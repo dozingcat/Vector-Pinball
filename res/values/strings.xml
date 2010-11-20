@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vector Pinball</string>
+    <string name="about_text">Vector Pinball 1.0\n© 2010 Brian Nenninger\nMore info: www.dozingcatsoftware.com/VectorPinball\nComments and bug reports: bnenning@gmail.com\n\nTouch the screen to start a new game, launch a ball if one is not in play, and activate both flippers.\n\nGame Rules:\n- Light all the cyan rollovers in the top or bottom lanes to advance the score multiplier. All points you earn will be multiplied by this amount.\nShooting the left ramp will also advance the multiplier.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- Hitting any group of drop targets will activate the next light in the center of the field. When the large white central light is activated, shoot the left ramp for an extra ball.\n\nVector Pinball is open source; the code is at https://github.com/dozingcat/Vector-Pinball</string>
+    <string name="about_menu_item">About/Help</string>
+    <string name="end_game_menu_item">End Game</string>
+</resources>
