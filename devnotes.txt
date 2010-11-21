@@ -1,5 +1,6 @@
 Thanks for your interest in the Vector Pinball code. This is a very high level description of its architecture,
-which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to send pull requests, or contact me at bnenning@gmail.com with comments or questions.
+which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to
+send pull requests, or contact me at bnenning@gmail.com with comments or questions.
 
 The pinball field layout is defined in res/raw/field_layout.json as a JSON document. Modifying that file is 
 the easiest way to change the game. All field elements (walls, bumpers, rollovers, etc) are defined in the
