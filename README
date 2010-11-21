@@ -3,7 +3,7 @@ version 3 of the GPL; see "COPYING" for the license text.
 
 The graphics are deliberately simple; currently everything is drawn with lines and circles. The focus is on gameplay and accurate physics. It uses the libgdx Java wrapper for the Box2D physics engine.
 
-The GitHub project page is: https://github.com/dozingcat/Vector-Pinball/
+The GitHub project page is: https://github.com/dozingcat/Vector-Pinball/ . See devnotes.txt for an overview of how to start modifying the game.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of

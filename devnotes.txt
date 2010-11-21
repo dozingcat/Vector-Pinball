@@ -1,0 +1,22 @@
+Thanks for your interest in the Vector Pinball code. This is a very high level description of its architecture, which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to send pull requests, or contact me at bnenning@gmail.com with comments or questions.
+
+The pinball field layout is defined in res/raw/field_layout.json as a JSON document. Modifying that file is the easiest way to change the game. All field elements (walls, bumpers, rollovers, etc) are defined in the "elements" array. Each element has a "class" attribute indicating its type; the value corresponds to a class in the com.dozingcatsoftware.bouncy.elements package (found under src/com/dozingcatsoftware/bouncy/elements). For example, to add a red bumper in the middle of the field, you could add this object to the elements array:
+
+{"class": "BumperElement", "position": [10.0, 15.0], "radius": 1.0, "kick": 3, "color": [255, 0, 0], "score": 42}
+
+See the individual element classes and the FieldElement superclass for details of what parameters can be set. Be careful, if your changes result in an invalid JSON file you'll get an error when you try to launch the app. Usually you can see where the error is by looking at the stack trace in the DDMS log. 
+
+The game uses the Box2D engine (via the Java wrapper in libgdx) to simulate its physics. When element instances are created, they can add objects to the Box2D world. BumperElement creates a circular object, WallElement creates a thin rectangle, and FlipperElement creates a joint allowing the flipper to rotate around one of its ends.
+
+BouncyActivity is the main Android activity class; it sets up the UI, handles OS-level suspend and resume events, responds to touch events, and updates the score view above the field every 100 milliseconds. Drawing is performed in the FieldView class, which calls the draw methods of the field element classes. FieldView's methods convert field coordinates, where the field height and width are defined in the JSON file, to the screen's pixel coordinates. 
+
+The main simulation loop is in the FieldDriver class and runs in a separate thread. The loop updates the Box2D physics world, and then calls FieldView.doDraw to render all visible objects to the screen. The Field class manages the overall state of the game and holds references to all field elements and balls in play.
+
+Custom table logic is controlled by a "delegate" class, Field1Delegate for the currently available table. (It's in the com.dozingcatsoftware.bouncy.fields package). The delegate class name is specified in the JSON file, and its methods are called when specific events occur. For example, Field1Delegate.allDropTargetsInGroupHit is called to advance the center lights and restore ball savers when all drop targets in a group are hit. The available delegate methods are defined in the nested Delegate interface in the Field class.
+
+Possible future directions:
+- More pinball tables. Currently the app only reads one table from field_layout.json, but it would be nice to have multiple tables defined either in one file or separate files, and allow the user to switch between them.
+- More field elements and game mechanics: spinners, holes, magnets, multiball, etc.
+- More detailed score display; show ball number, current multiplier, etc.
+- Non-pinball games using the same engine, like those handheld mechanical games where you try to bounce balls off pegs to get them to land in target holes. There is disabled code to support tilt control; see the OrientationListener class.
+- Internet high score support...of course, since it's open source it's easy to cheat.
