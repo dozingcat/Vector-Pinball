@@ -61,9 +61,6 @@
 			"left outside arc, inner",
 			{"class": "WallArcElement", "center": [6.246, 23], "xradius": 4.346, "yradius": 5.978, "minangle": 180, "maxangle": 225},
 						               	
-			"path along right edge",
-			{"class": "WallPathElement", "positions": [[17.2, 12.5], [17, 15], [14.8, 21.4], [15.05, 24.5], [15.05, 27.53]]},
-
 		    {"class": "WallElement", "position": [0.1, 0.1, 18.7, 0.1], "color": [0,0,0], "kill": true},
 		    {"class": "WallElement", "position": [18.7, 0.1, 19.9, 0.1]},
 			
@@ -85,7 +82,7 @@
 				"maxangle": 180,
 				"segments": 8
 			},
-			{"class": "WallElement", "position": [1.6, 12.5, 1.9, 17.5]},
+			{"class": "WallElement", "position": [1.6, 12.6, 1.9, 17.5]},
 			
 			"left outlane",
 			{"class": "WallElement", "position": [1.45, 8.5, 1.45, 4.8]},
@@ -103,6 +100,9 @@
 				"segments": 8
 			},
 			
+			"path along right edge",
+			{"class": "WallPathElement", "positions": [[17.2, 12.6], [17, 15], [14.8, 21.4], [15.05, 24.5], [15.05, 27.53]]},
+
 			"flipper lanes",
 			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
 			{"class": "WallElement", "position": [17.35, 4.8, 12.45, 2.3]},
@@ -120,31 +120,20 @@
 			{"class": "WallElement", "position": [12.0, 26.5, 12.0, 27.8]},
 			{"class": "WallElement", "position": [13.5, 26.5, 13.5, 27.8]},
 			
-"ledges for right drop targets",
-{"class": "WallElement", "position": [17.0, 15.0, 16.811785056743986, 14.932360254767369]},
-{"class": "WallElement", "position": [16.594161528604218, 16.129289659536088, 16.405946585348204, 16.061649914303459]},
-{"class": "WallElement", "position": [16.188323057208436, 17.258579319072176, 16.000108113952422, 17.190939573839547]},
-{"class": "WallElement", "position": [15.782484585812654, 18.387868978608267, 15.59426964255664, 18.320229233375638]},
-{"class": "WallElement", "position": [15.376646114416872, 19.517158638144355, 15.188431171160858, 19.449518892911726]},
 
-"right drop targets",
+"right drop targets (computed with python script to place parallel to wall, 0.2 perpendicular distance, 1.0 width, 0.2 gap)",
 {"class": "DropTargetGroupElement", "id": "DropTargetRightSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
- "positions": [[16.77796518412767, 15.026467726395376, 16.43976645796452, 15.96754244267545],
-               [16.372126712731887, 16.155757385931466, 16.033927986568738, 17.09683210221154],
-               [15.966288241336107, 17.285047045467554, 15.628089515172954, 18.226121761747628],
-               [15.560449769940325, 18.414336705003645, 15.222251043777172, 19.355411421283719]]},
+ "positions": [[16.778, 15.026, 16.440, 15.968],
+               [16.372, 16.156, 16.034, 17.097],
+               [15.966, 17.285, 15.628, 18.226],
+               [15.560, 18.414, 15.222, 19.355]]},
 			
-"ledges for left drop targets",
-{"class": "WallElement", "position": [1.6479138325823575, 13.298563876372622, 1.8475548016755132, 13.286585418227032]},
-{"class": "WallElement", "position": [1.7197845814558936, 14.496409690931557, 1.9194255505490494, 14.484431232785967]},
-{"class": "WallElement", "position": [1.7916553303294298, 15.694255505490492, 1.9912962994225856, 15.682277047344902]},
-{"class": "WallElement", "position": [1.8635260792029658, 16.892101320049427, 2.0631670482961217, 16.880122861903839]},
-
-"left drop targets",
+"left drop targets: 0.2 perpendicular distance from wall, 1.0 width, 0.2 gap, start 0.7 from bottom of wall",
 {"class": "DropTargetGroupElement", "id": "DropTargetLeftSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
- "positions": [[1.853544030748308, 13.38640590277361, 1.9134363214762546, 14.384610748239389],
-               [1.9254147796218442, 14.584251717332545, 1.9853070703497908, 15.582456562798324],
-               [1.9972855284953803, 15.78209753189148, 2.0571778192233272, 16.780302377357259]]},
+ "positions": [[1.807, 12.708, 1.868, 13.706],
+               [1.88, 13.905, 1.941, 14.903],
+               [1.954, 15.103, 2.015, 16.101],
+               [2.027, 16.301, 2.088, 17.299]]},
 
 		    "left kicker, 60 degree angle",
 		    {
@@ -185,8 +174,8 @@
 			
 			"upper drop targets",
 			{"class": "DropTargetGroupElement", "id": "DropTargetTop", "color": [0, 255, 255], "score": 500, "reset": 2.0,
- 			 "positions": [[8.6154667066968891, 26.09237336535751, 7.7449150447446904, 25.864031945829066],
-               [7.261275232549024, 25.737175601646598, 6.3907235705968253, 25.508834182118154],
+ 			 "positions": [[8.615, 26.092, 7.745, 25.864],
+               [7.261, 25.737, 6.391, 25.509],
                [5.75, 26.1, 5.75, 27.1]]},
 						
 			"bumpers below top lanes",
