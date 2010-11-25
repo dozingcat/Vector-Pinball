@@ -19,6 +19,7 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.*;
  * "kick": impulse to apply when a ball hits the wall, used for kickers and ball savers.
  * "kill": if true, the ball is lost when it hits the wall. Used for invisible wall below the flippers.
  * "retractWhenHit": if true, the wall is removed when hit by a ball. Used for ball savers.
+ * "disabled": if true, the wall starts out retracted, and will only be shown when setRetracted(field, true) is called.
  * 
  * Walls can be removed from the field by calling setRetracted(field, true), and restored with setRetracted(field, false).
  * 
@@ -51,13 +52,18 @@ public class WallElement extends FieldElement {
 		this.kick = asFloat(params.get("kick"));
 		this.killBall = (Boolean.TRUE.equals(params.get("kill")));
 		this.retractWhenHit = (Boolean.TRUE.equals(params.get("retractWhenHit")));
+
+		boolean disabled = Boolean.TRUE.equals(params.get("disabled"));
+		if (disabled) {
+			setRetracted(true);
+		}
 	}
 	
 	public boolean isRetracted() {
 		return !wallBody.isActive();
 	}
 	
-	public void setRetracted(Field field, boolean retracted) {
+	public void setRetracted(boolean retracted) {
 		if (retracted!=this.isRetracted()) {
 			wallBody.setActive(!retracted);
 		}
@@ -66,6 +72,12 @@ public class WallElement extends FieldElement {
 	@Override
 	public Collection getBodies() {
 		return bodySet;
+	}
+	
+	@Override
+	public boolean shouldCallTick() {
+		// tick() only needs to be called if this wall provides a kick which makes it flash
+		return (this.kick > 0.01f);
 	}
 
 	Vector2 impulseForBall(Body ball) {
@@ -93,7 +105,7 @@ public class WallElement extends FieldElement {
 	@Override
 	public void handleCollision(Body ball, Body bodyHit, Field field) {
 		if (retractWhenHit) {
-			this.setRetracted(field, true);
+			this.setRetracted(true);
 		}
 		
 		if (killBall) {

@@ -1,5 +1,6 @@
 [
 	{
+		"name": "Default",
 		"width": 20,
 		"height": 30,
 		
@@ -102,6 +103,11 @@
 			
 			"path along right edge",
 			{"class": "WallPathElement", "positions": [[17.2, 12.6], [17, 15], [14.8, 21.4], [15.05, 24.5], [15.05, 27.53]]},
+			
+			"barrier covering launch rail once the ball enters play, initially disabled",
+			{"class": "WallElement", "id": "LaunchBarrier", "position": [15.05, 27.53, 15.75, 28.74], "disabled": true, "color": [128, 128, 128]},
+			"sensor to enable launch barrier",
+			{"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [14.05, 27.53, 15.05, 29]},
 
 			"flipper lanes",
 			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
@@ -244,6 +250,5 @@
         		"downspeed": 3
         	}
         ]
-
 	}	
 ]

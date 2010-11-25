@@ -72,6 +72,13 @@ public abstract class FieldElement {
 		this.finishCreate(params, world);
 	}
 	
+	/** Called after creation to determine if tick() needs to be called after every frame is simulated. Default returns false, 
+	 * subclasses must override to return true in order for tick() to be called. This is an optimization to avoid needless
+	 * method calls in the game loop.
+	 */
+	public boolean shouldCallTick() {
+		return false;
+	}
 
 	/** Called on every update from Field.tick. Default implementation decrements flash counter if active, subclasses can override to perform
 	 * additional processing, e.g. RolloverGroupElement checking for balls within radius of rollovers. Subclasses should call super.tick(field).

@@ -115,6 +115,11 @@ public class RolloverGroupElement extends FieldElement {
 	}
 	
 	@Override
+	public boolean shouldCallTick() {
+		return true;
+	}
+
+	@Override
 	public void tick(Field field) {
 		if (this.ignoreBall) return;
 		

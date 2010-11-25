@@ -41,6 +41,13 @@ public class BumperElement extends FieldElement {
 	public Collection getBodies() {
 		return pegBodySet;
 	}
+	
+	@Override
+	public boolean shouldCallTick() {
+		// needs to call tick to decrement flash counter (but can use superclass tick() implementation)
+		return true;
+	}
+
 		
 	Vector2 impulseForBall(Body ball) {
 		if (this.kick <= 0.01f) return null;

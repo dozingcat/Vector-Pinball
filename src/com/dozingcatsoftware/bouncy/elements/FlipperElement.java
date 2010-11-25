@@ -105,6 +105,11 @@ public class FlipperElement extends FieldElement {
 	}
 	
 	@Override
+	public boolean shouldCallTick() {
+		return true;
+	}
+	
+	@Override
 	public void tick(Field field) {
 		super.tick(field);
 		

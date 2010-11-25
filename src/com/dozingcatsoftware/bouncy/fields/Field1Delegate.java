@@ -4,6 +4,7 @@ import com.dozingcatsoftware.bouncy.BaseFieldDelegate;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.bouncy.elements.RolloverGroupElement;
+import com.dozingcatsoftware.bouncy.elements.SensorElement;
 import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field1Delegate extends BaseFieldDelegate {
@@ -32,11 +33,11 @@ public class Field1Delegate extends BaseFieldDelegate {
 		// activate ball saver for left and right groups
 		String id = targetGroup.getElementID();
 		if ("DropTargetLeftSave".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-left")).setRetracted(field, false);
+			((WallElement)field.getFieldElementByID("BallSaver-left")).setRetracted(false);
 			field.showGameMessage("Left Save Enabled", 1500);
 		}
 		else if ("DropTargetRightSave".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(field, false);
+			((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(false);
 			field.showGameMessage("Right Save Enabled", 1500);
 		}
 		// for all groups, increment extra ball rollover
@@ -49,4 +50,28 @@ public class Field1Delegate extends BaseFieldDelegate {
 		}
 	}
 	
+	// support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
+	void setLaunchBarrierEnabled(Field field, boolean enabled) {
+		WallElement barrier = (WallElement)field.getFieldElementByID("LaunchBarrier");
+		barrier.setRetracted(!enabled);
+	}
+
+	@Override
+	public void ballInSensorRange(Field field, SensorElement sensor) {
+		// enable launch barrier 
+		if ("LaunchBarrierSensor".equals(sensor.getElementID())) {
+			setLaunchBarrierEnabled(field, true);
+		}
+	}
+	
+	@Override
+	public void gameStarted(Field field) {
+		setLaunchBarrierEnabled(field, false);
+	}
+
+	@Override
+	public void ballLost(Field field) {
+		setLaunchBarrierEnabled(field, false);
+	}
+
 }

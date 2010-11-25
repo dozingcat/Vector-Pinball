@@ -17,7 +17,7 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 		super(context, attrs);
 	}
 	
-	final static boolean DEBUG = false;
+	final static boolean DEBUG = true;
 	
 	Field field;
 	

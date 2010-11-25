@@ -24,6 +24,7 @@ import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 import com.dozingcatsoftware.bouncy.elements.FlipperElement;
 import com.dozingcatsoftware.bouncy.elements.RolloverGroupElement;
+import com.dozingcatsoftware.bouncy.elements.SensorElement;
 
 public class Field implements ContactListener {
 	
@@ -38,6 +39,7 @@ public class Field implements ContactListener {
 	Map<Body, FieldElement> bodyToFieldElement;
 	Map<String, FieldElement> fieldElements;
 	Map<String, List<FieldElement>> elementsByGroupID = new HashMap<String, List<FieldElement>>();
+	FieldElement[] fieldElementsToTick;
 	
 	Random RAND = new Random();
 	
@@ -51,6 +53,14 @@ public class Field implements ContactListener {
 	
 	// interface to allow custom behavior for various game events
 	public static interface Delegate {
+		public void gameStarted(Field field);
+		
+		public void ballLost(Field field);
+		
+		public void gameEnded(Field field);
+		
+		public void tick(Field field, long msecs);
+		
 		public void processCollision(Field field, FieldElement element, Body hitBody, Body ball);
 		
 		public void flipperActivated(Field field);
@@ -58,6 +68,8 @@ public class Field implements ContactListener {
 		public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup);
 		
 		public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
+		
+		public void ballInSensorRange(Field field, SensorElement sensor);
 	}
 	
 	// helper class to represent actions scheduled in the future
@@ -91,9 +103,11 @@ public class Field implements ContactListener {
 		scheduledActions = new PriorityQueue<ScheduledAction>();
 		gameTime = 0;
 
-		// map bodies and IDs to FieldElements
+		// map bodies and IDs to FieldElements, and get elements on whom tick() has to be called
 		bodyToFieldElement = new HashMap<Body, FieldElement>();
 		fieldElements = new HashMap<String, FieldElement>();
+		List<FieldElement> tickElements = new ArrayList<FieldElement>();
+
 		for(FieldElement element : layout.getFieldElements()) {
 			if (element.getElementID()!=null) {
 				fieldElements.put(element.getElementID(), element);
@@ -101,7 +115,11 @@ public class Field implements ContactListener {
 			for(Body body : element.getBodies()) {
 				bodyToFieldElement.put(body, element);
 			}
+			if (element.shouldCallTick()) {
+				tickElements.add(element);
+			}
 		}
+		fieldElementsToTick = tickElements.toArray(new FieldElement[0]);
 		
 		delegate = null;
 		String delegateClass = layout.getDelegateClassName();
@@ -125,6 +143,7 @@ public class Field implements ContactListener {
 	public void startGame() {
 		gameState.setTotalBalls(layout.getNumberOfBalls());
 		gameState.startNewGame();
+		getDelegate().gameStarted(this);
 	}
 	
 	/** Returns the FieldElement with the given value for its "id" attribute, or null if there is no such element.
@@ -150,13 +169,16 @@ public class Field implements ContactListener {
     	processElementTicks();
     	processScheduledActions();
     	processGameMessages();
+    	
+    	getDelegate().tick(this, msecs);
     }
     
     /** Calls the tick() method of every FieldElement in the layout. 
      */
     void processElementTicks() {
-    	for(FieldElement element : this.getFieldElements()) {
-    		element.tick(this);
+    	int size = fieldElementsToTick.length;
+    	for(int i=0; i<size; i++) {
+    		fieldElementsToTick[i].tick(this);
     	}
     }
     
@@ -223,17 +245,17 @@ public class Field implements ContactListener {
 		if (msg!=null) {
 			// game is still going, show message after delay
 			final String msg2 = msg; // must be final for closure, yay Java
-			this.scheduleAction(2000, new Runnable() {
+			this.scheduleAction(1500, new Runnable() {
 				public void run() {
 					showGameMessage(msg2, 1500);
 				}
 			});
 		}
 		else {
-			// show game over message immediately and for longer
-			msg = "Game Over";
-			showGameMessage(msg, 2000);
+			endGame();
 		}
+		
+		getDelegate().ballLost(this);
     }
     
     /** Returns true if there are active elements in motion. Returns false if there are no active elements,
@@ -295,6 +317,7 @@ public class Field implements ContactListener {
     	}
     	this.getGameState().setGameInProgress(false);
     	this.showGameMessage("Game Over", 2500);
+    	getDelegate().gameEnded(this);
     }
 
     /** Adjusts gravity in response to the device being tilted; not currently used.
