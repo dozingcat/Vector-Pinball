@@ -73,7 +73,9 @@ public class SensorElement extends FieldElement {
 	
 	@Override
 	public void tick(Field field) {
-		for(Body ball : field.getBalls()) {
+		List<Body> balls = field.getBalls();
+		for(int i=0; i<balls.size(); i++) {
+			Body ball = balls.get(i);
 			if (ballInRange(ball)) {
 				field.getDelegate().ballInSensorRange(field, this);
 				return;

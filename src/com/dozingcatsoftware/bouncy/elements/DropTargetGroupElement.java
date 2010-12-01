@@ -45,8 +45,9 @@ public class DropTargetGroupElement extends FieldElement {
 	
 	/** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
 	public boolean allTargetsHit() {
-		for(Body body : allBodies) {
-			if (body.isActive()) return false;
+		int bsize = allBodies.size();
+		for(int i=0; i<bsize; i++) {
+			if (allBodies.get(i).isActive()) return false;
 		}
 		return true;
 	}
@@ -62,7 +63,7 @@ public class DropTargetGroupElement extends FieldElement {
 			if (restoreTime>0) {
 				field.scheduleAction((long)(restoreTime*1000), new Runnable() {
 					public void run() {
-						makeAllTargetsVisible(field);
+						makeAllTargetsVisible();
 					}
 				});
 			}
@@ -70,9 +71,10 @@ public class DropTargetGroupElement extends FieldElement {
 	}
 	
 	/** Makes all targets visible by calling Body.setActive(true) on each target body */
-	public void makeAllTargetsVisible(Field field) {
-		for(Body body : allBodies) {
-			body.setActive(true);
+	public void makeAllTargetsVisible() {
+		int bsize = allBodies.size();
+		for(int i=0; i<bsize; i++) {
+			allBodies.get(i).setActive(true);
 		}
 	}
 	
@@ -83,7 +85,9 @@ public class DropTargetGroupElement extends FieldElement {
 		int g = greenColorComponent(255);
 		int b = blueColorComponent(0);
 		
-		for(Body body : allBodies) {
+		int bsize = allBodies.size();
+		for(int i=0; i<bsize; i++) {
+			Body body = allBodies.get(i);
 			if (body.isActive()) {
 				float[] parray = bodyPositions.get(body);
 				renderer.drawLine(parray[0], parray[1], parray[2], parray[3], r, g, b);

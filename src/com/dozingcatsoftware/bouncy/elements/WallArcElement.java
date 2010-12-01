@@ -33,7 +33,7 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 public class WallArcElement extends FieldElement {
 
 	public List wallBodies = new ArrayList();
-	List<float[]> lineSegments = new ArrayList<float[]>();
+	float[][] lineSegments;
 	
 	public void finishCreate(Map params, World world) {
 		List centerPos = (List)params.get("center");
@@ -56,6 +56,7 @@ public class WallArcElement extends FieldElement {
 		float maxangle = toRadians(asFloat(params.get("maxangle")));
 		float diff = maxangle - minangle;
 		// create numsegments line segments to approximate circular arc
+		lineSegments = new float[numsegments][];
 		for(int i=0; i<numsegments; i++) {
 			float angle1 = minangle + i * diff / numsegments; 
 			float angle2 = minangle + (i+1) * diff / numsegments;
@@ -66,7 +67,7 @@ public class WallArcElement extends FieldElement {
 			
 			Body wall = Box2DFactory.createThinWall(world, x1, y1, x2, y2, 0f);
 			this.wallBodies.add(wall);
-			lineSegments.add(new float[] {x1, y1, x2, y2});
+			lineSegments[i] = (new float[] {x1, y1, x2, y2});
 		}
 	}
 	

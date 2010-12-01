@@ -24,18 +24,19 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 public class WallPathElement extends FieldElement {
 	
 	List wallBodies = new ArrayList();
-	List<float[]> lineSegments = new ArrayList<float[]>();
+	float[][] lineSegments;
 	
 	public void finishCreate(Map params, World world) {
 		List positions = (List)params.get("positions");
-		
-		for(int i=0; i<positions.size()-1; i++) {
+		// N positions product N-1 line segments
+		lineSegments = new float[positions.size()-1][];
+		for(int i=0; i<lineSegments.length; i++) {
 			List startpos = (List)positions.get(i);
 			List endpos = (List)positions.get(i+1);
 			
 			float[] segment = new float[] {asFloat(startpos.get(0)), asFloat(startpos.get(1)),
 					asFloat(endpos.get(0)), asFloat(endpos.get(1))};
-			lineSegments.add(segment);
+			lineSegments[i] = segment;
 			
 			Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
 			this.wallBodies.add(wall);

@@ -94,7 +94,7 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 		// call draw() on each FieldElement, draw balls separately
 		this.canvas = c;
 		
-		for(FieldElement element : field.getFieldElements()) {
+		for(FieldElement element : field.getFieldElementsArray()) {
 			element.draw(this);
 		}
 

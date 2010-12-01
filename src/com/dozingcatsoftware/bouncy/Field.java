@@ -32,13 +32,15 @@ public class Field implements ContactListener {
 	World world;
 	
 	Set<Body> layoutBodies;
-	Set<Body> balls;
+	List<Body> balls;
 	Set<Body> ballsAtTargets;
 	
 	// allow access to model objects from Box2d bodies
 	Map<Body, FieldElement> bodyToFieldElement;
-	Map<String, FieldElement> fieldElements;
+	Map<String, FieldElement> fieldElementsByID;
 	Map<String, List<FieldElement>> elementsByGroupID = new HashMap<String, List<FieldElement>>();
+	// store FieldElements in arrays for optimized iteration
+	FieldElement[] fieldElementsArray;
 	FieldElement[] fieldElementsToTick;
 	
 	Random RAND = new Random();
@@ -97,7 +99,7 @@ public class Field implements ContactListener {
 		
 		layout = FieldLayout.layoutForLevel(context, level, world);
 		world.setGravity(new Vector2(0.0f, -layout.getGravity()));
-		balls = new HashSet<Body>();
+		balls = new ArrayList<Body>();
 		ballsAtTargets = new HashSet<Body>();
 		
 		scheduledActions = new PriorityQueue<ScheduledAction>();
@@ -105,12 +107,12 @@ public class Field implements ContactListener {
 
 		// map bodies and IDs to FieldElements, and get elements on whom tick() has to be called
 		bodyToFieldElement = new HashMap<Body, FieldElement>();
-		fieldElements = new HashMap<String, FieldElement>();
+		fieldElementsByID = new HashMap<String, FieldElement>();
 		List<FieldElement> tickElements = new ArrayList<FieldElement>();
 
 		for(FieldElement element : layout.getFieldElements()) {
 			if (element.getElementID()!=null) {
-				fieldElements.put(element.getElementID(), element);
+				fieldElementsByID.put(element.getElementID(), element);
 			}
 			for(Body body : element.getBodies()) {
 				bodyToFieldElement.put(body, element);
@@ -120,6 +122,7 @@ public class Field implements ContactListener {
 			}
 		}
 		fieldElementsToTick = tickElements.toArray(new FieldElement[0]);
+		fieldElementsArray = layout.getFieldElements().toArray(new FieldElement[0]);
 		
 		delegate = null;
 		String delegateClass = layout.getDelegateClassName();
@@ -149,7 +152,7 @@ public class Field implements ContactListener {
 	/** Returns the FieldElement with the given value for its "id" attribute, or null if there is no such element.
 	 */
 	public FieldElement getFieldElementByID(String elementID) {
-		return fieldElements.get(elementID);
+		return fieldElementsByID.get(elementID);
 	}
 	
 	/** Called to advance the game's state by the specified number of milliseconds. iters is the number of times to call
@@ -231,6 +234,13 @@ public class Field implements ContactListener {
     	}
     }
     
+    /** Removes a ball from play, but does not call doBallLost for end-of-ball processing even if no balls remain.
+     */
+    public void removeBallWithoutBallLoss(Body ball) {
+    	world.destroyBody(ball);
+    	this.balls.remove(ball);
+    }
+    
     /** Called when a ball has ended. Ends the game if that was the last ball, otherwise updates GameState to the next ball.
      * Shows a game message to indicate the ball number or game over.
      */
@@ -268,14 +278,22 @@ public class Field implements ContactListener {
     	return this.getBalls().size() > 0;
     }
     
+    
+    ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
     /** Removes balls that are not in play, currently defined as those having a y position of less than 1.
      */
     public void removeDeadBalls() {
-    	for(Body ball : new HashSet<Body>(this.getBalls())) {
+    	deadBalls.clear();
+    	for(int i=0; i<this.balls.size(); i++) {
+    		Body ball = this.balls.get(i);
     		if (ball.getPosition().y < 1) {
+    			deadBalls.add(ball);
     	    	world.destroyBody(ball);
-    	    	this.balls.remove(ball);
     		}
+    	}
+    	
+    	for(int i=0; i<deadBalls.size(); i++) {
+    		this.balls.remove(deadBalls.get(i));
     	}
     }
     
@@ -283,7 +301,8 @@ public class Field implements ContactListener {
      */
     public void drawBalls(IFieldRenderer renderer) {
     	List<Integer> color = layout.getBallColor();
-    	for(Body ball : this.balls) {
+    	for(int i=0; i<this.balls.size(); i++) {
+    		Body ball = this.balls.get(i);
 			CircleShape shape = (CircleShape)ball.getFixtureList().get(0).getShape();
 			renderer.fillCircle(ball.getPosition().x, ball.getPosition().y, shape.getRadius(), color.get(0), color.get(1), color.get(2));
     	}
@@ -294,16 +313,19 @@ public class Field implements ContactListener {
      */
     public void setAllFlippersEngaged(boolean engaged) {
     	boolean allFlippersPreviouslyActive = true;
-    	for(FlipperElement flipper : this.getFlipperElements()) {
+    	List<FlipperElement> flippers = this.getFlipperElements();
+    	int fsize = flippers.size();
+    	for(int i=0; i<fsize; i++) {
+    		FlipperElement flipper = flippers.get(i);
     		if (allFlippersPreviouslyActive && !flipper.isFlipperEngaged()) allFlippersPreviouslyActive = false;
     		flipper.setFlipperEngaged(engaged);
     	}
     	
     	if (engaged && !allFlippersPreviouslyActive) {
-        	for(FieldElement element : this.getFieldElements()) {
-        		element.flipperActivated(this);
-        	}
-        	getDelegate().flipperActivated(this);
+    		for(FieldElement element : this.getFieldElementsArray()) {
+    			element.flipperActivated(this);
+    		}
+    		getDelegate().flipperActivated(this);
     	}
     }
     
@@ -313,8 +335,8 @@ public class Field implements ContactListener {
     public void endGame() {
     	for(Body ball : this.getBalls()) {
 	    	world.destroyBody(ball);
-	    	this.balls.remove(ball);
     	}
+    	this.balls.clear();
     	this.getGameState().setGameInProgress(false);
     	this.showGameMessage("Game Over", 2500);
     	getDelegate().gameEnded(this);
@@ -340,9 +362,11 @@ public class Field implements ContactListener {
 	/** Called after Box2D world step method, to notify FieldElements that the ball collided with.
 	 */
 	void processBallContacts() {
+		if (ballContacts.size()==0) return;
 		for(Body ball : ballContacts.keySet()) {
 			List<Fixture> fixtures = ballContacts.get(ball);
-			for(Fixture f : fixtures) {
+			for(int i=0; i<fixtures.size(); i++) {
+				Fixture f = fixtures.get(i);
 				FieldElement element = bodyToFieldElement.get(f.getBody());
 				if (element!=null) {
 					element.handleCollision(ball, f.getBody(), this);
@@ -421,14 +445,17 @@ public class Field implements ContactListener {
 	public Set<Body> getLayoutBodies() {
 		return layoutBodies;
 	}
-	public Set<Body> getBalls() {
+	public List<Body> getBalls() {
 		return balls;
 	}
-	public Collection<FlipperElement> getFlipperElements() {
+	public List<FlipperElement> getFlipperElements() {
 		return layout.getFlipperElements();
 	}
-	public Collection<FieldElement> getFieldElements() {
+	public List<FieldElement> getFieldElements() {
 		return layout.getFieldElements();
+	}
+	public FieldElement[] getFieldElementsArray() {
+		return fieldElementsArray;
 	}
 	
 	public GameMessage getGameMessage() {
