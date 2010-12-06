@@ -43,7 +43,7 @@ public class BaseFieldDelegate implements Field.Delegate {
 	}
 
 	@Override
-	public void tick(Field field, long msecs) {
+	public void tick(Field field, long nanos) {
 	}
 	
 	@Override

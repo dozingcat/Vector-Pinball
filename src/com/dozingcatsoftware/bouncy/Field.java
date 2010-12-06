@@ -60,7 +60,7 @@ public class Field implements ContactListener {
 		
 		public void gameEnded(Field field);
 		
-		public void tick(Field field, long msecs);
+		public void tick(Field field, long nanos);
 		
 		public void processCollision(Field field, FieldElement element, Body hitBody, Body ball);
 		
@@ -154,12 +154,12 @@ public class Field implements ContactListener {
 		return fieldElementsByID.get(elementID);
 	}
 	
-	/** Called to advance the game's state by the specified number of milliseconds. iters is the number of times to call
+	/** Called to advance the game's state by the specified number of nanoseconds. iters is the number of times to call
 	 * the Box2D World.step method; more iterations produce better accuracy. After updating physics, processes element
 	 * collisions, calls tick() on every FieldElement, and performs scheduled actions.
 	 */
-    void tick(long msecs, int iters) {
-    	float dt = (msecs/1000.0f) / iters;
+    void tick(long nanos, int iters) {
+    	float dt = (float)((nanos/1000000000.0) / iters);
     	
     	for(int i=0; i<iters; i++) {
         	clearBallContacts();
@@ -167,12 +167,12 @@ public class Field implements ContactListener {
         	processBallContacts();
     	}
 
-    	gameTime += msecs;
+    	gameTime += nanos;
     	processElementTicks();
     	processScheduledActions();
     	processGameMessages();
     	
-    	getDelegate().tick(this, msecs);
+    	getDelegate().tick(this, nanos);
     }
     
     /** Calls the tick() method of every FieldElement in the layout. 
@@ -204,7 +204,8 @@ public class Field implements ContactListener {
      */
     public void scheduleAction(long interval, Runnable action) {
     	ScheduledAction sa = new ScheduledAction();
-    	sa.actionTime = gameTime + interval;
+    	// interval is in milliseconds, gameTime is in nanoseconds
+    	sa.actionTime = gameTime + (interval * 1000000);
     	sa.action = action;
     	scheduledActions.add(sa);
     }
