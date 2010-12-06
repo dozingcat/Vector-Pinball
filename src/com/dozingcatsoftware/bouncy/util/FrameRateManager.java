@@ -21,7 +21,7 @@ public class FrameRateManager {
 	int currentRateIndex = 0;
 	long currentNanosPerFrame;
 	
-	// apply fudge factor to requested frame rates; if 60 fps requested, internally aim for 61.2
+	// apply fudge factor to requested frame rates; if 60 fps requested, internally aim for 60.9
 	double targetFrameRateFudgeFactor = 1.015;
 	double[] unfudgedTargetFrameRates; // report un-fudged target frame rates to client
 	
@@ -203,7 +203,7 @@ public class FrameRateManager {
 		return waitTime;
 	}
 	
-	/** Calls frameStarted() with the current system time. */
+	/** Calls nanosToWaitUntilNextFrame() with the current system time. */
 	public long nanosToWaitUntilNextFrame() {
 		return nanosToWaitUntilNextFrame(System.nanoTime());
 	}
