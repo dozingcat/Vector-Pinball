@@ -14,7 +14,7 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
 /** This FieldElement subclass is used to identify areas on the table that should cause custom behavior
  * when the ball enters. SensorElements have no bodies and don't draw anything. The area they monitor
- * can be a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list, a circle defined
+ * can be a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list, or a circle defined
  * by the "center" and "radius" parameters. During every tick() invocation, a sensor determines if any of
  * the field's balls are within its area, and if so calls the field delegate's ballInSensorRange method. 
  * @author brian

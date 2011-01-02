@@ -280,13 +280,18 @@ public class Field implements ContactListener {
     
     
     ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
-    /** Removes balls that are not in play, currently defined as those having a y position of less than 1.
+    /** Removes balls that are not in play, as determined by optional "deadzone" property of launch parameters in field layout.
      */
     public void removeDeadBalls() {
+    	List<Number> deadRect = layout.getLaunchDeadZone();
+    	if (deadRect==null) return;
+
     	deadBalls.clear();
     	for(int i=0; i<this.balls.size(); i++) {
     		Body ball = this.balls.get(i);
-    		if (ball.getPosition().y < 1) {
+    		Vector2 bpos = ball.getPosition();
+    		if (bpos.x > deadRect.get(0).floatValue() && bpos.y > deadRect.get(1).floatValue() && 
+    			bpos.x < deadRect.get(2).floatValue() && bpos.y < deadRect.get(3).floatValue()) {
     			deadBalls.add(ball);
     	    	world.destroyBody(ball);
     		}

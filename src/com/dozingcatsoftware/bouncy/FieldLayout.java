@@ -118,6 +118,11 @@ public class FieldLayout {
 		return (List<Number>)launchMap.get("position");
 	}
 	
+	public List<Number> getLaunchDeadZone() {
+		Map launchMap = (Map)allParameters.get("launch");
+		return (List<Number>)launchMap.get("deadzone");
+	}
+	
 	// can apply random velocity increment if specified by "random_velocity" key
 	public List<Float> getLaunchVelocity() {
 		Map launchMap = (Map)allParameters.get("launch");
