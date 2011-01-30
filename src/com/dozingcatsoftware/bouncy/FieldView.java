@@ -1,9 +1,12 @@
 package com.dozingcatsoftware.bouncy;
 
+import java.lang.reflect.Method;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
@@ -17,7 +20,9 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 		super(context, attrs);
 	}
 	
-	final static boolean DEBUG = false;
+	boolean showFPS;
+	boolean highQuality;
+	boolean independentFlippers;
 	
 	Field field;
 	
@@ -38,6 +43,21 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 	
 	public void setDebugMessage(String value) {
 		debugMessage = value;
+	}
+	
+	public void setShowFPS(boolean value) {
+		showFPS = value;
+	}
+	
+	public void setIndependentFlippers(boolean value) {
+		independentFlippers = value;
+	}
+	
+	public void setHighQuality(boolean value) {
+		highQuality = value;
+	}
+	public boolean isHighQuality() {
+		return highQuality;
 	}
 	
 	float getScale() {
@@ -91,6 +111,7 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 	 */
 	public void doDraw(Canvas c) {
 		cacheScaleAndOffsets();
+		paint.setStrokeWidth(this.highQuality ? 2 : 0);
 		// call draw() on each FieldElement, draw balls separately
 		this.canvas = c;
 		
@@ -100,14 +121,90 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 
 		field.drawBalls(this);
 		
-		if (DEBUG) {
+		if (this.showFPS) {
 			if (debugMessage!=null) {
-				paint.setARGB(255,255,255,255);
-				c.drawText(""+debugMessage, 50, 25, paint);
+				c.drawText(""+debugMessage, 10, 10, textPaint);
 			}
 		}
 	}
 	
+	// for compatibility with Android 1.6, use reflection for multitouch features
+	boolean hasMultitouch;
+	Method getPointerCountMethod;
+	Method getXMethod;
+	int MOTIONEVENT_ACTION_MASK = 0xffffffff; // defaults to no-op AND mask
+	int MOTIONEVENT_ACTION_POINTER_UP;
+	int MOTIONEVENT_ACTION_POINTER_INDEX_MASK;
+	int MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
+	
+	{
+		try {
+			getPointerCountMethod = MotionEvent.class.getMethod("getPointerCount");
+			getXMethod = MotionEvent.class.getMethod("getX", int.class);
+			MOTIONEVENT_ACTION_MASK = MotionEvent.class.getField("ACTION_MASK").getInt(null);
+			MOTIONEVENT_ACTION_POINTER_UP = MotionEvent.class.getField("ACTION_POINTER_UP").getInt(null);
+			MOTIONEVENT_ACTION_POINTER_INDEX_MASK = MotionEvent.class.getField("ACTION_POINTER_INDEX_MASK").getInt(null);
+			MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT = MotionEvent.class.getField("ACTION_POINTER_INDEX_SHIFT").getInt(null);
+			hasMultitouch = true;
+		}
+		catch(Exception ex) {
+			hasMultitouch = false;
+		}
+	}
+	
+
+    /** Called when the view is touched. Activates flippers, starts a new game if one is not in progress, and
+     * launches a ball if one is not in play.
+     */
+	@Override
+    public boolean onTouchEvent(MotionEvent event) {
+		int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
+    	synchronized(field) {
+        	if (actionType==MotionEvent.ACTION_DOWN) {
+        		// start game if not in progress
+        		if (!field.getGameState().isGameInProgress()) {
+        			field.resetForLevel(this.getContext(), 1);
+        			field.startGame();
+        		}
+            	// remove "dead" balls and launch if none already in play
+        		field.removeDeadBalls();
+        		if (field.getBalls().size()==0) field.launchBall();
+        	}
+        	// activate or deactivate flippers
+        	if (this.independentFlippers && this.hasMultitouch) {
+        		try {
+            		boolean left=false, right=false;
+            		if (actionType!=MotionEvent.ACTION_UP) {
+            			int npointers = (Integer)getPointerCountMethod.invoke(event);
+            			// if pointer was lifted (ACTION_POINTER_UP), get its index so we don't count it as pressed
+            			int liftedPointerIndex = -1;
+            			if (actionType==MOTIONEVENT_ACTION_POINTER_UP){
+            				liftedPointerIndex = (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >> MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
+            				//this.setDebugMessage("Lifted " + liftedPointerIndex);
+            			}
+            			//this.setDebugMessage("Pointers: " + npointers);
+            			float halfwidth = this.getWidth() / 2;
+            			for(int i=0; i<npointers; i++) {
+            				if (i!=liftedPointerIndex) {
+                				float touchx = (Float)getXMethod.invoke(event, i);
+                				if (touchx < halfwidth) left = true;
+                				else right = true;
+            				}
+            			}
+            		}
+            		field.setLeftFlippersEngaged(left);
+            		field.setRightFlippersEngaged(right);
+        		}
+        		catch(Exception ignored) {}
+        	}
+        	else {
+            	boolean flipperState = !(event.getAction()==MotionEvent.ACTION_UP);
+            	field.setAllFlippersEngaged(flipperState);
+        	}
+    	}
+    	return true;
+    }
+
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
 	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {

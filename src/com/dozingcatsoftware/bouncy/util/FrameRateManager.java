@@ -109,6 +109,7 @@ public class FrameRateManager {
 	public void resetFrameRate() {
 		clearTimestamps();
 		setCurrentRateIndex(0);
+		frameRateLocked = false;
 	}
 	
 	

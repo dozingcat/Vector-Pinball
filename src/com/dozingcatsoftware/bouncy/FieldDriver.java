@@ -98,10 +98,8 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			frameRateManager.sleepUntilNextFrame();
 			
 			// for debugging, show frames per second and other info
-			if (FieldView.DEBUG) {
-				if (frameRateManager.getTotalFrames() % 100 == 0) {
-					fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
-				}
+			if (frameRateManager.getTotalFrames() % 100 == 0) {
+				fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
 			}
 		}
 	}
@@ -113,6 +111,12 @@ public class FieldDriver implements SurfaceHolder.Callback {
 		c.drawARGB(255, 0, 0, 0);
 		fieldView.doDraw(c);
 		fieldView.getHolder().unlockCanvasAndPost(c);
+	}
+	
+	/** Resets the frame rate and forgets any locked rate, called when rendering quality is changed.
+	 */
+	public void resetFrameRate() {
+		frameRateManager.resetFrameRate();
 	}
 	
 	// SurfaceHolder.Callback methods

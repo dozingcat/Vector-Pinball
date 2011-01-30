@@ -12,6 +12,7 @@
         </activity>
 
     <activity android:name="AboutActivity"></activity>
+    <activity android:name="BouncyPreferences"></activity>
 </application>
     <uses-sdk android:minSdkVersion="4" />
 

@@ -24,6 +24,8 @@ public class BouncyActivity extends Activity {
 	
 	MenuItem aboutMenuItem;
 	MenuItem endGameMenuItem;
+	MenuItem preferencesMenuItem;
+	final static int ACTIVITY_PREFERENCES = 1;
 	
 	Handler handler = new Handler();
 	
@@ -58,13 +60,6 @@ public class BouncyActivity extends Activity {
         fieldDriver.setFieldView(worldView);
         fieldDriver.setField(field);
         
-        worldView.setOnTouchListener(new View.OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				handleMainViewTouch(event);
-				return true;
-			}
-    	});
-        
         highScore = this.highScoreFromPreferences();
         scoreView.setHighScore(highScore);
 
@@ -77,6 +72,7 @@ public class BouncyActivity extends Activity {
         	}
         });
         */
+        updateFromPreferences();
     }
     
     @Override
@@ -101,6 +97,7 @@ public class BouncyActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
     	aboutMenuItem = menu.add(R.string.about_menu_item);
     	endGameMenuItem = menu.add(R.string.end_game_menu_item);
+    	preferencesMenuItem = menu.add(R.string.preferences_menu_item);
     	return true;
     }
 
@@ -113,7 +110,36 @@ public class BouncyActivity extends Activity {
     	else if (item==endGameMenuItem) {
     		field.endGame();
     	}
+    	else if (item==preferencesMenuItem) {
+    		Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
+    		startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
+    	}
     	return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) { 
+        super.onActivityResult(requestCode, resultCode, intent); 
+
+        switch(requestCode) { 
+            case ACTIVITY_PREFERENCES:
+            	updateFromPreferences();
+            	break;
+        }
+    }
+
+    // Update settings from preferences, called at launch and when preferences activity finishes
+    void updateFromPreferences() {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	worldView.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
+    	worldView.setShowFPS(prefs.getBoolean("showFPS", false));
+
+    	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
+    	boolean previousHighQuality = worldView.isHighQuality();
+    	worldView.setHighQuality(prefs.getBoolean("highQuality", false));
+    	if (previousHighQuality!=worldView.isHighQuality()) {
+    		fieldDriver.resetFrameRate();
+    	}
     }
 
     // called every 100 milliseconds while app is visible, to update score view and high score
@@ -153,24 +179,4 @@ public class BouncyActivity extends Activity {
     	editor.commit();
     }
     
-    /** Called when the main view is touched. Activates flippers, starts a new game if one is not in progress, and
-     * launches a ball if one is not in play.
-     */
-    void handleMainViewTouch(MotionEvent event) {
-    	synchronized(field) {
-        	if (event.getAction()==MotionEvent.ACTION_DOWN) {
-        		// start game if not in progress
-        		if (!field.getGameState().isGameInProgress()) {
-        			field.resetForLevel(this, level);
-        			field.startGame();
-        		}
-            	// remove "dead" balls and launch if none already in play
-        		field.removeDeadBalls();
-        		if (field.getBalls().size()==0) field.launchBall();
-        	}
-        	// activate or deactivate flippers
-        	boolean flipperState = !(event.getAction()==MotionEvent.ACTION_UP);
-        	field.setAllFlippersEngaged(flipperState);
-    	}
-    }
 }

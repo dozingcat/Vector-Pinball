@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -316,9 +317,8 @@ public class Field implements ContactListener {
     /** Called to engage or disengage all flippers. If called with an argument of true, and all flippers were not previously engaged,
      * calls the flipperActivated methods of all field elements and the field's delegate.
      */
-    public void setAllFlippersEngaged(boolean engaged) {
+    public void setFlippersEngaged(List<FlipperElement> flippers, boolean engaged) {
     	boolean allFlippersPreviouslyActive = true;
-    	List<FlipperElement> flippers = this.getFlipperElements();
     	int fsize = flippers.size();
     	for(int i=0; i<fsize; i++) {
     		FlipperElement flipper = flippers.get(i);
@@ -332,6 +332,17 @@ public class Field implements ContactListener {
     		}
     		getDelegate().flipperActivated(this);
     	}
+    }
+    
+    public void setAllFlippersEngaged(boolean engaged) {
+    	setFlippersEngaged(this.getFlipperElements(), engaged);
+    }
+    
+    public void setLeftFlippersEngaged(boolean engaged) {
+    	setFlippersEngaged(Collections.singletonList(this.getFlipperElements().get(0)), engaged);
+    }
+    public void setRightFlippersEngaged(boolean engaged) {
+    	setFlippersEngaged(Collections.singletonList(this.getFlipperElements().get(1)), engaged);
     }
     
     /** Ends a game in progress by removing all balls in play, calling setGameInProgress(false) on the GameState, and setting a

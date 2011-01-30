@@ -108,6 +108,8 @@
 			{"class": "WallElement", "id": "LaunchBarrier", "position": [15.05, 27.53, 15.75, 28.74], "disabled": true, "color": [128, 128, 128]},
 			"sensor to enable launch barrier",
 			{"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [14.05, 27.53, 15.05, 29]},
+			"sensor to retract launch barrier for multi-ball",
+			{"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [17.0, 26.0, 18.0, 28.0]},
 
 			"flipper lanes",
 			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},

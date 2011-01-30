@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Preferences">
+	
+		<CheckBoxPreference android:key="highQuality" android:enabled="true" android:title="@string/high_quality_pref_title" 
+		android:summaryOff="@string/high_quality_pref_summary_off" android:summaryOn="@string/high_quality_pref_summary_on" />
+		
+		<CheckBoxPreference android:key="showFPS" android:enabled="true" android:title="@string/show_fps_pref_title" />
+		
+	</PreferenceCategory>
+</PreferenceScreen>
