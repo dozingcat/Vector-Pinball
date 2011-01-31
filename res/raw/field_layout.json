@@ -11,7 +11,7 @@
 		"numballs": 3,
 		"ballradius": 0.5,
 		"ballcolor": [192, 192, 224],
-		"launch": {"position": [19.4, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 2.9]},
+		"launch": {"position": [19.4, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
 		
 		"elements": [
 			"Strings in this section are treated as comments and ignored.",
@@ -39,10 +39,10 @@
 			{
 				"class": "WallArcElement", 
 				"center": [10,23],
-				"xradius": 8.6,
+				"xradius": 8.7,
 				"yradius": 5.6,
 				"minangle": 0,
-				"maxangle": 54,
+				"maxangle": 54.5,
 				"segments": 12
 			},
 			
@@ -109,7 +109,7 @@
 			"sensor to enable launch barrier",
 			{"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [14.05, 27.53, 15.05, 29]},
 			"sensor to retract launch barrier for multi-ball",
-			{"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [17.0, 26.0, 18.0, 28.0]},
+			{"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [16.0, 26.5, 17.0, 28.5]},
 
 			"flipper lanes",
 			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
@@ -176,15 +176,17 @@
 			{"class": "WallElement", "position": [15.85, 5.8, 12.85, 4]},
 					
 			"box above bumpers with drop targets",
-			{"class": "WallElement", "position": [9.0, 27.9, 7.230, 28.262]},
-			{"class": "WallElement", "position": [9.0, 26.4, 5.95, 25.6]},
+			{"class": "WallElement", "position": [9.0, 27.8, 7.230, 28.262]},
+			{"class": "WallElement", "position": [9.0, 26.5, 5.95, 25.6]},
 			{"class": "WallElement", "position": [5.95, 25.6, 5.95, 27.85]},
 			
-			"upper drop targets",
+			"upper drop targets (0.2 height, 0.9 width, 0.25 gap, start 0.2 from right edge",
 			{"class": "DropTargetGroupElement", "id": "DropTargetTop", "color": [0, 255, 255], "score": 500, "reset": 2.0,
- 			 "positions": [[8.615, 26.092, 7.745, 25.864],
-               [7.261, 25.737, 6.391, 25.509],
-               [5.75, 26.1, 5.75, 27.1]]},
+ 			 "positions": [
+ 			   [8.625, 26.181, 7.762, 25.926],
+               [7.282, 25.785, 6.419, 25.53],
+               [5.75, 26.1, 5.75, 27.1]
+             ]},
 						
 			"bumpers below top lanes",
 			{"class": "BumperElement", "radius": 0.85, "position": [9.5, 18], "kick": 3, "color": [0, 0, 224], "score": 500},

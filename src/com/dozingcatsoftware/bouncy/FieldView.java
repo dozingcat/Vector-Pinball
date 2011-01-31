@@ -167,12 +167,13 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
         			field.startGame();
         		}
             	// remove "dead" balls and launch if none already in play
-        		field.removeDeadBalls();
+        		field.handleDeadBalls();
         		if (field.getBalls().size()==0) field.launchBall();
         	}
         	// activate or deactivate flippers
         	if (this.independentFlippers && this.hasMultitouch) {
         		try {
+        			// determine whether to activate left and/or right flippers (using reflection for Android 2.2 multitouch APIs)
             		boolean left=false, right=false;
             		if (actionType!=MotionEvent.ACTION_UP) {
             			int npointers = (Integer)getPointerCountMethod.invoke(event);

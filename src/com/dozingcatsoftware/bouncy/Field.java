@@ -283,11 +283,10 @@ public class Field implements ContactListener {
     ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
     /** Removes balls that are not in play, as determined by optional "deadzone" property of launch parameters in field layout.
      */
-    public void removeDeadBalls() {
+    public void handleDeadBalls() {
     	List<Number> deadRect = layout.getLaunchDeadZone();
     	if (deadRect==null) return;
 
-    	deadBalls.clear();
     	for(int i=0; i<this.balls.size(); i++) {
     		Body ball = this.balls.get(i);
     		Vector2 bpos = ball.getPosition();
@@ -300,6 +299,11 @@ public class Field implements ContactListener {
     	
     	for(int i=0; i<deadBalls.size(); i++) {
     		this.balls.remove(deadBalls.get(i));
+    	}
+
+    	if (deadBalls.size()>0) {
+    		launchBall();
+        	deadBalls.clear();
     	}
     }
     
@@ -339,10 +343,10 @@ public class Field implements ContactListener {
     }
     
     public void setLeftFlippersEngaged(boolean engaged) {
-    	setFlippersEngaged(Collections.singletonList(this.getFlipperElements().get(0)), engaged);
+    	setFlippersEngaged(layout.getLeftFlipperElements(), engaged);
     }
     public void setRightFlippersEngaged(boolean engaged) {
-    	setFlippersEngaged(Collections.singletonList(this.getFlipperElements().get(1)), engaged);
+    	setFlippersEngaged(layout.getRightFlipperElements(), engaged);
     }
     
     /** Ends a game in progress by removing all balls in play, calling setGameInProgress(false) on the GameState, and setting a

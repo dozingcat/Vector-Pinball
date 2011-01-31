@@ -55,7 +55,7 @@ public class FieldLayout {
 	}
 
 	List<FieldElement> fieldElements = new ArrayList<FieldElement>();
-	List<FlipperElement> flippers;
+	List<FlipperElement> flippers, leftFlippers, rightFlippers;
 	float width;
 	float height;
 	List<Integer> ballColor;
@@ -89,6 +89,12 @@ public class FieldLayout {
 		this.allParameters = layoutMap;
 		
 		flippers = addFieldElements(layoutMap, "flippers", FlipperElement.class, world);
+		leftFlippers = new ArrayList<FlipperElement>();
+		rightFlippers = new ArrayList<FlipperElement>();
+		for(FlipperElement f : flippers) {
+			if (f.isLeftFlipper()) leftFlippers.add(f);
+			else rightFlippers.add(f);
+		}
 		
 		addFieldElements(layoutMap, "elements", null, world);
 	}
@@ -99,6 +105,12 @@ public class FieldLayout {
 	
 	public List<FlipperElement> getFlipperElements() {
 		return flippers;
+	}
+	public List<FlipperElement> getLeftFlipperElements() {
+		return leftFlippers;
+	}
+	public List<FlipperElement> getRightFlipperElements() {
+		return rightFlippers;
 	}
 	
 	public float getBallRadius() {

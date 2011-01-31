@@ -87,6 +87,18 @@ public class FlipperElement extends FieldElement {
 		return (flipperLength<0);
 	}
 	
+	/** Returns true if the flipper is "left-handed", meaning it should be activated by a left flipper button.
+	 */
+	public boolean isLeftFlipper() {
+		return !isReversed();
+	}
+	
+	/** Returns true if the flipper is "right-handed", meaning it should be activated by a right flipper button.
+	 */
+	public boolean isRightFlipper() {
+		return isReversed();
+	}
+	
 	/** Returns the motor speed of the Box2D joint, normalized to be positive when the flipper is moving up. */
 	float getEffectiveMotorSpeed() {
 		float speed = joint.getMotorSpeed();

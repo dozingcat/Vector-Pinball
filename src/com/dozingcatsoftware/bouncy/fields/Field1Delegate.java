@@ -20,12 +20,21 @@ public class Field1Delegate extends BaseFieldDelegate {
 		if ("RampRollovers".equals(rolloverGroup.getElementID())) {
 			RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
 			if (extraBallRollovers.allRolloversActive()) {
-				field.showGameMessage("Extra Ball!", 2000);
-				field.getGameState().addExtraBall();
 				extraBallRollovers.setAllRolloversActivated(false);
+				startMultiball(field);
 			}
 		}
-		
+	}
+	
+	void startMultiball(final Field field) {
+		field.showGameMessage("Multiball!", 2000);
+		Runnable launchBall = new Runnable() {
+			public void run() {
+				if (field.getBalls().size()<3) field.launchBall();
+			}
+		};
+		field.scheduleAction(1000, launchBall);
+		field.scheduleAction(3500, launchBall);
 	}
 	
 	@Override
@@ -45,7 +54,7 @@ public class Field1Delegate extends BaseFieldDelegate {
 		if (!extraBallRollovers.allRolloversActive()) {
 			extraBallRollovers.activateFirstUnactivatedRollover();
 			if (extraBallRollovers.allRolloversActive()) {
-				field.showGameMessage("Shoot Ramp for Extra Ball", 1500);
+				field.showGameMessage("Shoot Ramp for Multiball", 1500);
 			}
 		}
 	}
@@ -62,6 +71,9 @@ public class Field1Delegate extends BaseFieldDelegate {
 		if ("LaunchBarrierSensor".equals(sensor.getElementID())) {
 			setLaunchBarrierEnabled(field, true);
 		}
+		else if ("LaunchBarrierRetract".equals(sensor.getElementID())) {
+			setLaunchBarrierEnabled(field, false);
+		}	
 	}
 	
 	@Override
