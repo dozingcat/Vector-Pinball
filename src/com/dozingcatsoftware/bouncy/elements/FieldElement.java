@@ -89,7 +89,7 @@ public abstract class FieldElement {
 	
 	/** Called when the player activates one or more flippers. The default implementation does nothing; subclasses can override.
 	 */
-	public void flipperActivated(Field field) {
+	public void flippersActivated(Field field, List<FlipperElement> flippers) {
 		
 	}
 	

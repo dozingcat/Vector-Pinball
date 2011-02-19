@@ -164,21 +164,27 @@ public class RolloverGroupElement extends FieldElement {
 	}
 	
 	@Override
-	public void flipperActivated(Field field) {
+	public void flippersActivated(Field field, List<FlipperElement> flippers) {
 		if (this.cycleOnFlipper) {
-			this.cycleRollovers();
+			// cycle to right if any right flipper is activated
+			boolean hasRightFlipper = false;
+			for(int i=0; !hasRightFlipper && i<flippers.size(); i++) {
+				hasRightFlipper = flippers.get(i).isRightFlipper();
+			}
+			this.cycleRollovers(hasRightFlipper);
 		}
 	}
 	
 	List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
-	/** Cycles the states of all rollover elements by "rotating" right. For example, if this group has three rollovers
-	 * whose states are (on, on, off), after calling this method the states will be (off, on, on). The state of the last rollover 
-	 * wraps around to the first, so (off, off, on) -> (on, off, off).
+	/** Cycles the states of all rollover elements by "rotating" left or right. For example, if this group has three rollovers
+	 * whose states are (on, on, off), after calling this method with toRight=true the states will be (off, on, on). 
+	 * The state of the last rollover wraps around to the first, so (off, off, on) -> (on, off, off).
 	 */
-	public void cycleRollovers() {
+	public void cycleRollovers(boolean toRight) {
 		newActiveRollovers.clear();
 		for(int i=0; i<this.rollovers.size(); i++) {
-			int prevIndex = (i==0) ? this.rollovers.size()-1 : i-1;
+			int prevIndex = (toRight) ? ((i==0) ? this.rollovers.size()-1 : i-1) :
+				                        ((i==this.rollovers.size()-1) ? 0 : i+1);
 			if (this.activeRollovers.contains(this.rollovers.get(prevIndex))) {
 				newActiveRollovers.add(this.rollovers.get(i));
 			}

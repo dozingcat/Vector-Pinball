@@ -65,13 +65,14 @@ public class Field implements ContactListener {
 		
 		public void processCollision(Field field, FieldElement element, Body hitBody, Body ball);
 		
-		public void flipperActivated(Field field);
+		public void flippersActivated(Field field, List<FlipperElement> flippers);
 		
 		public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup);
 		
 		public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
 		
 		public void ballInSensorRange(Field field, SensorElement sensor);
+
 	}
 	
 	// helper class to represent actions scheduled in the future
@@ -318,23 +319,28 @@ public class Field implements ContactListener {
     	}
     }
     
+    ArrayList<FlipperElement> activatedFlippers = new ArrayList<FlipperElement>();
     /** Called to engage or disengage all flippers. If called with an argument of true, and all flippers were not previously engaged,
      * calls the flipperActivated methods of all field elements and the field's delegate.
      */
     public void setFlippersEngaged(List<FlipperElement> flippers, boolean engaged) {
+    	activatedFlippers.clear();
     	boolean allFlippersPreviouslyActive = true;
     	int fsize = flippers.size();
     	for(int i=0; i<fsize; i++) {
     		FlipperElement flipper = flippers.get(i);
-    		if (allFlippersPreviouslyActive && !flipper.isFlipperEngaged()) allFlippersPreviouslyActive = false;
+    		if (!flipper.isFlipperEngaged()) {
+    			allFlippersPreviouslyActive = false;
+    			if (engaged) activatedFlippers.add(flipper);
+    		}
     		flipper.setFlipperEngaged(engaged);
     	}
     	
     	if (engaged && !allFlippersPreviouslyActive) {
     		for(FieldElement element : this.getFieldElementsArray()) {
-    			element.flipperActivated(this);
+    			element.flippersActivated(this, activatedFlippers);
     		}
-    		getDelegate().flipperActivated(this);
+    		getDelegate().flippersActivated(this, activatedFlippers);
     	}
     }
     
