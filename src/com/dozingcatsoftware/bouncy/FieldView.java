@@ -1,10 +1,21 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.opengl.GLSurfaceView;
+import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -14,10 +25,12 @@ import com.dozingcatsoftware.bouncy.elements.FieldElement;
 /** Draws the game field. Field elements are defined in world coordinates, which this view transforms to screen/pixel coordinates.
  * @author brian
  */
-public class FieldView extends SurfaceView implements IFieldRenderer {
+public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfaceView.Renderer {
 
 	public FieldView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		setRenderer(this);
+		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
 	boolean showFPS;
@@ -205,28 +218,159 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
     	}
     	return true;
     }
+	
+	List<Float> lineVertexCoords = new ArrayList<Float>();
+	int numLineVertexCoords;
+	
+	
+	void startGLElements(GL10 gl) {
+		numLineVertexCoords = 0;
+	}
+	
+	void endGLElements(GL10 gl) {
+		float[] coords = new float[numLineVertexCoords*2];
+		for(int i=0; i<coords.length; i++) {
+			coords[i] = lineVertexCoords.get(i);
+		}
+		FloatBuffer fb = makeFloatBuffer(coords);
+
+        gl.glEnable(GL10.GL_DITHER);        
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        gl.glMatrixMode(GL10.GL_MODELVIEW); 
+        gl.glLoadIdentity();
+        gl.glLineWidth(2);
+        
+        gl.glColor4f(0.8f, 0.8f, 0.0f, 1.0f);
+        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, fb);
+        gl.glPushMatrix();
+        gl.glDrawArrays(GL10.GL_LINES, 0, numLineVertexCoords);
+        
+        gl.glPopMatrix();
+	}
 
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
 	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {
+		drawLineGL(x1, y1, x2, y2, r, g, b);
+	}
+	
+	void drawLineCanvas(float x1, float y1, float x2, float y2, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
 		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
 	}
 	
+	void drawLineGL(float x1, float y1, float x2, float y2, int r, int g, int b) {
+		lineVertexCoords.add(world2pixelX(x1));
+		lineVertexCoords.add(world2pixelY(y1));
+		lineVertexCoords.add(world2pixelX(x2));
+		lineVertexCoords.add(world2pixelY(y2));
+		numLineVertexCoords += 2;
+	}
+	
 	@Override
 	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
+		fillCircleGL(cx, cy, radius, r, g, b);
+	}
+	
+	void fillCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
 		this.paint.setStyle(Paint.Style.FILL);
 		float rad = radius * cachedScale;
 		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
 	}
 	
+	void fillCircleGL(float cx, float cy, float radius, int r, int g, int b) {
+		
+	}
+	
 	@Override
 	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
+		frameCircleGL(cx, cy, radius, r, g, b);
+	}
+	
+	void frameCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
 		this.paint.setStyle(Paint.Style.STROKE);
 		float rad = radius * cachedScale;
 		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
 	}
 	
+	void frameCircleGL(float cx, float cy, float radius, int r, int g, int b) {
+		
+	}
+
+	FloatBuffer vertexBuffer;
+	{
+		vertexBuffer = makeFloatBuffer(new float[] {0,0, 100,100, 450,600, 480,720});
+	}
+	
+	@Override
+	public void onDrawFrame(GL10 gl) {
+		if (field==null) return;
+		cacheScaleAndOffsets();
+
+		startGLElements(gl);
+		
+		for(FieldElement element : field.getFieldElementsArray()) {
+			element.draw(this);
+		}
+
+		field.drawBalls(this);
+		endGLElements(gl);
+		/*		
+		if (this.showFPS) {
+			if (debugMessage!=null) {
+				c.drawText(""+debugMessage, 10, 10, textPaint);
+			}
+		}
+		*/
+	}
+
+	@Override
+	public void onSurfaceChanged(GL10 gl, int width, int height) {
+	    gl.glViewport(0, 0, width, height);
+	    //gl.glLoadIdentity();
+    }
+
+	@Override
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	    gl.glClearColor(0.0f, 0.0f, 0.0f, 1);
+	    gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+	    gl.glShadeModel(GL10.GL_FLAT);
+	    gl.glDisable(GL10.GL_DEPTH_TEST);
+	    gl.glEnable(GL10.GL_BLEND);
+	    gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
+
+	    gl.glViewport(0, 0, getWidth(), getHeight());
+	    gl.glMatrixMode(GL10.GL_PROJECTION);
+	    gl.glLoadIdentity();
+	    gl.glEnable(GL10.GL_BLEND);
+	    gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+	    gl.glShadeModel(GL10.GL_FLAT);
+	    gl.glEnable(GL10.GL_TEXTURE_2D);
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
+	    GLU.gluOrtho2D(gl, 0, getWidth(), getHeight(), 0);
+	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);	
+	}
+
+	
+    protected static FloatBuffer makeFloatBuffer(float[] arr) {
+        ByteBuffer vbb = ByteBuffer.allocateDirect(arr.length * 4); 
+        vbb.order(ByteOrder.nativeOrder());
+        FloatBuffer texBuffer = vbb.asFloatBuffer();
+        texBuffer.put(arr);
+        texBuffer.position(0);
+        return texBuffer; 
+    }
+
+    protected static IntBuffer makeIntBuffer(int[] arr) {
+        ByteBuffer vbb = ByteBuffer.allocateDirect(arr.length * 4); 
+        vbb.order(ByteOrder.nativeOrder());
+        IntBuffer texBuffer = vbb.asIntBuffer();
+        texBuffer.put(arr);
+        texBuffer.position(0);
+        return texBuffer; 
+    }
+
 }

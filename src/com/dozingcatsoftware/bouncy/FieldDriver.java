@@ -107,10 +107,13 @@ public class FieldDriver implements SurfaceHolder.Callback {
 	/** Calls FieldView.doDraw to render the game field to the SurfaceView, and draws the view to the screen.
 	 */
 	void drawField() {
+		fieldView.requestRender();
+		/*
 		Canvas c = fieldView.getHolder().lockCanvas();
 		c.drawARGB(255, 0, 0, 0);
 		fieldView.doDraw(c);
 		fieldView.getHolder().unlockCanvasAndPost(c);
+		*/
 	}
 	
 	/** Resets the frame rate and forgets any locked rate, called when rendering quality is changed.

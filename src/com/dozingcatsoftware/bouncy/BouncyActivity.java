@@ -83,6 +83,7 @@ public class BouncyActivity extends Activity {
         if (orientationListener!=null) orientationListener.start();
         
         fieldDriver.start();
+        worldView.onResume();
     }
     
     @Override
@@ -90,6 +91,7 @@ public class BouncyActivity extends Activity {
     	running = false;
     	if (orientationListener!=null) orientationListener.stop();
     	fieldDriver.stop();
+    	worldView.onPause();
     	super.onPause();
     }
     
