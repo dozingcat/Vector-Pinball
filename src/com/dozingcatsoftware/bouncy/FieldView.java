@@ -49,6 +49,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
 	
 	String debugMessage;
+	double fps;
 	
 	public void setField(Field value) {
 		field = value;
@@ -56,6 +57,10 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	
 	public void setDebugMessage(String value) {
 		debugMessage = value;
+	}
+	
+	public void setFPS(double fps) {
+		this.fps = fps;
 	}
 	
 	public void setShowFPS(boolean value) {
@@ -117,28 +122,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	float world2pixelY(float y) {
 		return cachedHeight - (y * cachedScale) - cachedYOffset;
 		//return getHeight() - (y * getScale()) - getYOffset();
-	}
-	
-	/** Main draw method, called from FieldDriver's game thread. Calls each FieldElement's draw() method passing
-	 * itself as the IFieldRenderer implementation.
-	 */
-	public void doDraw(Canvas c) {
-		cacheScaleAndOffsets();
-		paint.setStrokeWidth(this.highQuality ? 2 : 0);
-		// call draw() on each FieldElement, draw balls separately
-		this.canvas = c;
-		
-		for(FieldElement element : field.getFieldElementsArray()) {
-			element.draw(this);
-		}
-
-		field.drawBalls(this);
-		
-		if (this.showFPS) {
-			if (debugMessage!=null) {
-				c.drawText(""+debugMessage, 10, 10, textPaint);
-			}
-		}
 	}
 	
 	// for compatibility with Android 1.6, use reflection for multitouch features
@@ -219,12 +202,17 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
     	return true;
     }
 	
+	// GL implementation start
+	
 	List<Float> lineVertexCoords = new ArrayList<Float>();
+	List<Float> lineColors = new ArrayList<Float>();
 	int numLineVertexCoords;
 	
 	
 	void startGLElements(GL10 gl) {
 		numLineVertexCoords = 0;
+		lineVertexCoords.clear();
+		lineColors.clear();
 	}
 	
 	void endGLElements(GL10 gl) {
@@ -233,14 +221,27 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 			coords[i] = lineVertexCoords.get(i);
 		}
 		FloatBuffer fb = makeFloatBuffer(coords);
+		
+		int numcolors = numLineVertexCoords/2;
+		float[] colors = new float[numcolors*8];
+		for(int i=0; i<numcolors; i++) {
+			colors[8*i+0] = colors[8*i+4] = lineColors.get(3*i+0);
+			colors[8*i+1] = colors[8*i+5] = lineColors.get(3*i+1);
+			colors[8*i+2] = colors[8*i+6] = lineColors.get(3*i+2);
+			colors[8*i+3] = colors[8*i+7] = 1.0f;
+		}
+		FloatBuffer cb = makeFloatBuffer(colors);
 
         gl.glEnable(GL10.GL_DITHER);        
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glMatrixMode(GL10.GL_MODELVIEW); 
         gl.glLoadIdentity();
-        gl.glLineWidth(2);
         
-        gl.glColor4f(0.8f, 0.8f, 0.0f, 1.0f);
+        gl.glLineWidth(2);
+        //gl.glEnable(GL10.GL_LINE_SMOOTH);
+        
+        //gl.glColor4f(0.0f, 0.8f, 0.0f, 1.0f);
+        gl.glColorPointer(4, GL10.GL_FLOAT, 0, cb);
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, fb);
         gl.glPushMatrix();
         gl.glDrawArrays(GL10.GL_LINES, 0, numLineVertexCoords);
@@ -254,16 +255,15 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		drawLineGL(x1, y1, x2, y2, r, g, b);
 	}
 	
-	void drawLineCanvas(float x1, float y1, float x2, float y2, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
-	}
-	
 	void drawLineGL(float x1, float y1, float x2, float y2, int r, int g, int b) {
 		lineVertexCoords.add(world2pixelX(x1));
 		lineVertexCoords.add(world2pixelY(y1));
 		lineVertexCoords.add(world2pixelX(x2));
 		lineVertexCoords.add(world2pixelY(y2));
+		
+		lineColors.add(r/255.0f);
+		lineColors.add(g/255.0f);
+		lineColors.add(b/255.0f);
 		numLineVertexCoords += 2;
 	}
 	
@@ -272,15 +272,10 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		fillCircleGL(cx, cy, radius, r, g, b);
 	}
 	
-	void fillCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.paint.setStyle(Paint.Style.FILL);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
-	}
-	
 	void fillCircleGL(float cx, float cy, float radius, int r, int g, int b) {
-		
+		frameCircleGL(cx, cy, radius, r, g, b);
+		frameCircleGL(cx, cy, radius/2, r, g, b);
+		frameCircleGL(cx, cy, radius/4, r, g, b);
 	}
 	
 	@Override
@@ -288,22 +283,13 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		frameCircleGL(cx, cy, radius, r, g, b);
 	}
 	
-	void frameCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.paint.setStyle(Paint.Style.STROKE);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
-	}
-	
 	void frameCircleGL(float cx, float cy, float radius, int r, int g, int b) {
-		
+		drawLineGL(cx-radius, cy-radius, cx+radius, cy-radius, r, g, b);
+		drawLineGL(cx+radius, cy-radius, cx+radius, cy+radius, r, g, b);
+		drawLineGL(cx+radius, cy+radius, cx-radius, cy+radius, r, g, b);
+		drawLineGL(cx-radius, cy+radius, cx-radius, cy-radius, r, g, b);
 	}
 
-	FloatBuffer vertexBuffer;
-	{
-		vertexBuffer = makeFloatBuffer(new float[] {0,0, 100,100, 450,600, 480,720});
-	}
-	
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		if (field==null) return;
@@ -316,15 +302,31 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		}
 
 		field.drawBalls(this);
-		endGLElements(gl);
-		/*		
+
 		if (this.showFPS) {
-			if (debugMessage!=null) {
-				c.drawText(""+debugMessage, 10, 10, textPaint);
-			}
+			//if (debugMessage!=null) {
+				int val = (int)fps;
+				int sx = 1;
+				int sy = 1;
+				int w = 3;
+				int gap = 1;
+				
+				int tens = val/10;
+				for(int i=0, y=sy; i<tens; i++, y+=gap) {
+					drawLine(sx, y, sx+w, y, 255, 0, 0);
+				}
+				int ones = val%10;
+				sx += w+gap;
+				for(int i=0, y=sy; i<ones; i++, y+=gap) {
+					drawLine(sx, y, sx+w, y, 255, 0, 0);
+				}
+			//}
 		}
-		*/
+
+		endGLElements(gl);
+
 	}
+
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
@@ -349,6 +351,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	    gl.glShadeModel(GL10.GL_FLAT);
 	    gl.glEnable(GL10.GL_TEXTURE_2D);
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
 	    GLU.gluOrtho2D(gl, 0, getWidth(), getHeight(), 0);
 	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);	
@@ -372,5 +375,48 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
         texBuffer.position(0);
         return texBuffer; 
     }
+    
+    // GL implementation end, previous Canvas implementation here
 
+	/** Main draw method for Canvas, formerly called from FieldDriver's game thread. 
+	 * Calls each FieldElement's draw() method passing itself as the IFieldRenderer implementation.
+	 */
+	public void doDraw(Canvas c) {
+		cacheScaleAndOffsets();
+		paint.setStrokeWidth(this.highQuality ? 2 : 0);
+		// call draw() on each FieldElement, draw balls separately
+		this.canvas = c;
+		
+		for(FieldElement element : field.getFieldElementsArray()) {
+			element.draw(this);
+		}
+
+		field.drawBalls(this);
+		
+		if (this.showFPS) {
+			if (debugMessage!=null) {
+				c.drawText(""+debugMessage, 10, 10, textPaint);
+			}
+		}
+	}
+	
+	void frameCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.paint.setStyle(Paint.Style.STROKE);
+		float rad = radius * cachedScale;
+		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
+	}
+	
+	void fillCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.paint.setStyle(Paint.Style.FILL);
+		float rad = radius * cachedScale;
+		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
+	}
+	
+	void drawLineCanvas(float x1, float y1, float x2, float y2, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
+	}
+	
 }

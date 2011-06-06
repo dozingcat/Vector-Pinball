@@ -99,7 +99,8 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			
 			// for debugging, show frames per second and other info
 			if (frameRateManager.getTotalFrames() % 100 == 0) {
-				fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
+				//fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
+				fieldView.setFPS(frameRateManager.currentFramesPerSecond());
 			}
 		}
 	}
