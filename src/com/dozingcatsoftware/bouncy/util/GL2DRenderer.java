@@ -65,13 +65,15 @@ public class GL2DRenderer {
 		}
 		vertexBuffer.position(0);
 		
-		if (colorIndex>0 && (colorBuffer==null || colorBuffer.capacity()<colorIndex)) {
-			colorBuffer = makeFloatBuffer(colorIndex);
+		if (colorIndex>0) {
+			if (colorBuffer==null || colorBuffer.capacity()<colorIndex) {
+				colorBuffer = makeFloatBuffer(colorIndex);
+			}
 			for(int i=0; i<colorIndex; i++) {
 				colorBuffer.put(i, colorComponents.get(i));
 			}
+			colorBuffer.position(0);
 		}
-		if (colorBuffer!=null) colorBuffer.position(0);
 	}
 	
 	public void render(GL10 gl, int mode) {

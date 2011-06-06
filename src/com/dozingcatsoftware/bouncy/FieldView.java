@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
+import com.dozingcatsoftware.bouncy.util.GL2DRenderer;
 
 /** Draws the game field. Field elements are defined in world coordinates, which this view transforms to screen/pixel coordinates.
  * @author brian
@@ -203,35 +204,16 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
     }
 	
 	// GL implementation start
-	
-	List<Float> lineVertexCoords = new ArrayList<Float>();
-	List<Float> lineColors = new ArrayList<Float>();
-	int numLineVertexCoords;
+	GL2DRenderer lineRenderer = new GL2DRenderer();
 	
 	
 	void startGLElements(GL10 gl) {
-		numLineVertexCoords = 0;
-		lineVertexCoords.clear();
-		lineColors.clear();
+		lineRenderer.begin();
 	}
 	
 	void endGLElements(GL10 gl) {
-		float[] coords = new float[numLineVertexCoords*2];
-		for(int i=0; i<coords.length; i++) {
-			coords[i] = lineVertexCoords.get(i);
-		}
-		FloatBuffer fb = makeFloatBuffer(coords);
+		lineRenderer.end();
 		
-		int numcolors = numLineVertexCoords/2;
-		float[] colors = new float[numcolors*8];
-		for(int i=0; i<numcolors; i++) {
-			colors[8*i+0] = colors[8*i+4] = lineColors.get(3*i+0);
-			colors[8*i+1] = colors[8*i+5] = lineColors.get(3*i+1);
-			colors[8*i+2] = colors[8*i+6] = lineColors.get(3*i+2);
-			colors[8*i+3] = colors[8*i+7] = 1.0f;
-		}
-		FloatBuffer cb = makeFloatBuffer(colors);
-
         gl.glEnable(GL10.GL_DITHER);        
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glMatrixMode(GL10.GL_MODELVIEW); 
@@ -240,6 +222,8 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
         gl.glLineWidth(2);
         //gl.glEnable(GL10.GL_LINE_SMOOTH);
         
+        lineRenderer.render(gl, GL10.GL_LINES);
+        /*
         //gl.glColor4f(0.0f, 0.8f, 0.0f, 1.0f);
         gl.glColorPointer(4, GL10.GL_FLOAT, 0, cb);
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, fb);
@@ -247,6 +231,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
         gl.glDrawArrays(GL10.GL_LINES, 0, numLineVertexCoords);
         
         gl.glPopMatrix();
+        */
 	}
 
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
@@ -256,15 +241,14 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	}
 	
 	void drawLineGL(float x1, float y1, float x2, float y2, int r, int g, int b) {
-		lineVertexCoords.add(world2pixelX(x1));
-		lineVertexCoords.add(world2pixelY(y1));
-		lineVertexCoords.add(world2pixelX(x2));
-		lineVertexCoords.add(world2pixelY(y2));
-		
-		lineColors.add(r/255.0f);
-		lineColors.add(g/255.0f);
-		lineColors.add(b/255.0f);
-		numLineVertexCoords += 2;
+		lineRenderer.addVertex(world2pixelX(x1), world2pixelY(y1));
+		lineRenderer.addVertex(world2pixelX(x2), world2pixelY(y2));
+
+		float rf = r/255f;
+		float gf = g/255f;
+		float bf = b/255f;
+		lineRenderer.addColor(rf, gf, bf);
+		lineRenderer.addColor(rf, gf, bf);
 	}
 	
 	@Override
