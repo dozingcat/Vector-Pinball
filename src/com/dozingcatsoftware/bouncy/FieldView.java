@@ -21,7 +21,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
-import com.dozingcatsoftware.bouncy.util.GL2DRenderer;
+import com.dozingcatsoftware.bouncy.util.GLVertexList;
+import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
 
 /** Draws the game field. Field elements are defined in world coordinates, which this view transforms to screen/pixel coordinates.
  * @author brian
@@ -204,34 +205,36 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
     }
 	
 	// GL implementation start
-	GL2DRenderer lineRenderer = new GL2DRenderer();
+	GLVertexListManager vertexListManager = new GLVertexListManager();
+	GLVertexList lineVertexList;
 	
+	
+	static float[] SIN_VALUES = new float[12];
+	static float[] COS_VALUES = new float[12];
+	static {
+		for(int i=0; i<SIN_VALUES.length; i++) {
+			double angle = 2*Math.PI * i / SIN_VALUES.length;
+			SIN_VALUES[i] = (float)Math.sin(angle);
+			COS_VALUES[i] = (float)Math.cos(angle);
+		}
+	}
 	
 	void startGLElements(GL10 gl) {
-		lineRenderer.begin();
+		vertexListManager.begin();
+		lineVertexList = vertexListManager.addVertexListForMode(GL10.GL_LINES);
 	}
 	
 	void endGLElements(GL10 gl) {
-		lineRenderer.end();
+		vertexListManager.end();
 		
         gl.glEnable(GL10.GL_DITHER);        
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glMatrixMode(GL10.GL_MODELVIEW); 
         gl.glLoadIdentity();
         
-        gl.glLineWidth(2);
-        //gl.glEnable(GL10.GL_LINE_SMOOTH);
+        gl.glLineWidth(this.isHighQuality() ? 2 : 1);
         
-        lineRenderer.render(gl, GL10.GL_LINES);
-        /*
-        //gl.glColor4f(0.0f, 0.8f, 0.0f, 1.0f);
-        gl.glColorPointer(4, GL10.GL_FLOAT, 0, cb);
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, fb);
-        gl.glPushMatrix();
-        gl.glDrawArrays(GL10.GL_LINES, 0, numLineVertexCoords);
-        
-        gl.glPopMatrix();
-        */
+        vertexListManager.render(gl);
 	}
 
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
@@ -241,14 +244,14 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	}
 	
 	void drawLineGL(float x1, float y1, float x2, float y2, int r, int g, int b) {
-		lineRenderer.addVertex(world2pixelX(x1), world2pixelY(y1));
-		lineRenderer.addVertex(world2pixelX(x2), world2pixelY(y2));
+		lineVertexList.addVertex(world2pixelX(x1), world2pixelY(y1));
+		lineVertexList.addVertex(world2pixelX(x2), world2pixelY(y2));
 
 		float rf = r/255f;
 		float gf = g/255f;
 		float bf = b/255f;
-		lineRenderer.addColor(rf, gf, bf);
-		lineRenderer.addColor(rf, gf, bf);
+		lineVertexList.addColor(rf, gf, bf);
+		lineVertexList.addColor(rf, gf, bf);
 	}
 	
 	@Override
@@ -257,9 +260,14 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	}
 	
 	void fillCircleGL(float cx, float cy, float radius, int r, int g, int b) {
-		frameCircleGL(cx, cy, radius, r, g, b);
-		frameCircleGL(cx, cy, radius/2, r, g, b);
-		frameCircleGL(cx, cy, radius/4, r, g, b);
+		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(GL10.GL_TRIANGLE_FAN);
+		circleVertexList.addColor(r/255f, g/255f, b/255f);
+
+		for(int i=0; i<SIN_VALUES.length; i++) {
+			float x = cx + radius*COS_VALUES[i];
+			float y = cy + radius*SIN_VALUES[i];
+			circleVertexList.addVertex(world2pixelX(x), world2pixelY(y));
+		}
 	}
 	
 	@Override
@@ -268,54 +276,58 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	}
 	
 	void frameCircleGL(float cx, float cy, float radius, int r, int g, int b) {
-		drawLineGL(cx-radius, cy-radius, cx+radius, cy-radius, r, g, b);
-		drawLineGL(cx+radius, cy-radius, cx+radius, cy+radius, r, g, b);
-		drawLineGL(cx+radius, cy+radius, cx-radius, cy+radius, r, g, b);
-		drawLineGL(cx-radius, cy+radius, cx-radius, cy-radius, r, g, b);
+		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(GL10.GL_LINE_LOOP);
+		circleVertexList.addColor(r/255f, g/255f, b/255f);
+
+		for(int i=0; i<SIN_VALUES.length; i++) {
+			float x = cx + radius*COS_VALUES[i];
+			float y = cy + radius*SIN_VALUES[i];
+			circleVertexList.addVertex(world2pixelX(x), world2pixelY(y));
+		}
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		if (field==null) return;
-		cacheScaleAndOffsets();
+		synchronized(field) {
+			cacheScaleAndOffsets();
 
-		startGLElements(gl);
-		
-		for(FieldElement element : field.getFieldElementsArray()) {
-			element.draw(this);
+			startGLElements(gl);
+			
+			for(FieldElement element : field.getFieldElementsArray()) {
+				element.draw(this);
+			}
+
+			field.drawBalls(this);
+
+			if (this.showFPS) {
+				//if (debugMessage!=null) {
+					int val = (int)fps;
+					int sx = 1;
+					int sy = 1;
+					int w = 3;
+					int gap = 1;
+					
+					int tens = val/10;
+					for(int i=0, y=sy; i<tens; i++, y+=gap) {
+						drawLine(sx, y, sx+w, y, 255, 0, 0);
+					}
+					int ones = val%10;
+					sx += w+gap;
+					for(int i=0, y=sy; i<ones; i++, y+=gap) {
+						drawLine(sx, y, sx+w, y, 255, 0, 0);
+					}
+				//}
+			}
+
+			endGLElements(gl);
 		}
-
-		field.drawBalls(this);
-
-		if (this.showFPS) {
-			//if (debugMessage!=null) {
-				int val = (int)fps;
-				int sx = 1;
-				int sy = 1;
-				int w = 3;
-				int gap = 1;
-				
-				int tens = val/10;
-				for(int i=0, y=sy; i<tens; i++, y+=gap) {
-					drawLine(sx, y, sx+w, y, 255, 0, 0);
-				}
-				int ones = val%10;
-				sx += w+gap;
-				for(int i=0, y=sy; i<ones; i++, y+=gap) {
-					drawLine(sx, y, sx+w, y, 255, 0, 0);
-				}
-			//}
-		}
-
-		endGLElements(gl);
-
 	}
 
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 	    gl.glViewport(0, 0, width, height);
-	    //gl.glLoadIdentity();
     }
 
 	@Override
@@ -338,7 +350,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
         gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
 	    GLU.gluOrtho2D(gl, 0, getWidth(), getHeight(), 0);
-	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);	
+	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100f);
 	}
 
 	
