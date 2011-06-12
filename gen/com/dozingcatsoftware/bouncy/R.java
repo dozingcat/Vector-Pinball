@@ -37,6 +37,7 @@ public final class R {
         public static final int independent_flippers_pref_title=0x7f060005;
         public static final int preferences_menu_item=0x7f060004;
         public static final int show_fps_pref_title=0x7f06000b;
+        public static final int zoom_pref_title=0x7f06000c;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;

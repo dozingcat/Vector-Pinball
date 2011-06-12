@@ -137,13 +137,6 @@ public class BouncyActivity extends Activity {
     	worldView.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
-    	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
-    	boolean previousHighQuality = worldView.isHighQuality();
-    	worldView.setHighQuality(prefs.getBoolean("highQuality", false));
-    	if (previousHighQuality!=worldView.isHighQuality()) {
-    		fieldDriver.resetFrameRate();
-    	}
-    	
     	useZoom = prefs.getBoolean("zoom", true);
     	worldView.setZoom(useZoom ? 1.4f : 1.0f);
     }

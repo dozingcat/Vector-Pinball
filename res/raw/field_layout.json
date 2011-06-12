@@ -5,7 +5,7 @@
 		"height": 30,
 		
 		"delegate": "Field1Delegate",
-		"targetTimeRatio": 2.5,
+		"targetTimeRatio": 2.3,
 		"gravity": 4.0,
 		
 		"numballs": 3,

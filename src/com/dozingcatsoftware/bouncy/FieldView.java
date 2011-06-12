@@ -1,11 +1,6 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -18,7 +13,6 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -37,7 +31,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
-	boolean highQuality;
 	boolean independentFlippers;
 	
 	Field field;
@@ -65,13 +58,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	
 	public void setIndependentFlippers(boolean value) {
 		independentFlippers = value;
-	}
-	
-	public void setHighQuality(boolean value) {
-		highQuality = value;
-	}
-	public boolean isHighQuality() {
-		return highQuality;
 	}
 	
 	float getScale() {
@@ -252,7 +238,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
         gl.glMatrixMode(GL10.GL_MODELVIEW); 
         gl.glLoadIdentity();
         
-        gl.glLineWidth(this.isHighQuality() ? 2 : 1);
+        gl.glLineWidth(2);
         
         vertexListManager.render(gl);
 	}
@@ -348,43 +334,4 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100f);
 	}
 
-	
-    // GL implementation end, previous Canvas implementation here
-
-	/** Main draw method for Canvas, formerly called from FieldDriver's game thread. 
-	 * Calls each FieldElement's draw() method passing itself as the IFieldRenderer implementation.
-	 */
-	public void doDraw(Canvas c) {
-		cacheScaleAndOffsets();
-		paint.setStrokeWidth(this.highQuality ? 2 : 0);
-		// call draw() on each FieldElement, draw balls separately
-		this.canvas = c;
-		
-		for(FieldElement element : field.getFieldElementsArray()) {
-			element.draw(this);
-		}
-
-		field.drawBalls(this);
-		
-	}
-	
-	void frameCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.paint.setStyle(Paint.Style.STROKE);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
-	}
-	
-	void fillCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.paint.setStyle(Paint.Style.FILL);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
-	}
-	
-	void drawLineCanvas(float x1, float y1, float x2, float y2, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
-		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
-	}
-	
 }
