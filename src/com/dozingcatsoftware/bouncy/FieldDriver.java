@@ -22,6 +22,7 @@ public class FieldDriver implements SurfaceHolder.Callback {
 	boolean canDraw = false;
 	
 	FrameRateManager frameRateManager = new FrameRateManager(new double[] {60, 50, 45, 40, 30}, new double[] {57, 48, 43, 38});
+	double averageFPS;
 	
 	static long INACTIVE_FRAME_MSECS = 250; // sleep this long when field.hasActiveElements() is false
 	
@@ -88,6 +89,7 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			// if field is inactive, clear start time history and bail
 			if (!fieldActive) {
 				frameRateManager.clearTimestamps();
+				setAverageFPS(0);
 				try {
 					Thread.sleep(INACTIVE_FRAME_MSECS);
 				}
@@ -100,7 +102,8 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			// for debugging, show frames per second and other info
 			if (frameRateManager.getTotalFrames() % 100 == 0) {
 				//fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
-				fieldView.setFPS(frameRateManager.currentFramesPerSecond());
+				//setAverageFPS(frameRateManager.currentFramesPerSecond());
+				setAverageFPS(fieldView.frManager.currentFramesPerSecond());
 			}
 		}
 	}
@@ -121,6 +124,13 @@ public class FieldDriver implements SurfaceHolder.Callback {
 	 */
 	public void resetFrameRate() {
 		frameRateManager.resetFrameRate();
+	}
+	
+	public double getAverageFPS() {
+		return averageFPS;
+	}
+	public void setAverageFPS(double value) {
+		averageFPS = value;
 	}
 	
 	// SurfaceHolder.Callback methods

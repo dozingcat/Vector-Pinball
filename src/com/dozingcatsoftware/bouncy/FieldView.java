@@ -20,6 +20,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 import com.dozingcatsoftware.bouncy.util.GLVertexList;
 import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
@@ -35,7 +37,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
-	boolean showFPS;
 	boolean highQuality;
 	boolean independentFlippers;
 	
@@ -44,6 +45,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	Paint paint = new Paint(); {paint.setAntiAlias(true);}
 	Paint textPaint = new Paint(); {textPaint.setARGB(255, 255, 255, 255);}
 	float zoom = 1.0f;
+	float maxZoom = 1.0f;
 	Canvas canvas;
 	
 	// x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as elements are drawn.
@@ -59,14 +61,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	
 	public void setDebugMessage(String value) {
 		debugMessage = value;
-	}
-	
-	public void setFPS(double fps) {
-		this.fps = fps;
-	}
-	
-	public void setShowFPS(boolean value) {
-		showFPS = value;
 	}
 	
 	public void setIndependentFlippers(boolean value) {
@@ -85,27 +79,53 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		float ys = this.getHeight() / field.getHeight();
 		return Math.min(xs, ys) * this.zoom;
 	}
-	
-	float getXOffset() {
-		float scale = this.getScale();
-		return (this.getWidth() - scale*field.getWidth()) / 2.0f;
-	}
-	float getYOffset() {
-		float scale = this.getScale();
-		return (this.getHeight() - scale*field.getHeight()) / 2.0f;
-	}
-	
-	public float getZoom() {
-		return zoom;
-	}
+
+	// Sets maxZoom ivar, zoom will still be 1 when game is not in progress.
 	public void setZoom(float value) {
-		zoom = value;
+		maxZoom = value;
 	}
 	
 	/** Saves scale and x and y offsets for use by world2pixel methods, avoiding repeated method calls and math operations. */
 	void cacheScaleAndOffsets() {
-		cachedXOffset = getXOffset();
-		cachedYOffset = getYOffset();
+		zoom = maxZoom;
+		if (zoom<=1.0f || !field.getGameState().isGameInProgress()) {
+			cachedXOffset = 0;
+			cachedYOffset = 0;
+			zoom = 1.0f;
+		}
+		else {
+			List<Body> balls = field.getBalls();
+			float x=-1, y=-1;
+			if (balls.size()==1) {
+				Body b = balls.get(0);
+				x = b.getPosition().x;
+				y = b.getPosition().y;
+			}
+			else if (balls.size()==0) {
+				// use launch position
+				List<Number> position = field.layout.getLaunchPosition();
+				x = position.get(0).floatValue();
+				y = position.get(1).floatValue();
+			}
+			else {
+				// for multiple balls, take position with smallest y
+				for(Body b : balls) {
+					Vector2 pos = b.getPosition();
+					if (y<0 || pos.y<y) {
+						x = pos.x;
+						y = pos.y;
+					}
+				}
+			}
+			float maxOffsetRatio = 1.0f - 1.0f/zoom;
+			cachedXOffset = x - field.getWidth()/(2.0f * zoom);
+			if (cachedXOffset<0) cachedXOffset = 0;
+			if (cachedXOffset>field.getWidth()*maxOffsetRatio) cachedXOffset = field.getWidth() * maxOffsetRatio;
+			cachedYOffset = y - field.getHeight()/(2.0f * zoom);
+			if (cachedYOffset<0) cachedYOffset = 0;
+			if (cachedYOffset>field.getHeight()*maxOffsetRatio) cachedYOffset = field.getHeight() * maxOffsetRatio;
+		}
+
 		cachedScale = getScale();
 		cachedHeight = getHeight();
 	}
@@ -114,7 +134,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	/** Converts an x coordinate from world coordinates to the view's pixel coordinates. 
 	 */
 	float world2pixelX(float x) {
-		return x * cachedScale + cachedXOffset;
+		return (x-cachedXOffset) * cachedScale;
 		//return x * getScale() + getXOffset();
 	}
 	
@@ -122,7 +142,7 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	 * in pixel coordinates, positive y is down. 
 	 */
 	float world2pixelY(float y) {
-		return cachedHeight - (y * cachedScale) - cachedYOffset;
+		return cachedHeight - ((y-cachedYOffset) * cachedScale);
 		//return getHeight() - (y * getScale()) - getYOffset();
 	}
 	
@@ -209,8 +229,8 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	GLVertexList lineVertexList;
 	
 	
-	static float[] SIN_VALUES = new float[12];
-	static float[] COS_VALUES = new float[12];
+	static float[] SIN_VALUES = new float[20];
+	static float[] COS_VALUES = new float[20];
 	static {
 		for(int i=0; i<SIN_VALUES.length; i++) {
 			double angle = 2*Math.PI * i / SIN_VALUES.length;
@@ -286,10 +306,13 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		}
 	}
 
+	public com.dozingcatsoftware.bouncy.util.FrameRateManager frManager = new com.dozingcatsoftware.bouncy.util.FrameRateManager(0);
+	
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		if (field==null) return;
 		synchronized(field) {
+			frManager.frameStarted();
 			cacheScaleAndOffsets();
 
 			startGLElements(gl);
@@ -300,34 +323,13 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 
 			field.drawBalls(this);
 
-			if (this.showFPS) {
-				//if (debugMessage!=null) {
-					int val = (int)fps;
-					int sx = 1;
-					int sy = 1;
-					int w = 3;
-					int gap = 1;
-					
-					int tens = val/10;
-					for(int i=0, y=sy; i<tens; i++, y+=gap) {
-						drawLine(sx, y, sx+w, y, 255, 0, 0);
-					}
-					int ones = val%10;
-					sx += w+gap;
-					for(int i=0, y=sy; i<ones; i++, y+=gap) {
-						drawLine(sx, y, sx+w, y, 255, 0, 0);
-					}
-				//}
-			}
-
 			endGLElements(gl);
 		}
 	}
 
-
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-	    gl.glViewport(0, 0, width, height);
+		gl.glViewport(0, 0, width, height);
     }
 
 	@Override
@@ -336,42 +338,17 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 	    gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 	    gl.glShadeModel(GL10.GL_FLAT);
 	    gl.glDisable(GL10.GL_DEPTH_TEST);
-	    gl.glEnable(GL10.GL_BLEND);
-	    gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
+	    //gl.glEnable(GL10.GL_BLEND);
+	    //gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
 
-	    gl.glViewport(0, 0, getWidth(), getHeight());
 	    gl.glMatrixMode(GL10.GL_PROJECTION);
 	    gl.glLoadIdentity();
-	    gl.glEnable(GL10.GL_BLEND);
-	    gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-	    gl.glShadeModel(GL10.GL_FLAT);
-	    gl.glEnable(GL10.GL_TEXTURE_2D);
-        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
 	    GLU.gluOrtho2D(gl, 0, getWidth(), getHeight(), 0);
 	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100f);
 	}
 
 	
-    protected static FloatBuffer makeFloatBuffer(float[] arr) {
-        ByteBuffer vbb = ByteBuffer.allocateDirect(arr.length * 4); 
-        vbb.order(ByteOrder.nativeOrder());
-        FloatBuffer texBuffer = vbb.asFloatBuffer();
-        texBuffer.put(arr);
-        texBuffer.position(0);
-        return texBuffer; 
-    }
-
-    protected static IntBuffer makeIntBuffer(int[] arr) {
-        ByteBuffer vbb = ByteBuffer.allocateDirect(arr.length * 4); 
-        vbb.order(ByteOrder.nativeOrder());
-        IntBuffer texBuffer = vbb.asIntBuffer();
-        texBuffer.put(arr);
-        texBuffer.position(0);
-        return texBuffer; 
-    }
-    
     // GL implementation end, previous Canvas implementation here
 
 	/** Main draw method for Canvas, formerly called from FieldDriver's game thread. 
@@ -389,11 +366,6 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 
 		field.drawBalls(this);
 		
-		if (this.showFPS) {
-			if (debugMessage!=null) {
-				c.drawText(""+debugMessage, 10, 10, textPaint);
-			}
-		}
 	}
 	
 	void frameCircleCanvas(float cx, float cy, float radius, int r, int g, int b) {

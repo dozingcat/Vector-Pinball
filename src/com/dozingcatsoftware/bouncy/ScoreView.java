@@ -22,11 +22,18 @@ public class ScoreView extends View {
 	Field field;
 	Paint textPaint = new Paint();
 	Rect textRect = new Rect();
+	
+	Paint fpsPaint = new Paint();
+	Rect fpsRect = new Rect();
+	
 	long highScore;
 	Long lastUpdateTime;
 	
 	int gameOverMessageIndex = 0; // 0: "Touch to start", 1: last score, 2: high score
 	int gameOverMessageCycleTime = 3500;
+	
+	double fps;
+	boolean showFPS = false;
 	
 	static NumberFormat SCORE_FORMAT = NumberFormat.getInstance(); 
 
@@ -39,6 +46,8 @@ public class ScoreView extends View {
 		WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 		windowManager.getDefaultDisplay().getMetrics(metrics);
 		textPaint.setTextSize(24 * metrics.density);
+		
+		fpsPaint.setARGB(255, 255, 255, 0);
 	}
 	
 	@Override
@@ -70,6 +79,9 @@ public class ScoreView extends View {
 		textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
 		// textRect ends up being too high
 		c.drawText(displayString, this.getWidth()/2 - textRect.width()/2, this.getHeight()/2, textPaint);
+		if (showFPS && fps>0) {
+			c.drawText(String.format("%.1f fps", fps), 0, 20, fpsPaint);
+		}
 	}
 	
 	// Returns message to show when game is not in progress. Can be "Touch to start", high score, or previous score.
@@ -99,9 +111,14 @@ public class ScoreView extends View {
 	public void setField(Field value) {
 		field = value;
 	}
-	
 	public void setHighScore(long value) {
 		highScore = value;
+	}
+	public void setFPS(double value) {
+		fps = value;
+	}
+	public void setShowFPS(boolean value) {
+		showFPS = value;
 	}
 
 }

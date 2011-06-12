@@ -38,6 +38,7 @@ public class BouncyActivity extends Activity {
 	int level = 1;
 	long highScore = 0;
 	static String HIGHSCORE_PREFS_KEY = "highScore";
+	boolean useZoom = true;
 	
 	FieldDriver fieldDriver = new FieldDriver();
 	OrientationListener orientationListener;
@@ -134,7 +135,7 @@ public class BouncyActivity extends Activity {
     void updateFromPreferences() {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	worldView.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
-    	worldView.setShowFPS(prefs.getBoolean("showFPS", false));
+    	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
     	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
     	boolean previousHighQuality = worldView.isHighQuality();
@@ -142,11 +143,15 @@ public class BouncyActivity extends Activity {
     	if (previousHighQuality!=worldView.isHighQuality()) {
     		fieldDriver.resetFrameRate();
     	}
+    	
+    	useZoom = prefs.getBoolean("zoom", true);
+    	worldView.setZoom(useZoom ? 1.4f : 1.0f);
     }
 
     // called every 100 milliseconds while app is visible, to update score view and high score
     void tick() {
     	scoreView.invalidate();
+    	scoreView.setFPS(fieldDriver.getAverageFPS());
     	checkForHighScore();
     	handler.postDelayed(callTick, 100);
     }
