@@ -7,9 +7,6 @@
 		
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true" android:title="@string/zoom_pref_title" />
 		
-		<CheckBoxPreference android:key="highQuality" android:enabled="true" android:title="@string/high_quality_pref_title" 
-		android:summaryOff="@string/high_quality_pref_summary_off" android:summaryOn="@string/high_quality_pref_summary_on" />
-		
 		<CheckBoxPreference android:key="showFPS" android:enabled="true" android:title="@string/show_fps_pref_title" />
 		
 	</PreferenceCategory>
