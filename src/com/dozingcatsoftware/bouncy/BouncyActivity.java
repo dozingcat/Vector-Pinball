@@ -22,6 +22,7 @@ public class BouncyActivity extends Activity {
 	FieldView worldView;
 	ScoreView scoreView;
 	
+	View buttonPanel;
 	MenuItem aboutMenuItem;
 	MenuItem endGameMenuItem;
 	MenuItem preferencesMenuItem;
@@ -63,6 +64,8 @@ public class BouncyActivity extends Activity {
         
         highScore = this.highScoreFromPreferences();
         scoreView.setHighScore(highScore);
+        
+        buttonPanel = findViewById(R.id.buttonPanel);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -74,6 +77,11 @@ public class BouncyActivity extends Activity {
         });
         */
         updateFromPreferences();
+    }
+    
+    void gotoPreferences() {
+		Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
+		startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
     }
     
     @Override
@@ -114,8 +122,7 @@ public class BouncyActivity extends Activity {
     		field.endGame();
     	}
     	else if (item==preferencesMenuItem) {
-    		Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
-    		startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
+    		gotoPreferences();
     	}
     	return true;
     }
@@ -160,6 +167,9 @@ public class BouncyActivity extends Activity {
             		this.updateHighScore(score);
             	}
     		}
+    		if (!field.getGameState().isGameInProgress()) {
+    			buttonPanel.setVisibility(View.VISIBLE);
+    		}
     	}
     }
     
@@ -179,4 +189,18 @@ public class BouncyActivity extends Activity {
     	editor.commit();
     }
     
+    // button action methods (defined by android:onClick values in main.xml)
+    public void doStartGame(View view) {
+    	buttonPanel.setVisibility(View.GONE);
+    	field.startGame();
+    }
+    
+    public void doPreferences(View view) {
+    	gotoPreferences();
+    }
+    
+    public void doSwitchTable(View view) {
+    	level = (level==FieldLayout.numberOfLevels()) ? 1 : level+1;
+    	field.resetForLevel(this, level);
+    }
 }

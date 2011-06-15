@@ -255,4 +255,157 @@
         	}
         ]
 	}	
+	,
+    {
+		"name": "Round and Round",
+		"width": 20,
+		"height": 30,
+		
+		"Xdelegate": "Field1Delegate",
+		"targetTimeRatio": 2.5,
+		"gravity": 4.0,
+		
+		"numballs": 3,
+		"ballradius": 0.5,
+		"ballcolor": [192, 192, 224],
+		"launch": {"position": [19.4, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6]},
+
+		elements = [
+		    {"class": "WallPathElement", "positions": [[0,0], [20,0], [20,30], [0,30], [0,0]], "color": [255,255,255]},
+		
+			"launch rail",
+			{"class": "WallElement", "position": [18.7, 0.1, 18.7, 20]},
+			{"class": "WallElement", "position": [19.9, 0.1, 19.9, 20]},
+			
+			{"class": "WallArcElement", "center": [10,20], "radius": 9.9, "minangle": 0, "maxangle": 180, "segments": 20},
+			{"class": "WallArcElement", "center": [10,20], "radius": 8.5, "minangle": 0, "maxangle": 60, "segments": 10},
+			{"class": "WallArcElement", "center": [10,20], "radius": 8.5, "minangle": 120, "maxangle": 180, "segments": 10},
+			{"class": "WallArcElement", "center": [10,20], "radius": 7.0, "minangle": 0, "maxangle": 60, "segments": 10},
+			{"class": "WallArcElement", "center": [10,20], "radius": 7.0, "minangle": 120, "maxangle": 180, "segments": 10},
+			
+			{"class": "WallArcElement", "center": [10,20], "radius": 8.5, "minangle": 120, "maxangle": 180, "segments": 10},
+			
+			{"class": "WallArcElement", "center": [10,20], "xradius": 9.9, "yradius": 15, "minangle": 180, "maxangle": 210, "segments": 10},
+			{"class": "WallArcElement", "center": [10,20], "xradius": 8.5, "yradius": 12, "minangle": -36.8, "maxangle": 0, "segments": 10},
+			
+			"ramp caps",
+			{"class": "WallElement", "position": [5.05, 28.574, 5.75, 27.361]},
+			{"class": "WallElement", "position": [5.75, 27.361, 6.5, 26.062]},
+			{"class": "WallElement", "position": [14.95, 28.574, 14.25, 27.361], "disabled": true},
+			{"class": "WallElement", "position": [14.25, 27.361, 13.5, 26.062]},
+			
+			"ball captures, placed in ramp lanes at 125 and 55 degrees",
+			{"class": "RolloverGroupElement", "color": [192, 192, 224], "radius": 0.5,
+			 "rollovers": [{"position": [4.723, 27.536]}]},
+			{"class": "RolloverGroupElement", "color": [192, 192, 224], "radius": 0.5,
+			 "rollovers": [{"position": [5.555, 26.348]}]},
+			{"class": "RolloverGroupElement", "color": [192, 192, 224], "radius": 0.5,
+			 "rollovers": [{"position": [14.445, 26.348]}]},
+			
+			
+			{"class": "WallElement", "position": [10, 24.5, 10, 26]},
+			{"class": "WallElement", "position": [8.5, 24.5, 8.5, 26]},
+			{"class": "WallElement", "position": [7, 24.5, 7, 26]},
+			{"class": "WallElement", "position": [11.5, 24.5, 11.5, 26]},
+			{"class": "WallElement", "position": [13, 24.5, 13, 26]},
+			
+			{"class": "BumperElement", "position": [10, 19], "radius": 0.75, "kick": 4, "score": 1000, "color": [224,32,32]},
+			{"class": "BumperElement", "position": [12.598, 17.5], "radius": 1, "kick": 3, "score": 500},
+			{"class": "BumperElement", "position": [7.402, 17.5], "radius": 1, "kick": 3, "score": 500},
+			{"class": "BumperElement", "position": [10, 22], "radius": 1, "kick": 3, "score": 500},
+
+		    "left kicker, 60 degree angle",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [3.2, 8.77, 5.7, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of left kicker without kick, x goes .25 (=0.5*cos(pi/3)), y goes .43 (=0.5*sin(pi/3))",
+			{"class": "WallElement", "position": [2.95, 9.2, 3.2, 8.77]},
+			{"class": "WallElement", "position": [5.95, 4, 5.7, 4.43]},
+
+		    "around left kicker", 
+		    {"class": "WallElement", "position": [2.95, 9.2, 2.95, 5.8]},
+			{"class": "WallElement", "position": [2.95, 5.8, 5.95, 4]},
+		        
+		    "right kicker",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [15.6, 8.77, 13.1, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of right kicker without kick",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.6, 8.77]},
+			{"class": "WallElement", "position": [12.85, 4, 13.1, 4.43]},
+		    
+			"around right kicker",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.85, 5.8]},
+			{"class": "WallElement", "position": [15.85, 5.8, 12.85, 4]},
+
+		    {"class": "WallElement", "position": [0.1, 0.1, 18.7, 0.1], "color": [0,0,0], "kill": true},
+		    {"class": "WallElement", "position": [18.7, 0.1, 19.9, 0.1]},
+			
+			"left bottom",
+			{"class": "WallElement", "position": [0.1, 4, 6, 1]},
+			"right bottom",
+			{"class": "WallElement", "position": [18.7, 4, 12.7, 1]},
+			
+			"left side",
+			{"class": "WallElement", "position": [0.1, 4, 0.1, 10], "name": "left border"},
+			
+			"above left outlane",
+			{
+				"class": "WallArcElement", 
+				"center": [3.1,10],
+				"xradius": 3.0,
+				"yradius": 3.0,
+				"minangle": 125,
+				"maxangle": 180,
+				"segments": 8
+			},
+			
+			"left outlane",
+			{"class": "WallElement", "position": [1.45, 8.5, 1.45, 4.8]},
+			
+			"right outlane",
+			{"class": "WallElement", "position": [17.35, 8.5, 17.35, 4.8]},
+			"above right outlane",
+			{
+				"class": "WallArcElement", 
+				"center": [15.7,10],
+				"xradius": 3.0,
+				"yradius": 3.0,
+				"minangle": 0,
+				"maxangle": 67,
+				"segments": 8
+			},
+
+			"flipper lanes",
+			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
+			{"class": "WallElement", "position": [17.35, 4.8, 12.45, 2.3]}
+		],
+        "flippers": [
+        	{
+        		"position": [6.35, 2.2],
+        		"length": 2.5,
+        		"minangle": -22.5,
+        		"maxangle": 20,
+        		"upspeed": 10,
+        		"downspeed": 3
+        	},
+        	{
+        		"position": [12.35, 2.2],
+        		"length": -2.5,
+        		"minangle": -25,
+        		"maxangle": 18,
+        		"upspeed": 10,
+        		"downspeed": 3
+        	}
+        ]
+    }
+	
 ]

@@ -164,12 +164,10 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
     public boolean onTouchEvent(MotionEvent event) {
 		int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
     	synchronized(field) {
+    		if (!field.getGameState().isGameInProgress()) {
+    			return true;
+    		}
         	if (actionType==MotionEvent.ACTION_DOWN) {
-        		// start game if not in progress
-        		if (!field.getGameState().isGameInProgress()) {
-        			field.resetForLevel(this.getContext(), 1);
-        			field.startGame();
-        		}
             	// remove "dead" balls and launch if none already in play
         		field.handleDeadBalls();
         		if (field.getBalls().size()==0) field.launchBall();

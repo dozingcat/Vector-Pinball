@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -17,8 +18,24 @@ import android.content.Context;
 
 public class FieldLayout {
 	
-	static List _layoutArray;
+	static int _numLevels = -1;
+	static Map _layoutMap = new HashMap();
+	static Context _context;
 	Random RAND = new Random();
+	
+	public static void setContext(Context value) {
+		_context = value;
+	}
+	
+	public static int numberOfLevels() {
+		if (_numLevels>0) return _numLevels;
+		
+	}
+
+	
+	static Integer resourceIDForLevel(int level) {
+		
+	}
 	
 	static void readLayoutArray(Context context) {
 		try {
@@ -41,6 +58,8 @@ public class FieldLayout {
 	public static FieldLayout layoutForLevel(Context context, int level, World world) {
 		try {
 			if (_layoutArray==null) readLayoutArray(context);
+			Object foo = _layoutArray;
+			foo.toString();
 			Map layoutMap = (Map)_layoutArray.get(level - 1);
 			return new FieldLayout(layoutMap, world);
 		}
@@ -50,10 +69,6 @@ public class FieldLayout {
 		}
 	}
 	
-	public static int numberOfLevels() {
-		return _layoutArray.size();
-	}
-
 	List<FieldElement> fieldElements = new ArrayList<FieldElement>();
 	List<FlipperElement> flippers, leftFlippers, rightFlippers;
 	float width;
