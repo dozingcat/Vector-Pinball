@@ -98,7 +98,7 @@ public class Field implements ContactListener {
 		world = new World(gravity, doSleep);
 		world.setContactListener(this);
 		
-		layout = FieldLayout.layoutForLevel(context, level, world);
+		layout = FieldLayout.layoutForLevel(level, world);
 		world.setGravity(new Vector2(0.0f, -layout.getGravity()));
 		balls = new ArrayList<Body>();
 		ballsAtTargets = new HashSet<Body>();

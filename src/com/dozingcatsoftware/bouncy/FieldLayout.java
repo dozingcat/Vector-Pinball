@@ -15,11 +15,12 @@ import com.dozingcatsoftware.bouncy.util.JSONUtils;
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
 import android.content.Context;
+import android.util.Log;
 
 public class FieldLayout {
 	
 	static int _numLevels = -1;
-	static Map _layoutMap = new HashMap();
+	static Map<Object, Map> _layoutMap = new HashMap();
 	static Context _context;
 	Random RAND = new Random();
 	
@@ -29,17 +30,25 @@ public class FieldLayout {
 	
 	public static int numberOfLevels() {
 		if (_numLevels>0) return _numLevels;
-		
+		try {
+			List tableFiles = Arrays.asList(_context.getAssets().list("tables"));
+			int count = 0;
+			while(tableFiles.contains("table"+(count+1)+".json")) {
+				count++;
+			}
+			_numLevels = count;
+		}
+		catch(IOException ex) {
+			Log.e("FieldLayout", "Error reading tables directory", ex);
+		}
+		return _numLevels;
 	}
 
 	
-	static Integer resourceIDForLevel(int level) {
-		
-	}
-	
-	static void readLayoutArray(Context context) {
+	static Map readFieldLayout(int level) {
 		try {
-			InputStream fin = context.getResources().openRawResource(R.raw.field_layout);
+			String assetPath = "tables/table" + level + ".json";
+			InputStream fin = _context.getAssets().open(assetPath);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fin));
 
 			StringBuilder buffer = new StringBuilder();
@@ -48,25 +57,21 @@ public class FieldLayout {
 				buffer.append(line);
 			}
 			fin.close();
-			_layoutArray = JSONUtils.listFromJSONString(buffer.toString());
+			Map layoutMap = JSONUtils.mapFromJSONString(buffer.toString());
+			return layoutMap;
 		}
 		catch(Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);
 		}
 	}
 	
-	public static FieldLayout layoutForLevel(Context context, int level, World world) {
-		try {
-			if (_layoutArray==null) readLayoutArray(context);
-			Object foo = _layoutArray;
-			foo.toString();
-			Map layoutMap = (Map)_layoutArray.get(level - 1);
-			return new FieldLayout(layoutMap, world);
+	public static FieldLayout layoutForLevel(int level, World world) {
+		Map levelLayout = _layoutMap.get(level);
+		if (levelLayout==null) {
+			levelLayout = readFieldLayout(level);
+			_layoutMap.put(level, levelLayout);
 		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
+		return new FieldLayout(levelLayout, world);
 	}
 	
 	List<FieldElement> fieldElements = new ArrayList<FieldElement>();

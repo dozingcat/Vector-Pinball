@@ -51,6 +51,7 @@ public class BouncyActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         
+        FieldLayout.setContext(this);
         field.resetForLevel(this, level);
         
         worldView = (FieldView)findViewById(R.id.worldView);
