@@ -106,7 +106,7 @@ public abstract class FieldElement {
 
 	/** Must be overridden by subclasses to return a collection of all Box2D bodies which make up this element.
 	 */
-	public abstract Collection<Body> getBodies();
+	public abstract List<Body> getBodies();
 
 	/** Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
 	 */

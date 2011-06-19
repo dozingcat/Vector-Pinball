@@ -39,7 +39,7 @@ public class DropTargetGroupElement extends FieldElement {
 	}
 
 	@Override
-	public Collection<Body> getBodies() {
+	public List<Body> getBodies() {
 		return allBodies;
 	}
 	

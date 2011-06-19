@@ -72,7 +72,7 @@ public class WallArcElement extends FieldElement {
 	}
 	
 	@Override
-	public Collection getBodies() {
+	public List<Body> getBodies() {
 		return wallBodies;
 	}
 

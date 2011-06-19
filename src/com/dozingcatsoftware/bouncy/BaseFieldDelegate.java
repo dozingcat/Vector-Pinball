@@ -52,4 +52,9 @@ public class BaseFieldDelegate implements Field.Delegate {
 	@Override
 	public void ballInSensorRange(Field field, SensorElement sensor) {
 	}
+
+	@Override
+	public boolean isFieldActive(Field field) {
+		return false;
+	}
 }

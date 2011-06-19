@@ -84,8 +84,8 @@ public class SensorElement extends FieldElement {
 	}
 
 	@Override
-	public Collection<Body> getBodies() {
-		return Collections.EMPTY_SET;
+	public List<Body> getBodies() {
+		return Collections.EMPTY_LIST;
 	}
 
 	@Override

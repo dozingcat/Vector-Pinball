@@ -73,6 +73,7 @@ public class Field implements ContactListener {
 		
 		public void ballInSensorRange(Field field, SensorElement sensor);
 
+		public boolean isFieldActive(Field field);
 	}
 	
 	// helper class to represent actions scheduled in the future
@@ -276,7 +277,8 @@ public class Field implements ContactListener {
     public boolean hasActiveElements() {
     	// HACK: to allow flippers to drop properly at beginning of game, we need accurate simulation
     	if (this.gameTime < 500) return true;
-    	// allow delegate to return true even if there are no balls?
+    	// allow delegate to return true even if there are no balls
+    	if (getDelegate().isFieldActive(this)) return true;
     	return this.getBalls().size() > 0;
     }
     

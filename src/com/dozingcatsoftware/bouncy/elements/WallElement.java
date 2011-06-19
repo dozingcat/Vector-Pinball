@@ -30,7 +30,7 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.*;
 public class WallElement extends FieldElement {
 
 	Body wallBody;
-	Collection bodySet;
+	List<Body> bodySet;
 	float x1, y1, x2, y2;
 	float kick;
 	
@@ -47,7 +47,7 @@ public class WallElement extends FieldElement {
 		float restitution = asFloat(params.get("restitution"));
 		
 		wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution);
-		bodySet = Collections.singleton(wallBody);
+		bodySet = Collections.singletonList(wallBody);
 		
 		this.kick = asFloat(params.get("kick"));
 		this.killBall = (Boolean.TRUE.equals(params.get("kill")));
@@ -70,7 +70,7 @@ public class WallElement extends FieldElement {
 	}
 	
 	@Override
-	public Collection getBodies() {
+	public List<Body> getBodies() {
 		return bodySet;
 	}
 	

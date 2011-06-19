@@ -20,7 +20,7 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 public class BumperElement extends FieldElement {
 
 	Body pegBody;
-	Collection pegBodySet;
+	List pegBodySet;
 	
 	float radius;
 	float cx, cy;
@@ -34,11 +34,11 @@ public class BumperElement extends FieldElement {
 		this.kick = asFloat(params.get("kick"));
 		
 		pegBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
-		pegBodySet = Collections.singleton(pegBody);
+		pegBodySet = Collections.singletonList(pegBody);
 	}
 	
 	@Override
-	public Collection getBodies() {
+	public List<Body> getBodies() {
 		return pegBodySet;
 	}
 	
@@ -71,6 +71,8 @@ public class BumperElement extends FieldElement {
 
 	@Override
 	public void draw(IFieldRenderer renderer) {
-		renderer.fillCircle(cx, cy, radius, redColorComponent(0), greenColorComponent(0), blueColorComponent(255));
+		float px = pegBody.getPosition().x;
+		float py = pegBody.getPosition().y;
+		renderer.fillCircle(px, py, radius, redColorComponent(0), greenColorComponent(0), blueColorComponent(255));
 	}
 }

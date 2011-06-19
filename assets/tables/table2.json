@@ -3,7 +3,7 @@
 		"width": 20,
 		"height": 30,
 		
-		"Xdelegate": "Field1Delegate",
+		"delegate": "Field2Delegate",
 		"targetTimeRatio": 2.25,
 		"gravity": 4.0,
 		
@@ -51,10 +51,10 @@
 			{"class": "WallElement", "position": [11.5, 24.5, 11.5, 26]},
 			{"class": "WallElement", "position": [13, 24.5, 13, 26]},
 			
-			{"class": "BumperElement", "position": [10, 19], "radius": 0.75, "kick": 4, "score": 1000, "color": [224,32,32]},
-			{"class": "BumperElement", "position": [12.598, 17.5], "radius": 1, "kick": 3, "score": 500},
-			{"class": "BumperElement", "position": [7.402, 17.5], "radius": 1, "kick": 3, "score": 500},
-			{"class": "BumperElement", "position": [10, 22], "radius": 1, "kick": 3, "score": 500},
+			{"class": "BumperElement", "position": [10, 19], "radius": 0.75, "kick": 4, "score": 1000, "color": [224,32,32], "id": "CenterBumper1"},
+			{"class": "BumperElement", "position": [12.598, 17.5], "radius": 1, "kick": 3, "score": 500, "id": "RotatingBumper1A"},
+			{"class": "BumperElement", "position": [7.402, 17.5], "radius": 1, "kick": 3, "score": 500, "id": "RotatingBumper1B"},
+			{"class": "BumperElement", "position": [10, 22], "radius": 1, "kick": 3, "score": 500, "id": "RotatingBumper1C"},
 
 		    "left kicker, 60 degree angle",
 		    {

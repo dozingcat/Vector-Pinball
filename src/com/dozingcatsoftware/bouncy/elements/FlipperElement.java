@@ -35,7 +35,7 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.toRadians;
 public class FlipperElement extends FieldElement {
 	
 	Body flipperBody;
-	Collection flipperBodySet;
+	List<Body> flipperBodySet;
 	public Body anchorBody;
 	public RevoluteJoint joint;
 	RevoluteJointDef jointDef;
@@ -78,7 +78,7 @@ public class FlipperElement extends FieldElement {
     	
     	this.joint = (RevoluteJoint)world.createJoint(jointDef);
 
-    	flipperBodySet = Collections.singleton(flipperBody);
+    	flipperBodySet = Collections.singletonList(flipperBody);
     	this.setEffectiveMotorSpeed(-this.downspeed); // force flipper to bottom when field is first created
 	}
 	
@@ -112,7 +112,7 @@ public class FlipperElement extends FieldElement {
 	}
 	
 	@Override
-	public Collection getBodies() {
+	public List<Body> getBodies() {
 		return flipperBodySet;
 	}
 	

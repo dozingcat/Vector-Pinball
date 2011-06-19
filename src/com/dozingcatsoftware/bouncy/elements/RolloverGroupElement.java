@@ -68,8 +68,8 @@ public class RolloverGroupElement extends FieldElement {
 	}
 
 	@Override
-	public Collection<Body> getBodies() {
-		return Collections.EMPTY_SET;
+	public List<Body> getBodies() {
+		return Collections.EMPTY_LIST;
 	}
 	
 	List<Rollover> hitRollovers = new ArrayList<Rollover>(); // avoid object allocation in rolloversHitByBalls
