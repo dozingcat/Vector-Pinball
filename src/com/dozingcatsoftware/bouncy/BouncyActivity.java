@@ -1,11 +1,19 @@
 package com.dozingcatsoftware.bouncy;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -43,7 +51,9 @@ public class BouncyActivity extends Activity {
 	
 	FieldDriver fieldDriver = new FieldDriver();
 	OrientationListener orientationListener;
-	
+
+	FMODaudio mFMODaudio = new FMODaudio();
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +88,101 @@ public class BouncyActivity extends Activity {
         });
         */
         updateFromPreferences();
+        mFMODaudio.updateOnCreate();
+    }
+    
+    @Override
+    public void onStart()
+    { 	
+    	super.onStart();
+/*
+ * 		During initialization, FMOD requires a pathway to the folder where the event and soundbank files are stored.
+ * 		The files in the Assets folder must be copied out of the (compressed) Android package (.apk)
+ * 		to either internal storage, or the external SD card.
+ * 		Then a string containing the pathway is passed down to the native C code.
+ */
+    	
+    	// to sdcard:
+//        AssetManager mAssetManager = getAssets();
+//        String[] files = null;
+//        try {
+//            files = mAssetManager.list("fmod");
+//        } catch (IOException e) {
+//            Log.e("BouncyActivity", e.getMessage());
+//        }
+//        
+//        Log.e("BouncyActivity", "files= " + files[0]);
+//
+//        for(int i=0; i<files.length; i++) {
+//            InputStream in = null;
+//            try {
+//              in = mAssetManager.open("fmod/" + files[i], 0);
+//              
+//              File sdCard = Environment.getExternalStorageDirectory();
+//              File dir = new File (sdCard.getAbsolutePath() + "/fmod");
+//              dir.mkdirs();
+//              File file = new File(dir, files[i]);
+//              FileOutputStream fout = new FileOutputStream(file);
+//
+//              copyFile(in, fout);
+//              in.close();
+//              in = null;
+//              fout.flush();
+//              fout.close();
+//              fout = null;
+//            } catch(Exception e) {
+//                Log.e("BouncyActivity Exception", e.getMessage());
+//            }       
+//        }
+    	
+    	//to internal storage:
+      AssetManager mAssetManager = getAssets();
+      String[] FMODfiles = null;
+      try {
+          FMODfiles = mAssetManager.list("fmod");
+      } catch (IOException e) {
+          Log.e("BouncyActivity", e.getMessage());
+      }
+      
+      File mediaDir = getDir("fmod", 0);
+      for(int i=0; i<FMODfiles.length; i++) {
+          File fileOut = new File(mediaDir, FMODfiles[i]);
+          if (!fileOut.exists()) {
+	          try {
+	        	  InputStream in = mAssetManager.open("fmod/" + FMODfiles[i], 0);
+		          FileOutputStream out = new FileOutputStream(fileOut);
+		          copyFile(in, out);
+		          in.close();
+		          in = null;
+		          out.flush();
+		          out.close();
+		          out = null;
+	          } catch(Exception e) {
+	              Log.e("BouncyActivity Exception", e.getMessage());
+	          }
+          }
+      }
+      String mediaPath = mediaDir.getPath();
+      mFMODaudio.initAudio(mediaPath);
+    }
+    
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+          out.write(buffer, 0, read);
+        }
+    }
+
+    @Override
+    public void onStop()
+    { 	
+    	mFMODaudio.stopAudio();
+     	super.onStop();
+     	
+     	// workaround for FMOD MusicSystem memory release bug: kill the process to allow a clean restart
+     	// FMOD bug fix scheduled for release version 4.35.06 
+     	System.exit(0);
     }
     
     void gotoPreferences() {

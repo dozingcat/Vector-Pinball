@@ -50,6 +50,7 @@ public class Field implements ContactListener {
 	
 	Delegate delegate;
 	
+	FMODaudio mFMODaudio = new FMODaudio();
 	GameState gameState = new GameState();
 	GameMessage gameMessage;
 	
@@ -224,6 +225,8 @@ public class Field implements ContactListener {
 		ball.setBullet(true);
 		ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
 		this.balls.add(ball);
+		mFMODaudio.playBall();
+
 		return ball;
     }
     
@@ -333,7 +336,10 @@ public class Field implements ContactListener {
     		FlipperElement flipper = flippers.get(i);
     		if (!flipper.isFlipperEngaged()) {
     			allFlippersPreviouslyActive = false;
-    			if (engaged) activatedFlippers.add(flipper);
+    			if (engaged) {
+    				activatedFlippers.add(flipper);
+    	   			mFMODaudio.playFlipper();
+    			}
     		}
     		flipper.setFlipperEngaged(engaged);
     	}
@@ -361,6 +367,7 @@ public class Field implements ContactListener {
      * "Game Over" message for display by the score view. 
      */
     public void endGame() {
+    	mFMODaudio.playStart(); // play startup sound at end of game
     	for(Body ball : this.getBalls()) {
 	    	world.destroyBody(ball);
     	}
@@ -401,7 +408,10 @@ public class Field implements ContactListener {
 					if (delegate!=null) {
 						delegate.processCollision(this, element, f.getBody(), ball);
 					}
-					this.gameState.addScore(element.getScore());
+					if (element.getScore()!=0) {
+						this.gameState.addScore(element.getScore());
+						mFMODaudio.playScore();
+					}
 				}
 			}			
 		}
@@ -441,6 +451,7 @@ public class Field implements ContactListener {
 	 * Duration is in real world time, not simulated game time.
 	 */
 	public void showGameMessage(String text, long duration) {
+		mFMODaudio.playMessage(text);
 		gameMessage = new GameMessage();
 		gameMessage.text = text;
 		gameMessage.duration = duration;
