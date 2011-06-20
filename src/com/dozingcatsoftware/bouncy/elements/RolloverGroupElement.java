@@ -9,9 +9,10 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.bouncy.FMODaudio;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
+import com.dozingcatsoftware.bouncy.VPSoundpool;
+
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
 /** This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
@@ -40,8 +41,6 @@ public class RolloverGroupElement extends FieldElement {
 	List<Rollover> rollovers = new ArrayList<Rollover>();
 	List<Rollover> activeRollovers = new ArrayList<Rollover>();
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
-    
-    FMODaudio mFMODaudio = new FMODaudio();
     
 	@Override
 	public void finishCreate(Map params, World world) {
@@ -139,7 +138,7 @@ public class RolloverGroupElement extends FieldElement {
 			if (!activeRollovers.contains(rollover)) {
 				activeRollovers.add(rollover);
 				field.addScore(rollover.score);
-				mFMODaudio.playRollover();
+				VPSoundpool.playRollover();
 				// set timer to clear rollover if reset parameter is present and >0
 				if (rollover.resetDelay > 0) {
 					field.scheduleAction((long)(rollover.resetDelay*1000), new Runnable() {
@@ -152,7 +151,7 @@ public class RolloverGroupElement extends FieldElement {
 			else if (this.canToggleOff) {
 				activeRollovers.remove(rollover);
 				field.addScore(rollover.score);
-				mFMODaudio.playRollover();
+				VPSoundpool.playRollover();
 			}
 		}
 		

@@ -10,10 +10,7 @@
     <string name="independent_flippers_pref_summary_on">A touch activates the flipper on the same side of the screen</string>
     <string name="independent_flippers_pref_summary_off">Any touch activates both flippers</string>
 
-    <string name="high_quality_pref_title">High Quality</string>
-    <string name="high_quality_pref_summary_on">Higher quality but slower graphics</string>
-    <string name="high_quality_pref_summary_off">Lower quality but faster graphics</string>
-    
+    <string name="sound_pref_title">Sound</string>
     <string name="show_fps_pref_title">Show FPS</string>
     <string name="zoom_pref_title">Zoom Playfield</string>
 

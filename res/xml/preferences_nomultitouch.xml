@@ -2,6 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Preferences">
 	
+		<CheckBoxPreference android:key="sound" android:defaultValue="true" android:enabled="true" android:title="@string/sound_pref_title" />
+		
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true" android:title="@string/zoom_pref_title" />
 		
 		<CheckBoxPreference android:key="showFPS" android:enabled="true" android:title="@string/show_fps_pref_title" />

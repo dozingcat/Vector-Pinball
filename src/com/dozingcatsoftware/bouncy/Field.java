@@ -50,7 +50,6 @@ public class Field implements ContactListener {
 	
 	Delegate delegate;
 	
-	FMODaudio mFMODaudio = new FMODaudio();
 	GameState gameState = new GameState();
 	GameMessage gameMessage;
 	
@@ -225,7 +224,7 @@ public class Field implements ContactListener {
 		ball.setBullet(true);
 		ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
 		this.balls.add(ball);
-		mFMODaudio.playBall();
+		VPSoundpool.playBall();
 
 		return ball;
     }
@@ -263,7 +262,7 @@ public class Field implements ContactListener {
 			final String msg2 = msg; // must be final for closure, yay Java
 			this.scheduleAction(1500, new Runnable() {
 				public void run() {
-					showGameMessage(msg2, 1500);
+					showGameMessage(msg2, 1500, false); // no sound effect
 				}
 			});
 		}
@@ -338,7 +337,7 @@ public class Field implements ContactListener {
     			allFlippersPreviouslyActive = false;
     			if (engaged) {
     				activatedFlippers.add(flipper);
-    	   			mFMODaudio.playFlipper();
+    	   			VPSoundpool.playFlipper();
     			}
     		}
     		flipper.setFlipperEngaged(engaged);
@@ -367,7 +366,7 @@ public class Field implements ContactListener {
      * "Game Over" message for display by the score view. 
      */
     public void endGame() {
-    	mFMODaudio.playStart(); // play startup sound at end of game
+    	VPSoundpool.playStart(); // play startup sound at end of game
     	for(Body ball : this.getBalls()) {
 	    	world.destroyBody(ball);
     	}
@@ -410,7 +409,7 @@ public class Field implements ContactListener {
 					}
 					if (element.getScore()!=0) {
 						this.gameState.addScore(element.getScore());
-						mFMODaudio.playScore();
+						VPSoundpool.playScore();
 					}
 				}
 			}			
@@ -450,12 +449,16 @@ public class Field implements ContactListener {
 	/** Displays a message in the score view for the specified duration in milliseconds. 
 	 * Duration is in real world time, not simulated game time.
 	 */
-	public void showGameMessage(String text, long duration) {
-		mFMODaudio.playMessage(text);
+	public void showGameMessage(String text, long duration, boolean playSound) {
+		if (playSound) VPSoundpool.playMessage();
 		gameMessage = new GameMessage();
 		gameMessage.text = text;
 		gameMessage.duration = duration;
 		gameMessage.creationTime = System.currentTimeMillis();
+	}
+	
+	public void showGameMessage(String text, long duration) {
+		showGameMessage(text, duration, true);
 	}
 	
 	// updates time remaining on current game message
