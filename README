@@ -1,7 +1,7 @@
 Vector Pinball is a pinball game for Android devices. It is released under 
 version 3 of the GPL; see "COPYING" for the license text.
 
-The graphics are deliberately simple; currently everything is drawn with lines and circles. The focus is on gameplay and accurate physics. It uses the libgdx Java wrapper for the Box2D physics engine.
+The graphics are deliberately simple; currently everything is drawn with lines and circles. The focus is on gameplay and accurate physics. It uses the libgdx Java wrapper for the Box2D physics engine. Thanks to Peter Drescher for the sound effects; see http://broadcast.oreilly.com/2011/06/fmod-for-android.html for his article on creating them.
 
 The GitHub project page is: https://github.com/dozingcat/Vector-Pinball/ . See devnotes.txt for an overview of the code layout.
 
