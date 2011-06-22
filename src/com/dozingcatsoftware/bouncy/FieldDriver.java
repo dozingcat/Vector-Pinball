@@ -2,7 +2,6 @@ package com.dozingcatsoftware.bouncy;
 
 import com.dozingcatsoftware.bouncy.util.FrameRateManager;
 
-import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 /** Class to manage the game thread which updates the game's internal state and draws to the FieldView. Controls the
