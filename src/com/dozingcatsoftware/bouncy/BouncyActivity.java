@@ -104,7 +104,7 @@ public class BouncyActivity extends Activity {
         if (orientationListener!=null) orientationListener.start();
         
         fieldDriver.start();
-        worldView.onResume();
+        // worldView.onResume(); // for disabled OpenGL implementation
     }
     
     @Override
@@ -112,7 +112,7 @@ public class BouncyActivity extends Activity {
     	running = false;
     	if (orientationListener!=null) orientationListener.stop();
     	fieldDriver.stop();
-    	worldView.onPause();
+    	// worldView.onPause(); // for disabled OpenGL implementation
     	super.onPause();
     }
     
@@ -154,6 +154,13 @@ public class BouncyActivity extends Activity {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	worldView.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
+
+    	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
+    	boolean previousHighQuality = worldView.isHighQuality();
+    	worldView.setHighQuality(prefs.getBoolean("highQuality", false));
+    	if (previousHighQuality!=worldView.isHighQuality()) {
+    		fieldDriver.resetFrameRate();
+    	}
 
     	useZoom = prefs.getBoolean("zoom", true);
     	worldView.setZoom(useZoom ? 1.4f : 1.0f);

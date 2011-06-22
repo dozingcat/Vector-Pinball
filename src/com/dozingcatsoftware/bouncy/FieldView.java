@@ -3,9 +3,6 @@ package com.dozingcatsoftware.bouncy;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -13,24 +10,23 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
-import com.dozingcatsoftware.bouncy.util.GLVertexList;
-import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
 
 /** Draws the game field. Field elements are defined in world coordinates, which this view transforms to screen/pixel coordinates.
  * @author brian
  */
-public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfaceView.Renderer {
+public class FieldView extends SurfaceView implements IFieldRenderer {
 
 	public FieldView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setRenderer(this);
-		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
+	boolean showFPS;
+	boolean highQuality;
 	boolean independentFlippers;
 	
 	Field field;
@@ -56,8 +52,19 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 		debugMessage = value;
 	}
 	
+	public void setShowFPS(boolean value) {
+		showFPS = value;
+	}
+	
 	public void setIndependentFlippers(boolean value) {
 		independentFlippers = value;
+	}
+	
+	public void setHighQuality(boolean value) {
+		highQuality = value;
+	}
+	public boolean isHighQuality() {
+		return highQuality;
 	}
 	
 	float getScale() {
@@ -208,7 +215,8 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
     	return true;
     }
 	
-	// GL implementation start
+	// GL implementation start, this is apparently very slow on some devices (HTC Desire?)
+	/*
 	GLVertexListManager vertexListManager = new GLVertexListManager();
 	GLVertexList lineVertexList;
 	
@@ -330,6 +338,52 @@ public class FieldView extends GLSurfaceView implements IFieldRenderer, GLSurfac
 
 	    GLU.gluOrtho2D(gl, 0, getWidth(), getHeight(), 0);
 	    //GLU.gluPerspective(gl, 45.0f, (float)getWidth() / (float)getHeight(), 0.1f, 100f);
+	}
+	*/
+
+	/** Main draw method, called from FieldDriver's game thread. Calls each FieldElement's draw() method passing
+	 * itself as the IFieldRenderer implementation.
+	 */
+	public void doDraw(Canvas c) {
+		cacheScaleAndOffsets();
+		paint.setStrokeWidth(this.highQuality ? 2 : 0);
+		// call draw() on each FieldElement, draw balls separately
+		this.canvas = c;
+		
+		for(FieldElement element : field.getFieldElementsArray()) {
+			element.draw(this);
+		}
+
+		field.drawBalls(this);
+		
+		if (this.showFPS) {
+			if (debugMessage!=null) {
+				c.drawText(""+debugMessage, 10, 10, textPaint);
+			}
+		}
+	}
+	
+	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
+	@Override
+	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
+	}
+	
+	@Override
+	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.paint.setStyle(Paint.Style.FILL);
+		float rad = radius * cachedScale;
+		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
+	}
+	
+	@Override
+	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
+		this.paint.setARGB(255, r, g, b);
+		this.paint.setStyle(Paint.Style.STROKE);
+		float rad = radius * cachedScale;
+		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
 	}
 
 }

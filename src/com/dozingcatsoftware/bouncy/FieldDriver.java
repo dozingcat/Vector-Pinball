@@ -2,6 +2,7 @@ package com.dozingcatsoftware.bouncy;
 
 import com.dozingcatsoftware.bouncy.util.FrameRateManager;
 
+import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 /** Class to manage the game thread which updates the game's internal state and draws to the FieldView. Controls the
@@ -100,9 +101,9 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			
 			// for debugging, show frames per second and other info
 			if (frameRateManager.getTotalFrames() % 100 == 0) {
-				//fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
-				//setAverageFPS(frameRateManager.currentFramesPerSecond());
-				setAverageFPS(fieldView.frManager.currentFramesPerSecond());
+				fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
+				setAverageFPS(frameRateManager.currentFramesPerSecond());
+				//setAverageFPS(fieldView.frManager.currentFramesPerSecond());
 			}
 		}
 	}
@@ -110,13 +111,11 @@ public class FieldDriver implements SurfaceHolder.Callback {
 	/** Calls FieldView.doDraw to render the game field to the SurfaceView, and draws the view to the screen.
 	 */
 	void drawField() {
-		fieldView.requestRender();
-		/*
+		//fieldView.requestRender();
 		Canvas c = fieldView.getHolder().lockCanvas();
 		c.drawARGB(255, 0, 0, 0);
 		fieldView.doDraw(c);
 		fieldView.getHolder().unlockCanvasAndPost(c);
-		*/
 	}
 	
 	/** Resets the frame rate and forgets any locked rate, called when rendering quality is changed.
