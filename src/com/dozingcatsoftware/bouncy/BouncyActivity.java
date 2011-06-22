@@ -91,13 +91,18 @@ public class BouncyActivity extends Activity {
         VPSoundpool.initSounds(this);
         VPSoundpool.loadSounds();
         
-        this.setVolumeControlStream(AudioManager.STREAM_SYSTEM);
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
     
 
     void gotoPreferences() {
 		Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
 		startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
+    }
+    
+    void gotoAbout() {
+		Intent aboutIntent = new Intent(getBaseContext(), AboutActivity.class);
+		this.startActivity(aboutIntent);
     }
     
     @Override
@@ -131,8 +136,7 @@ public class BouncyActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	if (item==aboutMenuItem) {
-    		Intent aboutIntent = new Intent(getBaseContext(), AboutActivity.class);
-    		this.startActivity(aboutIntent);
+    		gotoAbout();
     	}
     	else if (item==endGameMenuItem) {
     		field.endGame();
@@ -210,12 +214,17 @@ public class BouncyActivity extends Activity {
     // button action methods (defined by android:onClick values in main.xml)
     public void doStartGame(View view) {
     	buttonPanel.setVisibility(View.GONE);
+    	field.resetForLevel(this, level);
     	field.startGame();
     	VPSoundpool.playStart();
     }
     
     public void doPreferences(View view) {
     	gotoPreferences();
+    }
+    
+    public void doAbout(View view) {
+    	gotoAbout();
     }
     
     public void doSwitchTable(View view) {

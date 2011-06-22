@@ -10,7 +10,7 @@
 		"numballs": 3,
 		"ballradius": 0.5,
 		"ballcolor": [192, 192, 224],
-		"launch": {"position": [19.4, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
+		"launch": {"position": [19.3, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
 		
 		"elements": [
 			"Strings in this section are treated as comments and ignored.",

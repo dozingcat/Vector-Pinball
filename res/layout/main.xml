@@ -21,13 +21,13 @@
     />
     
 	<LinearLayout android:id="@+id/buttonPanel" android:layout_width="wrap_content" android:layout_height="wrap_content" 
-				  android:background="#AA0000CC" android:layout_gravity="center">
+	      android:background="#8448" android:padding="10px" android:layout_gravity="center">
 				  
 		<Button android:id="@+id/startGameButton" android:onClick="doStartGame"
 			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Start Game" />
 			
-		<Button android:id="@+id/switchTableButton" android:onClick="doSwitchTable"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Switch Table" />
+		<Button android:id="@+id/aboutButton" android:onClick="doAbout"
+			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Help/About" />
 			
 		<Button android:id="@+id/preferencesButton" android:onClick="doPreferences"
 			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Preferences" />
