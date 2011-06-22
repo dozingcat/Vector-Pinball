@@ -2,7 +2,7 @@ Thanks for your interest in the Vector Pinball code. This is a very high level d
 which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to
 send pull requests, or contact me at bnenning@gmail.com with comments or questions.
 
-The pinball field layout is defined in res/raw/field_layout.json as a JSON document. Modifying that file is 
+The pinball field layout is defined in assets/tables/table1.json as a JSON document. Modifying that file is 
 the easiest way to change the game. All field elements (walls, bumpers, rollovers, etc) are defined in the
 "elements" array. Each element has a "class" attribute indicating its type; the value corresponds to a class 
 in the com.dozingcatsoftware.bouncy.elements package (found under src/com/dozingcatsoftware/bouncy/elements).
@@ -38,8 +38,7 @@ when all drop targets in a group are hit. The available delegate methods are def
 interface in the Field class.
 
 Possible future directions:
-- More pinball tables. Currently the app only reads one table from field_layout.json, but it would be nice to
-have multiple tables defined either in one file or separate files, and allow the user to switch between them.
+- More pinball tables. There is partial support for multiple table files, and an incomplete second table in assets/tables/table2.json. 
 - More field elements and game mechanics: spinners, holes, magnets, multiball, etc.
 - More detailed score display; show ball number, current multiplier, etc.
 - Non-pinball games using the same engine, like those handheld mechanical games where you try to bounce balls
