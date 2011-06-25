@@ -49,8 +49,6 @@ public class VPSoundpool {
          mSoundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
          mSoundPoolMap = new HashMap<Integer, Integer>(); 
          mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
-         int mMediaVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mMediaVolume - 2, 0);
     } 
 
     public static void loadSounds()
