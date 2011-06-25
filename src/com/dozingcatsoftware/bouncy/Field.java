@@ -336,13 +336,13 @@ public class Field implements ContactListener {
     			allFlippersPreviouslyActive = false;
     			if (engaged) {
     				activatedFlippers.add(flipper);
-    	   			VPSoundpool.playFlipper();
     			}
     		}
     		flipper.setFlipperEngaged(engaged);
     	}
     	
     	if (engaged && !allFlippersPreviouslyActive) {
+   			VPSoundpool.playFlipper();
     		for(FieldElement element : this.getFieldElementsArray()) {
     			element.flippersActivated(this, activatedFlippers);
     		}
