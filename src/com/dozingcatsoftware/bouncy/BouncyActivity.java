@@ -113,9 +113,16 @@ public class BouncyActivity extends Activity {
     	if (orientationListener!=null) orientationListener.stop();
     	fieldDriver.stop();
     	// worldView.onPause(); // for disabled OpenGL implementation
+    	VPSoundpool.pauseMusic();
     	super.onPause();
     }
     
+    @Override
+    public void onDestroy() {
+        VPSoundpool.cleanup();
+    	super.onDestroy();
+    }
+        
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	aboutMenuItem = menu.add(R.string.about_menu_item);
