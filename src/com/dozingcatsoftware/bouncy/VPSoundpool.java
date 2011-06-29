@@ -20,6 +20,7 @@ public class VPSoundpool {
     private static Random mRandom = new Random();
     
     private static boolean soundEnabled = true;
+    private static boolean musicEnabled = true;
 	private static int cScore = 0;
 	private static int prevDing, currentDing = 0;
 	private static int andrModAmt = 10;
@@ -76,17 +77,27 @@ public class VPSoundpool {
         catch(IOException ex) {
         	Log.e("VPSoundpool", "Error loading sounds", ex);
         }
-        resetState();
+        resetMusicState();
     }
     
     public static void setSoundEnabled(boolean enabled) {
     	soundEnabled = enabled;
     }
     
-    public static void resetState() {
+    public static void setMusicEnabled(boolean enabled) {
+    	musicEnabled = enabled;
+    	if (!musicEnabled) {
+    		resetMusicState();
+    	}
+    }
+    
+    public static void resetMusicState() {
     	pauseMusic();
+    	drumbassPlaying = false;
     	cScore = 0;
     	andrModAmt = 10;
+    	if (drumbass!=null) drumbass.seekTo(0);
+    	if (androidpad!=null) androidpad.seekTo(0);
     }
     
     static void playSound(int soundKey, float volume, float pitch) {
@@ -108,7 +119,7 @@ public class VPSoundpool {
 
     	//start playing the drumbassloop after 20 scoring hits
     	cScore++;
-    	if (soundEnabled && cScore%20 == 0 && !drumbass.isPlaying()){
+    	if (musicEnabled && cScore%20 == 0 && drumbass!=null && !drumbass.isPlaying()){
     		drumbass.setVolume(1.0f, 1.0f);
     	    drumbass.start();
     	    drumbassPlaying = true;
@@ -116,7 +127,7 @@ public class VPSoundpool {
     	//play the androidpad after 10 scoring hits the first time
     	//then increase the mod amount each time the pad is played,
     	//so that it will be heard less frequently over time
-    	if (soundEnabled && cScore%andrModAmt == 0){
+    	if (musicEnabled && androidpad!=null && cScore%andrModAmt == 0){
     		androidpad.setVolume(0.5f, 0.5f);
     	    androidpad.start();
     		andrModAmt += 42;
@@ -165,7 +176,7 @@ public class VPSoundpool {
     }
     
     public static void playStart() {
-    	resetState();
+    	resetMusicState();
     	playSound(ID_START, 0.5f, 1);
     }
     
@@ -175,25 +186,25 @@ public class VPSoundpool {
     
     public static void pauseMusic()
     {
-    	if (drumbass.isPlaying()) {
+    	if (drumbass!=null && drumbass.isPlaying()) {
             drumbass.pause();
     	}
-    	if (androidpad.isPlaying()) {
+    	if (androidpad!=null && androidpad.isPlaying()) {
     		androidpad.pause();
     	}
     }
     public static void resumeMusic()
     {
-    	if (drumbassPlaying) {
+    	if (drumbass!=null && drumbassPlaying) {
     		drumbass.start();
     	}
         //androidpad.start();
     }
     public static void stopMusic()
     {
-        drumbass.stop();
+        if (drumbass!=null) drumbass.stop();
         drumbassPlaying = false;
-        androidpad.stop();
+        if (androidpad!=null) androidpad.stop();
     }
     
     public static void cleanup()

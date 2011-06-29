@@ -4,6 +4,8 @@
 	
 		<CheckBoxPreference android:key="sound" android:defaultValue="true" android:enabled="true" android:title="@string/sound_pref_title" />
 		
+		<CheckBoxPreference android:key="music" android:defaultValue="true" android:enabled="true" android:title="@string/music_pref_title" />
+		
 		<CheckBoxPreference android:key="highQuality" android:enabled="true" android:title="@string/high_quality_pref_title" 
 		android:summaryOff="@string/high_quality_pref_summary_off" android:summaryOn="@string/high_quality_pref_summary_on" />
 		

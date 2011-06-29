@@ -4,6 +4,8 @@
 	
 		<CheckBoxPreference android:key="sound" android:defaultValue="true" android:enabled="true" android:title="@string/sound_pref_title" />
 		
+		<CheckBoxPreference android:key="music" android:defaultValue="true" android:enabled="true" android:title="@string/music_pref_title" />
+		
 		<CheckBoxPreference android:key="independentFlippers" android:enabled="true" android:title="@string/independent_flippers_pref_title" 
 		android:summaryOff="@string/independent_flippers_pref_summary_off" android:summaryOn="@string/independent_flippers_pref_summary_on" />
 		

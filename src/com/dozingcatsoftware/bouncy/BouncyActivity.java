@@ -173,6 +173,7 @@ public class BouncyActivity extends Activity {
     	worldView.setZoom(useZoom ? 1.4f : 1.0f);
     	
     	VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
+    	VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
     }
 
     // called every 100 milliseconds while app is visible, to update score view and high score
