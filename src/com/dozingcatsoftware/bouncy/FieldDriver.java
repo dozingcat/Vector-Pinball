@@ -2,19 +2,15 @@ package com.dozingcatsoftware.bouncy;
 
 import com.dozingcatsoftware.bouncy.util.FrameRateManager;
 
-import android.graphics.Canvas;
-import android.view.SurfaceHolder;
-
 /** Class to manage the game thread which updates the game's internal state and draws to the FieldView. Controls the
  * frame rate and attempts to keep it as consistent as possible. Because this class manipulates the Field object in a
  * separate thread, all access to the Field from the game thread and main thread must be synchronized.
  * 
  * @author brian
  */
-public class FieldDriver implements SurfaceHolder.Callback {
+public class FieldDriver {
 	
-	FieldView fieldView;
-	SurfaceHolder surfaceHolder;
+	FieldViewManager fieldViewManager;
 	Field field;
 	
 	boolean running;
@@ -26,10 +22,8 @@ public class FieldDriver implements SurfaceHolder.Callback {
 	
 	static long INACTIVE_FRAME_MSECS = 250; // sleep this long when field.hasActiveElements() is false
 	
-	public void setFieldView(FieldView value) {
-		this.fieldView = value;
-		this.surfaceHolder = this.fieldView.getHolder();
-		this.surfaceHolder.addCallback(this);
+	public void setFieldViewManager(FieldViewManager value) {
+		this.fieldViewManager = value;
 	}
 	
 	public void setField(Field value) {
@@ -67,7 +61,7 @@ public class FieldDriver implements SurfaceHolder.Callback {
 		while (running) {
 			frameRateManager.frameStarted();
 			boolean fieldActive = true;
-			if (field!=null && canDraw) {
+			if (field!=null && fieldViewManager.canDraw()) {
 				try {
 					synchronized(field) {
 						long nanosPerFrame = (long)(1000000000L / frameRateManager.targetFramesPerSecond());
@@ -101,21 +95,18 @@ public class FieldDriver implements SurfaceHolder.Callback {
 			
 			// for debugging, show frames per second and other info
 			if (frameRateManager.getTotalFrames() % 100 == 0) {
-				fieldView.setDebugMessage(frameRateManager.fpsDebugInfo());
+				fieldViewManager.setDebugMessage(frameRateManager.fpsDebugInfo());
 				setAverageFPS(frameRateManager.currentFramesPerSecond());
 				//setAverageFPS(fieldView.frManager.currentFramesPerSecond());
 			}
 		}
 	}
 	
-	/** Calls FieldView.doDraw to render the game field to the SurfaceView, and draws the view to the screen.
+	/** Calls FieldViewManager.doDraw to render the game field to the display.
 	 */
 	void drawField() {
+		fieldViewManager.draw();
 		//fieldView.requestRender();
-		Canvas c = fieldView.getHolder().lockCanvas();
-		c.drawARGB(255, 0, 0, 0);
-		fieldView.doDraw(c);
-		fieldView.getHolder().unlockCanvasAndPost(c);
 	}
 	
 	/** Resets the frame rate and forgets any locked rate, called when rendering quality is changed.
@@ -131,18 +122,4 @@ public class FieldDriver implements SurfaceHolder.Callback {
 		averageFPS = value;
 	}
 	
-	// SurfaceHolder.Callback methods
-	
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-	}
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		canDraw = true;
-	}
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		canDraw = false;
-	}
-
 }

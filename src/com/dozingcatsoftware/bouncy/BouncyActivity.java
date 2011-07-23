@@ -19,7 +19,7 @@ public class BouncyActivity extends Activity {
 		System.loadLibrary("gdx");
 	}
 	
-	FieldView worldView;
+	IFieldRenderer worldView;
 	ScoreView scoreView;
 	
 	View buttonPanel;
@@ -42,6 +42,7 @@ public class BouncyActivity extends Activity {
 	boolean useZoom = true;
 	
 	FieldDriver fieldDriver = new FieldDriver();
+	FieldViewManager fieldViewManager = new FieldViewManager();
 	OrientationListener orientationListener;
 
     /** Called when the activity is first created. */
@@ -54,13 +55,14 @@ public class BouncyActivity extends Activity {
         FieldLayout.setContext(this);
         field.resetForLevel(this, level);
         
-        worldView = (FieldView)findViewById(R.id.worldView);
-        worldView.setField(field);
+        worldView = (IFieldRenderer)findViewById(R.id.worldView);
+        fieldViewManager.setFieldView(worldView);
+        fieldViewManager.setField(field);
         
         scoreView = (ScoreView)findViewById(R.id.scoreView);
         scoreView.setField(field);
         
-        fieldDriver.setFieldView(worldView);
+        fieldDriver.setFieldViewManager(fieldViewManager);
         fieldDriver.setField(field);
         
         highScore = this.highScoreFromPreferences();
@@ -159,18 +161,18 @@ public class BouncyActivity extends Activity {
     // Update settings from preferences, called at launch and when preferences activity finishes
     void updateFromPreferences() {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	worldView.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
+    	fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
     	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
-    	boolean previousHighQuality = worldView.isHighQuality();
-    	worldView.setHighQuality(prefs.getBoolean("highQuality", false));
-    	if (previousHighQuality!=worldView.isHighQuality()) {
+    	boolean previousHighQuality = fieldViewManager.isHighQuality();
+    	fieldViewManager.setHighQuality(prefs.getBoolean("highQuality", false));
+    	if (previousHighQuality!=fieldViewManager.isHighQuality()) {
     		fieldDriver.resetFrameRate();
     	}
 
     	useZoom = prefs.getBoolean("zoom", true);
-    	worldView.setZoom(useZoom ? 1.4f : 1.0f);
+    	fieldViewManager.setZoom(useZoom ? 1.4f : 1.0f);
     	
     	VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
     	VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));

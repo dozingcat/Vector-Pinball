@@ -1,19 +1,12 @@
 package com.dozingcatsoftware.bouncy;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 
 /** Draws the game field. Field elements are defined in world coordinates, which this view transforms to screen/pixel coordinates.
@@ -25,142 +18,14 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 		super(context, attrs);
 	}
 	
-	boolean showFPS;
-	boolean highQuality;
-	boolean independentFlippers;
-	
-	Field field;
+	FieldViewManager manager;
 	
 	Paint paint = new Paint(); {paint.setAntiAlias(true);}
 	Paint textPaint = new Paint(); {textPaint.setARGB(255, 255, 255, 255);}
-	float zoom = 1.0f;
-	float maxZoom = 1.0f;
 	Canvas canvas;
-	
-	// x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as elements are drawn.
-	// They shouldn't change between calls to draw() either, but better safe than sorry. 
-	float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
-	
-	String debugMessage;
-	double fps;
-	
-	public void setField(Field value) {
-		field = value;
-	}
-	
-	public void setDebugMessage(String value) {
-		debugMessage = value;
-	}
-	
-	public void setShowFPS(boolean value) {
-		showFPS = value;
-	}
-	
-	public void setIndependentFlippers(boolean value) {
-		independentFlippers = value;
-	}
-	
-	public void setHighQuality(boolean value) {
-		highQuality = value;
-	}
-	public boolean isHighQuality() {
-		return highQuality;
-	}
-	
-	float getScale() {
-		float xs = this.getWidth() / field.getWidth();
-		float ys = this.getHeight() / field.getHeight();
-		return Math.min(xs, ys) * this.zoom;
-	}
 
-	// Sets maxZoom ivar, zoom will still be 1 when game is not in progress.
-	public void setZoom(float value) {
-		maxZoom = value;
-	}
-	
-	/** Saves scale and x and y offsets for use by world2pixel methods, avoiding repeated method calls and math operations. */
-	void cacheScaleAndOffsets() {
-		zoom = maxZoom;
-		if (zoom<=1.0f || !field.getGameState().isGameInProgress()) {
-			cachedXOffset = 0;
-			cachedYOffset = 0;
-			zoom = 1.0f;
-		}
-		else {
-			List<Body> balls = field.getBalls();
-			float x=-1, y=-1;
-			if (balls.size()==1) {
-				Body b = balls.get(0);
-				x = b.getPosition().x;
-				y = b.getPosition().y;
-			}
-			else if (balls.size()==0) {
-				// use launch position
-				List<Number> position = field.layout.getLaunchPosition();
-				x = position.get(0).floatValue();
-				y = position.get(1).floatValue();
-			}
-			else {
-				// for multiple balls, take position with smallest y
-				for(Body b : balls) {
-					Vector2 pos = b.getPosition();
-					if (y<0 || pos.y<y) {
-						x = pos.x;
-						y = pos.y;
-					}
-				}
-			}
-			float maxOffsetRatio = 1.0f - 1.0f/zoom;
-			cachedXOffset = x - field.getWidth()/(2.0f * zoom);
-			if (cachedXOffset<0) cachedXOffset = 0;
-			if (cachedXOffset>field.getWidth()*maxOffsetRatio) cachedXOffset = field.getWidth() * maxOffsetRatio;
-			cachedYOffset = y - field.getHeight()/(2.0f * zoom);
-			if (cachedYOffset<0) cachedYOffset = 0;
-			if (cachedYOffset>field.getHeight()*maxOffsetRatio) cachedYOffset = field.getHeight() * maxOffsetRatio;
-		}
-
-		cachedScale = getScale();
-		cachedHeight = getHeight();
-	}
-	
-	// world2pixel methods assume cacheScaleAndOffsets has been called previously
-	/** Converts an x coordinate from world coordinates to the view's pixel coordinates. 
-	 */
-	float world2pixelX(float x) {
-		return (x-cachedXOffset) * cachedScale;
-		//return x * getScale() + getXOffset();
-	}
-	
-	/** Converts an x coordinate from world coordinates to the view's pixel coordinates. In world coordinates, positive y is up,
-	 * in pixel coordinates, positive y is down. 
-	 */
-	float world2pixelY(float y) {
-		return cachedHeight - ((y-cachedYOffset) * cachedScale);
-		//return getHeight() - (y * getScale()) - getYOffset();
-	}
-	
-	// for compatibility with Android 1.6, use reflection for multitouch features
-	boolean hasMultitouch;
-	Method getPointerCountMethod;
-	Method getXMethod;
-	int MOTIONEVENT_ACTION_MASK = 0xffffffff; // defaults to no-op AND mask
-	int MOTIONEVENT_ACTION_POINTER_UP;
-	int MOTIONEVENT_ACTION_POINTER_INDEX_MASK;
-	int MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
-	
-	{
-		try {
-			getPointerCountMethod = MotionEvent.class.getMethod("getPointerCount");
-			getXMethod = MotionEvent.class.getMethod("getX", int.class);
-			MOTIONEVENT_ACTION_MASK = MotionEvent.class.getField("ACTION_MASK").getInt(null);
-			MOTIONEVENT_ACTION_POINTER_UP = MotionEvent.class.getField("ACTION_POINTER_UP").getInt(null);
-			MOTIONEVENT_ACTION_POINTER_INDEX_MASK = MotionEvent.class.getField("ACTION_POINTER_INDEX_MASK").getInt(null);
-			MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT = MotionEvent.class.getField("ACTION_POINTER_INDEX_SHIFT").getInt(null);
-			hasMultitouch = true;
-		}
-		catch(Exception ex) {
-			hasMultitouch = false;
-		}
+	public void setManager(FieldViewManager value) {
+		this.manager = value;
 	}
 	
 
@@ -169,50 +34,7 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
      */
 	@Override
     public boolean onTouchEvent(MotionEvent event) {
-		int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
-    	synchronized(field) {
-    		if (!field.getGameState().isGameInProgress()) {
-    			return true;
-    		}
-        	if (actionType==MotionEvent.ACTION_DOWN) {
-            	// remove "dead" balls and launch if none already in play
-        		field.handleDeadBalls();
-        		if (field.getBalls().size()==0) field.launchBall();
-        	}
-        	// activate or deactivate flippers
-        	if (this.independentFlippers && this.hasMultitouch) {
-        		try {
-        			// determine whether to activate left and/or right flippers (using reflection for Android 2.2 multitouch APIs)
-            		boolean left=false, right=false;
-            		if (actionType!=MotionEvent.ACTION_UP) {
-            			int npointers = (Integer)getPointerCountMethod.invoke(event);
-            			// if pointer was lifted (ACTION_POINTER_UP), get its index so we don't count it as pressed
-            			int liftedPointerIndex = -1;
-            			if (actionType==MOTIONEVENT_ACTION_POINTER_UP){
-            				liftedPointerIndex = (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >> MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
-            				//this.setDebugMessage("Lifted " + liftedPointerIndex);
-            			}
-            			//this.setDebugMessage("Pointers: " + npointers);
-            			float halfwidth = this.getWidth() / 2;
-            			for(int i=0; i<npointers; i++) {
-            				if (i!=liftedPointerIndex) {
-                				float touchx = (Float)getXMethod.invoke(event, i);
-                				if (touchx < halfwidth) left = true;
-                				else right = true;
-            				}
-            			}
-            		}
-            		field.setLeftFlippersEngaged(left);
-            		field.setRightFlippersEngaged(right);
-        		}
-        		catch(Exception ignored) {}
-        	}
-        	else {
-            	boolean flipperState = !(event.getAction()==MotionEvent.ACTION_UP);
-            	field.setAllFlippersEngaged(flipperState);
-        	}
-    	}
-    	return true;
+		return manager.handleTouchEvent(event);
     }
 	
 	// GL implementation start, this is apparently very slow on some devices (HTC Desire?)
@@ -344,46 +166,49 @@ public class FieldView extends SurfaceView implements IFieldRenderer {
 	/** Main draw method, called from FieldDriver's game thread. Calls each FieldElement's draw() method passing
 	 * itself as the IFieldRenderer implementation.
 	 */
-	public void doDraw(Canvas c) {
-		cacheScaleAndOffsets();
-		paint.setStrokeWidth(this.highQuality ? 2 : 0);
+	public void doDraw() {
+		Canvas c = this.getHolder().lockCanvas();
+		c.drawARGB(255, 0, 0, 0);
+		paint.setStrokeWidth(manager.highQuality ? 2 : 0);
 		// call draw() on each FieldElement, draw balls separately
 		this.canvas = c;
 		
-		for(FieldElement element : field.getFieldElementsArray()) {
+		for(FieldElement element : manager.getField().getFieldElementsArray()) {
 			element.draw(this);
 		}
 
-		field.drawBalls(this);
+		manager.getField().drawBalls(this);
 		
-		if (this.showFPS) {
-			if (debugMessage!=null) {
-				c.drawText(""+debugMessage, 10, 10, textPaint);
+		if (manager.showFPS()) {
+			if (manager.getDebugMessage()!=null) {
+				c.drawText(""+manager.getDebugMessage(), 10, 10, textPaint);
 			}
 		}
+		this.getHolder().unlockCanvasAndPost(c);
 	}
+	
 	
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
 	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
-		this.canvas.drawLine(world2pixelX(x1), world2pixelY(y1), world2pixelX(x2), world2pixelY(y2), this.paint);
+		this.canvas.drawLine(manager.world2pixelX(x1), manager.world2pixelY(y1), manager.world2pixelX(x2), manager.world2pixelY(y2), this.paint);
 	}
 	
 	@Override
 	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
 		this.paint.setStyle(Paint.Style.FILL);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
+		float rad = radius * manager.getCachedScale();
+		this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);
 	}
 	
 	@Override
 	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
 		this.paint.setARGB(255, r, g, b);
 		this.paint.setStyle(Paint.Style.STROKE);
-		float rad = radius * cachedScale;
-		this.canvas.drawCircle(world2pixelX(cx), world2pixelY(cy), rad, paint);
+		float rad = radius * manager.getCachedScale();
+		this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);
 	}
 
 }
