@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -106,7 +107,10 @@ public class BouncyActivity extends Activity {
         if (orientationListener!=null) orientationListener.start();
         
         fieldDriver.start();
-        // worldView.onResume(); // for disabled OpenGL implementation
+        if (worldView instanceof GLSurfaceView) {
+        	((GLSurfaceView)worldView).onResume();
+        }
+
     }
     
     @Override
@@ -114,7 +118,9 @@ public class BouncyActivity extends Activity {
     	running = false;
     	if (orientationListener!=null) orientationListener.stop();
     	fieldDriver.stop();
-    	// worldView.onPause(); // for disabled OpenGL implementation
+        if (worldView instanceof GLSurfaceView) {
+        	((GLSurfaceView)worldView).onPause();
+        }
     	VPSoundpool.pauseMusic();
     	super.onPause();
     }
