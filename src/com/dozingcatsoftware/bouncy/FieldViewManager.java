@@ -20,13 +20,16 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	boolean canDraw;
 
 	public void setFieldView(IFieldRenderer view) {
-		this.view = view;
-		view.setManager(this);
-		if (view instanceof SurfaceView) {
-			((SurfaceView)view).getHolder().addCallback(this);
-		}
-		else {
-			canDraw = true;
+		if (this.view!=view) {
+			this.view = view;
+			view.setManager(this);
+			if (view instanceof SurfaceView) {
+				canDraw = false;
+				((SurfaceView)view).getHolder().addCallback(this);
+			}
+			else {
+				canDraw = true;
+			}
 		}
 	}
 	

@@ -83,19 +83,16 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 	
 	@Override
 	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
-		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(GL10.GL_TRIANGLE_FAN);
-		circleVertexList.addColor(r/255f, g/255f, b/255f);
-
-		for(int i=0; i<SIN_VALUES.length; i++) {
-			float x = cx + radius*COS_VALUES[i];
-			float y = cy + radius*SIN_VALUES[i];
-			circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
-		}
+		drawCircle(cx, cy, radius, r, g, b, GL10.GL_TRIANGLE_FAN);
 	}
 	
 	@Override
 	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
-		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(GL10.GL_LINE_LOOP);
+		drawCircle(cx, cy, radius, r, g, b, GL10.GL_LINE_LOOP);
+	}
+	
+	void drawCircle(float cx, float cy, float radius, int r, int g, int b, int mode) {
+		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
 		circleVertexList.addColor(r/255f, g/255f, b/255f);
 
 		for(int i=0; i<SIN_VALUES.length; i++) {
@@ -104,18 +101,15 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 			circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
 		}
 	}
-
-	public com.dozingcatsoftware.bouncy.util.FrameRateManager frManager = new com.dozingcatsoftware.bouncy.util.FrameRateManager(0);
 	
+	Object renderLock = new Object();
+	boolean renderDone;
+
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		//if (true) return;
 		Field field = manager.getField();
 		if (field==null) return;
 		synchronized(field) {
-			frManager.frameStarted();
-			//cacheScaleAndOffsets();
-
 			startGLElements(gl);
 			
 			for(FieldElement element : field.getFieldElementsArray()) {
@@ -126,11 +120,33 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
 			endGLElements(gl);
 		}
+
+		synchronized(renderLock) {
+			renderDone = true;
+			renderLock.notify();
+		}
 	}
 	
+	/* requestRender() returns immediately and schedules onDrawFrame for execution on a separate thread. In this case,
+	 * we want to block until onDrawFrame returns so that the simulation thread in FieldDriver stays in sync with the
+	 * rendering thread. (Without the locks, FieldDriver registers 60fps even if the actual drawing is much slower).
+	 */
 	@Override
 	public void doDraw() {
+		synchronized(renderLock) {
+			renderDone = false;
+		}
+		
 		this.requestRender();
+		
+		synchronized(renderLock) {
+			while (!renderDone) {
+				try {
+					renderLock.wait();
+				}
+				catch(InterruptedException ex) {}
+			}
+		}
 	}
 
 	@Override

@@ -20,7 +20,8 @@ public class BouncyActivity extends Activity {
 		System.loadLibrary("gdx");
 	}
 	
-	IFieldRenderer worldView;
+	CanvasFieldView canvasFieldView;
+	GLFieldView glFieldView;
 	ScoreView scoreView;
 	
 	View buttonPanel;
@@ -56,8 +57,9 @@ public class BouncyActivity extends Activity {
         FieldLayout.setContext(this);
         field.resetForLevel(this, level);
         
-        worldView = (IFieldRenderer)findViewById(R.id.worldView);
-        fieldViewManager.setFieldView(worldView);
+        canvasFieldView = (CanvasFieldView)findViewById(R.id.canvasFieldView);
+        glFieldView = (GLFieldView)findViewById(R.id.glFieldView);
+        
         fieldViewManager.setField(field);
         
         scoreView = (ScoreView)findViewById(R.id.scoreView);
@@ -107,9 +109,7 @@ public class BouncyActivity extends Activity {
         if (orientationListener!=null) orientationListener.start();
         
         fieldDriver.start();
-        if (worldView instanceof GLSurfaceView) {
-        	((GLSurfaceView)worldView).onResume();
-        }
+        if (glFieldView!=null) glFieldView.onResume();
 
     }
     
@@ -118,9 +118,8 @@ public class BouncyActivity extends Activity {
     	running = false;
     	if (orientationListener!=null) orientationListener.stop();
     	fieldDriver.stop();
-        if (worldView instanceof GLSurfaceView) {
-        	((GLSurfaceView)worldView).onPause();
-        }
+    	if (glFieldView!=null) glFieldView.onPause();
+
     	VPSoundpool.pauseMusic();
     	super.onPause();
     }
@@ -170,11 +169,29 @@ public class BouncyActivity extends Activity {
     	fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
-    	// if switching quality modes, reset frame rate manager because maximum achievable frame rate may change
+    	// if switching quality modes or OpenGL/Canvas, reset frame rate manager because maximum achievable frame rate may change
     	boolean previousHighQuality = fieldViewManager.isHighQuality();
     	fieldViewManager.setHighQuality(prefs.getBoolean("highQuality", false));
     	if (previousHighQuality!=fieldViewManager.isHighQuality()) {
     		fieldDriver.resetFrameRate();
+    	}
+    	
+    	boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
+    	if (useOpenGL) {
+    		if (glFieldView.getVisibility()!=View.VISIBLE) {
+        		canvasFieldView.setVisibility(View.GONE);
+                glFieldView.setVisibility(View.VISIBLE);
+                fieldViewManager.setFieldView(glFieldView);
+                fieldDriver.resetFrameRate();
+    		}
+    	}
+    	else {
+    		if (canvasFieldView.getVisibility()!=View.VISIBLE) {
+        		glFieldView.setVisibility(View.GONE);
+        		canvasFieldView.setVisibility(View.VISIBLE);
+                fieldViewManager.setFieldView(canvasFieldView);
+                fieldDriver.resetFrameRate();
+    		}
     	}
 
     	useZoom = prefs.getBoolean("zoom", true);

@@ -106,7 +106,6 @@ public class FieldDriver {
 	 */
 	void drawField() {
 		fieldViewManager.draw();
-		//fieldView.requestRender();
 	}
 	
 	/** Resets the frame rate and forgets any locked rate, called when rendering quality is changed.

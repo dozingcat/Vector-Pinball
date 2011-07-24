@@ -14,6 +14,8 @@
 		
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true" android:title="@string/zoom_pref_title" />
 		
+		<CheckBoxPreference android:key="useOpenGL" android:enabled="true" android:title="@string/use_opengl_pref_title" />
+		
 		<CheckBoxPreference android:key="showFPS" android:enabled="true" android:title="@string/show_fps_pref_title" />
 		
 	</PreferenceCategory>
