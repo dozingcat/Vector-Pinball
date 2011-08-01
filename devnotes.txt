@@ -2,7 +2,7 @@ Thanks for your interest in the Vector Pinball code. This is a very high level d
 which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to
 send pull requests, or contact me at bnenning@gmail.com with comments or questions.
 
-The pinball field layout is defined in assets/tables/table1.json as a JSON document. Modifying that file is 
+The pinball field layouts are defined in assets/tables as JSON documents. Modifying those files is 
 the easiest way to change the game. All field elements (walls, bumpers, rollovers, etc) are defined in the
 "elements" array. Each element has a "class" attribute indicating its type; the value corresponds to a class 
 in the com.dozingcatsoftware.bouncy.elements package (found under src/com/dozingcatsoftware/bouncy/elements).
@@ -30,16 +30,16 @@ The main simulation loop is in the FieldDriver class and runs in a separate thre
 Box2D physics world, and then calls FieldView.doDraw to render all visible objects to the screen. The Field
 class manages the overall state of the game and holds references to all field elements and balls in play.
 
-Custom table logic is controlled by a "delegate" class, Field1Delegate for the currently available table. 
-(It's in the com.dozingcatsoftware.bouncy.fields package). The delegate class name is specified in the JSON
+Custom table logic is controlled by a "delegate" class, Field1Delegate and Field2Delegate for the currently tables. 
+(They're in the com.dozingcatsoftware.bouncy.fields package). The delegate class name is specified in the JSON
 file, and its methods are called when specific events occur. For example, 
 Field1Delegate.allDropTargetsInGroupHit is called to advance the center lights and restore ball savers 
 when all drop targets in a group are hit. The available delegate methods are defined in the nested Delegate
 interface in the Field class.
 
 Possible future directions:
-- More pinball tables. There is partial support for multiple table files, and an incomplete second table in assets/tables/table2.json. 
-- More field elements and game mechanics: spinners, holes, magnets, multiball, etc.
+- More pinball tables. 
+- More field elements and game mechanics: spinners, holes, magnets, etc.
 - More detailed score display; show ball number, current multiplier, etc.
 - Non-pinball games using the same engine, like those handheld mechanical games where you try to bounce balls
 off pegs to get them to land in target holes. There is disabled code to support tilt control; see the
