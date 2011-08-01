@@ -103,8 +103,7 @@ public class BouncyActivity extends Activity {
     }
     
     void gotoAbout() {
-		Intent aboutIntent = new Intent(getBaseContext(), AboutActivity.class);
-		this.startActivity(aboutIntent);
+    	AboutActivity.startForLevel(this, this.level);
     }
     
     @Override

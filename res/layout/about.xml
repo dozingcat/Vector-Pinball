@@ -5,6 +5,7 @@
     android:layout_height="fill_parent">
 
         <TextView
+        	android:id="@+id/aboutTextView"
             android:text="@string/about_text"
             android:autoLink="web|email"
             android:layout_width="fill_parent"
