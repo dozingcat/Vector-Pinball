@@ -151,7 +151,6 @@ public class BouncyActivity extends Activity {
     	}
     	else if (item==endGameMenuItem) {
     		field.endGame();
-    		this.endGameTime = System.currentTimeMillis();
     		// button panel will be shown in checkForHighScore()
     	}
     	else if (item==preferencesMenuItem) {
@@ -213,26 +212,31 @@ public class BouncyActivity extends Activity {
     void tick() {
     	scoreView.invalidate();
     	scoreView.setFPS(fieldDriver.getAverageFPS());
-    	checkForHighScore();
+    	updateHighScoreAndButtonPanel();
     	handler.postDelayed(callTick, 100);
     }
     
     /** If the score of the current or previous game is greater than the previous high score, update high score in 
-     * preferences and ScoreView.
+     * preferences and ScoreView. Also show button panel if game has ended.
      */
-    void checkForHighScore() {
+    void updateHighScoreAndButtonPanel() {
+    	// we only need to check the first time the game is over, when the button panel isn't visible
+    	if (buttonPanel.getVisibility()==View.VISIBLE) return;
     	synchronized(field) {
     		if (!field.getGameState().isGameInProgress()) {
+    			// game just ended, show button panel and set end game timestamp
+    			this.endGameTime = System.currentTimeMillis();
     			buttonPanel.setVisibility(View.VISIBLE);
-    		}
 
-    		long score = field.getGameState().getScore();
-        	if (score > this.highScore) {
-        		this.updateHighScoreForCurrentLevel(score);
-        	}
+    			long score = field.getGameState().getScore();
+    			if (score > this.highScore) {
+    				this.updateHighScoreForCurrentLevel(score);
+    			}
+    		}
     	}
     }
     
+    // store separate high scores for each field, using unique suffix in prefs key
     String highScorePrefsKeyForLevel(int level) {
     	return HIGHSCORE_PREFS_KEY + "." + level;
     }
@@ -242,7 +246,7 @@ public class BouncyActivity extends Activity {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	long score = prefs.getLong(highScorePrefsKeyForLevel(level), 0);
     	if (score==0 && level==1) {
-    		// check for no level suffix
+    		// check for no level suffix, to read pre-1.3 scores
     		score = prefs.getLong(HIGHSCORE_PREFS_KEY, 0);
     	}
     	return score;
