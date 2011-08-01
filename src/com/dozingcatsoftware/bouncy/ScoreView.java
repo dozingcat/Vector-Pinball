@@ -94,7 +94,7 @@ public class ScoreView extends View {
 		while (msg==null) {
 			switch(gameOverMessageIndex) {
 			case 0:
-				return "Vector Pinball";
+				return "Touch to start";
 			case 1:
 				long score = field.getGameState().getScore();
 				if (score > 0) return "Last Score: " + SCORE_FORMAT.format(score);

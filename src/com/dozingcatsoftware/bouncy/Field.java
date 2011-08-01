@@ -70,7 +70,7 @@ public class Field implements ContactListener {
 		
 		public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
 		
-		public void ballInSensorRange(Field field, SensorElement sensor);
+		public void ballInSensorRange(Field field, SensorElement sensor, Body ball);
 
 		public boolean isFieldActive(Field field);
 	}
@@ -521,5 +521,9 @@ public class Field implements ContactListener {
 	
 	public Delegate getDelegate() {
 		return delegate;
+	}
+	
+	public Object getValueWithKey(String key) {
+		return layout.getValueWithKey(key);
 	}
 }

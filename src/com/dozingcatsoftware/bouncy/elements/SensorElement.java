@@ -76,7 +76,7 @@ public class SensorElement extends FieldElement {
 		for(int i=0; i<balls.size(); i++) {
 			Body ball = balls.get(i);
 			if (ballInRange(ball)) {
-				field.getDelegate().ballInSensorRange(field, this);
+				field.getDelegate().ballInSensorRange(field, this, ball);
 				return;
 			}
 		}

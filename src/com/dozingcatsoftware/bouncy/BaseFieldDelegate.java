@@ -50,7 +50,7 @@ public class BaseFieldDelegate implements Field.Delegate {
 	}
 	
 	@Override
-	public void ballInSensorRange(Field field, SensorElement sensor) {
+	public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
 	}
 
 	@Override

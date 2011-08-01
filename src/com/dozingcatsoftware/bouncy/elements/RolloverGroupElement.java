@@ -118,6 +118,24 @@ public class RolloverGroupElement extends FieldElement {
 		}
 	}
 	
+	public int numberOfRollovers() {
+		return rollovers.size();
+	}
+	
+	public boolean isRolloverActiveAtIndex(int index) {
+		return activeRollovers.contains(rollovers.get(index));
+	}
+	
+	public void setRolloverActiveAtIndex(int index, boolean active) {
+		Rollover r = rollovers.get(index);
+		if (active) {
+			if (!activeRollovers.contains(r)) activeRollovers.add(r);
+		}
+		else {
+			activeRollovers.remove(r);
+		}
+	}
+	
 	@Override
 	public boolean shouldCallTick() {
 		return true;

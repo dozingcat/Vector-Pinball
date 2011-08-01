@@ -52,8 +52,9 @@ public class BumperElement extends FieldElement {
 		if (this.kick <= 0.01f) return null;
 		// compute unit vector from center of peg to ball, and scale by kick value to get impulse
 		Vector2 ballpos = ball.getWorldCenter();
-		float ix = ballpos.x - this.cx;
-		float iy = ballpos.y - this.cy;
+		Vector2 thisPos = pegBody.getPosition();
+		float ix = ballpos.x - thisPos.x;
+		float iy = ballpos.y - thisPos.y;
 		float mag = (float)Math.sqrt(ix*ix + iy*iy);
 		float scale = this.kick / mag;
 		return new Vector2(ix*scale, iy*scale);

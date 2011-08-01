@@ -193,4 +193,11 @@ public class FieldLayout {
 		return (String)allParameters.get("delegate");
 	}
 
+	/** Returns a value from the "values" map, used to store information independent of the FieldElements. 
+	 */
+	public Object getValueWithKey(String key) {
+		Map values = (Map)allParameters.get("values");
+		if (values==null) return null;
+		return values.get(key);
+	}
 }

@@ -18,6 +18,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	
 	IFieldRenderer view;
 	boolean canDraw;
+	Runnable startGameAction;
 
 	public void setFieldView(IFieldRenderer view) {
 		if (this.view!=view) {
@@ -83,6 +84,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	}
 	public boolean isHighQuality() {
 		return highQuality;
+	}
+	
+	public void setStartGameAction(Runnable action) {
+		startGameAction = action;
 	}
 	
 	float getScale() {
@@ -193,7 +198,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 		int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
     	synchronized(field) {
     		if (!field.getGameState().isGameInProgress()) {
-    			return true;
+    			if (startGameAction!=null) {
+    				startGameAction.run();
+    				return true;
+    			}
     		}
         	if (actionType==MotionEvent.ACTION_DOWN) {
             	// remove "dead" balls and launch if none already in play

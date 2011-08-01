@@ -41,7 +41,11 @@ public class BouncyActivity extends Activity {
 	int level = 1;
 	long highScore = 0;
 	static String HIGHSCORE_PREFS_KEY = "highScore";
+	static String INITIAL_LEVEL_PREFS_KEY = "initialLevel";
 	boolean useZoom = true;
+	
+	static long END_GAME_DELAY = 1000; // delay after ending a game, before a touch will start a new game
+	long endGameTime = System.currentTimeMillis() - END_GAME_DELAY;
 	
 	FieldDriver fieldDriver = new FieldDriver();
 	FieldViewManager fieldViewManager = new FieldViewManager();
@@ -55,12 +59,14 @@ public class BouncyActivity extends Activity {
         setContentView(R.layout.main);
         
         FieldLayout.setContext(this);
+        this.level = getInitialLevel();
         field.resetForLevel(this, level);
         
         canvasFieldView = (CanvasFieldView)findViewById(R.id.canvasFieldView);
         glFieldView = (GLFieldView)findViewById(R.id.glFieldView);
         
         fieldViewManager.setField(field);
+        fieldViewManager.setStartGameAction(new Runnable() {public void run() {doStartGame(null);}});
         
         scoreView = (ScoreView)findViewById(R.id.scoreView);
         scoreView.setField(field);
@@ -68,7 +74,7 @@ public class BouncyActivity extends Activity {
         fieldDriver.setFieldViewManager(fieldViewManager);
         fieldDriver.setField(field);
         
-        highScore = this.highScoreFromPreferences();
+        highScore = this.highScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScore(highScore);
         
         buttonPanel = findViewById(R.id.buttonPanel);
@@ -145,6 +151,8 @@ public class BouncyActivity extends Activity {
     	}
     	else if (item==endGameMenuItem) {
     		field.endGame();
+    		this.endGameTime = System.currentTimeMillis();
+    		// button panel will be shown in checkForHighScore()
     	}
     	else if (item==preferencesMenuItem) {
     		gotoPreferences();
@@ -214,36 +222,68 @@ public class BouncyActivity extends Activity {
      */
     void checkForHighScore() {
     	synchronized(field) {
-    		if (!field.hasActiveElements()) {
-            	long score = field.getGameState().getScore();
-            	if (score > this.highScore) {
-            		this.updateHighScore(score);
-            	}
-    		}
     		if (!field.getGameState().isGameInProgress()) {
     			buttonPanel.setVisibility(View.VISIBLE);
     		}
+
+    		long score = field.getGameState().getScore();
+        	if (score > this.highScore) {
+        		this.updateHighScoreForCurrentLevel(score);
+        	}
     	}
     }
     
+    String highScorePrefsKeyForLevel(int level) {
+    	return HIGHSCORE_PREFS_KEY + "." + level;
+    }
+    
     /** Returns the high score stored in SharedPreferences, or 0 if no score is stored. */
-    long highScoreFromPreferences() {
+    long highScoreFromPreferences(int level) {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	return prefs.getLong(HIGHSCORE_PREFS_KEY, 0);
+    	long score = prefs.getLong(highScorePrefsKeyForLevel(level), 0);
+    	if (score==0 && level==1) {
+    		// check for no level suffix
+    		score = prefs.getLong(HIGHSCORE_PREFS_KEY, 0);
+    	}
+    	return score;
+    }
+    
+    long highScoreFromPreferencesForCurrentLevel() {
+    	return highScoreFromPreferences(level);
     }
     
     /** Updates the highScore instance variable, the ScoreView display, and writes the score to SharedPreferences. */
-    void updateHighScore(long score) {
+    void updateHighScore(int level, long score) {
     	this.highScore = score;
     	scoreView.setHighScore(score);
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	SharedPreferences.Editor editor = prefs.edit();
-    	editor.putLong(HIGHSCORE_PREFS_KEY, score);
+    	editor.putLong(highScorePrefsKeyForLevel(level), score);
+    	editor.commit();
+    }
+    
+    void updateHighScoreForCurrentLevel(long score) {
+    	updateHighScore(level, score);
+    }
+    
+    int getInitialLevel() {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	int startLevel = prefs.getInt(INITIAL_LEVEL_PREFS_KEY, 1);
+    	if (startLevel<1 || startLevel>FieldLayout.numberOfLevels()) startLevel = 1;
+    	return startLevel;
+    }
+    
+    void setInitialLevel(int level) {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	SharedPreferences.Editor editor = prefs.edit();
+    	editor.putInt(INITIAL_LEVEL_PREFS_KEY, level);
     	editor.commit();
     }
     
     // button action methods (defined by android:onClick values in main.xml)
     public void doStartGame(View view) {
+    	// avoids accidental starts due to touches just after game ends
+    	if (System.currentTimeMillis() < endGameTime + END_GAME_DELAY) return;
     	buttonPanel.setVisibility(View.GONE);
     	field.resetForLevel(this, level);
     	field.startGame();
@@ -261,5 +301,8 @@ public class BouncyActivity extends Activity {
     public void doSwitchTable(View view) {
     	level = (level==FieldLayout.numberOfLevels()) ? 1 : level+1;
     	field.resetForLevel(this, level);
+    	this.setInitialLevel(level);
+        this.highScore = this.highScoreFromPreferencesForCurrentLevel();
+        scoreView.setHighScore(highScore);
     }
 }
