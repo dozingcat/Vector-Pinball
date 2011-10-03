@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -105,29 +104,29 @@ public class BouncyActivity extends Activity {
     void gotoAbout() {
     	AboutActivity.startForLevel(this, this.level);
     }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-    	running = true;
-        handler.postDelayed(callTick, 75);
-        if (orientationListener!=null) orientationListener.start();
-        
-        fieldDriver.start();
-        if (glFieldView!=null) glFieldView.onResume();
 
-    }
-    
     @Override
-    public void onPause() {
-    	running = false;
-    	if (orientationListener!=null) orientationListener.stop();
-    	fieldDriver.stop();
-    	if (glFieldView!=null) glFieldView.onPause();
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+    	// this handles the main activity pausing and resuming, as well as the Android menu appearing and disappearing
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (!hasWindowFocus) {
+            running = false;
+            if (orientationListener != null) orientationListener.stop();
 
-    	VPSoundpool.pauseMusic();
-    	super.onPause();
+            fieldDriver.stop();
+            if (glFieldView != null) glFieldView.onPause();
+            VPSoundpool.pauseMusic();
+        } 
+        else {
+            running = true;
+            handler.postDelayed(callTick, 75);
+            if (orientationListener != null) orientationListener.start();
+
+            fieldDriver.start();
+            if (glFieldView != null) glFieldView.onResume();
+        }
     }
+
     
     @Override
     public void onDestroy() {
@@ -236,15 +235,15 @@ public class BouncyActivity extends Activity {
     }
     
     // store separate high scores for each field, using unique suffix in prefs key
-    String highScorePrefsKeyForLevel(int level) {
-    	return HIGHSCORE_PREFS_KEY + "." + level;
+    String highScorePrefsKeyForLevel(int theLevel) {
+    	return HIGHSCORE_PREFS_KEY + "." + theLevel;
     }
     
     /** Returns the high score stored in SharedPreferences, or 0 if no score is stored. */
-    long highScoreFromPreferences(int level) {
+    long highScoreFromPreferences(int theLevel) {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	long score = prefs.getLong(highScorePrefsKeyForLevel(level), 0);
-    	if (score==0 && level==1) {
+    	long score = prefs.getLong(highScorePrefsKeyForLevel(theLevel), 0);
+    	if (score==0 && theLevel==1) {
     		// check for no level suffix, to read pre-1.3 scores
     		score = prefs.getLong(HIGHSCORE_PREFS_KEY, 0);
     	}
@@ -256,12 +255,12 @@ public class BouncyActivity extends Activity {
     }
     
     /** Updates the highScore instance variable, the ScoreView display, and writes the score to SharedPreferences. */
-    void updateHighScore(int level, long score) {
+    void updateHighScore(int theLevel, long score) {
     	this.highScore = score;
     	scoreView.setHighScore(score);
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	SharedPreferences.Editor editor = prefs.edit();
-    	editor.putLong(highScorePrefsKeyForLevel(level), score);
+    	editor.putLong(highScorePrefsKeyForLevel(theLevel), score);
     	editor.commit();
     }
     
