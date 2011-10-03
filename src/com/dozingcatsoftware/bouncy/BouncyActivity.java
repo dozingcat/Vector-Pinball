@@ -303,7 +303,9 @@ public class BouncyActivity extends Activity {
     
     public void doSwitchTable(View view) {
     	level = (level==FieldLayout.numberOfLevels()) ? 1 : level+1;
-    	field.resetForLevel(this, level);
+    	synchronized(field) {
+        	field.resetForLevel(this, level);
+    	}
     	this.setInitialLevel(level);
         this.highScore = this.highScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScore(highScore);
