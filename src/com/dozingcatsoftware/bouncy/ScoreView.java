@@ -22,7 +22,7 @@ public class ScoreView extends View {
 	Field field;
 	Paint textPaint = new Paint();
 	Rect textRect = new Rect();
-	
+		
 	Paint fpsPaint = new Paint();
 	Rect fpsRect = new Rect();
 	
@@ -60,7 +60,7 @@ public class ScoreView extends View {
 			if (displayString==null) {
 				// show score if game is in progress, otherwise cycle between "Touch to start"/previous score/high score
 				if (field.getGameState().isGameInProgress()) {
-					displayString = SCORE_FORMAT.format(field.getGameState().getScore());
+					displayString = "B=" + (field.getGameState().totalBalls - field.getGameState().ballNumber) + "|  " + SCORE_FORMAT.format(field.getGameState().getScore()) + "  |M=x" + field.getGameState().scoreMultiplier;;
 				}
 				else {
 					boolean cycle = false;
@@ -75,10 +75,10 @@ public class ScoreView extends View {
 				}
 			}
 		}
-		
 		textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
 		// textRect ends up being too high
 		c.drawText(displayString, this.getWidth()/2 - textRect.width()/2, this.getHeight()/2, textPaint);
+						
 		if (showFPS && fps>0) {
 			c.drawText(String.format("%.1f fps", fps), 0, 20, fpsPaint);
 		}
