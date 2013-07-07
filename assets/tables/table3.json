@@ -1,0 +1,236 @@
+  	{
+		"name": "Loop Trap",
+		"width": 20,
+		"height": 30,
+		
+		"delegate": "Field3Delegate",
+		"targetTimeRatio": 2.3,
+		"gravity": 4.0,
+		
+		"numballs": 3,
+		"ballradius": 0.5,
+		"ballcolor": [192, 192, 224],
+		"launch": {"position": [19.3, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
+		
+		"values": {
+			"RotatingBumper1Speed": 0.75,
+			"RotatingBumper1CenterX": 7,
+			"RotatingBumper1CenterY": 25
+		},
+		
+		"elements": [
+			
+			"launch rail",
+			{"class": "WallElement", "position": [18.7, 0.1, 18.7, 23]},
+			{"class": "WallElement", "position": [19.9, 0.1, 19.9, 23]},
+
+			"main outside arc",
+			{
+				"class": "WallArcElement", 
+				"center": [10,23],
+				"xradius": 9.9,
+				"yradius": 7,
+				"minangle": 0,
+				"maxangle": 180,
+				"segments": 30
+			},
+			
+			"right inside arc",
+			{
+				"class": "WallArcElement", 
+				"center": [10,23],
+				"xradius": 8.7,
+				"yradius": 5.6,
+				"minangle": 0,
+				"maxangle": 54.5,
+				"segments": 12
+			},
+			
+			"outer bottom borders",
+			{"class": "WallElement", "position": [0.1, 0.1, 18.7, 0.1], "color": [0,0,0], "kill": true},
+			{"class": "WallElement", "position": [18.7, 0.1, 19.9, 0.1]},
+			
+			"left bottom",
+			{"class": "WallElement", "position": [0.1, 4, 6, 1]},
+			"right bottom",
+			{"class": "WallElement", "position": [18.7, 4, 12.7, 1]},
+			
+			"left side",
+			{"class": "WallElement", "position": [0.1, 4, 0.1, 23], "name": "left border"},
+			
+			"left outlane",
+			{"class": "WallElement", "position": [1.45, 8.5, 1.45, 4.8]},
+			
+			"right outlane",
+			{"class": "WallElement", "position": [17.35, 8.5, 17.35, 4.8]},
+					
+			"barrier covering launch rail once the ball enters play, initially disabled",
+			{"class": "WallElement", "id": "LaunchBarrier", "position": [15.05, 27.53, 15.75, 28.74], "disabled": true, "color": [128, 128, 128]},
+			"sensor to enable launch barrier",
+			{"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [14.05, 27.53, 15.05, 29]},
+			"sensor to retract launch barrier for multi-ball",
+			{"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [16, 26.5, 17, 28.5]},
+
+			"flipper lanes",
+			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
+			{"class": "WallElement", "position": [17.35, 4.8, 12.45, 2.3]},
+			
+			"ball savers, disappear when hit and reappear when drop targets are cleared, controlled by Field1Delegate",
+			{"class": "WallElement", "id": "BallSaver-left", "position": [0.15, 5.0, 1.35, 5.0], 
+			 "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+			 
+			{"class": "WallElement", "id": "BallSaver-right", "position": [17.45, 5.0, 18.65, 5.0], 
+			 "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+									
+		    "left kicker, 60 degree angle",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [3.2, 8.77, 5.7, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of left kicker without kick, x goes .25 (=0.5*cos(pi/3)), y goes .43 (=0.5*sin(pi/3))",
+			{"class": "WallElement", "position": [2.95, 9.2, 3.2, 8.77]},
+			{"class": "WallElement", "position": [5.95, 4, 5.7, 4.43]},
+
+		    "around left kicker", 
+		    {"class": "WallElement", "position": [2.95, 9.2, 2.95, 5.8]},
+			{"class": "WallElement", "position": [2.95, 5.8, 5.95, 4]},
+		        
+		    "right kicker",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [15.6, 8.77, 13.1, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of right kicker without kick",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.6, 8.77]},
+			{"class": "WallElement", "position": [12.85, 4, 13.1, 4.43]},
+		    
+			"around right kicker",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.85, 5.8]},
+			{"class": "WallElement", "position": [15.85, 5.8, 12.85, 4]},
+			
+			"above left outlane, top arc position [1.379, 12.457]",
+			{
+				"class": "WallArcElement", 
+				"center": [3.1,10],
+				"xradius": 3.0,
+				"yradius": 3.0,
+				"minangle": 125,
+				"maxangle": 180,
+				"segments": 8
+			},
+			{"class": "WallElement", "position": [1.379, 12.457, 0.1, 14], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+					
+			"rollovers for flipper lanes",
+			{"class": "RolloverGroupElement", "id": "FlipperRollovers", "color": [0, 224, 224], "radius": 0.4, "score": 500, "cycleOnFlipper": true,
+			 "rollovers": [{"position": [0.775, 7.0]},
+			               {"position": [2.2, 7.0]},
+			               {"position": [16.6, 7.0]},
+			               {"position": [18.025, 7.0]}
+			               ]
+			},
+			
+			"rollovers in middle for extra ball when all lit",
+			{"class": "RolloverGroupElement", "id": "ExtraBallRollovers", "radius": 0.5, "ignoreBall": true,
+			 "rollovers": [{"position": [9.4, 13], "color": [224, 224, 224]},
+			               {"position": [12.0, 11.5], "color": [224, 224, 0]},
+			               {"position": [9.4, 9], "color": [0, 224, 0]},
+			               {"position": [9.4, 7], "color": [0, 224, 224]},
+			               {"position": [9.4, 11], "color": [0, 0, 224]},
+			               {"position": [6.8, 11.5], "color": [224, 0, 224]}
+			               ]
+			},
+			
+			"Drop Target group bottom right",
+			{"class": "DropTargetGroupElement", "id": "DropTargetRightSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[16.22, 20.751, 16.66, 19.853],
+               				  [16.88, 19.404, 17.32, 18.506],
+               				  [17.54, 18.057, 17.98, 17.159]]},
+             
+            "Drop Target group bottom left",
+			{"class": "DropTargetGroupElement", "id": "DropTargetLeftSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[3.315, 20.649, 2.565, 19.987],
+               				  [2.28, 19.736, 1.53, 19.074],
+               				  [1.245, 18.823, 0.495, 18.161]]},
+			
+			"Drop Target group top right",
+			{"class": "WallElement", "position": [17.7, 23.8, 13.5, 26.5]},
+  			{"class": "DropTargetGroupElement", "id": "DropTargetRightTop", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[17.18, 23.97, 16.34, 24.51],
+               				  [15.92, 24.78, 15.08, 25.32],
+               				  [14.66, 25.59, 13.82, 26.13]]},
+               				  
+            "Walls on the left of the Drop Target group top right",
+			{"class": "WallElement", "position": [15.05, 27.53, 13.5, 26.5]},
+			{"class": "WallElement", "position": [13.5, 26.5, 11.9,24.1]},
+			
+			"Walls on the right of the Drop Target group top right",
+			{"class": "WallElement", "position": [17.7, 23.8, 16.1, 21.3]},
+			{"class": "WallElement", "position": [16.1, 21.3, 18.7, 16]},
+			
+            "path under top left flipper",
+			{"class": "WallPathElement", "positions": [[18.7, 15.7], [17.1, 14.3],[18.7, 13]]},
+			
+            "path on the left of the field",
+			{"class": "WallPathElement", "positions": [[0.1, 18], [3.5, 21],[0.1, 23]]},
+			
+			"rollovers for top lanes",
+			{"class": "RolloverGroupElement", "id": "TopRollovers", "radius": 0.5, "score": 500, "cycleOnFlipper": true,
+			 "rollovers": [{"position": [15.48, 22.27],"color": [255, 0, 0]},
+			               {"position": [14.22, 23.08],"color": [0, 255, 0]},
+			               {"position": [12.96, 23.89],"color": [0, 0, 255]}
+			              ]
+			},
+			
+			"Walls between top rollovers",
+			{"class": "WallElement", "position": [14.63, 22.245, 15.169, 23.089]},
+			{"class": "WallElement", "position": [13.37, 23.055, 13.909, 23.897]},
+			
+			"bumpers below top lanes",
+			{"class": "BumperElement", "radius": 0.8, "position": [4, 15], "kick": 3, "color": [225, 10, 20], "score": 500},
+			{"class": "BumperElement", "radius": 0.8, "position": [14, 13], "kick": 3, "color": [225, 10, 20], "score": 500},
+			
+			"Hole in the center of the field",
+			{"class": "HoleElement", "radius": 0.8, "position": [8.5, 19], "id": "CenterHole", "color": [225, 10, 80], "kick": 3, "active" : false, "score": 500},
+			
+			"bumpers on top",
+			{"class": "BumperElement", "position": [7, 25], "radius": 0.5, "kick": 4, "score": 1000, "color": [224,32,32]},
+			{"class": "BumperElement", "position": [4.5, 23.6], "radius": 0.75, "kick": 3, "score": 500},
+			{"class": "BumperElement", "position": [9.5, 26.4], "radius": 0.75, "kick": 3, "score": 500}
+			   
+		],
+		          
+        "flippers": [
+        	{
+        		"position": [6.35, 2.2],
+        		"length": 2.5,
+        		"minangle": -20,
+        		"maxangle": 20,
+        		"upspeed": 7,
+        		"downspeed": 3
+        	},
+        	{
+        		"position": [12.35, 2.2],
+        		"length": -2.5,
+        		"minangle": -20,
+        		"maxangle": 20,
+        		"upspeed": 7,
+        		"downspeed": 3
+        	},
+        	{
+        		"position": [18.46, 15.96],
+        		"length": -2,
+        		"minangle": -40,
+        		"maxangle": 3,
+        		"upspeed": 9,
+        		"downspeed": 4
+        	}
+        	
+        ]
+	}	
+	
