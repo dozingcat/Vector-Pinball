@@ -1,0 +1,266 @@
+  	{
+		"name": "Hexagon",
+		"width": 20,
+		"height": 30,
+		
+		"delegate": "Field3Delegate",
+		"targetTimeRatio": 2.3,
+		"gravity": 4.0,
+		
+		"numballs": 3,
+		"ballradius": 0.5,
+		"ballcolor": [192, 192, 224],
+		"launch": {"position": [19.3, 3.0], "velocity": [0, 15.4], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
+		
+		"values": {
+			"RotatingBumper1Speed": 0.75
+		},
+		
+		"elements": [
+			
+			"launch rail",
+			{"class": "WallElement", "position": [18.7, 0.1, 18.7, 23]},
+			{"class": "WallElement", "position": [19.9, 0.1, 19.9, 23]},
+
+			"main outside arc",
+			{
+				"class": "WallArcElement", 
+				"center": [10,23],
+				"xradius": 9.9,
+				"yradius": 7,
+				"minangle": 0,
+				"maxangle": 180,
+				"segments": 30
+			},
+			
+			"right inside arc",
+			{
+				"class": "WallArcElement", 
+				"center": [10,23],
+				"xradius": 8.7,
+				"yradius": 5.6,
+				"minangle": 0,
+				"maxangle": 70,
+				"segments": 12
+			},
+			
+			"left inside arc",
+			{
+				"class": "WallArcElement", 
+				"center": [10,23],
+				"xradius": 8.7,
+				"yradius": 5.6,
+				"minangle": 110,
+				"maxangle": 180,
+				"segments": 12
+			},
+			
+			"outer bottom borders",
+			{"class": "WallElement", "position": [0.1, 0.1, 18.7, 0.1], "color": [0,0,0], "kill": true},
+			{"class": "WallElement", "position": [18.7, 0.1, 19.9, 0.1]},
+			
+			"left bottom",
+			{"class": "WallElement", "position": [0.1, 4, 6, 1]},
+			"right bottom",
+			{"class": "WallElement", "position": [18.7, 4, 12.7, 1]},
+			
+			"left side",
+			{"class": "WallElement", "position": [0.1, 4, 0.1, 23], "name": "left border"},
+			
+			"left outlane",
+			{"class": "WallElement", "position": [1.45, 8.5, 1.45, 4.8]},
+			
+			"right outlane",
+			{"class": "WallElement", "position": [17.35, 8.5, 17.35, 4.8]},
+					
+			"barrier covering launch rail once the ball enters play, initially disabled",
+			{"class": "WallElement", "id": "LaunchBarrier", "position": [13.05, 28.2, 13.05, 29.7], "disabled": true, "color": [128, 128, 128]},
+			"sensor to enable launch barrier",
+			{"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [12.05, 28.2, 12.35, 29.7]},
+			"sensor to retract launch barrier for multi-ball",
+			{"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [16, 26.5, 17, 28.5]},
+
+			"flipper lanes",
+			{"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
+			{"class": "WallElement", "position": [17.35, 4.8, 12.45, 2.3]},
+			
+			"ball savers, disappear when hit and reappear when drop targets are cleared, controlled by Field1Delegate",
+			{"class": "WallElement", "id": "BallSaver-left", "position": [0.15, 5.0, 1.35, 5.0], 
+			 "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+			 
+			{"class": "WallElement", "id": "BallSaver-right", "position": [17.45, 5.0, 18.65, 5.0], 
+			 "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+									
+		    "left kicker, 60 degree angle",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [3.2, 8.77, 5.7, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of left kicker without kick, x goes .25 (=0.5*cos(pi/3)), y goes .43 (=0.5*sin(pi/3))",
+			{"class": "WallElement", "position": [2.95, 9.2, 3.2, 8.77]},
+			{"class": "WallElement", "position": [5.95, 4, 5.7, 4.43]},
+
+		    "around left kicker", 
+		    {"class": "WallElement", "position": [2.95, 9.2, 2.95, 5.8]},
+			{"class": "WallElement", "position": [2.95, 5.8, 5.95, 4]},
+		        
+		    "right kicker",
+		    {
+		    	"class": "WallElement", 
+		       	"position": [15.6, 8.77, 13.1, 4.43],
+		       	"kick": 3.5,
+		       	"score": 100,
+		       	"color": [0, 0, 255]
+		    },
+			"top/bottom of right kicker without kick",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.6, 8.77]},
+			{"class": "WallElement", "position": [12.85, 4, 13.1, 4.43]},
+		    
+			"around right kicker",
+			{"class": "WallElement", "position": [15.85, 9.2, 15.85, 5.8]},
+			{"class": "WallElement", "position": [15.85, 5.8, 12.85, 4]},
+					
+			"rollovers for flipper lanes",
+			{"class": "RolloverGroupElement", "id": "FlipperRollovers", "color": [0, 224, 224], "radius": 0.4, "score": 500, "cycleOnFlipper": true,
+			 "rollovers": [{"position": [0.775, 7.0]},
+			               {"position": [2.2, 7.0]},
+			               {"position": [16.6, 7.0]},
+			               {"position": [18.025, 7.0]}
+			               ]
+			},
+			
+			"rollovers in middle for extra ball when all lit",
+			{"class": "RolloverGroupElement", "id": "ExtraBallRollovers", "radius": 0.5, "ignoreBall": true,
+			 "rollovers": [{"position": [9.4, 8], "color": [224, 224, 224]},
+			               {"position": [12.0, 10.5], "color": [224, 224, 0]},
+			               {"position": [14.6, 11.5], "color": [0, 224, 0]},
+			               {"position": [4.2, 11.5], "color": [0, 224, 224]},
+			               {"position": [9.4, 10], "color": [100, 100, 224]},
+			               {"position": [6.8, 10.5], "color": [224, 0, 224]}
+			               ]
+			},
+			
+			
+            "bottom right hexagon",
+			{"class": "WallElement", "position": [11.6, 14.5, 12.35, 15.799]},
+			{"class": "WallElement", "position": [12.35, 15.779, 13.85, 15.779], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+			{"class": "WallElement", "position": [13.85, 15.779, 14.6, 14.5]},
+			{"class": "WallElement", "position": [14.6, 14.5, 13.85, 13.201]},
+			{"class": "WallElement", "position": [13.85, 13.201, 12.35, 13.201]},
+			{"class": "WallElement", "position": [12.35, 13.201, 11.6, 14.5]},
+			
+			"middle left hexagon",
+			{"class": "WallElement", "position": [3.8, 19.5, 4.55, 20.799]},
+			{"class": "WallElement", "position": [4.55, 20.779, 6.05, 20.779], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+			{"class": "WallElement", "position": [6.05, 20.779, 6.8, 19.5]},
+			{"class": "WallElement", "position": [6.8, 19.5, 6.05, 18.201]},
+			{"class": "WallElement", "position": [6.05, 18.201, 4.55, 18.201]},
+			{"class": "WallElement", "position": [4.55, 18.201, 3.8, 19.5]},
+			
+			"top right hexagon",
+			{"class": "WallElement", "position": [11.6, 24.5, 12.35, 25.799]},
+			{"class": "WallElement", "position": [12.35, 25.779, 13.85, 25.779], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+			{"class": "WallElement", "position": [13.85, 25.779, 14.6, 24.5]},
+			{"class": "WallElement", "position": [14.6, 24.5, 13.85, 23.201]},
+			{"class": "WallElement", "position": [13.85, 23.201, 12.35, 23.201]},
+			{"class": "WallElement", "position": [12.35, 23.201, 11.6, 24.5]},
+			
+			"Drop Target group top right hexagon",
+			{"class": "DropTargetGroupElement", "id": "DropTargetRightTop", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[11.6, 24.674, 12.2, 25.712],
+               				  [13.75, 23.085, 12.45, 23.085],
+               				  [12.2, 23.288, 11.6, 24.326]]},
+               				  
+            "Drop Target group middle left hexagon",
+			{"class": "DropTargetGroupElement", "id": "DropTargetLeftSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[6.2, 20.692, 6.8, 19.674],
+               				  [6.8, 19.326, 6.2, 18.288],
+               				  [5.95, 18.085, 4.65, 18.085]]},
+               				  
+            "Drop Target group bottom right hexagon",
+			{"class": "DropTargetGroupElement", "id": "DropTargetRightSave", "color": [0, 255, 0], "score": 500, "reset": 2.0,
+ 				"positions": [[11.6, 14.674, 12.2, 15.712],
+               				  [13.75, 13.085, 12.45, 13.085],
+               				  [12.2, 13.288, 11.6, 14.326]]},
+			
+			"big bumpers between hexagons",
+			{"class": "BumperElement", "radius": 0.85, "position": [5.3, 14.49], "kick": 3, "color": [224, 10, 20], "score": 500},
+			{"class": "BumperElement", "radius": 0.85, "position": [13.1, 19.49], "kick": 3, "color": [224, 10, 20], "score": 500},
+			
+			"small bumpers between hexagons",
+			{"class": "BumperElement", "radius": 0.45, "position": [9.2, 16.99], "kick": 3, "color": [0, 0, 224], "score": 500},
+			{"class": "BumperElement", "radius": 0.45, "position": [9.2, 21.99], "kick": 3, "color": [0, 0, 224], "score": 500},
+
+			{"class": "MagnetElement", "radius": 0.45, "position": [9.2, 13.99], "color": [0, 0, 224]},
+			"above left outlane, top arc position [1.379, 12.457]",
+			{
+				"class": "WallArcElement", 
+				"center": [3.1,10],
+				"xradius": 3.0,
+				"yradius": 3.0,
+				"minangle": 125,
+				"maxangle": 180,
+				"segments": 8
+			},
+			{"class": "WallElement", "position": [1.379, 12.457, 0.1, 14], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+			
+			"above right outlane, top arc position [16.872, 12.762]",
+			{
+				"class": "WallArcElement", 
+				"center": [15.7,10],
+				"xradius": 3.0,
+				"yradius": 3.0,
+				"minangle": 0,
+				"maxangle": 67,
+				"segments": 8
+			},
+			{"class": "WallElement", "position": [16.872, 12.762, 18.7, 14], "kick": 3, "score": 200,  "color": [0, 0, 255]},
+			
+			"path on the left",
+			{"class": "WallPathElement", "positions": [[0.1, 17], [1.5, 19],[1.5, 21],[0.1, 23]]},
+			{"class": "WallElement", "position": [1.5, 21, 1.3, 23]},
+			
+			"separators between top lanes",
+			{"class": "WallElement", "position": [7.0,  27.0, 7.0,  29.7]},
+			{"class": "WallElement", "position": [8.5, 27.0, 8.5, 28.3]},
+			{"class": "WallElement", "position": [10.0, 27.0, 10.0, 28.3]},
+			{"class": "WallElement", "position": [11.5, 27.0, 11.5, 28.3]},
+			{"class": "WallElement", "position": [13.0, 27.0, 13.0, 28.2]},
+			
+			"rollovers for top lanes",
+			{"class": "RolloverGroupElement", "id": "TopRollovers", "color": [0, 224, 224], "radius": 0.45, "score": 500, "cycleOnFlipper": true,
+			 "rollovers": [{"position": [7.75,  27.7]},
+			               {"position": [9.25, 27.7]},
+			               {"position": [10.75, 27.7]},
+			               {"position": [12.25, 27.7]}
+			               ]
+			},
+			
+			"path on the right",
+			{"class": "WallPathElement", "positions": [[18.7, 17], [17.3, 19],[17.3, 21],[18.7, 23]]}
+		],
+		          
+        "flippers": [
+        	{
+        		"position": [6.35, 2.2],
+        		"length": 2.5,
+        		"minangle": -20,
+        		"maxangle": 20,
+        		"upspeed": 7,
+        		"downspeed": 3
+        	},
+        	{
+        		"position": [12.35, 2.2],
+        		"length": -2.5,
+        		"minangle": -20,
+        		"maxangle": 20,
+        		"upspeed": 7,
+        		"downspeed": 3
+        	}
+        	
+        ]
+	}	
+	
