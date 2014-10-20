@@ -1,0 +1,201 @@
+    {
+        "name": "Connect Four",
+        "width": 20,
+        "height": 30,
+        
+        "delegate": "Field1Delegate",
+        "targetTimeRatio": 2.25,
+        "gravity": 4.0,
+        
+        "numballs": 3,
+        "ballradius": 0.5,
+        "ballcolor": [192, 192, 224],
+        "launch": {"position": [19.3, 3.0], "velocity": [0, 16.0], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
+        
+        "values": {
+        },
+
+        "elements": [
+            "launch rail",
+            {"class": "WallElement", "position": [18.7, 0.1, 18.7, 25.4]},
+            {"class": "WallElement", "position": [19.9, 0.1, 19.9, 25.4]},
+
+            "barrier covering launch rail once the ball enters play, initially disabled",
+            {"class": "WallElement", "id": "LaunchBarrier", "position": [16.4, 29.9, 16.4, 28.6], "disabled": true, "color": [128, 128, 128]},
+            "sensor to enable launch barrier once ball is in play",
+            {"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [15.3, 28.2, 16.3, 29.9]},
+            "sensor to retract launch barrier for multi-ball",
+            {"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [10.1, 28.7, 11, 29.9]},
+
+            "connector to rightmost top lane",
+            {"class": "WallElement", "position": [15.9, 28.1, 16.4, 28.5]},
+            "top lanes",
+            {"class": "WallElement", "position": [12.9, 28.1, 12.9, 26.8]},
+            {"class": "WallElement", "position": [14.4, 28.1, 14.4, 26.8]},
+            {"class": "WallElement", "position": [15.9, 28.1, 15.9, 26.8]},
+
+            "upper right arcs",         
+            {"class": "WallArcElement", "center": [16.4, 25.4], "xradius": 3.5, "yradius": 4.5, "minangle": 0, "maxangle": 90, "segments": 20},
+            {"class": "WallArcElement", "center": [16.4, 25.4], "xradius": 2.3, "yradius": 3.1, "minangle": 0, "maxangle": 90, "segments": 20},
+            
+            "above top lanes",
+            {"class": "WallPathElement", "positions": [[16.4, 29.9], [9.6, 29.9], [11.4, 28.1], [11.4, 26.8], [5.3, 25.7]]},
+
+            "left upper arc",
+            {"class": "WallArcElement", "center": [2.7, 25.0], "xradius": 2.6, "yradius": 4.0, "minangle": 10, "maxangle": 180, "segments": 20},
+            "connect to lower arc",
+            {"class": "WallElement", "position": [0.1, 25.0, 0.1, 22.0]},
+            "left lower arc",
+            {"class": "WallArcElement", "center": [12.1, 22.0], "radius": 12.0, "minangle": 180, "maxangle": 210, "segments": 10},
+
+            "left top interior circle",
+            {"class": "WallArcElement", "center": [2.7, 25.3], "radius": 1.0, "minangle": 0, "maxangle": 359.9, "segments": 40},
+            "left top inner arc",
+            {"class": "WallArcElement", "center": [16.9, 25.3], "xradius": 15.2, "yradius": 16.5, "minangle": 180, "maxangle": 208, "segments": 15},
+ 
+            "rail for flipper starting at [3.7, 25.3]. The flipper has length of 2.5 and ends at [6.1, 18.9].",
+            "2.7 before the flipper ends, cut in 0.2 units and then go down 2.6 parallel to the flipper.",
+            "Then join the bottom point of the left inner arc.",
+            {"class": "WallPathElement", "positions": [[3.7, 25.3], [5.152, 21.428], [4.965, 21.358], [5.913, 18.830], [3.479, 17.5545]]},
+
+            "right upper outer arc",
+            {"class": "WallArcElement", "center": [15.9, 22.0], "xradius": 2.8, "yradius": 4.8, "minangle": 0, "maxangle": 90, "segments": 10},
+            "right lower outer arc",
+            {"class": "WallArcElement", "center": [10.0, 21.0], "radius": 8.7, "minangle": -30, "maxangle": 0, "segments": 10},
+            "right upper inner arc",
+            {"class": "WallArcElement", "center": [2.2, 21.8], "xradius": 15.0, "yradius": 8.0, "minangle": 0, "maxangle": 24, "segments": 10},
+            "right lower inner arc",
+            {"class": "WallArcElement", "center": [2.2, 21.8], "xradius": 15.0, "yradius": 10.0, "minangle": -24, "maxangle": 0, "segments": 10},
+
+            "above left outlane, top arc position [1.379, 12.457]",
+            "TODO: allow specifying endpoint of arcs",
+            {
+                "class": "WallArcElement", 
+                "center": [3.1,10],
+                "xradius": 3.0,
+                "yradius": 3.0,
+                "minangle": 125,
+                "maxangle": 180,
+                "segments": 8
+            },
+            {"class": "WallElement", "position": [1.379, 12.457, 1.708, 16.0]},
+
+            "above right outlane, top arc position [16.872, 12.762]",
+            {
+                "class": "WallArcElement", 
+                "center": [15.7,10],
+                "xradius": 3.0,
+                "yradius": 3.0,
+                "minangle": 0,
+                "maxangle": 67,
+                "segments": 8
+            },
+            {"class": "WallElement", "position": [16.872, 12.762, 17.534, 16.65]},
+
+            "bumpers",
+            {"class": "BumperElement", "position": [10.5, 23.7], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
+            {"class": "BumperElement", "position": [14.5, 21.8], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
+            {"class": "BumperElement", "position": [11.6, 19.5], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
+            
+
+            "left kicker, 60 degree angle",
+            {
+                "class": "WallElement", 
+                "position": [3.2, 8.77, 5.7, 4.43],
+                "kick": 3.5,
+                "score": 100,
+                "color": [0, 0, 255]
+            },
+            "top/bottom of left kicker without kick, x goes .25 (=0.5*cos(pi/3)), y goes .43 (=0.5*sin(pi/3))",
+            {"class": "WallElement", "position": [2.95, 9.2, 3.2, 8.77]},
+            {"class": "WallElement", "position": [5.95, 4, 5.7, 4.43]},
+
+            "around left kicker", 
+            {"class": "WallElement", "position": [2.95, 9.2, 2.95, 5.8]},
+            {"class": "WallElement", "position": [2.95, 5.8, 5.95, 4]},
+                
+            "right kicker",
+            {
+                "class": "WallElement", 
+                "position": [15.6, 8.77, 13.1, 4.43],
+                "kick": 3.5,
+                "score": 100,
+                "color": [0, 0, 255]
+            },
+            "top/bottom of right kicker without kick",
+            {"class": "WallElement", "position": [15.85, 9.2, 15.6, 8.77]},
+            {"class": "WallElement", "position": [12.85, 4, 13.1, 4.43]},
+            
+            "around right kicker",
+            {"class": "WallElement", "position": [15.85, 9.2, 15.85, 5.8]},
+            {"class": "WallElement", "position": [15.85, 5.8, 12.85, 4]},
+
+            {"class": "WallElement", "position": [0.1, 0.1, 18.7, 0.1], "color": [0,0,0], "kill": true},
+            {"class": "WallElement", "position": [18.7, 0.1, 19.9, 0.1]},
+            
+            "left bottom",
+            {"class": "WallElement", "position": [0.1, 4, 6, 1]},
+            "right bottom",
+            {"class": "WallElement", "position": [18.7, 4, 12.7, 1]},
+            
+            "left side",
+            {"class": "WallElement", "position": [0.1, 4, 0.1, 10], "name": "left border"},
+            
+            "left outlane",
+            {"class": "WallElement", "position": [1.45, 8.5, 1.45, 4.8]},
+            
+            "right outlane",
+            {"class": "WallElement", "position": [17.35, 8.5, 17.35, 4.8]},
+
+
+            "ball savers, disappear when hit and reappear when drop targets are cleared, controlled by Field1Delegate",
+            {"class": "WallElement", "id": "BallSaver-left", "position": [0.15, 5.0, 1.35, 5.0], 
+             "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+             
+            {"class": "WallElement", "id": "BallSaver-right", "position": [17.45, 5.0, 18.65, 5.0], 
+             "kick": 6.0, "color": [0, 255, 0], "retractWhenHit": true},
+            
+
+            "flipper lanes",
+            {"class": "WallElement", "position": [1.45, 4.8, 6.25, 2.3]},
+            {"class": "WallElement", "position": [17.35, 4.8, 12.45, 2.3]},
+
+            "rollovers for flipper lanes",
+            {"class": "RolloverGroupElement", "id": "FlipperRollovers", "color": [0, 224, 224], "radius": 0.4, "score": 500, "cycleOnFlipper": true,
+             "rollovers": [{"position": [0.775, 7.0]},
+                           {"position": [2.2, 7.0]},
+                           {"position": [16.6, 7.0]},
+                           {"position": [18.025, 7.0]}
+                           ]
+            }
+            
+        ],
+
+        "flippers": [
+            {
+                "position": [6.35, 2.2],
+                "length": 2.5,
+                "minangle": -22.5,
+                "maxangle": 20,
+                "upspeed": 9,
+                "downspeed": 3
+            },
+            {
+                "position": [12.35, 2.2],
+                "length": -2.5,
+                "minangle": -25,
+                "maxangle": 20,
+                "upspeed": 9,
+                "downspeed": 3
+            },
+            {
+                "position": [5.222, 21.241],
+                "length": 2.5,
+                "minangle": -69.444,
+                "maxangle": -25,
+                "upspeed": 9,
+                "downspeed": 3
+            }
+        ]
+    }
+    

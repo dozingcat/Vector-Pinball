@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -37,6 +38,15 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 		return manager.handleTouchEvent(event);
     }
 	
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return manager.handleKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        return manager.handleKeyUp(keyCode, event);
+    }
 
 	/** Main draw method, called from FieldDriver's game thread. Calls each FieldElement's draw() method passing
 	 * itself as the IFieldRenderer implementation.

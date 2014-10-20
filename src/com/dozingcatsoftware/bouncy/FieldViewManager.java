@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -162,6 +163,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	 * in pixel coordinates, positive y is down. 
 	 */
 	public float world2pixelY(float y) {
+	    //return ((y-cachedYOffset) * cachedScale);
 		return cachedHeight - ((y-cachedYOffset) * cachedScale);
 		//return getHeight() - (y * getScale()) - getYOffset();
 	}
@@ -190,6 +192,21 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 		}
 	}
 	
+	void doFlippers(boolean launch, boolean left, boolean right) {
+        if (!field.getGameState().isGameInProgress()) {
+            if (startGameAction!=null) {
+                startGameAction.run();
+                return;
+            }
+        }
+	    if (launch) {
+            // remove "dead" balls and launch if none already in play
+            field.handleDeadBalls();
+            if (field.getBalls().size()==0) field.launchBall();
+	    }
+        field.setLeftFlippersEngaged(left);
+        field.setRightFlippersEngaged(right);
+	}
 
     /** Called when the view is touched. Activates flippers, starts a new game if one is not in progress, and
      * launches a ball if one is not in play.
@@ -197,22 +214,12 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     public boolean handleTouchEvent(MotionEvent event) {
 		int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
     	synchronized(field) {
-    		if (!field.getGameState().isGameInProgress()) {
-    			if (startGameAction!=null) {
-    				startGameAction.run();
-    				return true;
-    			}
-    		}
-        	if (actionType==MotionEvent.ACTION_DOWN) {
-            	// remove "dead" balls and launch if none already in play
-        		field.handleDeadBalls();
-        		if (field.getBalls().size()==0) field.launchBall();
-        	}
+    		boolean launch = actionType==MotionEvent.ACTION_DOWN;
         	// activate or deactivate flippers
+        	boolean left=false, right=false;
         	if (this.independentFlippers && this.hasMultitouch) {
         		try {
         			// determine whether to activate left and/or right flippers (using reflection for Android 2.2 multitouch APIs)
-            		boolean left=false, right=false;
             		if (actionType!=MotionEvent.ACTION_UP) {
             			int npointers = (Integer)getPointerCountMethod.invoke(event);
             			// if pointer was lifted (ACTION_POINTER_UP), get its index so we don't count it as pressed
@@ -237,11 +244,25 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         		catch(Exception ignored) {}
         	}
         	else {
-            	boolean flipperState = !(event.getAction()==MotionEvent.ACTION_UP);
-            	field.setAllFlippersEngaged(flipperState);
+        	    left = right = !(event.getAction()==MotionEvent.ACTION_UP);
         	}
+        	doFlippers(launch, left, right);
     	}
     	return true;
+    }
+
+    public boolean handleKeyDown(int keyCode, KeyEvent event) {
+        synchronized(field) {
+            doFlippers(true, true, true);
+        }
+        return true;
+    }
+    
+    public boolean handleKeyUp(int keyCode, KeyEvent event) {
+        synchronized(field) {
+            doFlippers(true, true, true);
+        }
+        return false;
     }
     
     public void draw() {
