@@ -10,7 +10,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
-/** FieldElement subclass which represents a series of wall segments. The segments are defined in the "positions"
+/**
+ * FieldElement subclass which represents a series of wall segments. The segments are defined in the "positions"
  * parameter as a list of [x,y] values, for example:
  * {
  * 		"class": "WallPathElement",
@@ -27,7 +28,7 @@ public class WallPathElement extends FieldElement {
 	
 	public void finishCreate(Map params, World world) {
 		List positions = (List)params.get("positions");
-		// N positions product N-1 line segments
+		// N positions produce N-1 line segments
 		lineSegments = new float[positions.size()-1][];
 		for(int i=0; i<lineSegments.length; i++) {
 			List startpos = (List)positions.get(i);
@@ -42,17 +43,13 @@ public class WallPathElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return wallBodies;
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		for(float[] segment : this.lineSegments) {
-			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], 
-					redColorComponent(DEFAULT_WALL_RED), greenColorComponent(DEFAULT_WALL_GREEN), blueColorComponent(DEFAULT_WALL_BLUE));
+			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
 		}
 	}
-
 }

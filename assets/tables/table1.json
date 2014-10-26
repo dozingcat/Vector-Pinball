@@ -231,26 +231,28 @@
 			               {"position": [6.8, 11.5], "color": [224, 0, 224]},
 			               {"position": [9.4, 10], "radius": 1.5, "color": [224, 224, 224]}
 			               ]
-			}
-			
-		],
-		          
-        "flippers": [
-        	{
-        		"position": [6.35, 2.2],
-        		"length": 2.5,
-        		"minangle": -20,
-        		"maxangle": 20,
-        		"upspeed": 7,
-        		"downspeed": 3
-        	},
-        	{
-        		"position": [12.35, 2.2],
-        		"length": -2.5,
-        		"minangle": -20,
-        		"maxangle": 20,
-        		"upspeed": 7,
-        		"downspeed": 3
-        	}
-        ]
+			},
+
+            
+			"left flipper",
+			{
+			  "class": "FlipperElement",
+              "position": [6.35, 2.2],
+              "length": 2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
+            },
+            "right flipper",
+            {
+              "class": "FlipperElement",
+              "position": [12.35, 2.2],
+              "length": -2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
+            }
+		]
 	}	

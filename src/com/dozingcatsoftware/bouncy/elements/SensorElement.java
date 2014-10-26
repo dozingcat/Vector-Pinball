@@ -11,7 +11,8 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
-/** This FieldElement subclass is used to identify areas on the table that should cause custom behavior
+/**
+ * This FieldElement subclass is used to identify areas on the table that should cause custom behavior
  * when the ball enters. SensorElements have no bodies and don't draw anything. The area they monitor
  * can be a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list, or a circle defined
  * by the "center" and "radius" parameters. During every tick() invocation, a sensor determines if any of
@@ -27,8 +28,7 @@ public class SensorElement extends FieldElement {
 	float cx, cy; // center for circular areas
 	float radiusSquared; 
 
-	@Override
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreate(Map params, World world) {
 		if (params.containsKey("center") && params.containsKey("radius")) {
 			this.circular = true;
 			List centerPos = (List)params.get("center");
@@ -51,8 +51,7 @@ public class SensorElement extends FieldElement {
 		}
 	}
 	
-	@Override
-	public boolean shouldCallTick() {
+	@Override public boolean shouldCallTick() {
 		return true;
 	}
 	
@@ -70,8 +69,7 @@ public class SensorElement extends FieldElement {
 		return true;
 	}
 	
-	@Override
-	public void tick(Field field) {
+	@Override public void tick(Field field) {
 		List<Body> balls = field.getBalls();
 		for(int i=0; i<balls.size(); i++) {
 			Body ball = balls.get(i);
@@ -82,14 +80,11 @@ public class SensorElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return Collections.EMPTY_LIST;
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		// no UI
 	}
-
 }

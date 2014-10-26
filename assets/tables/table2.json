@@ -202,44 +202,28 @@
 			 			   {"position": [9.35, 14.2], "color": [0, 224, 0]},
 			 			   {"position": [10.55, 14.2], "color": [0, 0, 224]}			 			   
 			               ]
-			}
-			
-		],
+			},
 
-        "flippers": [
-        	{
-        		"position": [6.35, 2.2],
-        		"length": 2.5,
-        		"minangle": -22.5,
-        		"maxangle": 20,
-        		"upspeed": 9,
-        		"downspeed": 3
-        	},
-        	{
-        		"position": [12.35, 2.2],
-        		"length": -2.5,
-        		"minangle": -25,
-        		"maxangle": 20,
-        		"upspeed": 9,
-        		"downspeed": 3
-        	},
-        	
-        	{
-        		"position": [3.55, 22.9],
-        		"length": 1.65,
-        		"minangle": -22.5,
-        		"maxangle": 20,
-        		"upspeed": 9,
-        		"downspeed": 3
-        	},
-        	{
-        		"position": [7.9, 22.9],
-        		"length": -1.65,
-        		"minangle": -25,
-        		"maxangle": 20,
-        		"upspeed": 9,
-        		"downspeed": 3
-        	}
-        ]
+            "left flipper",
+            {
+              "class": "FlipperElement",
+              "position": [6.35, 2.2],
+              "length": 2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
+            },
+            "right flipper",
+            {
+              "class": "FlipperElement",
+              "position": [12.35, 2.2],
+              "length": -2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
+            }
+		]
     }
     

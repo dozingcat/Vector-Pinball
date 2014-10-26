@@ -96,7 +96,15 @@
             {"class": "BumperElement", "position": [10.5, 23.7], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
             {"class": "BumperElement", "position": [14.5, 21.8], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
             {"class": "BumperElement", "position": [11.6, 19.5], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
-            
+
+            "rollovers for top lanes",
+            {"class": "RolloverGroupElement", "id": "TopRollovers", "color": [0, 224, 224], "radius": 0.45, "score": 500, "cycleOnFlipper": true,
+             "rollovers": [{"position": [12.15,  27.45]},
+                           {"position": [13.65, 27.45]},
+                           {"position": [15.15, 27.45]}
+                           ]
+            },
+
 
             "left kicker, 60 degree angle",
             {
@@ -167,34 +175,37 @@
                            {"position": [16.6, 7.0]},
                            {"position": [18.025, 7.0]}
                            ]
-            }
-            
-        ],
+            },
 
-        "flippers": [
+            "lower left flipper",
             {
-                "position": [6.35, 2.2],
-                "length": 2.5,
-                "minangle": -22.5,
-                "maxangle": 20,
-                "upspeed": 9,
-                "downspeed": 3
+              "class": "FlipperElement",
+              "position": [6.35, 2.2],
+              "length": 2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
             },
+            "right flipper",
             {
-                "position": [12.35, 2.2],
-                "length": -2.5,
-                "minangle": -25,
-                "maxangle": 20,
-                "upspeed": 9,
-                "downspeed": 3
+              "class": "FlipperElement",
+              "position": [12.35, 2.2],
+              "length": -2.5,
+              "minangle": -20,
+              "maxangle": 20,
+              "upspeed": 7,
+              "downspeed": 3
             },
+            "upper left flipper",
             {
-                "position": [5.222, 21.241],
-                "length": 2.5,
-                "minangle": -69.444,
-                "maxangle": -25,
-                "upspeed": 9,
-                "downspeed": 3
+              "class": "FlipperElement",
+              "position": [5.222, 21.241],
+              "length": 2.5,
+              "minangle": -69.444,
+              "maxangle": -25,
+              "upspeed": 9,
+              "downspeed": 3
             }
         ]
     }

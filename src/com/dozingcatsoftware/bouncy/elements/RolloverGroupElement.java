@@ -8,13 +8,15 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 import com.dozingcatsoftware.bouncy.VPSoundpool;
 
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
-/** This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
+/**
+ * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
  * (and optionally deactivated) when a ball passes over them. Individual rollovers in the group are represented by
  * instances of the Rollover nested class, which specify center, radius, and color. Parameters at the collection level
  * control whether the rollovers should cycle when flippers are activated, and whether rollovers can toggle from on to off.
@@ -27,10 +29,12 @@ public class RolloverGroupElement extends FieldElement {
 		float cx, cy;
 		float radius;
 		float radiusSquared; // optimization when computing whether ball is in range
-		List<Integer> color;
+		Color color;
 		long score;
 		float resetDelay;
 	}
+
+	static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 	
 	boolean cycleOnFlipper;
 	boolean canToggleOff;
@@ -41,8 +45,7 @@ public class RolloverGroupElement extends FieldElement {
 	List<Rollover> activeRollovers = new ArrayList<Rollover>();
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
     
-	@Override
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreate(Map params, World world) {
 		this.canToggleOff = Boolean.TRUE.equals(params.get("toggleOff"));
 		this.cycleOnFlipper = Boolean.TRUE.equals(params.get("cycleOnFlipper"));
 		this.ignoreBall = Boolean.TRUE.equals(params.get("ignoreBall"));
@@ -59,7 +62,7 @@ public class RolloverGroupElement extends FieldElement {
 			rollover.cy = asFloat(pos.get(1));
 			// radius, color, score, and reset delay can be specified for each rollover, if not present use default from group
 			rollover.radius = (rmap.containsKey("radius")) ? asFloat(rmap.get("radius")) : this.defaultRadius;
-			rollover.color = (List<Integer>)rmap.get("color");
+			rollover.color = (rmap.containsKey("color")) ? Color.fromList((List<Integer>)rmap.get("color")) : null;
 			rollover.score = (rmap.containsKey("score")) ? ((Number)rmap.get("score")).longValue() : this.score;
 			rollover.resetDelay = (rmap.containsKey("reset")) ? asFloat(rmap.get("reset")) : this.defaultResetDelay;
 
@@ -67,8 +70,7 @@ public class RolloverGroupElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return Collections.EMPTY_LIST;
 	}
 	
@@ -141,8 +143,7 @@ public class RolloverGroupElement extends FieldElement {
 		return true;
 	}
 
-	@Override
-	public void tick(Field field) {
+	@Override public void tick(Field field) {
 		if (this.ignoreBall) return;
 		
 		boolean allActivePrevious = this.allRolloversActive();
@@ -183,8 +184,7 @@ public class RolloverGroupElement extends FieldElement {
 		}
 	}
 	
-	@Override
-	public void flippersActivated(Field field, List<FlipperElement> flippers) {
+	@Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
 		if (this.cycleOnFlipper) {
 			// cycle to right if any right flipper is activated
 			boolean hasRightFlipper = false;
@@ -225,31 +225,24 @@ public class RolloverGroupElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		// default color defined at the group level
-		int defaultRed = this.redColorComponent(0);
-		int defaultGreen = this.greenColorComponent(255);
-		int defaultBlue = this.blueColorComponent(0);
+	    Color groupColor = currentColor(DEFAULT_COLOR);
 		
 		// for each rollover, draw outlined circle for inactive or filled circle for active
 		int rsize = this.rollovers.size();
 		for(int i=0; i<rsize; i++) {
 			Rollover rollover = this.rollovers.get(i);
 			// use custom rollover color if available
-			int red = (rollover.color!=null) ? rollover.color.get(0) : defaultRed;
-			int green = (rollover.color!=null) ? rollover.color.get(1) : defaultGreen;
-			int blue = (rollover.color!=null) ? rollover.color.get(2) : defaultBlue;
+			Color color = (rollover.color != null) ? rollover.color : groupColor;
 			
 			if (activeRollovers.contains(rollover)) {
-				renderer.fillCircle(rollover.cx, rollover.cy, rollover.radius, red, green, blue);
+				renderer.fillCircle(rollover.cx, rollover.cy, rollover.radius, color);
 			}
 			else {
-				renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, red, green, blue);
+				renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, color);
 			}
 		}
 		
 	}
-
-
 }

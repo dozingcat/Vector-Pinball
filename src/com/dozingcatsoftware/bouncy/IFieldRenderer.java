@@ -8,16 +8,15 @@ public interface IFieldRenderer {
 	
 	public void setManager(FieldViewManager manager);
 
-	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b);
+	public void drawLine(float x1, float y1, float x2, float y2, Color color);
 	
-	public void fillCircle(float cx, float cy, float radius, int r, int g, int b);
+	public void fillCircle(float cx, float cy, float radius, Color color);
 
-	public void frameCircle(float cx, float cy, float radius, int r, int g, int b);
+	public void frameCircle(float cx, float cy, float radius, Color color);
 
 	public void doDraw();
 
 	public int getWidth();
 
 	public int getHeight();
-
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
@@ -17,6 +18,8 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  */
 
 public class BumperElement extends FieldElement {
+
+    static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
 	Body pegBody;
 	List pegBodySet;
@@ -36,13 +39,11 @@ public class BumperElement extends FieldElement {
 		pegBodySet = Collections.singletonList(pegBody);
 	}
 	
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return pegBodySet;
 	}
 	
-	@Override
-	public boolean shouldCallTick() {
+	@Override public boolean shouldCallTick() {
 		// needs to call tick to decrement flash counter (but can use superclass tick() implementation)
 		return true;
 	}
@@ -60,8 +61,7 @@ public class BumperElement extends FieldElement {
 		return new Vector2(ix*scale, iy*scale);
 	}
 
-	@Override
-	public void handleCollision(Body ball, Body bodyHit, Field field) {
+	@Override public void handleCollision(Body ball, Body bodyHit, Field field) {
 		Vector2 impulse = this.impulseForBall(ball);
 		if (impulse!=null) {
 			ball.applyLinearImpulse(impulse, ball.getWorldCenter());
@@ -69,10 +69,9 @@ public class BumperElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		float px = pegBody.getPosition().x;
 		float py = pegBody.getPosition().y;
-		renderer.fillCircle(px, py, radius, redColorComponent(0), greenColorComponent(0), blueColorComponent(255));
+		renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
 	}
 }

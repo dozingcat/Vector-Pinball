@@ -1,13 +1,14 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.elements.*;
@@ -23,6 +24,8 @@ public class FieldLayout {
 	static Map<Object, Map> _layoutMap = new HashMap();
 	static Context _context;
 	Random RAND = new Random();
+
+	private FieldLayout() {}
 	
 	public static void setContext(Context value) {
 		_context = value;
@@ -45,7 +48,7 @@ public class FieldLayout {
 	}
 
 	
-	static Map readFieldLayout(int level) {
+	static Map<String, Object> readFieldLayout(int level) {
 		try {
 			String assetPath = "tables/table" + level + ".json";
 			InputStream fin = _context.getAssets().open(assetPath);
@@ -57,7 +60,7 @@ public class FieldLayout {
 				buffer.append(line);
 			}
 			fin.close();
-			Map layoutMap = JSONUtils.mapFromJSONString(buffer.toString());
+			Map<String, Object> layoutMap = JSONUtils.mapFromJSONString(buffer.toString());
 			return layoutMap;
 		}
 		catch(Exception ex) {
@@ -71,73 +74,73 @@ public class FieldLayout {
 			levelLayout = readFieldLayout(level);
 			_layoutMap.put(level, levelLayout);
 		}
-		return new FieldLayout(levelLayout, world);
+		FieldLayout layout = new FieldLayout();
+		layout.initFromLevel(levelLayout, world);
+		return layout;
 	}
 	
-	List<FieldElement> fieldElements = new ArrayList<FieldElement>();
-	List<FlipperElement> flippers, leftFlippers, rightFlippers;
+	FieldElementCollection fieldElements = new FieldElementCollection();
 	float width;
 	float height;
-	List<Integer> ballColor;
+	Color ballColor;
 	float targetTimeRatio;
 	Map allParameters;
 	
-	static List<Integer> DEFAULT_BALL_COLOR = Arrays.asList(255, 0, 0);
+	static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
 
-	static List listForKey(Map map, String key) {
-		if (map.containsKey(key)) return (List)map.get(key);
+	static List<?> listForKey(Map<?, ?> map, Object key) {
+		if (map.containsKey(key)) return (List<?>) map.get(key);
 		return Collections.EMPTY_LIST;
 	}
-	
-	List addFieldElements(Map layoutMap, String key, Class defaultClass, World world) {
-		List elements = new ArrayList();
-		for(Object obj : listForKey(layoutMap, key)) {
-			// allow strings in JSON for comments
-			if (!(obj instanceof Map)) continue;
-			Map params = (Map)obj;
-			elements.add(FieldElement.createFromParameters(params, world, defaultClass));
-		}
-		fieldElements.addAll(elements);
-		return elements;
+
+	private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
+	    FieldElementCollection elements = new FieldElementCollection();
+	    Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
+	    // Initial pass
+	    for (Object obj : listForKey(layoutMap, "elements")) {
+	        if (!(obj instanceof Map)) continue;
+            Map<String, Object> params = (Map<String, Object>) obj;
+	        try {
+	            elements.addElement(FieldElement.createFromParameters(params, world));
+	        }
+	        catch (FieldElement.DependencyNotAvailableException ex) {
+	            unresolvedElements.add(params);
+	        }
+	    }
+
+	    return elements;
 	}
-	
-	public FieldLayout(Map layoutMap, World world) {
+
+	void initFromLevel(Map<String, Object> layoutMap, World world) {
 		this.width = asFloat(layoutMap.get("width"), 20.0f);
 		this.height = asFloat(layoutMap.get("height"), 30.0f);
 		this.targetTimeRatio = asFloat(layoutMap.get("targetTimeRatio"));
-		this.ballColor = (layoutMap.containsKey("ballcolor")) ? (List<Integer>)layoutMap.get("ballcolor") : DEFAULT_BALL_COLOR;
+		this.ballColor = (layoutMap.containsKey("ballcolor"))
+		        ? Color.fromList((List<Integer>)layoutMap.get("ballcolor"))
+		        : DEFAULT_BALL_COLOR;
 		this.allParameters = layoutMap;
-		
-		flippers = addFieldElements(layoutMap, "flippers", FlipperElement.class, world);
-		leftFlippers = new ArrayList<FlipperElement>();
-		rightFlippers = new ArrayList<FlipperElement>();
-		for(FlipperElement f : flippers) {
-			if (f.isLeftFlipper()) leftFlippers.add(f);
-			else rightFlippers.add(f);
-		}
-		
-		addFieldElements(layoutMap, "elements", null, world);
+		this.fieldElements = createFieldElements(layoutMap, world);
 	}
 
 	public List<FieldElement> getFieldElements() {
-		return fieldElements;
+		return fieldElements.getAllElements();
 	}
 	
 	public List<FlipperElement> getFlipperElements() {
-		return flippers;
+		return fieldElements.getFlipperElements();
 	}
 	public List<FlipperElement> getLeftFlipperElements() {
-		return leftFlippers;
+		return fieldElements.getLeftFlipperElements();
 	}
 	public List<FlipperElement> getRightFlipperElements() {
-		return rightFlippers;
+	    return fieldElements.getRightFlipperElements();
 	}
 	
 	public float getBallRadius() {
 		return asFloat(allParameters.get("ballradius"), 0.5f);
 	}
 	
-	public List<Integer> getBallColor() {
+	public Color getBallColor() {
 		return ballColor;
 	}
 	

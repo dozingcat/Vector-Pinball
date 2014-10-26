@@ -10,13 +10,15 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 import static com.dozingcatsoftware.bouncy.util.MathUtils.toRadians;
 
-/** FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a Box2D RevoluteJoint 
+/**
+ * FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a Box2D RevoluteJoint
  * where a thin wall rotates around an invisible anchor. Flippers are defined in the layout JSON as follows:
  * {
  *     "class": "FlipperElement",
@@ -32,6 +34,8 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.toRadians;
  */
 
 public class FlipperElement extends FieldElement {
+
+    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 	
 	Body flipperBody;
 	List<Body> flipperBodySet;
@@ -44,8 +48,7 @@ public class FlipperElement extends FieldElement {
 	float minangle, maxangle;
 	float cx, cy;
 	
-	@Override
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreate(Map params, World world) {
 		List pos = (List)params.get("position");
 		
 		this.cx = asFloat(pos.get(0));
@@ -110,8 +113,7 @@ public class FlipperElement extends FieldElement {
 		joint.setMotorSpeed(speed);
 	}
 	
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return flipperBodySet;
 	}
 	
@@ -120,8 +122,7 @@ public class FlipperElement extends FieldElement {
 		return true;
 	}
 	
-	@Override
-	public void tick(Field field) {
+	@Override public void tick(Field field) {
 		super.tick(field);
 		
 		// if angle is at maximum, reduce speed so that the ball won't fly off when it hits
@@ -158,8 +159,7 @@ public class FlipperElement extends FieldElement {
 		return anchorBody;
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		// draw single line segment from anchor point
 		Vector2 position = anchorBody.getPosition();
 		float angle = joint.getJointAngle();
@@ -171,7 +171,6 @@ public class FlipperElement extends FieldElement {
 		float x2 = position.x + flipperLength * (float)Math.cos(angle);
 		float y2 = position.y + flipperLength * (float)Math.sin(angle);
 		
-		renderer.drawLine(x1, y1, x2, y2, redColorComponent(0), greenColorComponent(255), blueColorComponent(0));
-
+		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
 	}
 }

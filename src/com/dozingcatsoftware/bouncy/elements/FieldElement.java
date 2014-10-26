@@ -5,8 +5,10 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
+import com.dozingcatsoftware.bouncy.Point;
 
 /** Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  * @author brian
@@ -17,38 +19,60 @@ public abstract class FieldElement {
 	Map parameters;
 	World box2dWorld;
 	String elementID;
-	int[] color; // 3-element r,g,b values between 0 and 255
+	Color color;
 	
 	int flashCounter=0; // when >0, inverts colors (e.g. after being hit by the ball), decrements in tick()
 	long score = 0;
 	
 	// default wall color shared by WallElement, WallArcElement, WallPathElement
-	static int DEFAULT_WALL_RED = 64;
-	static int DEFAULT_WALL_GREEN = 64;
-	static int DEFAULT_WALL_BLUE = 160;
-	
-	/** Creates and returns a FieldElement object from the given map of parameters. The default class to instantiate is an argument to this method,
-	 * and can be overridden by the "class" property of the parameter map. Calls the no-argument constructor of the default or custom class, and
-	 * then calls initialize() passing the parameter map and World.
+	static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
+
+	/**
+	 * Exception thrown when an element can't be created because it depends on another element that
+	 * hasn't been created yet.
 	 */
-	public static FieldElement createFromParameters(Map params, World world, Class defaultClass) {
+	public static class DependencyNotAvailableException extends Exception {
+        public DependencyNotAvailableException(String message) {
+	        super(message);
+	    }
+	}
+	
+	/**
+	 * Creates and returns a FieldElement object from the given map of parameters. The class to
+	 * instantiate is given by the "class" property of the parameter map. Calls the no-argument
+	 * constructor of the default or custom class, and then calls initialize() passing the
+	 * parameter map and World.
+	 */
+	public static FieldElement createFromParameters(Map params, World world)
+	        throws DependencyNotAvailableException {
+	    if (!params.containsKey("class")) {
+	        throw new IllegalArgumentException("class not specified for element: " + params);
+	    }
+	    Class elementClass = null;
+		// if package not specified, use this package
+		String className = (String)params.get("class");
+		if (className.indexOf('.')==-1) {
+			className = "com.dozingcatsoftware.bouncy.elements." + className;
+		}
 		try {
-			if (params.containsKey("class")) {
-				// if package not specified, use this package
-				String className = (String)params.get("class");
-				if (className.indexOf('.')==-1) {
-					className = "com.dozingcatsoftware.bouncy.elements." + className;
-				}
-				defaultClass = Class.forName(className);
-			}
+		    elementClass = Class.forName(className);
+        }
+		catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 			
-			FieldElement self = (FieldElement)defaultClass.newInstance();
-			self.initialize(params, world);
-			return self;
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		FieldElement self;
+        try {
+            self = (FieldElement) elementClass.newInstance();
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+		self.initialize(params, world);
+		return self;
 	}
 
 	/** Extracts common values from the definition parameter map, and calls finishCreate to allow subclasses to further initialize themselves.
@@ -61,7 +85,7 @@ public abstract class FieldElement {
 		
 		List<Integer> colorList = (List<Integer>)params.get("color");
 		if (colorList!=null) {
-			this.color = new int[] {colorList.get(0), colorList.get(1), colorList.get(2)};
+			this.color = Color.fromList(colorList);
 		}
 		
 		if (params.containsKey("score")) {
@@ -70,7 +94,7 @@ public abstract class FieldElement {
 		
 		this.finishCreate(params, world);
 	}
-	
+
 	/** Called after creation to determine if tick() needs to be called after every frame is simulated. Default returns false, 
 	 * subclasses must override to return true in order for tick() to be called. This is an optimization to avoid needless
 	 * method calls in the game loop.
@@ -135,32 +159,29 @@ public abstract class FieldElement {
 	public long getScore() {
 		return score;
 	}
-	
-	// look in optional "color" parameter, use default value if not present. Invert if flashCounter>0
-	protected int colorComponent(int index, int defvalue) {
-		int value = defvalue;
-		if (this.color!=null) value = this.color[index];
-		return (flashCounter>0) ? 255 - value : value;
+
+	/**
+	 * Gets the current color by using the defined color if set and the default color if not, and
+	 * inverting if the element is flashing. Subclasses can override.
+	 */
+	protected Color currentColor(Color defaultColor) {
+	    Color baseColor = (this.color != null) ? this.color : defaultColor;
+	    return (flashCounter > 0) ? baseColor.inverted() : baseColor;
 	}
 
-	/** Returns the red component of this element's base color, taken from the "color" parameter. If there is no color parameter, the default
-	 * argument is returned.
+	/**
+	 * Returns the point at which this element starts, for example the first endpoint of a wall.
+	 * Default implementation throws UnsupportedOperationException, subclasses should override.
 	 */
-	protected int redColorComponent(int defvalue) {
-		return colorComponent(0, defvalue);
+	public Point getStartPoint() {
+	    throw new UnsupportedOperationException();
 	}
 
-	/** Returns the green component of this element's base color, taken from the "color" parameter. If there is no color parameter, the default
-	 * argument is returned.
-	 */
-	protected int greenColorComponent(int defvalue) {
-		return colorComponent(1, defvalue);
-	}
-	
-	/** Returns the blue component of this element's base color, taken from the "color" parameter. If there is no color parameter, the default
-	 * argument is returned.
-	 */
-	protected int blueColorComponent(int defvalue) {
-		return colorComponent(2, defvalue);
+    /**
+     * Returns the point at which this element ends, for example the second endpoint of a wall.
+     * Default implementation throws UnsupportedOperationException, subclasses should override.
+     */
+	public Point getEndPoint() {
+	    throw new UnsupportedOperationException();
 	}
 }

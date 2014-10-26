@@ -314,11 +314,11 @@ public class Field implements ContactListener {
     /** Called by FieldView to draw the balls currently in play.
      */
     public void drawBalls(IFieldRenderer renderer) {
-    	List<Integer> color = layout.getBallColor();
+    	Color color = layout.getBallColor();
     	for(int i=0; i<this.balls.size(); i++) {
     		Body ball = this.balls.get(i);
 			CircleShape shape = (CircleShape)ball.getFixtureList().get(0).getShape();
-			renderer.fillCircle(ball.getPosition().x, ball.getPosition().y, shape.getRadius(), color.get(0), color.get(1), color.get(2));
+			renderer.fillCircle(ball.getPosition().x, ball.getPosition().y, shape.getRadius(), color);
     	}
     }
     

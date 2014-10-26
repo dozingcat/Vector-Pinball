@@ -75,23 +75,23 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 	
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
-	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {
-		this.paint.setARGB(255, r, g, b);
+	public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+		this.paint.setARGB(255, color.red, color.green, color.blue);
 		this.canvas.drawLine(manager.world2pixelX(x1), manager.world2pixelY(y1), manager.world2pixelX(x2), manager.world2pixelY(y2), this.paint);
 	}
 	
 	@Override
-	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
-		drawCircle(cx, cy, radius, r, g, b, Paint.Style.FILL);
+	public void fillCircle(float cx, float cy, float radius, Color color) {
+		drawCircle(cx, cy, radius, color, Paint.Style.FILL);
 	}
 	
 	@Override
-	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
-		drawCircle(cx, cy, radius, r, g, b, Paint.Style.STROKE);
+	public void frameCircle(float cx, float cy, float radius, Color color) {
+		drawCircle(cx, cy, radius, color, Paint.Style.STROKE);
 	}
 
-	void drawCircle(float cx, float cy, float radius, int r, int g, int b, Paint.Style style) {
-		this.paint.setARGB(255, r, g, b);
+	void drawCircle(float cx, float cy, float radius, Color color, Paint.Style style) {
+		this.paint.setARGB(255, color.red, color.green, color.blue);
 		this.paint.setStyle(style);
 		float rad = radius * manager.getCachedScale();
 		this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);

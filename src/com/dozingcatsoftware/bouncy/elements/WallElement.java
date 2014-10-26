@@ -12,7 +12,8 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 import static com.dozingcatsoftware.bouncy.util.MathUtils.*;
 
-/** FieldElement subclass that represents a straight wall. Its position is specified by the "position" parameter
+/**
+ * FieldElement subclass that represents a straight wall. Its position is specified by the "position" parameter
  * with 4 values, which are [start x, start y, end x, end y]. There are several optional parameters to customize
  * the wall's behavior:
  * "kick": impulse to apply when a ball hits the wall, used for kickers and ball savers.
@@ -122,8 +123,6 @@ public class WallElement extends FieldElement {
 	@Override
 	public void draw(IFieldRenderer renderer) {
 		if (isRetracted()) return;
-		renderer.drawLine(x1, y1, x2, y2, 
-				redColorComponent(DEFAULT_WALL_RED), greenColorComponent(DEFAULT_WALL_GREEN), blueColorComponent(DEFAULT_WALL_BLUE));
+		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
 	}
-
 }

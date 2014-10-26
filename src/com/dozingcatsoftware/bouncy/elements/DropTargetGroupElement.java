@@ -7,25 +7,27 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 import static com.dozingcatsoftware.bouncy.util.MathUtils.*;
 
-/** This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all 
+/**
+ * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all 
  * targets are hit, the Field delegate is notified, and if the reset parameter is set, the targets will reappear after
  * a delay.
- * @author brian
  */
 
 public class DropTargetGroupElement extends FieldElement {
+
+    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 	
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
 	List<Body> allBodies = new ArrayList<Body>();
 	Map<Body, float[]> bodyPositions = new HashMap<Body, float[]>();
 
-	@Override
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreate(Map params, World world) {
 		// individual targets are specified in "positions" list
 		List<List> positions = (List<List>)params.get("positions");
 		for(List pos : positions) {
@@ -37,8 +39,7 @@ public class DropTargetGroupElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return allBodies;
 	}
 	
@@ -51,8 +52,7 @@ public class DropTargetGroupElement extends FieldElement {
 		return true;
 	}
 
-	@Override
-	public void handleCollision(Body ball, Body bodyHit, final Field field) {
+	@Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
 		bodyHit.setActive(false);
 		// if all hit, notify delegate and check for reset parameter
 		if (allTargetsHit()) {
@@ -77,22 +77,16 @@ public class DropTargetGroupElement extends FieldElement {
 		}
 	}
 	
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		// draw line for each target
-		int r = redColorComponent(0);
-		int g = greenColorComponent(255);
-		int b = blueColorComponent(0);
-		
+	    Color color = currentColor(DEFAULT_COLOR);
 		int bsize = allBodies.size();
 		for(int i=0; i<bsize; i++) {
 			Body body = allBodies.get(i);
 			if (body.isActive()) {
 				float[] parray = bodyPositions.get(body);
-				renderer.drawLine(parray[0], parray[1], parray[2], parray[3], r, g, b);
+				renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
 			}
 		}
-		
 	}
-
 }

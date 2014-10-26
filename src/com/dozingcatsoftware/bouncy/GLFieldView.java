@@ -82,30 +82,30 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
-	public void drawLine(float x1, float y1, float x2, float y2, int r, int g, int b) {
+	public void drawLine(float x1, float y1, float x2, float y2, Color color) {
 		lineVertexList.addVertex(manager.world2pixelX(x1), manager.world2pixelY(y1));
 		lineVertexList.addVertex(manager.world2pixelX(x2), manager.world2pixelY(y2));
 
-		float rf = r/255f;
-		float gf = g/255f;
-		float bf = b/255f;
+		float rf = color.red/255f;
+		float gf = color.green/255f;
+		float bf = color.blue/255f;
 		lineVertexList.addColor(rf, gf, bf);
 		lineVertexList.addColor(rf, gf, bf);
 	}
 	
 	@Override
-	public void fillCircle(float cx, float cy, float radius, int r, int g, int b) {
-		drawCircle(cx, cy, radius, r, g, b, GL10.GL_TRIANGLE_FAN);
+	public void fillCircle(float cx, float cy, float radius, Color color) {
+		drawCircle(cx, cy, radius, color, GL10.GL_TRIANGLE_FAN);
 	}
 	
 	@Override
-	public void frameCircle(float cx, float cy, float radius, int r, int g, int b) {
-		drawCircle(cx, cy, radius, r, g, b, GL10.GL_LINE_LOOP);
+	public void frameCircle(float cx, float cy, float radius, Color color) {
+		drawCircle(cx, cy, radius, color, GL10.GL_LINE_LOOP);
 	}
 	
-	void drawCircle(float cx, float cy, float radius, int r, int g, int b, int mode) {
+	void drawCircle(float cx, float cy, float radius, Color color, int mode) {
 		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
-		circleVertexList.addColor(r/255f, g/255f, b/255f);
+		circleVertexList.addColor(color.red/255f, color.green/255f, color.blue/255f);
 
 		for(int i=0; i<SIN_VALUES.length; i++) {
 			float x = cx + radius*COS_VALUES[i];
