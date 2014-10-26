@@ -10,8 +10,8 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 import com.dozingcatsoftware.bouncy.Point;
 
-/** Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
- * @author brian
+/**
+ * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
 
 public abstract class FieldElement {
@@ -43,7 +43,7 @@ public abstract class FieldElement {
 	 * constructor of the default or custom class, and then calls initialize() passing the
 	 * parameter map and World.
 	 */
-	public static FieldElement createFromParameters(Map params, World world)
+	public static FieldElement createFromParameters(Map params, FieldElementCollection collection, World world)
 	        throws DependencyNotAvailableException {
 	    if (!params.containsKey("class")) {
 	        throw new IllegalArgumentException("class not specified for element: " + params);
@@ -71,14 +71,15 @@ public abstract class FieldElement {
         catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
-		self.initialize(params, world);
+		self.initialize(params, collection, world);
 		return self;
 	}
 
 	/** Extracts common values from the definition parameter map, and calls finishCreate to allow subclasses to further initialize themselves.
 	 * Subclasses should override finishCreate, and should not override this method.
 	 */
-	public void initialize(Map params, World world) {
+	public void initialize(Map params, FieldElementCollection collection, World world)
+	        throws DependencyNotAvailableException {
 		this.parameters = params;
 		this.box2dWorld = world;
 		this.elementID = (String)params.get("id");
@@ -92,7 +93,8 @@ public abstract class FieldElement {
 			this.score = ((Number)params.get("score")).longValue();
 		}
 		
-		this.finishCreate(params, world);
+		this.finishCreateElement(params, collection);
+		this.createBodies(world);
 	}
 
 	/** Called after creation to determine if tick() needs to be called after every frame is simulated. Default returns false, 
@@ -123,9 +125,19 @@ public abstract class FieldElement {
 		flashCounter = frames;
 	}
 
-	/** Must be overridden by subclasses, which should perform any setup required after creation.
+	/**
+	 * Must be overridden by subclasses, which should perform any setup required after creation.
+	 * Throws DependencyNotAvailableException if the element can't be initialized because it's
+	 * dependent on other uninitialized elements.
 	 */
-	public abstract void finishCreate(Map params, World world);
+	public abstract void finishCreateElement(Map params, FieldElementCollection collection)
+	        throws DependencyNotAvailableException;
+
+	/**
+	 * Must be overridden by subclasses, to create the element's Box2D bodies. This will be called
+	 * after finishCreateElement has completed (without throwing DependencyNotAvailableException).
+	 */
+	public abstract void createBodies(World world);
 
 	/** Must be overridden by subclasses to return a collection of all Box2D bodies which make up this element.
 	 */

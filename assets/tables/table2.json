@@ -12,7 +12,7 @@
 		"ballcolor": [192, 192, 224],
 		"launch": {"position": [19.3, 3.0], "velocity": [0, 16.0], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
 		
-		"values": {
+		"variables": {
 			"RotatingBumper1Speed": 0.75,
 			"RotatingBumper2Speed": -0.5,
 			"RotatingBumper2CenterX": 9.35,
@@ -204,7 +204,7 @@
 			               ]
 			},
 
-            "left flipper",
+            "lower left flipper",
             {
               "class": "FlipperElement",
               "position": [6.35, 2.2],
@@ -214,7 +214,7 @@
               "upspeed": 7,
               "downspeed": 3
             },
-            "right flipper",
+            "lower right flipper",
             {
               "class": "FlipperElement",
               "position": [12.35, 2.2],
@@ -222,6 +222,26 @@
               "minangle": -20,
               "maxangle": 20,
               "upspeed": 7,
+              "downspeed": 3
+            },
+            "upper left flipper",
+            {
+              "class": "FlipperElement",
+              "position": [3.55, 22.9],
+              "length": 1.65,
+              "minangle": -22.5,
+              "maxangle": 20,
+              "upspeed": 9,
+              "downspeed": 3
+            },
+            "upper right flipper",
+            {
+              "class": "FlipperElement",
+              "position": [7.9, 22.9],
+              "length": -1.65,
+              "minangle": -25,
+              "maxangle": 20,
+              "upspeed": 9,
               "downspeed": 3
             }
 		]

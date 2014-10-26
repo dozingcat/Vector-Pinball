@@ -36,29 +36,31 @@ public class WallElement extends FieldElement {
 	
 	boolean killBall;
 	boolean retractWhenHit;
+	float restitution;
+	boolean disabled;
 	
-	@Override
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		List pos = (List)params.get("position");
 		this.x1 = asFloat(pos.get(0));
 		this.y1 = asFloat(pos.get(1));
 		this.x2 = asFloat(pos.get(2));
 		this.y2 = asFloat(pos.get(3));
-		float restitution = asFloat(params.get("restitution"));
-		
-		wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution);
-		bodySet = Collections.singletonList(wallBody);
-		
+		this.restitution = asFloat(params.get("restitution"));
+				
 		this.kick = asFloat(params.get("kick"));
 		this.killBall = (Boolean.TRUE.equals(params.get("kill")));
 		this.retractWhenHit = (Boolean.TRUE.equals(params.get("retractWhenHit")));
-
-		boolean disabled = Boolean.TRUE.equals(params.get("disabled"));
-		if (disabled) {
-			setRetracted(true);
-		}
+		this.disabled = Boolean.TRUE.equals(params.get("disabled"));
 	}
-	
+
+	@Override public void createBodies(World world) {
+        wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution);
+        bodySet = Collections.singletonList(wallBody);
+        if (disabled) {
+            setRetracted(true);
+        }
+	}
+
 	public boolean isRetracted() {
 		return !wallBody.isActive();
 	}

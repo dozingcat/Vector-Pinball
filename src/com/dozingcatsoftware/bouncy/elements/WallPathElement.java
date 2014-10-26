@@ -26,7 +26,7 @@ public class WallPathElement extends FieldElement {
 	List wallBodies = new ArrayList();
 	float[][] lineSegments;
 	
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		List positions = (List)params.get("positions");
 		// N positions produce N-1 line segments
 		lineSegments = new float[positions.size()-1][];
@@ -37,10 +37,14 @@ public class WallPathElement extends FieldElement {
 			float[] segment = new float[] {asFloat(startpos.get(0)), asFloat(startpos.get(1)),
 					asFloat(endpos.get(0)), asFloat(endpos.get(1))};
 			lineSegments[i] = segment;
-			
-			Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
-			this.wallBodies.add(wall);
 		}
+	}
+
+	@Override public void createBodies(World world) {
+        for (float[] segment : this.lineSegments) {
+            Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
+            this.wallBodies.add(wall);
+        }
 	}
 
 	@Override public List<Body> getBodies() {
@@ -48,7 +52,7 @@ public class WallPathElement extends FieldElement {
 	}
 
 	@Override public void draw(IFieldRenderer renderer) {
-		for(float[] segment : this.lineSegments) {
+		for (float[] segment : this.lineSegments) {
 			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
 		}
 	}

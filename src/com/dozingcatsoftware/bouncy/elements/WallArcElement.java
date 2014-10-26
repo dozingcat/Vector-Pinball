@@ -35,7 +35,7 @@ public class WallArcElement extends FieldElement {
 	public List wallBodies = new ArrayList();
 	float[][] lineSegments;
 	
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		List centerPos = (List)params.get("center");
 		float cx = asFloat(centerPos.get(0));
 		float cy = asFloat(centerPos.get(1));
@@ -63,20 +63,24 @@ public class WallArcElement extends FieldElement {
 			float x1 = cx + xradius * (float)Math.cos(angle1);
 			float y1 = cy + yradius * (float)Math.sin(angle1);
 			float x2 = cx + xradius * (float)Math.cos(angle2);
-			float y2 = cy + yradius * (float)Math.sin(angle2);
-			
-			Body wall = Box2DFactory.createThinWall(world, x1, y1, x2, y2, 0f);
-			this.wallBodies.add(wall);
+			float y2 = cy + yradius * (float)Math.sin(angle2);			
 			lineSegments[i] = (new float[] {x1, y1, x2, y2});
 		}
 	}
-	
+
+	@Override public void createBodies(World world) {
+        for (float[] segment : this.lineSegments) {
+            Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
+            this.wallBodies.add(wall);
+        }
+	}
+
 	@Override public List<Body> getBodies() {
 		return wallBodies;
 	}
 
 	@Override public void draw(IFieldRenderer renderer) {
-		for(float[] segment : this.lineSegments) {
+		for (float[] segment : this.lineSegments) {
 			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
 		}
 	}

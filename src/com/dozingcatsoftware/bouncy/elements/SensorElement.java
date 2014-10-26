@@ -28,7 +28,7 @@ public class SensorElement extends FieldElement {
 	float cx, cy; // center for circular areas
 	float radiusSquared; 
 
-	@Override public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		if (params.containsKey("center") && params.containsKey("radius")) {
 			this.circular = true;
 			List centerPos = (List)params.get("center");
@@ -50,7 +50,11 @@ public class SensorElement extends FieldElement {
 			this.ymax = asFloat(rectPos.get(3));
 		}
 	}
-	
+
+	@Override public void createBodies(World world) {
+	    // Not needed.
+	}
+
 	@Override public boolean shouldCallTick() {
 		return true;
 	}

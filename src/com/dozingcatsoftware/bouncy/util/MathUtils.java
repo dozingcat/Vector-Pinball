@@ -14,6 +14,5 @@ public class MathUtils {
 	public static float toRadians(float degrees) {
 		return (float)(Math.PI/180) * degrees;
 	}
-	
 
 }

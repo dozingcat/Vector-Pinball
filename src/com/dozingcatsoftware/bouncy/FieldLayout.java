@@ -79,7 +79,7 @@ public class FieldLayout {
 		return layout;
 	}
 	
-	FieldElementCollection fieldElements = new FieldElementCollection();
+	FieldElementCollection fieldElements;
 	float width;
 	float height;
 	Color ballColor;
@@ -95,13 +95,21 @@ public class FieldLayout {
 
 	private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
 	    FieldElementCollection elements = new FieldElementCollection();
+
+	    Map<String, Object> variables = (Map<String, Object>) layoutMap.get("variables");
+	    if (variables != null) {
+	        for (String varname : variables.keySet()) {
+	            elements.setVariable(varname, variables.get(varname));
+	        }
+	    }
+
 	    Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
 	    // Initial pass
 	    for (Object obj : listForKey(layoutMap, "elements")) {
 	        if (!(obj instanceof Map)) continue;
             Map<String, Object> params = (Map<String, Object>) obj;
 	        try {
-	            elements.addElement(FieldElement.createFromParameters(params, world));
+	            elements.addElement(FieldElement.createFromParameters(params, elements, world));
 	        }
 	        catch (FieldElement.DependencyNotAvailableException ex) {
 	            unresolvedElements.add(params);
@@ -199,8 +207,6 @@ public class FieldLayout {
 	/** Returns a value from the "values" map, used to store information independent of the FieldElements. 
 	 */
 	public Object getValueWithKey(String key) {
-		Map values = (Map)allParameters.get("values");
-		if (values==null) return null;
-		return values.get(key);
+	    return fieldElements.getVariable(key);
 	}
 }

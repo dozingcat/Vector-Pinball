@@ -23,13 +23,17 @@ public class DropTargetGroupElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 	
+    List<List> positions;
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
 	List<Body> allBodies = new ArrayList<Body>();
 	Map<Body, float[]> bodyPositions = new HashMap<Body, float[]>();
 
-	@Override public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		// individual targets are specified in "positions" list
-		List<List> positions = (List<List>)params.get("positions");
+		positions = (List<List>)params.get("positions");
+	}
+
+	@Override public void createBodies(World world) {
 		for(List pos : positions) {
 			float[] parray = new float[] {asFloat(pos.get(0)), asFloat(pos.get(1)), asFloat(pos.get(2)), asFloat(pos.get(3))};
 			float restitution = 0f;

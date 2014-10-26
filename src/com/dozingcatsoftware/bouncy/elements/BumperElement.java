@@ -28,13 +28,15 @@ public class BumperElement extends FieldElement {
 	float cx, cy;
 	float kick;
 	
-	public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		List pos = (List)params.get("position");
 		this.radius = asFloat(params.get("radius"));
 		this.cx = asFloat(pos.get(0));
 		this.cy = asFloat(pos.get(1));
 		this.kick = asFloat(params.get("kick"));
-		
+	}
+	
+	@Override public void createBodies(World world) {
 		pegBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
 		pegBodySet = Collections.singletonList(pegBody);
 	}

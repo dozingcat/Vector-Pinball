@@ -1,12 +1,10 @@
-package com.dozingcatsoftware.bouncy;
+package com.dozingcatsoftware.bouncy.elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dozingcatsoftware.bouncy.elements.FieldElement;
-import com.dozingcatsoftware.bouncy.elements.FlipperElement;
 
 public class FieldElementCollection {
 
@@ -16,6 +14,8 @@ public class FieldElementCollection {
     List<FlipperElement> flipperElements = new ArrayList<FlipperElement>();
     List<FlipperElement> leftFlipperElements = new ArrayList<FlipperElement>();
     List<FlipperElement> rightFlipperElements = new ArrayList<FlipperElement>();
+
+    Map<String, Object> variables = new HashMap<String, Object>();
 
     public void addElement(FieldElement element) {
         allElements.add(element);
@@ -27,6 +27,10 @@ public class FieldElementCollection {
             flipperElements.add(flipper);
             (flipper.isLeftFlipper() ? leftFlipperElements : rightFlipperElements).add(flipper);
         }
+    }
+
+    public void setVariable(String key, Object value) {
+        variables.put(key, value);
     }
 
     public List<FieldElement> getAllElements() {
@@ -47,5 +51,16 @@ public class FieldElementCollection {
 
     public FieldElement getElementForId(String id) {
         return elementsById.get(id);
+    }
+
+    public Object getVariable(String key) {
+        if (!variables.containsKey(key)) {
+            throw new IllegalArgumentException("Variable not set: " + key);
+        }
+        return variables.get(key);
+    }
+
+    public Object getVariableOrDefault(String key, Object defaultValue) {
+        return (variables.containsKey(key)) ? variables.get(key) : defaultValue;
     }
 }

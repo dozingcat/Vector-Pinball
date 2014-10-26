@@ -11,7 +11,7 @@ public class Point {
       this.y = y;
   }
 
-  public static Point create(float x, float y) {
+  public static Point fromXY(float x, float y) {
       return new Point(x, y);
   }
 }

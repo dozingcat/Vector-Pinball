@@ -45,7 +45,7 @@ public class RolloverGroupElement extends FieldElement {
 	List<Rollover> activeRollovers = new ArrayList<Rollover>();
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
     
-	@Override public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		this.canToggleOff = Boolean.TRUE.equals(params.get("toggleOff"));
 		this.cycleOnFlipper = Boolean.TRUE.equals(params.get("cycleOnFlipper"));
 		this.ignoreBall = Boolean.TRUE.equals(params.get("ignoreBall"));
@@ -68,6 +68,10 @@ public class RolloverGroupElement extends FieldElement {
 
 			rollover.radiusSquared = rollover.radius * rollover.radius;
 		}
+	}
+
+	@Override public void createBodies(World world) {
+	    // Not needed.
 	}
 
 	@Override public List<Body> getBodies() {

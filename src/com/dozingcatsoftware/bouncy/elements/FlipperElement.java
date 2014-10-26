@@ -48,7 +48,7 @@ public class FlipperElement extends FieldElement {
 	float minangle, maxangle;
 	float cx, cy;
 	
-	@Override public void finishCreate(Map params, World world) {
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		List pos = (List)params.get("position");
 		
 		this.cx = asFloat(pos.get(0));
@@ -58,7 +58,9 @@ public class FlipperElement extends FieldElement {
 		this.maxangle = toRadians(asFloat(params.get("maxangle")));
 		this.upspeed = asFloat(params.get("upspeed"));
 		this.downspeed = asFloat(params.get("downspeed"));
+	}
 
+	@Override public void createBodies(World world) {
     	this.anchorBody = Box2DFactory.createCircle(world, this.cx, this.cy, 0.05f, true);
     	// joint angle is 0 when flipper is horizontal
     	// flipper needs to be slightly extended past anchorBody to rotate correctly 
