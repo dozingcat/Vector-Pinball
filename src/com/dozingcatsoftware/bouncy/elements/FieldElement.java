@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy.elements;
 
+import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
+
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +165,48 @@ public abstract class FieldElement {
 	 */
 	public Map getParameters() {
 		return parameters;
+	}
+
+	public boolean hasParameterKey(String key) {
+	    return parameters.containsKey(key);
+	}
+
+	public Object getRawParameterValueForKey(String key) {
+	    return parameters.get(key);
+	}
+
+	public float getFloatParameterValueForKey(String key) {
+	    // TODO: parse function/math expressions.
+	    Number num = (Number) parameters.get(key);
+	    return num.floatValue();
+	}
+
+    public int getIntParameterValueForKey(String key) {
+        // TODO: parse function/math expressions.
+        Number num = (Number) parameters.get(key);
+        return num.intValue();
+    }
+
+	public long getLongParameterValueForKey(String key) {
+        // TODO: parse function/math expressions.
+        Number num = (Number) parameters.get(key);
+        return num.longValue();
+	}
+
+	public float[] getFloatArrayParameterValueForKey(String key) {
+	     // TODO: parse function/math expressions.
+	    List<?> list = (List<?>) parameters.get(key);
+	    float[] result = new float[list.size()];
+	    for (int i = 0; i < list.size(); i++) {
+	        result[i] = asFloat(list.get(i));
+	    }
+	    return result;
+	}
+
+	public boolean getBooleanParameterValueForKey(String key) {
+	    Object value = parameters.get(key);
+	    return (Boolean.TRUE.equals(value) ||
+	            ((value instanceof Number) && ((Number) value).doubleValue() != 0));
 	}
 
 	/** Returns the "score" value for this element. The score is automatically added when the element is hit by a ball, and elements

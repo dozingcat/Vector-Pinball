@@ -52,7 +52,7 @@ public class Field1Delegate extends BaseFieldDelegate {
 		}
 		// for all groups, increment extra ball rollover
 		RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
-		if (!extraBallRollovers.allRolloversActive()) {
+		if (extraBallRollovers != null && !extraBallRollovers.allRolloversActive()) {
 			extraBallRollovers.activateFirstUnactivatedRollover();
 			if (extraBallRollovers.allRolloversActive()) {
 				field.showGameMessage("Shoot Ramp for Multiball", 1500);

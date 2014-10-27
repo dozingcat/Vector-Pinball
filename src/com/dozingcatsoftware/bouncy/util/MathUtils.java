@@ -2,6 +2,8 @@ package com.dozingcatsoftware.bouncy.util;
 
 public class MathUtils {
 
+    public static final double TAU = 2 * Math.PI;
+
 	public static float asFloat(Object obj, float defvalue) {
 		if (obj instanceof Number) return ((Number)obj).floatValue();
 		return defvalue;

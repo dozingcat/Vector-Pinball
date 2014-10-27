@@ -21,7 +21,7 @@
             {"class": "WallElement", "position": [19.9, 0.1, 19.9, 25.4]},
 
             "barrier covering launch rail once the ball enters play, initially disabled",
-            {"class": "WallElement", "id": "LaunchBarrier", "position": [16.4, 29.9, 16.4, 28.6], "disabled": true, "color": [128, 128, 128]},
+            {"class": "WallElement", "id": "LaunchBarrier", "position": [16.4, 29.9, 16.4, 28.5], "disabled": true, "color": [128, 128, 128]},
             "sensor to enable launch barrier once ball is in play",
             {"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [15.3, 28.2, 16.3, 29.9]},
             "sensor to retract launch barrier for multi-ball",
@@ -41,6 +41,20 @@
             "above top lanes",
             {"class": "WallPathElement", "positions": [[16.4, 29.9], [9.6, 29.9], [11.4, 28.1], [11.4, 26.8], [5.3, 25.7]]},
 
+            "Drop targets in front of top wall",
+            {
+              "class": "DropTargetGroupElement",
+              "score": 500,
+              "reset": 2.0,
+              "wallStart": [5.3, 25.7],
+              "wallEnd": [11.4, 26.8],
+              "gapFromWall": -0.2,
+              "startDistanceAlongWall": 0.1,
+              "targetWidth": 1.0,
+              "gapBetweenTargets": 0.2,
+              "numTargets": 5
+            },
+
             "left upper arc",
             {"class": "WallArcElement", "center": [2.7, 25.0], "xradius": 2.6, "yradius": 4.0, "minangle": 10, "maxangle": 180, "segments": 20},
             "connect to lower arc",
@@ -57,6 +71,20 @@
             "2.7 before the flipper ends, cut in 0.2 units and then go down 2.6 parallel to the flipper.",
             "Then join the bottom point of the left inner arc.",
             {"class": "WallPathElement", "positions": [[3.7, 25.3], [5.152, 21.428], [4.965, 21.358], [5.913, 18.830], [3.479, 17.5545]]},
+
+            "Drop targets in front of bottom wall",
+            {
+              "class": "DropTargetGroupElement",
+              "score": 500,
+              "reset": 2.0,
+              "wallStart": [3.479, 17.5545],
+              "wallEnd": [5.913, 18.830],
+              "gapFromWall": -0.2,
+              "startDistanceAlongWall": 0.1,
+              "targetWidth": 1.1,
+              "gapBetweenTargets": 0.3,
+              "numTargets": 2
+            },
 
             "right upper outer arc",
             {"class": "WallArcElement", "center": [15.9, 22.0], "xradius": 2.8, "yradius": 4.8, "minangle": 0, "maxangle": 90, "segments": 10},
@@ -79,6 +107,20 @@
                 "segments": 8
             },
             {"class": "WallElement", "position": [1.379, 12.457, 1.708, 16.0]},
+            
+            "Drop targets in front of left wall",
+            {
+              "class": "DropTargetGroupElement",
+              "score": 500,
+              "reset": 2.0,
+              "wallStart": [1.379, 12.457],
+              "wallEnd": [1.708, 16.0],
+              "gapFromWall": -0.2,
+              "startDistanceAlongWall": 0.2,
+              "targetWidth": 0.9,
+              "gapBetweenTargets": 0.2,
+              "numTargets": 3
+            },
 
             "above right outlane, top arc position [16.872, 12.762]",
             {
@@ -91,6 +133,20 @@
                 "segments": 8
             },
             {"class": "WallElement", "position": [16.872, 12.762, 17.534, 16.65]},
+
+            "Drop targets in front of left wall",
+            {
+              "class": "DropTargetGroupElement",
+              "score": 500,
+              "reset": 2.0,
+              "wallStart": [16.872, 12.762],
+              "wallEnd": [17.534, 16.65],
+              "gapFromWall": 0.2,
+              "startDistanceAlongWall": 0.2,
+              "targetWidth": 1.0,
+              "gapBetweenTargets": 0.2,
+              "numTargets": 3
+            },
 
             "bumpers",
             {"class": "BumperElement", "position": [10.5, 23.7], "radius": 0.75, "kick": 3, "score": 500, "color": [0, 0, 224]},
