@@ -3,7 +3,7 @@
         "width": 20,
         "height": 30,
         
-        "delegate": "Field1Delegate",
+        "delegate": "Field3Delegate",
         "targetTimeRatio": 2.25,
         "gravity": 4.0,
         
@@ -111,6 +111,7 @@
             "Drop targets in front of left wall",
             {
               "class": "DropTargetGroupElement",
+              "id": "DropTargetLeftSave",
               "score": 500,
               "reset": 2.0,
               "wallStart": [1.379, 12.457],
@@ -134,9 +135,10 @@
             },
             {"class": "WallElement", "position": [16.872, 12.762, 17.534, 16.65]},
 
-            "Drop targets in front of left wall",
+            "Drop targets in front of right wall",
             {
               "class": "DropTargetGroupElement",
+              "id": "DropTargetRightSave",
               "score": 500,
               "reset": 2.0,
               "wallStart": [16.872, 12.762],

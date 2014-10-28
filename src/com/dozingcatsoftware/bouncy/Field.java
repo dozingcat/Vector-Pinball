@@ -489,6 +489,9 @@ public class Field implements ContactListener {
 	public List<Body> getBalls() {
 		return balls;
 	}
+	public FieldLayout getFieldLayout() {
+	    return layout;
+	}
 	public List<FlipperElement> getFlipperElements() {
 		return layout.getFlipperElements();
 	}

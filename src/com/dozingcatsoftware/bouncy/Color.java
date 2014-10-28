@@ -26,4 +26,13 @@ public class Color {
     public Color inverted() {
         return Color.fromRGB(255-red, 255-green, 255-blue);
     }
+
+    public Color blendedWith(Color other, double fraction) {
+        if (fraction < 0) fraction = 0;
+        if (fraction > 1) fraction = 1;
+        return fromRGB(
+                (int) (this.red + (other.red - this.red) * fraction),
+                (int) (this.green + (other.green - this.green) * fraction),
+                (int) (this.blue + (other.blue - this.blue) * fraction));
+    }
 }

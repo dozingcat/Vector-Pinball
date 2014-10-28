@@ -21,7 +21,8 @@ public abstract class FieldElement {
 	Map parameters;
 	World box2dWorld;
 	String elementID;
-	Color color;
+	Color initialColor;
+	Color newColor;
 	
 	int flashCounter=0; // when >0, inverts colors (e.g. after being hit by the ball), decrements in tick()
 	long score = 0;
@@ -88,7 +89,7 @@ public abstract class FieldElement {
 		
 		List<Integer> colorList = (List<Integer>)params.get("color");
 		if (colorList!=null) {
-			this.color = Color.fromList(colorList);
+			this.initialColor = Color.fromList(colorList);
 		}
 		
 		if (params.containsKey("score")) {
@@ -216,12 +217,18 @@ public abstract class FieldElement {
 		return score;
 	}
 
+	public void setNewColor(Color value) {
+	    this.newColor = value;
+	}
+
 	/**
 	 * Gets the current color by using the defined color if set and the default color if not, and
 	 * inverting if the element is flashing. Subclasses can override.
 	 */
 	protected Color currentColor(Color defaultColor) {
-	    Color baseColor = (this.color != null) ? this.color : defaultColor;
+	    Color baseColor = (this.newColor != null) ?
+	            this.newColor :
+	            (this.initialColor != null) ? this.initialColor : defaultColor;
 	    return (flashCounter > 0) ? baseColor.inverted() : baseColor;
 	}
 
