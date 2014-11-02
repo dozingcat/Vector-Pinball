@@ -12,13 +12,11 @@
 />
 
 <FrameLayout android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="9">
-    
-    
+
 	<com.dozingcatsoftware.bouncy.CanvasFieldView  
 		android:id="@+id/canvasFieldView"
    		android:layout_width="fill_parent" 
     	android:layout_height="fill_parent" 
-    	android:layout_weight="1"
     	android:visibility="gone"
     />
 
@@ -26,21 +24,20 @@
 		android:id="@+id/glFieldView"
    		android:layout_width="fill_parent" 
     	android:layout_height="fill_parent" 
-    	android:layout_weight="1"
     	android:visibility="gone"
     />
 
 	<LinearLayout android:id="@+id/buttonPanel" android:layout_width="wrap_content" android:layout_height="wrap_content" 
-	      android:background="#8448" android:padding="10px" android:layout_gravity="center">
+	      android:background="#8448" android:padding="10dp" android:layout_gravity="center">
 				  
 		<Button android:id="@+id/switchTableButton" android:onClick="doSwitchTable"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Change Table" />
+			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/change_table_button_label" />
 			
 		<Button android:id="@+id/aboutButton" android:onClick="doAbout"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Help/About" />
+			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/help_button_label" />
 			
 		<Button android:id="@+id/preferencesButton" android:onClick="doPreferences"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Preferences" />
+			android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/preferences_button_label" />
 		
 	</LinearLayout>    
     

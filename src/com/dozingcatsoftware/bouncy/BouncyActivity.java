@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
+import java.lang.reflect.Method;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -94,6 +96,16 @@ public class BouncyActivity extends Activity {
         
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
+
+    @Override public void onResume() {
+        super.onResume();
+        // Attempt to call setSystemUiVisibility(1) which is "low profile" mode.
+        try {
+            Method setUiMethod = View.class.getMethod("setSystemUiVisibility", int.class);
+            setUiMethod.invoke(scoreView, 1);
+        }
+        catch (Exception ignored) {}
+    }
     
 
     void gotoPreferences() {
@@ -133,7 +145,7 @@ public class BouncyActivity extends Activity {
         VPSoundpool.cleanup();
     	super.onDestroy();
     }
-        
+        /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	aboutMenuItem = menu.add(R.string.about_menu_item);
@@ -141,6 +153,7 @@ public class BouncyActivity extends Activity {
     	preferencesMenuItem = menu.add(R.string.preferences_menu_item);
     	return true;
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

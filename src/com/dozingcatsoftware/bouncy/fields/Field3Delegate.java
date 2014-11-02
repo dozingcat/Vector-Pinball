@@ -33,10 +33,10 @@ public class Field3Delegate extends BaseFieldDelegate {
 
         Color startBumperColor = Color.fromRGB(255, 0, 0);
         Color endBumperColor = Color.fromRGB(0, 0, 255);
-        bumperBonusColors = new Color[50];
+        bumperBonusColors = new Color[150];
         for (int i = 0; i < bumperBonusColors.length; i++) {
             bumperBonusColors[i] = startBumperColor.blendedWith(
-                    endBumperColor, ((double) i) / bumperBonusColors.length);
+                    endBumperColor, ((double) i) / (bumperBonusColors.length - 1));
         }
 
         List<FieldElement> bumpers = new ArrayList<FieldElement>();
@@ -50,10 +50,19 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-        // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
-        rolloverGroup.setAllRolloversActivated(false);
-        field.getGameState().incrementScoreMultiplier();
-        field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
+        String id = rolloverGroup.getElementID();
+        if ("LeftRampRollover".equals(id) || "RightRampRollover".equals(id)) {
+            startBumperBonus();
+        }
+        else if ("CenterGridRollovers".equals(id)) {
+            // ???
+        }
+        else {
+            // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+            rolloverGroup.setAllRolloversActivated(false);
+            field.getGameState().incrementScoreMultiplier();
+            field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
+        }
     }
     
     void startMultiball(final Field field) {
@@ -103,9 +112,13 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     void endBumperBonus() {
         bumperBonusActive = false;
+        for (FieldElement bumper : bumperElements) {
+            bumper.setNewColor(bumperBonusColors[bumperBonusColors.length - 1]);
+        }
     }
 
     @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+        // Add bumper bonus if active.
         if ((element instanceof BumperElement) && bumperBonusActive) {
             field.addScore(element.getScore() * (bumperBonusMultiplier - 1));
         }
@@ -122,8 +135,6 @@ public class Field3Delegate extends BaseFieldDelegate {
         // enable launch barrier 
         if ("LaunchBarrierSensor".equals(sensor.getElementID())) {
             setLaunchBarrierEnabled(field, true);
-            // test
-            startBumperBonus();
         }
         else if ("LaunchBarrierRetract".equals(sensor.getElementID())) {
             setLaunchBarrierEnabled(field, false);
@@ -139,7 +150,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     @Override
     public void ballLost(Field field) {
         setLaunchBarrierEnabled(field, false);
-        bumperBonusActive = false;
+        endBumperBonus();
     }
 
 }

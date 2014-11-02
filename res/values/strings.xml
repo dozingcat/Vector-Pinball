@@ -24,5 +24,8 @@
 	<string name="table1_rules">Table Rules:\n- Light all the cyan rollovers in the top or bottom lanes to advance the score multiplier. All points you earn will be multiplied by this amount. Shooting the left ramp will also advance the multiplier.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- Hitting any group of drop targets will activate the next light in the center of the field. When the large white central light is activated, shoot the left ramp to start multiball.</string>
 
 	<string name="table2_rules">Table Rules:\n- Light all the cyan rollovers in the bottom lanes to advance the score multiplier. All points you earn will be multiplied by this amount. \n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- The circles in the middle of the field keep track of how many times you\'ve hit all the left, upper, and right drop targets. When all of them have been hit at least 3 times, shoot the red bumper in the upper right to start multiball.</string>
+	<string name="change_table_button_label">Change Table</string>
+	<string name="help_button_label">Help/About</string>
+	<string name="preferences_button_label">Preferences</string>
 
 </resources>

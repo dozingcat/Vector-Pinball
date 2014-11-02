@@ -35,7 +35,9 @@ public final class R {
         public static final int about_menu_item=0x7f060001;
         public static final int about_text=0x7f06000f;
         public static final int app_name=0x7f060000;
+        public static final int change_table_button_label=0x7f060012;
         public static final int end_game_menu_item=0x7f060002;
+        public static final int help_button_label=0x7f060013;
         public static final int high_quality_pref_summary_off=0x7f060009;
         public static final int high_quality_pref_summary_on=0x7f060008;
         public static final int high_quality_pref_title=0x7f060007;
@@ -43,6 +45,7 @@ public final class R {
         public static final int independent_flippers_pref_summary_on=0x7f060005;
         public static final int independent_flippers_pref_title=0x7f060004;
         public static final int music_pref_title=0x7f06000b;
+        public static final int preferences_button_label=0x7f060014;
         public static final int preferences_menu_item=0x7f060003;
         public static final int show_fps_pref_title=0x7f06000c;
         public static final int sound_pref_title=0x7f06000a;

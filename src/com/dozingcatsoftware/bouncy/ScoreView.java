@@ -25,6 +25,10 @@ public class ScoreView extends View {
 	
 	Paint fpsPaint = new Paint();
 	Rect fpsRect = new Rect();
+
+	Paint usedBallPaint = new Paint();
+	Paint remainingBallPaint = new Paint();
+	Paint multiplierPaint = new Paint();
 	
 	long highScore;
 	Long lastUpdateTime;
@@ -48,40 +52,89 @@ public class ScoreView extends View {
 		textPaint.setTextSize(24 * metrics.density);
 		
 		fpsPaint.setARGB(255, 255, 255, 0);
+		fpsPaint.setTextSize(6 * metrics.density);
+
+		multiplierPaint.setARGB(255, 32, 224, 32);
+		multiplierPaint.setTextSize(12 * metrics.density);
+
+		usedBallPaint.setARGB(255, 128, 128, 128);
+		usedBallPaint.setStyle(Paint.Style.STROKE);
+		remainingBallPaint.setARGB(255, 224, 224, 224);
+		remainingBallPaint.setStyle(Paint.Style.FILL);
 	}
 	
 	@Override
 	public void draw(Canvas c) {
-		String displayString = null;
+		GameMessage msg = null;
+		boolean gameInProgress = false;
+		boolean ballInPlay = false;
+		int totalBalls = 0;
+		int currentBall = 0;
+		int multiplier = 0;
+		long score = 0;
 		synchronized(field) {
 			// show custom message if present
-			GameMessage msg = field.getGameMessage();
-			displayString = (msg!=null) ? msg.text : null;
-			if (displayString==null) {
-				// show score if game is in progress, otherwise cycle between "Touch to start"/previous score/high score
-				if (field.getGameState().isGameInProgress()) {
-					displayString = SCORE_FORMAT.format(field.getGameState().getScore());
+			msg = field.getGameMessage();
+			GameState state = field.getGameState();
+			gameInProgress = state.isGameInProgress();
+			totalBalls = state.getTotalBalls();
+			currentBall = state.getBallNumber();
+			multiplier = state.getScoreMultiplier();
+			score = (gameInProgress) ? state.getScore() : 0;
+			ballInPlay = field.getBalls().size() > 0;
+		}
+
+        c.drawARGB(255, 0, 0, 0);
+		String displayString = (msg!=null) ? msg.text : null;
+		if (displayString==null) {
+			// show score if game is in progress, otherwise cycle between
+		    // "Touch to start"/previous score/high score
+			if (gameInProgress) {
+				displayString = SCORE_FORMAT.format(score);
+			}
+			else {
+				boolean cycle = false;
+				long now = currentMillis();
+				if (lastUpdateTime==null) {
+					lastUpdateTime = now;
 				}
-				else {
-					boolean cycle = false;
-					if (lastUpdateTime==null) {
-						lastUpdateTime = System.currentTimeMillis();
-					}
-					else if (System.currentTimeMillis() - lastUpdateTime > gameOverMessageCycleTime) {
-						cycle = true;
-						lastUpdateTime = System.currentTimeMillis();
-					}
-					displayString = displayedGameOverMessage(cycle);
+				else if (now - lastUpdateTime > gameOverMessageCycleTime) {
+					cycle = true;
+					lastUpdateTime = now;
 				}
+				displayString = displayedGameOverMessage(cycle);
 			}
 		}
-		
+
+		int width = this.getWidth();
+		int height = this.getHeight();
 		textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
 		// textRect ends up being too high
-		c.drawText(displayString, this.getWidth()/2 - textRect.width()/2, this.getHeight()/2, textPaint);
+		c.drawText(displayString, width/2 - textRect.width()/2, height/2, textPaint);
 		if (showFPS && fps>0) {
-			c.drawText(String.format("%.1f fps", fps), 0, 20, fpsPaint);
+			c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
 		}
+		if (gameInProgress) {
+		    // Draw balls.
+		    float ballRadius = width / 75f;
+		    float ballMarginX = ballRadius;
+		    float cy = height - (3 * ballRadius);
+		    for (int i=0; i<totalBalls; i++) {
+		        float cx = width - ballMarginX - ballRadius - (i * (2 * ballRadius + ballMarginX));
+		        // "Remove" ball from display when launched.
+		        boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
+		        c.drawCircle(cx, cy, ballRadius, isRemaining ? remainingBallPaint : usedBallPaint);
+		    }
+		    // Draw multiplier if >1.
+		    if (multiplier > 1) {
+		        float multiplierStartX = width - totalBalls * (2 * ballRadius + ballMarginX);
+		        c.drawText(multiplier + "x", multiplierStartX, height * 0.4f, multiplierPaint);
+		    }
+		}
+	}
+
+	long currentMillis() {
+	    return System.currentTimeMillis();
 	}
 	
 	// Returns message to show when game is not in progress. Can be "Touch to start", high score, or previous score.
@@ -120,5 +173,4 @@ public class ScoreView extends View {
 	public void setShowFPS(boolean value) {
 		showFPS = value;
 	}
-
 }

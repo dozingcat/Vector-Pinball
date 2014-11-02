@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.dozingcatsoftware.bouncy.R;
-
 public class AboutActivity extends Activity {
     /** Called when the activity is first created. */
     @Override

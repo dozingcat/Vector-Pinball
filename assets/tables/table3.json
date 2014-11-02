@@ -66,6 +66,13 @@
             {"class": "WallArcElement", "center": [2.7, 25.3], "radius": 1.0, "minangle": 0, "maxangle": 359.9, "segments": 40},
             "left top inner arc",
             {"class": "WallArcElement", "center": [16.9, 25.3], "xradius": 15.2, "yradius": 16.5, "minangle": 180, "maxangle": 208, "segments": 15},
+
+            {
+              "class": "RolloverGroupElement",
+              "id": "LeftRampRollover",
+              "radius": 0.5, "score": 5000, "reset": 1,
+              "rollovers": [{"position": [0.9, 25.3], "color": [255, 0, 0], "score": 5000}]
+            },
  
             "rail for flipper starting at [3.7, 25.3]. The flipper has length of 2.5 and ends at [6.1, 18.9].",
             "2.7 before the flipper ends, cut in 0.2 units and then go down 2.6 parallel to the flipper.",
@@ -94,6 +101,16 @@
             {"class": "WallArcElement", "center": [2.2, 21.8], "xradius": 15.0, "yradius": 8.0, "minangle": 0, "maxangle": 24, "segments": 10},
             "right lower inner arc",
             {"class": "WallArcElement", "center": [2.2, 21.8], "xradius": 15.0, "yradius": 10.0, "minangle": -24, "maxangle": 0, "segments": 10},
+
+            "rollover for right ramp",
+            {
+              "class": "RolloverGroupElement",
+              "id": "RightRampRollover",
+              "radius": 0.5,
+              "score": 10000,
+              "reset": 1,
+              "rollovers": [{"position": [17.95, 21.8], "color": [255, 0, 0], "score": 10000}]
+            },
 
             "above left outlane, top arc position [1.379, 12.457]",
             "TODO: allow specifying endpoint of arcs",
