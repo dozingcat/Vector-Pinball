@@ -53,6 +53,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 	 */
 	public void doDraw() {
 		Canvas c = this.getHolder().lockCanvas();
+		if (c == null) return;
 		c.drawARGB(255, 0, 0, 0);
 		paint.setStrokeWidth(manager.highQuality ? 2 : 0);
 		// call draw() on each FieldElement, draw balls separately

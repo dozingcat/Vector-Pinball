@@ -9,10 +9,10 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 
 public class BouncyActivity extends Activity {
 	
@@ -26,9 +26,8 @@ public class BouncyActivity extends Activity {
 	ScoreView scoreView;
 	
 	View buttonPanel;
-	MenuItem aboutMenuItem;
-	MenuItem endGameMenuItem;
-	MenuItem preferencesMenuItem;
+	Button switchTableButton;
+	Button endGameButton;
 	final static int ACTIVITY_PREFERENCES = 1;
 	
 	Handler handler = new Handler();
@@ -38,7 +37,6 @@ public class BouncyActivity extends Activity {
 	};
 	
 	Field field = new Field();
-	boolean running;
 	int level = 1;
 	long highScore = 0;
 	static String HIGHSCORE_PREFS_KEY = "highScore";
@@ -46,7 +44,7 @@ public class BouncyActivity extends Activity {
 	boolean useZoom = true;
 	
 	static long END_GAME_DELAY = 1000; // delay after ending a game, before a touch will start a new game
-	long endGameTime = System.currentTimeMillis() - END_GAME_DELAY;
+	Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY;
 	
 	FieldDriver fieldDriver = new FieldDriver();
 	FieldViewManager fieldViewManager = new FieldViewManager();
@@ -79,6 +77,8 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScore(highScore);
         
         buttonPanel = findViewById(R.id.buttonPanel);
+        switchTableButton = (Button)findViewById(R.id.switchTableButton);
+        endGameButton = (Button)findViewById(R.id.endGameButton);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -95,6 +95,7 @@ public class BouncyActivity extends Activity {
         VPSoundpool.loadSounds();
         
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        
     }
 
     @Override public void onResume() {
@@ -122,52 +123,58 @@ public class BouncyActivity extends Activity {
     	// this handles the main activity pausing and resuming, as well as the Android menu appearing and disappearing
         super.onWindowFocusChanged(hasWindowFocus);
         if (!hasWindowFocus) {
-            running = false;
-            if (orientationListener != null) orientationListener.stop();
-
-            fieldDriver.stop();
-            if (glFieldView != null) glFieldView.onPause();
-            VPSoundpool.pauseMusic();
+            pauseGame();
         } 
         else {
-            running = true;
-            handler.postDelayed(callTick, 75);
-            if (orientationListener != null) orientationListener.start();
-
-            fieldDriver.start();
-            if (glFieldView != null) glFieldView.onResume();
+            // If game is in progress, we want to return to the paused menu rather than immediately
+            // resuming. We need to draw the current field, which currently doesn't work reliably
+            // for OpenGL views. For now the game will resume immediately when using OpenGL.
+            if (field.getGameState().isGameInProgress() && glFieldView.getVisibility()==View.GONE) {
+                fieldDriver.drawField();
+                showPausedButtons();
+            }
+            else {
+                unpauseGame();
+            }
         }
     }
 
+    public void pauseGame() {
+        if (field.getGameState().isPaused()) return;
+        field.getGameState().setPaused(true);
+
+        if (orientationListener != null) orientationListener.stop();
+        fieldDriver.stop();
+        if (glFieldView != null) glFieldView.onPause();
+
+        VPSoundpool.pauseMusic();
+    }
+
+    public void unpauseGame() {
+        if (!field.getGameState().isPaused()) return;
+        field.getGameState().setPaused(false);
+
+        handler.postDelayed(callTick, 75);
+        if (orientationListener != null) orientationListener.start();
+
+        fieldDriver.start();
+        if (glFieldView != null) glFieldView.onResume();
+
+        if (field.getGameState().isGameInProgress()) {
+            buttonPanel.setVisibility(View.GONE);
+        }
+    }
+
+    void showPausedButtons() {
+        endGameButton.setVisibility(View.VISIBLE);
+        switchTableButton.setVisibility(View.GONE);
+        buttonPanel.setVisibility(View.VISIBLE);
+    }
     
     @Override
     public void onDestroy() {
         VPSoundpool.cleanup();
     	super.onDestroy();
-    }
-        /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	aboutMenuItem = menu.add(R.string.about_menu_item);
-    	endGameMenuItem = menu.add(R.string.end_game_menu_item);
-    	preferencesMenuItem = menu.add(R.string.preferences_menu_item);
-    	return true;
-    }
-    */
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	if (item==aboutMenuItem) {
-    		gotoAbout();
-    	}
-    	else if (item==endGameMenuItem) {
-    		field.endGame();
-    		// button panel will be shown in checkForHighScore()
-    	}
-    	else if (item==preferencesMenuItem) {
-    		gotoPreferences();
-    	}
-    	return true;
     }
 
     @Override
@@ -186,13 +193,15 @@ public class BouncyActivity extends Activity {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
-
+    	
     	// if switching quality modes or OpenGL/Canvas, reset frame rate manager because maximum achievable frame rate may change
+    	boolean highQuality = prefs.getBoolean("highQuality", false);
     	boolean previousHighQuality = fieldViewManager.isHighQuality();
-    	fieldViewManager.setHighQuality(prefs.getBoolean("highQuality", false));
+    	fieldViewManager.setHighQuality(highQuality);
     	if (previousHighQuality!=fieldViewManager.isHighQuality()) {
     		fieldDriver.resetFrameRate();
     	}
+    	scoreView.setHighQuality(highQuality);
     	
     	boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
     	if (useOpenGL) {
@@ -237,6 +246,8 @@ public class BouncyActivity extends Activity {
     		if (!field.getGameState().isGameInProgress()) {
     			// game just ended, show button panel and set end game timestamp
     			this.endGameTime = System.currentTimeMillis();
+    			endGameButton.setVisibility(View.GONE);
+    			switchTableButton.setVisibility(View.VISIBLE);
     			buttonPanel.setVisibility(View.VISIBLE);
 
     			long score = field.getGameState().getScore();
@@ -297,12 +308,25 @@ public class BouncyActivity extends Activity {
     
     // button action methods (defined by android:onClick values in main.xml)
     public void doStartGame(View view) {
+        if (field.getGameState().isPaused()) {
+            unpauseGame();
+            return;
+        }
     	// avoids accidental starts due to touches just after game ends
-    	if (System.currentTimeMillis() < endGameTime + END_GAME_DELAY) return;
-    	buttonPanel.setVisibility(View.GONE);
-    	field.resetForLevel(this, level);
-    	field.startGame();
-    	VPSoundpool.playStart();
+    	if (endGameTime==null || (System.currentTimeMillis() < endGameTime + END_GAME_DELAY)) return;
+    	if (!field.getGameState().isGameInProgress()) {
+            buttonPanel.setVisibility(View.GONE);
+            field.resetForLevel(this, level);
+            field.startGame();
+            VPSoundpool.playStart();
+            endGameTime = null;
+    	}
+    }
+
+    public void doEndGame(View view) {
+        // Game might be paused, if ended from button.
+        unpauseGame();
+        field.endGame();
     }
     
     public void doPreferences(View view) {
@@ -311,6 +335,21 @@ public class BouncyActivity extends Activity {
     
     public void doAbout(View view) {
     	gotoAbout();
+    }
+
+    public void scoreViewClicked(View view) {
+        if (field.getGameState().isGameInProgress()) {
+            if (field.getGameState().isPaused()) {
+                unpauseGame();
+            }
+            else {
+                pauseGame();
+                showPausedButtons();
+            }
+        }
+        else {
+            doStartGame(null);
+        }
     }
     
     public void doSwitchTable(View view) {

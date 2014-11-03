@@ -84,7 +84,7 @@ public class ScoreView extends View {
 			ballInPlay = field.getBalls().size() > 0;
 		}
 
-        c.drawARGB(255, 0, 0, 0);
+        c.drawARGB(255, 8, 8, 8);
 		String displayString = (msg!=null) ? msg.text : null;
 		if (displayString==null) {
 			// show score if game is in progress, otherwise cycle between
@@ -110,25 +110,27 @@ public class ScoreView extends View {
 		int height = this.getHeight();
 		textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
 		// textRect ends up being too high
-		c.drawText(displayString, width/2 - textRect.width()/2, height/2, textPaint);
+		c.drawText(displayString, width/2 - textRect.width()/2, height/2 + textRect.height()/2, textPaint);
 		if (showFPS && fps>0) {
 			c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
 		}
 		if (gameInProgress) {
 		    // Draw balls.
 		    float ballRadius = width / 75f;
-		    float ballMarginX = ballRadius;
-		    float cy = height - (3 * ballRadius);
+		    float ballOuterMargin = 2 * ballRadius;
+		    float ballBetweenSpace = ballRadius;
+		    float ballCenterY = height - (ballOuterMargin + ballRadius);
+		    float ballCenterX = 0;
 		    for (int i=0; i<totalBalls; i++) {
-		        float cx = width - ballMarginX - ballRadius - (i * (2 * ballRadius + ballMarginX));
+		        ballCenterX = width - ballOuterMargin - ballRadius - (i * (2*ballRadius + ballBetweenSpace));
 		        // "Remove" ball from display when launched.
 		        boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
-		        c.drawCircle(cx, cy, ballRadius, isRemaining ? remainingBallPaint : usedBallPaint);
+		        c.drawCircle(ballCenterX, ballCenterY, ballRadius,
+		                isRemaining ? remainingBallPaint : usedBallPaint);
 		    }
-		    // Draw multiplier if >1.
+		    // Draw multiplier if >1. Use X position of leftmost ball.
 		    if (multiplier > 1) {
-		        float multiplierStartX = width - totalBalls * (2 * ballRadius + ballMarginX);
-		        c.drawText(multiplier + "x", multiplierStartX, height * 0.4f, multiplierPaint);
+		        c.drawText(multiplier + "x", ballCenterX-ballRadius, height * 0.4f, multiplierPaint);
 		    }
 		}
 	}
@@ -159,6 +161,12 @@ public class ScoreView extends View {
 			gameOverMessageIndex = (gameOverMessageIndex+1) % 3;
 		}
 		return msg;
+	}
+
+	public void setHighQuality(boolean highQuality) {
+	    int ballWidth = highQuality ? 2 : 0;
+	    remainingBallPaint.setStrokeWidth(ballWidth);
+	    usedBallPaint.setStrokeWidth(ballWidth);
 	}
 	
 	public void setField(Field value) {

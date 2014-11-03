@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vector Pinball</string>
-    <string name="about_menu_item">About/Help</string>
-    <string name="end_game_menu_item">End Game</string>
-    <string name="preferences_menu_item">Preferences</string>
     
     <string name="independent_flippers_pref_title">Independent Flippers</string>
     <string name="independent_flippers_pref_summary_on">A touch activates the flipper on the same side of the screen</string>
@@ -27,5 +24,6 @@
 	<string name="change_table_button_label">Change Table</string>
 	<string name="help_button_label">Help/About</string>
 	<string name="preferences_button_label">Preferences</string>
+	<string name="end_game_button_label">End Game</string>
 
 </resources>
