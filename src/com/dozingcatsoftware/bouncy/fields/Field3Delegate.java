@@ -18,26 +18,42 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 public class Field3Delegate extends BaseFieldDelegate {
 
     long bumperBonusDurationNanos;
-    Color[] bumperBonusColors;
-    long nanosPerBumperColor;
+    Color[] bumperColors;
+    Color[] upperTargetGroupRolloverColors;
+    Color[] lowerTargetGroupRolloverColors;
 
     boolean bumperBonusActive;
     long bumperBonusNanosElapsed;
     FieldElement[] bumperElements;
     int bumperBonusMultiplier = 5;
 
+    int upperTargetGroupCompleted = 0;
+    int lowerTargetGroupCompleted = 0;
+    double bumperEnergy = 0;
+
     void buildBumperColors(Field field) {
         // TODO: Read these parameters from variables in field layout.
-        bumperBonusDurationNanos = TimeUnit.SECONDS.toNanos(5);
-        nanosPerBumperColor = TimeUnit.MILLISECONDS.toNanos(100);
+        bumperBonusDurationNanos = TimeUnit.SECONDS.toNanos(15);
 
-        Color startBumperColor = Color.fromRGB(255, 0, 0);
-        Color endBumperColor = Color.fromRGB(0, 0, 255);
-        bumperBonusColors = new Color[150];
-        for (int i = 0; i < bumperBonusColors.length; i++) {
-            bumperBonusColors[i] = startBumperColor.blendedWith(
-                    endBumperColor, ((double) i) / (bumperBonusColors.length - 1));
+        bumperColors = new Color[256];
+        for (int i = 0; i < 256; i++) {
+            bumperColors[i] = Color.fromRGB(i, 0, 255-i);
         }
+        upperTargetGroupRolloverColors = new Color[] {
+            Color.fromRGB(0, 0, 255),
+            Color.fromRGB(0, 255, 255),
+            Color.fromRGB(255, 255, 0),
+            Color.fromRGB(255, 0, 0),
+        };
+        lowerTargetGroupRolloverColors = new Color[] {
+            bumperColors[0],
+            bumperColors[42],
+            bumperColors[84],
+            bumperColors[127],
+            bumperColors[169],
+            bumperColors[212],
+            bumperColors[255],
+        };
 
         List<FieldElement> bumpers = new ArrayList<FieldElement>();
         for (FieldElement element : field.getFieldElements()) {
@@ -53,9 +69,6 @@ public class Field3Delegate extends BaseFieldDelegate {
         String id = rolloverGroup.getElementID();
         if ("LeftRampRollover".equals(id) || "RightRampRollover".equals(id)) {
             startBumperBonus();
-        }
-        else if ("CenterGridRollovers".equals(id)) {
-            // ???
         }
         else {
             // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
@@ -88,18 +101,34 @@ public class Field3Delegate extends BaseFieldDelegate {
             ((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(false);
             field.showGameMessage("Right Save Enabled", 1500);
         }
+        else if ("LowerMultiballTargets".equals(id)) {
+            if (lowerTargetGroupCompleted < lowerTargetGroupRolloverColors.length-1) {
+                ++lowerTargetGroupCompleted;
+                field.getFieldElementByID("LowerTargetIndicator")
+                        .setNewColor(lowerTargetGroupRolloverColors[lowerTargetGroupCompleted]);
+            }
+        }
+        else if ("UpperMultiballTargets".equals(id)) {
+            if (upperTargetGroupCompleted < upperTargetGroupRolloverColors.length-1) {
+                ++upperTargetGroupCompleted;
+                field.getFieldElementByID("UpperTargetIndicator")
+                        .setNewColor(upperTargetGroupRolloverColors[upperTargetGroupCompleted]);
+            }
+        }
     }
 
     public void tick(Field field, long nanos) {
         if (bumperBonusActive) {
             bumperBonusNanosElapsed += nanos;
-            int colorIndex = (int) (bumperBonusNanosElapsed / nanosPerBumperColor);
-            if (colorIndex >= bumperBonusColors.length) {
-                bumperBonusActive = false;
+            if (bumperBonusNanosElapsed >= bumperBonusDurationNanos) {
+                endBumperBonus();
             }
             else {
+                double fractionElapsed = ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
+                int colorIndex = (int) Math.floor(bumperColors.length * fractionElapsed);
+                Color color = bumperColors[bumperColors.length - 1 - colorIndex];
                 for (FieldElement bumper : bumperElements) {
-                    bumper.setNewColor(bumperBonusColors[colorIndex]);
+                    bumper.setNewColor(color);
                 }
             }
         }
@@ -113,14 +142,23 @@ public class Field3Delegate extends BaseFieldDelegate {
     void endBumperBonus() {
         bumperBonusActive = false;
         for (FieldElement bumper : bumperElements) {
-            bumper.setNewColor(bumperBonusColors[bumperBonusColors.length - 1]);
+            bumper.setNewColor(bumperColors[0]);
         }
     }
 
     @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
         // Add bumper bonus if active.
-        if ((element instanceof BumperElement) && bumperBonusActive) {
-            field.addScore(element.getScore() * (bumperBonusMultiplier - 1));
+        if (element instanceof BumperElement) {
+            double energy = 1;
+            if (bumperBonusActive) {
+                double fractionElapsed = ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
+                energy += fractionElapsed * bumperBonusMultiplier;
+                field.addScore((long) (element.getScore() * (energy - 1)));
+            }
+            bumperEnergy = Math.min(bumperEnergy+energy, 255);
+            int colorIndex = (int) Math.floor(bumperEnergy);
+            field.getFieldElementByID("BumperIndicator")
+                .setNewColor(bumperColors[colorIndex]);
         }
     }
     

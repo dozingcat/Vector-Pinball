@@ -44,6 +44,7 @@
             "Drop targets in front of top wall",
             {
               "class": "DropTargetGroupElement",
+              "id": "UpperMultiballTargets",
               "score": 500,
               "reset": 2.0,
               "wallStart": [5.3, 25.7],
@@ -82,6 +83,7 @@
             "Drop targets in front of bottom wall",
             {
               "class": "DropTargetGroupElement",
+              "id": "LowerMultiballTargets",
               "score": 500,
               "reset": 2.0,
               "wallStart": [3.479, 17.5545],
@@ -179,6 +181,33 @@
                            {"position": [15.15, 27.45]}
                            ]
             },
+
+            "rollovers in middle which change color as bumpers and drop targets are hit",
+            {
+              "class": "RolloverGroupElement",
+              "id": "UpperTargetIndicator",
+              "radius": 2.1,
+              "ignoreBall": true,
+              "color": [0, 0, 255],
+              "rollovers": [{"position": [9.4, 10]}]
+            },
+            {
+              "class": "RolloverGroupElement",
+              "id": "LowerTargetIndicator",
+              "radius": 1.4,
+              "ignoreBall": true,
+              "color": [0, 0, 255],
+              "rollovers": [{"position": [9.4, 10]}]
+            },
+            {
+              "class": "RolloverGroupElement",
+              "id": "BumperIndicator",
+              "radius": 0.7,
+              "ignoreBall": true,
+              "color": [0, 0, 255],
+              "rollovers": [{"position": [9.4, 10]}]
+            },
+
 
 
             "left kicker, 60 degree angle",
