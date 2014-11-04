@@ -25,7 +25,7 @@
             "sensor to enable launch barrier once ball is in play",
             {"class": "SensorElement", "id": "LaunchBarrierSensor", "rect": [15.3, 28.2, 16.3, 29.9]},
             "sensor to retract launch barrier for multi-ball",
-            {"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [10.1, 28.7, 11, 29.9]},
+            {"class": "SensorElement", "id": "LaunchBarrierRetract", "rect": [18.8, 22.0, 19.8, 25.0]},
 
             "connector to rightmost top lane",
             {"class": "WallElement", "position": [15.9, 28.1, 16.4, 28.5]},
