@@ -110,7 +110,8 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	/** Saves scale and x and y offsets for use by world2pixel methods, avoiding repeated method calls and math operations. */
 	public void cacheScaleAndOffsets() {
 		zoom = maxZoom;
-		if (zoom<=1.0f || !field.getGameState().isGameInProgress()) {
+		// Don't zoom if game is over or multiball is active.
+		if (zoom<=1.0f || !field.getGameState().isGameInProgress() || field.getBalls().size()>1) {
 			cachedXOffset = 0;
 			cachedYOffset = 0;
 			zoom = 1.0f;

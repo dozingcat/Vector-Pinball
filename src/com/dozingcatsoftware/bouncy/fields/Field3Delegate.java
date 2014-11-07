@@ -99,6 +99,9 @@ public class Field3Delegate extends BaseFieldDelegate {
     int baseBumperBonusMultiplier;
     int bumperBonusMultiplier;
 
+    int bumperBonusMultiplierIncrement = 1;
+    long bumperBonusDurationIncrement = TimeUnit.SECONDS.toNanos(1);
+
     int upperTargetGroupCompleted = 0;
     int lowerTargetGroupCompleted = 0;
     double bumperEnergy = 0;
@@ -113,9 +116,9 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     void resetState(Field field) {
         // TODO: Read these parameters from variables in field layout.
-        maxBumperEnergy = 10;
-        maxUpperTargetGroupCompleted = 1;
-        maxLowerTargetGroupCompleted = 2;
+        maxBumperEnergy = 200;
+        maxUpperTargetGroupCompleted = 2;
+        maxLowerTargetGroupCompleted = 5;
 
         baseBumperBonusDurationNanos = TimeUnit.SECONDS.toNanos(15);
         baseBumperBonusMultiplier = 5;
@@ -151,6 +154,10 @@ public class Field3Delegate extends BaseFieldDelegate {
             if (multiballStatus==MultiballStatus.INACTIVE && isMultiballRolloverActive(field)) {
                 startMultiball(field);
             }
+            // Double score if already in multiball.
+            if (multiballStatus==MultiballStatus.ACTIVE) {
+                field.addScore(rolloverGroup.getScore());
+            }
         }
         else {
             // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
@@ -175,7 +182,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         else if ("LowerMultiballTargets".equals(id)) {
             // Increase bumper bonus duration.
             if (lowerTargetGroupCompleted < maxLowerTargetGroupCompleted) {
-                bumperBonusDurationNanos += TimeUnit.SECONDS.toNanos(1);
+                bumperBonusDurationNanos += bumperBonusDurationIncrement;
                 ++lowerTargetGroupCompleted;
                 double ratio = ((double) lowerTargetGroupCompleted) / maxLowerTargetGroupCompleted;
                 field.getFieldElementByID("LowerTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
@@ -185,7 +192,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         else if ("UpperMultiballTargets".equals(id)) {
             // Increase bumper bonus multiplier.
             if (upperTargetGroupCompleted < maxUpperTargetGroupCompleted) {
-                bumperBonusMultiplier += 1;
+                bumperBonusMultiplier += bumperBonusMultiplierIncrement;
                 ++upperTargetGroupCompleted;
                 double ratio = ((double)upperTargetGroupCompleted) / maxUpperTargetGroupCompleted;
                 field.getFieldElementByID("UpperTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
@@ -235,13 +242,15 @@ public class Field3Delegate extends BaseFieldDelegate {
     @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
         // Add bumper bonus if active.
         if (element instanceof BumperElement) {
-            double energy = 1;
+            double extraEnergy = 0;
             if (bumperBonusActive) {
-                double fractionElapsed = ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
-                energy += fractionElapsed * bumperBonusMultiplier;
-                field.addScore((long) (element.getScore() * (energy - 1)));
+                double fractionRemaining = 1 - (((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos);
+                extraEnergy = fractionRemaining * bumperBonusMultiplier;
+                // Round score to nearest multiple of 10.
+                double bonusScore = element.getScore() * extraEnergy;
+                field.addScore(10 * ((long)Math.round(bonusScore / 10)));
             }
-            bumperEnergy = Math.min(bumperEnergy+energy, maxBumperEnergy);
+            bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
             double ratio = ((double)bumperEnergy) / maxBumperEnergy;
             field.getFieldElementByID("BumperIndicator").setNewColor(colorForTemperatureRatio(ratio));
             checkForEnableMultiball(field);
@@ -313,6 +322,10 @@ public class Field3Delegate extends BaseFieldDelegate {
         };
         field.scheduleAction(1000, launchBall);
         field.scheduleAction(3500, launchBall);
+
+        // Increase bonuses past normal maximum.
+        bumperBonusMultiplier += bumperBonusMultiplierIncrement;
+        bumperBonusDurationNanos += bumperBonusDurationIncrement;
     }
 
     void initializeMultiballFlashers() {

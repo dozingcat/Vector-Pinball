@@ -71,7 +71,7 @@
             {
               "class": "RolloverGroupElement",
               "id": "LeftRampRollover",
-              "radius": 0.5, "score": 5000, "reset": 1,
+              "radius": 0.5, "score": 5000, "reset": 3,
               "rollovers": [{"position": [0.9, 25.3], "color": [255, 0, 0], "score": 5000}]
             },
  
@@ -110,7 +110,7 @@
               "id": "RightRampRollover",
               "radius": 0.5,
               "score": 10000,
-              "reset": 1,
+              "reset": 3,
               "rollovers": [{"position": [17.95, 21.8], "color": [255, 0, 0], "score": 10000}]
             },
 
