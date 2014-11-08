@@ -8,15 +8,20 @@ import java.util.List;
 // TODO: cache instances.
 public class Color {
     public final int red, green, blue;
+    private Color inverse;
 
-    private Color(int r, int g, int b) {
+    private Color(int r, int g, int b, Color inverse) {
         this.red = r;
         this.green = g;
         this.blue = b;
+        if (inverse == null) {
+            inverse = new Color(255 - r, 255 - g, 255 - b, this);
+        }
+        this.inverse = inverse;
     }
 
     public static Color fromRGB(int r, int g, int b) {
-        return new Color(r, g, b);
+        return new Color(r, g, b, null);
     }
 
     public static Color fromList(List<Integer> rgb) {
@@ -24,7 +29,7 @@ public class Color {
     }
 
     public Color inverted() {
-        return Color.fromRGB(255-red, 255-green, 255-blue);
+        return inverse;
     }
 
     public Color blendedWith(Color other, double fraction) {
