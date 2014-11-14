@@ -2,6 +2,8 @@ package com.dozingcatsoftware.bouncy;
 
 import java.lang.reflect.Method;
 
+import com.badlogic.gdx.physics.box2d.Box2D;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,9 +17,8 @@ import android.widget.Button;
 
 public class BouncyActivity extends Activity {
 	
-	// libgdx 0.7 no longer loads the native library in World.java
 	static {
-		System.loadLibrary("gdx");
+		Box2D.init();
 	}
 	
 	CanvasFieldView canvasFieldView;

@@ -66,7 +66,7 @@ public class BumperElement extends FieldElement {
 	@Override public void handleCollision(Body ball, Body bodyHit, Field field) {
 		Vector2 impulse = this.impulseForBall(ball);
 		if (impulse!=null) {
-			ball.applyLinearImpulse(impulse, ball.getWorldCenter());
+			ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
 			flashForFrames(3);
 		}
 	}
