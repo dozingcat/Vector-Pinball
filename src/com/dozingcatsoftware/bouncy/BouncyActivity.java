@@ -16,7 +16,8 @@ import android.view.Window;
 import android.widget.Button;
 
 public class BouncyActivity extends Activity {
-	
+
+    // Using libgdx 1.4.1 with Box2D extension.
 	static {
 		Box2D.init();
 	}
