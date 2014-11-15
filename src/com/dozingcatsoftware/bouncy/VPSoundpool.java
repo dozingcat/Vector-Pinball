@@ -43,8 +43,7 @@ public class VPSoundpool {
     static int ID_DRUMBASSLOOP 	= 301;
     
 
-    public static void initSounds(Context theContext) 
-    { 
+    public static void initSounds(Context theContext) { 
          Log.v("VPSoundpool", "initSounds");
          mContext = theContext;
          mSoundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
@@ -52,8 +51,7 @@ public class VPSoundpool {
          mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
     } 
 
-    public static void loadSounds()
-    {
+    public static void loadSounds() {
         mSoundPoolMap.clear();
         AssetManager assets = mContext.getAssets();
         try {
@@ -134,37 +132,25 @@ public class VPSoundpool {
     	}
     }
 
-    public static void playRollover() {
-    	//play up to three events, each randomly pitched to a different note in the pentatonic scale
-    	//the rollover ding is E, so in semitones, the other pitches are -4 (C), -2 (D), +3 (G), +5 (A), +8 (C)
-    	//for Soundpool, that translate to:  0.7937008 (C), 0.8908991 (D), 1.1892079 (G), 1.3348408 (A), 1.5874025 (C)
-    	float pitch[] = {0.7937008f, 0.8908991f, 1f, 1.1892079f, 1.3348408f, 1.5874025f};
-    	int pitchDx[] = {0, 0, 0};
+    //play up to three events, each randomly pitched to a different note in the pentatonic scale
+    //the rollover ding is E, so in semitones, the other pitches are -4 (C), -2 (D), +3 (G), +5 (A), +8 (C)
+    //for Soundpool, that translate to:  0.7937008 (C), 0.8908991 (D), 1.1892079 (G), 1.3348408 (A), 1.5874025 (C)
+    private static float[] PITCHES = {0.7937008f, 0.8908991f, 1f, 1.1892079f, 1.3348408f, 1.5874025f};
+    private static float ROLLOVER_DURATION = 0.3f;
 
-        for (int i = 0; i < 3; i++) {
-    		switch (i){
-    			case 0:
-    				pitchDx[i] = mRandom.nextInt(6);
-    		    	playSound(ID_ROLLOVER, .3f, pitch[pitchDx[i]]);
-    				break;
-    			case 1:
-    				pitchDx[i] = mRandom.nextInt(6);
-    				if (pitchDx[i] != pitchDx[i-1]) {
-        		    	playSound(ID_ROLLOVER, .3f, pitch[pitchDx[i]]);
-    				}
-    				break;
-    			case 2:
-    				pitchDx[i] = mRandom.nextInt(6);
-    				if (pitchDx[i] != pitchDx[i-1] &&
-    					pitchDx[i] != pitchDx[i-2] ) {
-        		    	playSound(ID_ROLLOVER, .3f, pitch[pitchDx[i]]);
-    				}
-    				break;
-    			default:
-    				Log.e("VPSoundpool", "rollover bad mojo");
-    				break;
-    		}
-        }
+    public static void playRollover() {
+    	int p1 = mRandom.nextInt(6);
+    	int p2 = mRandom.nextInt(6);
+    	int p3 = mRandom.nextInt(6);
+
+    	// Only play distinct notes.
+    	playSound(ID_ROLLOVER, ROLLOVER_DURATION, PITCHES[p1]);
+    	if (p2 != p1) {
+    	    playSound(ID_ROLLOVER, ROLLOVER_DURATION, PITCHES[p2]);
+    	}
+    	if (p3 != p1 && p3 != p2) {
+    	    playSound(ID_ROLLOVER, ROLLOVER_DURATION, PITCHES[p3]);
+    	}
     }
     
     public static void playBall() {
@@ -184,8 +170,7 @@ public class VPSoundpool {
     	playSound(ID_MESSAGE, 0.66f, 1);
     }
     
-    public static void pauseMusic()
-    {
+    public static void pauseMusic() {
     	if (drumbass!=null && drumbass.isPlaying()) {
             drumbass.pause();
     	}
@@ -193,22 +178,19 @@ public class VPSoundpool {
     		androidpad.pause();
     	}
     }
-    public static void resumeMusic()
-    {
+    public static void resumeMusic() {
     	if (drumbass!=null && drumbassPlaying) {
     		drumbass.start();
     	}
         //androidpad.start();
     }
-    public static void stopMusic()
-    {
+    public static void stopMusic() {
         if (drumbass!=null) drumbass.stop();
         drumbassPlaying = false;
         if (androidpad!=null) androidpad.stop();
     }
     
-    public static void cleanup()
-    {
+    public static void cleanup() {
         mSoundPool.release();
         mSoundPool = null;
         mSoundPoolMap.clear();
