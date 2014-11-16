@@ -83,10 +83,12 @@ public class FieldLayout {
 	float width;
 	float height;
 	Color ballColor;
+	Color secondaryBallColor;
 	float targetTimeRatio;
 	Map allParameters;
 	
 	static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
+	static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
 	static List<?> listForKey(Map<?, ?> map, Object key) {
 		if (map.containsKey(key)) return (List<?>) map.get(key);
@@ -126,6 +128,9 @@ public class FieldLayout {
 		this.ballColor = (layoutMap.containsKey("ballcolor"))
 		        ? Color.fromList((List<Integer>)layoutMap.get("ballcolor"))
 		        : DEFAULT_BALL_COLOR;
+		this.secondaryBallColor = (layoutMap.containsKey("secondaryBallColor"))
+		        ? Color.fromList((List<Integer>)layoutMap.get("secondaryBallColor"))
+		        : DEFAULT_SECONDARY_BALL_COLOR;
 		this.allParameters = layoutMap;
 		this.fieldElements = createFieldElements(layoutMap, world);
 	}
@@ -150,6 +155,10 @@ public class FieldLayout {
 	
 	public Color getBallColor() {
 		return ballColor;
+	}
+
+	public Color getSecondaryBallColor() {
+	    return secondaryBallColor;
 	}
 	
 	public int getNumberOfBalls() {

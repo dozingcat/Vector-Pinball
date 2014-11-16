@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.content.Context;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -312,15 +313,24 @@ public class Field implements ContactListener {
         	deadBalls.clear();
     	}
     }
-    
+
     /** Called by FieldView to draw the balls currently in play.
      */
     public void drawBalls(IFieldRenderer renderer) {
     	Color color = layout.getBallColor();
+    	Color secondaryColor = layout.getSecondaryBallColor();
     	for(int i=0; i<this.balls.size(); i++) {
-    		Body ball = this.balls.get(i);
-			CircleShape shape = (CircleShape)ball.getFixtureList().get(0).getShape();
-			renderer.fillCircle(ball.getPosition().x, ball.getPosition().y, shape.getRadius(), color);
+            Body ball = this.balls.get(i);
+            CircleShape shape = (CircleShape)ball.getFixtureList().get(0).getShape();
+            Vector2 center = ball.getPosition();
+            float radius = shape.getRadius();
+            renderer.fillCircle(center.x, center.y, radius, color);
+
+            // Draw a smaller circle to show the ball's rotation.
+            float angle = ball.getAngle();
+            float smallCenterX = center.x + (radius / 2) * MathUtils.cos(angle);
+            float smallCenterY = center.y + (radius / 2) * MathUtils.sin(angle);
+            renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
     	}
     }
     
