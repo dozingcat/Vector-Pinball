@@ -8,9 +8,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -91,12 +93,17 @@ public class BouncyActivity extends Activity {
         });
         */
         updateFromPreferences();
-        // initialize audio
+
+        // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
-        VPSoundpool.loadSounds();
+        (new AsyncTask<Void, Void, Void>() {
+            protected Void doInBackground(Void... params) {
+                VPSoundpool.loadSounds();
+                return null;
+            }}
+        ).execute();
         
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        
     }
 
     @Override public void onResume() {

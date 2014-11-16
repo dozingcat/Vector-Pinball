@@ -25,9 +25,10 @@ public class VPSoundpool {
 	private static int prevDing, currentDing = 0;
 	private static int andrModAmt = 10;
 	private static MediaPlayer drumbass;
-	private static boolean drumbassPlaying = false;
 	private static MediaPlayer androidpad;
     //private final static float SEMITONE = 1.059463094f;
+
+    private static volatile boolean soundsLoaded = false;
     
     static int ID_DING_START 	= 0;
     static int NUM_DINGS 		= 6;
@@ -41,17 +42,25 @@ public class VPSoundpool {
     
     static int ID_ANDROIDPAD 	= 300;
     static int ID_DRUMBASSLOOP 	= 301;
-    
+
+    private static final String LOG_TAG = "VPSoundPool";
 
     public static void initSounds(Context theContext) { 
-         Log.v("VPSoundpool", "initSounds");
+         Log.v(LOG_TAG, "initSounds");
          mContext = theContext;
          mSoundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
          mSoundPoolMap = new HashMap<Integer, Integer>(); 
          mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
     } 
 
+    // On some devices running Lollipop (seen on Nexus 5 and emulator), SoundPool slows down
+    // significantly after loading ~6 sounds, taking several seconds for each additional call to
+    // load(). To avoid blocking the main thread (and delaying the app launch), this method is
+    // called in an AsyncTask from the main activity.
+    // See https://code.google.com/p/android-developer-preview/issues/detail?id=1812
     public static void loadSounds() {
+        Log.v(LOG_TAG, "loadSounds start");
+        soundsLoaded = false;
         mSoundPoolMap.clear();
         AssetManager assets = mContext.getAssets();
         try {
@@ -71,11 +80,13 @@ public class VPSoundpool {
         	drumbass = MediaPlayer.create(mContext, R.raw.drumbassloop);
         	androidpad = MediaPlayer.create(mContext, R.raw.androidpad);
 
+            soundsLoaded = true;
+            resetMusicState();
+            Log.v(LOG_TAG, "loadSounds finished");
          }
         catch(IOException ex) {
-        	Log.e("VPSoundpool", "Error loading sounds", ex);
+        	Log.e(LOG_TAG, "Error loading sounds", ex);
         }
-        resetMusicState();
     }
     
     public static void setSoundEnabled(boolean enabled) {
@@ -90,8 +101,9 @@ public class VPSoundpool {
     }
     
     public static void resetMusicState() {
+        if (!soundsLoaded) return;
+
     	pauseMusic();
-    	drumbassPlaying = false;
     	cScore = 0;
     	andrModAmt = 10;
     	if (drumbass!=null) drumbass.seekTo(0);
@@ -99,6 +111,8 @@ public class VPSoundpool {
     }
     
     static void playSound(int soundKey, float volume, float pitch) {
+        if (!soundsLoaded) return;
+
     	if (soundEnabled && mSoundPoolMap!=null) {
     		Integer soundID = mSoundPoolMap.get(soundKey);
     		if (soundID!=null) {
@@ -108,6 +122,8 @@ public class VPSoundpool {
     }
 
     public static void playScore() {
+        if (!soundsLoaded) return;
+
     	//prevent repeated dings
     	while (currentDing == prevDing) {
         	currentDing = mRandom.nextInt(NUM_DINGS);    		
@@ -120,7 +136,6 @@ public class VPSoundpool {
     	if (musicEnabled && cScore%20 == 0 && drumbass!=null && !drumbass.isPlaying()){
     		drumbass.setVolume(1.0f, 1.0f);
     	    drumbass.start();
-    	    drumbassPlaying = true;
     	}
     	//play the androidpad after 10 scoring hits the first time
     	//then increase the mod amount each time the pad is played,
@@ -135,10 +150,12 @@ public class VPSoundpool {
     //play up to three events, each randomly pitched to a different note in the pentatonic scale
     //the rollover ding is E, so in semitones, the other pitches are -4 (C), -2 (D), +3 (G), +5 (A), +8 (C)
     //for Soundpool, that translate to:  0.7937008 (C), 0.8908991 (D), 1.1892079 (G), 1.3348408 (A), 1.5874025 (C)
-    private static float[] PITCHES = {0.7937008f, 0.8908991f, 1f, 1.1892079f, 1.3348408f, 1.5874025f};
-    private static float ROLLOVER_DURATION = 0.3f;
+    private static final float[] PITCHES = {0.7937008f, 0.8908991f, 1f, 1.1892079f, 1.3348408f, 1.5874025f};
+    private static final float ROLLOVER_DURATION = 0.3f;
 
     public static void playRollover() {
+        if (!soundsLoaded) return;
+
     	int p1 = mRandom.nextInt(6);
     	int p2 = mRandom.nextInt(6);
     	int p3 = mRandom.nextInt(6);
@@ -171,6 +188,8 @@ public class VPSoundpool {
     }
     
     public static void pauseMusic() {
+        if (!soundsLoaded) return;
+
     	if (drumbass!=null && drumbass.isPlaying()) {
             drumbass.pause();
     	}
@@ -178,19 +197,9 @@ public class VPSoundpool {
     		androidpad.pause();
     	}
     }
-    public static void resumeMusic() {
-    	if (drumbass!=null && drumbassPlaying) {
-    		drumbass.start();
-    	}
-        //androidpad.start();
-    }
-    public static void stopMusic() {
-        if (drumbass!=null) drumbass.stop();
-        drumbassPlaying = false;
-        if (androidpad!=null) androidpad.stop();
-    }
-    
+
     public static void cleanup() {
+        Log.v(LOG_TAG, "cleanup start");
         mSoundPool.release();
         mSoundPool = null;
         mSoundPoolMap.clear();
@@ -199,5 +208,6 @@ public class VPSoundpool {
         drumbass = null;
         androidpad.release();
         androidpad = null;
+        Log.v(LOG_TAG, "cleanup finished");
     }
 }
