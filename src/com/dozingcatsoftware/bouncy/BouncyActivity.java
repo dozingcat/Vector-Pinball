@@ -199,7 +199,7 @@ public class BouncyActivity extends Activity {
     // Update settings from preferences, called at launch and when preferences activity finishes
     void updateFromPreferences() {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", false));
+    	fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", true));
     	scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
     	
     	// if switching quality modes or OpenGL/Canvas, reset frame rate manager because maximum achievable frame rate may change
