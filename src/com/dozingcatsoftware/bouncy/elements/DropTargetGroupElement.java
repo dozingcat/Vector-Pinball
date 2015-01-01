@@ -14,7 +14,7 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /**
- * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all 
+ * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all
  * targets are hit, the Field delegate is notified, and if the reset parameter is set, the targets will reappear after
  * a delay.
  *
@@ -44,21 +44,31 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  *   "gapBetweenTargets": 0.2,
  *   "numTargets": 4
  * }
- * 
+ *
  */
 
 public class DropTargetGroupElement extends FieldElement {
 
+    public static final String POSITIONS_PROPERTY = "positions";
+    public static final String WALL_START_PROPERTY = "wallStart";
+    public static final String WALL_END_PROPERTY = "wallEnd";
+    public static final String GAP_FROM_WALL_PROPERTY = "gapFromWall";
+    public static final String START_DISTANCE_ALONG_WALL_PROPERTY = "startDistanceAlongWall";
+    public static final String TARGET_WIDTH_PROPERTY = "targetWidth";
+    public static final String GAP_BETWEEN_TARGETS_PROPERTY = "gapBetweenTargets";
+    public static final String RESET_DELAY_PROPERTY = "reset";
+    public static final String NUM_TARGETS_PROPERTY = "numTargets";
+
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
-	
+
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
 	List<Body> allBodies = new ArrayList<Body>();
 	float[][] positions;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		// Individual targets can be specified in "positions" list.
-	    if (hasParameterKey("positions")) {
-	        List<List<Number>> positionList = (List) getRawParameterValueForKey("positions");
+	    if (hasParameterKey(POSITIONS_PROPERTY)) {
+	        List<List<Number>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
 	        positions = new float[positionList.size()][];
 	        for (int i = 0; i < positionList.size(); i++) {
 	            List<Number> coords = positionList.get(i);
@@ -67,13 +77,13 @@ public class DropTargetGroupElement extends FieldElement {
 	        }
 	    }
 	    else {
-	        float[] wallStart = getFloatArrayParameterValueForKey("wallStart");
-	        float[] wallEnd = getFloatArrayParameterValueForKey("wallEnd");
-	        float gapFromWall = getFloatParameterValueForKey("gapFromWall");
-	        float startDistanceAlongWall = getFloatParameterValueForKey("startDistanceAlongWall");
-	        float targetWidth = getFloatParameterValueForKey("targetWidth");
-	        float gapBetweenTargets = getFloatParameterValueForKey("gapBetweenTargets");
-	        int numTargets = getIntParameterValueForKey("numTargets");
+	        float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
+	        float[] wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
+	        float gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
+	        float startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
+	        float targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
+	        float gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
+	        int numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
 	        positions = new float[numTargets][];
 	        double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
@@ -105,7 +115,7 @@ public class DropTargetGroupElement extends FieldElement {
 	@Override public List<Body> getBodies() {
 		return allBodies;
 	}
-	
+
 	/** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
 	public boolean allTargetsHit() {
 		int bsize = allBodies.size();
@@ -120,18 +130,19 @@ public class DropTargetGroupElement extends FieldElement {
 		// if all hit, notify delegate and check for reset parameter
 		if (allTargetsHit()) {
 			field.getDelegate().allDropTargetsInGroupHit(field, this);
-			
-			float restoreTime = asFloat(this.parameters.get("reset"));
+
+			float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
 			if (restoreTime>0) {
 				field.scheduleAction((long)(restoreTime*1000), new Runnable() {
-					public void run() {
+					@Override
+                    public void run() {
 						makeAllTargetsVisible();
 					}
 				});
 			}
 		}
 	}
-	
+
 	/** Makes all targets visible by calling Body.setActive(true) on each target body */
 	public void makeAllTargetsVisible() {
 		int bsize = allBodies.size();
@@ -139,7 +150,7 @@ public class DropTargetGroupElement extends FieldElement {
 			allBodies.get(i).setActive(true);
 		}
 	}
-	
+
 	@Override public void draw(IFieldRenderer renderer) {
 		// draw line for each target
 	    Color color = currentColor(DEFAULT_COLOR);

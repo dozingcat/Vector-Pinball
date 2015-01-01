@@ -14,43 +14,47 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /** This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits. The impulse magnitude is controlled
- * by the "kick" parameter in the configuration map. 
+ * by the "kick" parameter in the configuration map.
  */
 
 public class BumperElement extends FieldElement {
+
+    public static final String POSITION_PROPERTY = "position";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String KICK_PROPERTY = "kick";
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
 	Body pegBody;
 	List pegBodySet;
-	
+
 	float radius;
 	float cx, cy;
 	float kick;
-	
+
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List pos = (List)params.get("position");
-		this.radius = asFloat(params.get("radius"));
+		List pos = (List)params.get(POSITION_PROPERTY);
+		this.radius = asFloat(params.get(RADIUS_PROPERTY));
 		this.cx = asFloat(pos.get(0));
 		this.cy = asFloat(pos.get(1));
-		this.kick = asFloat(params.get("kick"));
+		this.kick = asFloat(params.get(KICK_PROPERTY));
 	}
-	
+
 	@Override public void createBodies(World world) {
 		pegBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
 		pegBodySet = Collections.singletonList(pegBody);
 	}
-	
+
 	@Override public List<Body> getBodies() {
 		return pegBodySet;
 	}
-	
+
 	@Override public boolean shouldCallTick() {
 		// needs to call tick to decrement flash counter (but can use superclass tick() implementation)
 		return true;
 	}
 
-		
+
 	Vector2 impulseForBall(Body ball) {
 		if (this.kick <= 0.01f) return null;
 		// compute unit vector from center of peg to ball, and scale by kick value to get impulse

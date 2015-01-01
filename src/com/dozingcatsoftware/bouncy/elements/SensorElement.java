@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy.elements;
 
+import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,46 +11,49 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
-import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 
 /**
  * This FieldElement subclass is used to identify areas on the table that should cause custom behavior
  * when the ball enters. SensorElements have no bodies and don't draw anything. The area they monitor
  * can be a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list, or a circle defined
  * by the "center" and "radius" parameters. During every tick() invocation, a sensor determines if any of
- * the field's balls are within its area, and if so calls the field delegate's ballInSensorRange method. 
+ * the field's balls are within its area, and if so calls the field delegate's ballInSensorRange method.
  * @author brian
  *
  */
 
 public class SensorElement extends FieldElement {
-	
+
+    public static final String CENTER_PROPERTY = "center";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String RECT_PROPERTY = "rect";
+
 	float xmin, ymin, xmax, ymax;
 	boolean circular = false;
 	float cx, cy; // center for circular areas
-	float radiusSquared; 
+	float radiusSquared;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		if (params.containsKey("center") && params.containsKey("radius")) {
-			this.circular = true;
-			List centerPos = (List)params.get("center");
-			this.cx = asFloat(centerPos.get(0));
-			this.cy = asFloat(centerPos.get(1));
-			float radius = asFloat(params.get("radius"));
-			this.radiusSquared = radius*radius;
-			// create bounding box to allow rejecting balls without making distance calculations
-			this.xmin = this.cx - radius/2;
-			this.xmax = this.cx + radius/2;
-			this.ymin = this.cy - radius/2;
-			this.ymax = this.cy + radius/2;
-		}
-		else {
-			List rectPos = (List)params.get("rect");
-			this.xmin = asFloat(rectPos.get(0));
-			this.ymin = asFloat(rectPos.get(1));
-			this.xmax = asFloat(rectPos.get(2));
-			this.ymax = asFloat(rectPos.get(3));
-		}
+        if (params.containsKey(CENTER_PROPERTY) && params.containsKey(RADIUS_PROPERTY)) {
+            this.circular = true;
+            List centerPos = (List)params.get(CENTER_PROPERTY);
+            this.cx = asFloat(centerPos.get(0));
+            this.cy = asFloat(centerPos.get(1));
+            float radius = asFloat(params.get(RADIUS_PROPERTY));
+            this.radiusSquared = radius*radius;
+            // create bounding box to allow rejecting balls without making distance calculations
+            this.xmin = this.cx - radius/2;
+            this.xmax = this.cx + radius/2;
+            this.ymin = this.cy - radius/2;
+            this.ymax = this.cy + radius/2;
+        }
+        else {
+            List rectPos = (List)params.get(RECT_PROPERTY);
+            this.xmin = asFloat(rectPos.get(0));
+            this.ymin = asFloat(rectPos.get(1));
+            this.xmax = asFloat(rectPos.get(2));
+            this.ymax = asFloat(rectPos.get(3));
+        }
 	}
 
 	@Override public void createBodies(World world) {
@@ -58,7 +63,7 @@ public class SensorElement extends FieldElement {
 	@Override public boolean shouldCallTick() {
 		return true;
 	}
-	
+
 	boolean ballInRange(Body ball) {
 		Vector2 bpos = ball.getPosition();
 		// test against rect
@@ -72,7 +77,7 @@ public class SensorElement extends FieldElement {
 		}
 		return true;
 	}
-	
+
 	@Override public void tick(Field field) {
 		List<Body> balls = field.getBalls();
 		for(int i=0; i<balls.size(); i++) {

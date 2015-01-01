@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy.elements;
 
+import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +15,6 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 import com.dozingcatsoftware.bouncy.VPSoundpool;
 
-import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
-
 /**
  * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
  * (and optionally deactivated) when a ball passes over them. Individual rollovers in the group are represented by
@@ -24,7 +24,18 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
  */
 
 public class RolloverGroupElement extends FieldElement {
-	
+
+    public static final String TOGGLE_OFF_PROPERTY = "toggleOff";
+    public static final String CYCLE_ON_FLIPPER_PROPERTY = "cycleOnFlipper";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String RESET_DELAY_PROPERTY = "reset";
+    public static final String ROLLOVERS_PROPERTY = "rollovers";
+    // For individual rollovers.
+    public static final String POSITION_PROPERTY = "position";
+    public static final String COLOR_PROPERTY = "color";
+    public static final String SCORE_PROPERTY = "score";
+
 	static class Rollover {
 		float cx, cy;
 		float radius;
@@ -35,7 +46,7 @@ public class RolloverGroupElement extends FieldElement {
 	}
 
 	static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
-	
+
 	boolean cycleOnFlipper;
 	boolean canToggleOff;
 	boolean ignoreBall;
@@ -44,30 +55,34 @@ public class RolloverGroupElement extends FieldElement {
 	List<Rollover> rollovers = new ArrayList<Rollover>();
 	List<Rollover> activeRollovers = new ArrayList<Rollover>();
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
-    
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		this.canToggleOff = Boolean.TRUE.equals(params.get("toggleOff"));
-		this.cycleOnFlipper = Boolean.TRUE.equals(params.get("cycleOnFlipper"));
-		this.ignoreBall = Boolean.TRUE.equals(params.get("ignoreBall"));
-		this.defaultRadius = asFloat(params.get("radius"));
-		this.defaultResetDelay = asFloat(params.get("reset"));
-		
-		List<Map> rolloverMaps = (List<Map>)params.get("rollovers");
-		for(Map rmap : rolloverMaps) {
-			Rollover rollover = new Rollover();
-			rollovers.add(rollover);
-			
-			List pos = (List)rmap.get("position");
-			rollover.cx = asFloat(pos.get(0));
-			rollover.cy = asFloat(pos.get(1));
-			// radius, color, score, and reset delay can be specified for each rollover, if not present use default from group
-			rollover.radius = (rmap.containsKey("radius")) ? asFloat(rmap.get("radius")) : this.defaultRadius;
-			rollover.color = (rmap.containsKey("color")) ? Color.fromList((List<Integer>)rmap.get("color")) : null;
-			rollover.score = (rmap.containsKey("score")) ? ((Number)rmap.get("score")).longValue() : this.score;
-			rollover.resetDelay = (rmap.containsKey("reset")) ? asFloat(rmap.get("reset")) : this.defaultResetDelay;
 
-			rollover.radiusSquared = rollover.radius * rollover.radius;
-		}
+	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+        this.canToggleOff = Boolean.TRUE.equals(params.get(TOGGLE_OFF_PROPERTY));
+        this.cycleOnFlipper = Boolean.TRUE.equals(params.get(CYCLE_ON_FLIPPER_PROPERTY));
+        this.ignoreBall = Boolean.TRUE.equals(params.get(IGNORE_BALL_PROPERTY));
+        this.defaultRadius = asFloat(params.get(RADIUS_PROPERTY));
+        this.defaultResetDelay = asFloat(params.get(RESET_DELAY_PROPERTY));
+
+        List<Map> rolloverMaps = (List<Map>)params.get(ROLLOVERS_PROPERTY);
+        for(Map rmap : rolloverMaps) {
+            Rollover rollover = new Rollover();
+            rollovers.add(rollover);
+
+            List pos = (List)rmap.get(POSITION_PROPERTY);
+            rollover.cx = asFloat(pos.get(0));
+            rollover.cy = asFloat(pos.get(1));
+            // radius, color, score, and reset delay can be specified for each rollover, if not present use default from group
+            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ?
+                    asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
+            rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ?
+                    Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
+            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ?
+                    ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
+            rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ?
+                    asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
+
+            rollover.radiusSquared = rollover.radius * rollover.radius;
+        }
 	}
 
 	@Override public void createBodies(World world) {
@@ -77,13 +92,13 @@ public class RolloverGroupElement extends FieldElement {
 	@Override public List<Body> getBodies() {
 		return Collections.EMPTY_LIST;
 	}
-	
+
 	List<Rollover> hitRollovers = new ArrayList<Rollover>(); // avoid object allocation in rolloversHitByBalls
-	
+
 	/** Returns a set of all rollovers which have balls within their specified radius. */
 	protected List<Rollover> rolloversHitByBalls(List<Body> balls) {
 		hitRollovers.clear();
-		
+
 		int rsize = this.rollovers.size();
 		for(int i=0; i<rsize; i++) {
 			Rollover rollover = this.rollovers.get(i);
@@ -105,12 +120,12 @@ public class RolloverGroupElement extends FieldElement {
 		}
 		return hitRollovers;
 	}
-	
+
 	/** Returns true if all rollovers in the group are active. */
 	public boolean allRolloversActive() {
 		return activeRollovers.size() == rollovers.size();
 	}
-	
+
 	/** Activates the first unactivated rollover in the group. Has no effect if all are active.
 	 */
 	public void activateFirstUnactivatedRollover() {
@@ -123,15 +138,15 @@ public class RolloverGroupElement extends FieldElement {
 			}
 		}
 	}
-	
+
 	public int numberOfRollovers() {
 		return rollovers.size();
 	}
-	
+
 	public boolean isRolloverActiveAtIndex(int index) {
 		return activeRollovers.contains(rollovers.get(index));
 	}
-	
+
 	public void setRolloverActiveAtIndex(int index, boolean active) {
 		Rollover r = rollovers.get(index);
 		if (active) {
@@ -141,7 +156,7 @@ public class RolloverGroupElement extends FieldElement {
 			activeRollovers.remove(r);
 		}
 	}
-	
+
 	@Override
 	public boolean shouldCallTick() {
 		return true;
@@ -149,7 +164,7 @@ public class RolloverGroupElement extends FieldElement {
 
 	@Override public void tick(Field field) {
 		if (this.ignoreBall) return;
-		
+
 		boolean allActivePrevious = this.allRolloversActive();
 		List<Rollover> hitRollovers = rolloversHitByBalls(field.getBalls());
 		// only update rollovers that are hit on this tick and weren't on the previous tick
@@ -164,7 +179,8 @@ public class RolloverGroupElement extends FieldElement {
 				// set timer to clear rollover if reset parameter is present and >0
 				if (rollover.resetDelay > 0) {
 					field.scheduleAction((long)(rollover.resetDelay*1000), new Runnable() {
-						public void run() {
+						@Override
+                        public void run() {
 							activeRollovers.remove(rollover);
 						}
 					});
@@ -176,18 +192,18 @@ public class RolloverGroupElement extends FieldElement {
 				VPSoundpool.playRollover();
 			}
 		}
-		
+
 		rolloversHitOnPreviousTick.clear();
         for(int i = 0; i < hitRollovers.size(); i++) {
             rolloversHitOnPreviousTick.add(hitRollovers.get(i));
         }
-		
+
 		// notify delegate if all rollovers are now active and they weren't previously
 		if (!allActivePrevious && allRolloversActive()) {
 			field.getDelegate().allRolloversInGroupActivated(field, this);
 		}
 	}
-	
+
 	@Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
 		if (this.cycleOnFlipper) {
 			// cycle to right if any right flipper is activated
@@ -198,10 +214,10 @@ public class RolloverGroupElement extends FieldElement {
 			this.cycleRollovers(hasRightFlipper);
 		}
 	}
-	
+
 	List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
 	/** Cycles the states of all rollover elements by "rotating" left or right. For example, if this group has three rollovers
-	 * whose states are (on, on, off), after calling this method with toRight=true the states will be (off, on, on). 
+	 * whose states are (on, on, off), after calling this method with toRight=true the states will be (off, on, on).
 	 * The state of the last rollover wraps around to the first, so (off, off, on) -> (on, off, off).
 	 */
 	public void cycleRollovers(boolean toRight) {
@@ -213,13 +229,13 @@ public class RolloverGroupElement extends FieldElement {
 				newActiveRollovers.add(this.rollovers.get(i));
 			}
 		}
-		
+
 		this.activeRollovers.clear();
 		for(int i=0; i<newActiveRollovers.size(); i++) {
 			this.activeRollovers.add(newActiveRollovers.get(i));
 		}
 	}
-	
+
 	/** Sets all rollovers to be active or inactive according to the boolean argument.
 	 */
 	public void setAllRolloversActivated(boolean active) {
@@ -232,14 +248,14 @@ public class RolloverGroupElement extends FieldElement {
 	@Override public void draw(IFieldRenderer renderer) {
 		// default color defined at the group level
 	    Color groupColor = currentColor(DEFAULT_COLOR);
-		
+
 		// for each rollover, draw outlined circle for inactive or filled circle for active
 		int rsize = this.rollovers.size();
 		for(int i=0; i<rsize; i++) {
 			Rollover rollover = this.rollovers.get(i);
 			// use custom rollover color if available
 			Color color = (rollover.color != null) ? rollover.color : groupColor;
-			
+
 			if (activeRollovers.contains(rollover)) {
 				renderer.fillCircle(rollover.cx, rollover.cy, rollover.radius, color);
 			}
@@ -247,6 +263,5 @@ public class RolloverGroupElement extends FieldElement {
 				renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, color);
 			}
 		}
-		
 	}
 }

@@ -11,7 +11,7 @@ import com.dozingcatsoftware.bouncy.elements.SensorElement;
 import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field2Delegate extends BaseFieldDelegate {
-	
+
 	static final double TAU = 2*Math.PI; // pi is wrong
 
 	static class RotatingGroup {
@@ -22,8 +22,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 		double startAngle;
 		double currentAngle;
 		double angleIncrement;
-		Vector2 tempVector = new Vector2();
-		
+
 		public RotatingGroup(String[] ids, double cx, double cy, double radius, double startAngle, double speed) {
 			this.elementIDs = ids;
 			this.centerX = cx;
@@ -33,7 +32,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			this.startAngle = this.currentAngle = startAngle;
 			this.angleIncrement = TAU / ids.length;
 		}
-		
+
 		/** Creates a RotatingGroup by computing the distance and angle to center from the first element ID in the ids array.
 		 */
 		public static RotatingGroup create(Field field, String[] ids, double cx, double cy, double speed) {
@@ -44,34 +43,33 @@ public class Field2Delegate extends BaseFieldDelegate {
 			double angle = Math.atan2(position.y - cy, position.x - cx);
 			return new RotatingGroup(ids, cx, cy, radius, angle, speed);
 		}
-		
+
 		public void applyRotation(Field field, double dt) {
 			currentAngle += dt*rotationSpeed;
 			if (currentAngle>TAU) currentAngle -= TAU;
 			if (currentAngle<0) currentAngle += TAU;
 			for(int i=0; i<elementIDs.length; i++) {
 				double angle = currentAngle + angleIncrement*i;
-				
+
 				FieldElement element = field.getFieldElementByID(elementIDs[i]);
 				Body body = element.getBodies().get(0);
 				double x = centerX + radius*Math.cos(angle);
 				double y = centerY + radius*Math.sin(angle);
-				tempVector.set((float)x, (float)y);
-				body.setTransform(tempVector, 0);
+				body.setTransform((float)x, (float)y, body.getAngle());
 			}
 		}
-		
-		
+
+
 	}
 
 	RotatingGroup[] rotatingGroups;
-	
+
 	RotatingGroup createRotatingGroup(Field field, String centerID, String[] ids, double speed) {
 		FieldElement centerElement = field.getFieldElementByID(centerID);
 		Vector2 centerPosition = centerElement.getBodies().get(0).getPosition();
 		return RotatingGroup.create(field, ids, centerPosition.x, centerPosition.y, speed);
 	}
-	
+
 	void setupRotatingGroups(Field field) {
 		float b1Speed = ((Number)field.getValueWithKey("RotatingBumper1Speed")).floatValue();
 		float b2Speed = ((Number)field.getValueWithKey("RotatingBumper2Speed")).floatValue();
@@ -83,11 +81,12 @@ public class Field2Delegate extends BaseFieldDelegate {
 		};
 	}
 
-	public void tick(Field field, long nanos) {
+	@Override
+    public void tick(Field field, long nanos) {
 		if (rotatingGroups==null) {
 			setupRotatingGroups(field);
 		}
-		
+
 		double seconds = nanos/1e9;
 		for(int i=0; i<rotatingGroups.length; i++) {
 			rotatingGroups[i].applyRotation(field, seconds);
@@ -97,14 +96,15 @@ public class Field2Delegate extends BaseFieldDelegate {
 	void startMultiball(final Field field) {
 		field.showGameMessage("Multiball!", 2000);
 		Runnable launchBall = new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				if (field.getBalls().size()<3) field.launchBall();
 			}
 		};
 		field.scheduleAction(1000, launchBall);
 		field.scheduleAction(3500, launchBall);
 	}
-	
+
 	/** Always return true so the rotating bumpers animate smoothly */
 	@Override
 	public boolean isFieldActive(Field field) {
@@ -118,7 +118,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 		field.getGameState().incrementScoreMultiplier();
 		field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
 	}
-	
+
 	@Override
 	public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
 		// when center red bumper is hit, start multiball if all center rollovers are lit, otherwise retract left barrier
@@ -135,7 +135,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			else {
 				// don't retract during multiball
 				if (field.getBalls().size()==1) {
-					barrier.setRetracted(true);				
+					barrier.setRetracted(true);
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 		else if ("DropTargetTopLeft".equals(id)) {
 			startRolloverIndex = 1;
 		}
-		
+
 		// activate next rollover for appropriate column if possible
 		if (startRolloverIndex>=0) {
 			RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
@@ -167,7 +167,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			while (startRolloverIndex < numRollovers) {
 				if (!multiballRollovers.isRolloverActiveAtIndex(startRolloverIndex)) {
 					multiballRollovers.setRolloverActiveAtIndex(startRolloverIndex, true);
-					
+
 					if (multiballRollovers.allRolloversActive()) {
 						field.showGameMessage("Shoot Red Bumper", 1500);
 					}
@@ -178,7 +178,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 				}
 			}
 		}
-		
+
 	}
 
 	// support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
@@ -190,7 +190,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	@Override
 	public void ballInSensorRange(final Field field, SensorElement sensor, Body ball) {
 		String sensorID = sensor.getElementID();
-		// enable launch barrier 
+		// enable launch barrier
 		if ("LaunchBarrierSensor".equals(sensorID)) {
 			setLaunchBarrierEnabled(field, true);
 		}
@@ -201,7 +201,8 @@ public class Field2Delegate extends BaseFieldDelegate {
 			if (ball.getLinearVelocity().y > 0) {
 				// ball going up, retract barrier after delay
 				field.scheduleAction(1000, new Runnable() {
-					public void run() {
+					@Override
+                    public void run() {
 						WallElement barrier = (WallElement)field.getFieldElementByID("LeftTubeBarrier");
 						barrier.setRetracted(false);
 					}
@@ -209,7 +210,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			}
 		}
 	}
-	
+
 	@Override
 	public void gameStarted(Field field) {
 		setLaunchBarrierEnabled(field, false);

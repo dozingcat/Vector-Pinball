@@ -24,8 +24,8 @@ public class Color {
         return new Color(r, g, b, null);
     }
 
-    public static Color fromList(List<Integer> rgb) {
-        return fromRGB(rgb.get(0), rgb.get(1), rgb.get(2));
+    public static Color fromList(List<Number> rgb) {
+        return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue());
     }
 
     public Color inverted() {

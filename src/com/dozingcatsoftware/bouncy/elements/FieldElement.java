@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
-import com.dozingcatsoftware.bouncy.Point;
 
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
@@ -18,15 +17,20 @@ import com.dozingcatsoftware.bouncy.Point;
 
 public abstract class FieldElement {
 
-	Map parameters;
+    public static final String CLASS_PROPERTY = "class";
+    public static final String ID_PROPERTY = "id";
+    public static final String SCORE_PROPERTY = "score";
+    public static final String COLOR_PROPERTY = "color";
+
+    Map parameters;
 	World box2dWorld;
 	String elementID;
 	Color initialColor;
 	Color newColor;
-	
+
 	int flashCounter=0; // when >0, inverts colors (e.g. after being hit by the ball), decrements in tick()
 	long score = 0;
-	
+
 	// default wall color shared by WallElement, WallArcElement, WallPathElement
 	static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
 
@@ -39,7 +43,7 @@ public abstract class FieldElement {
 	        super(message);
 	    }
 	}
-	
+
 	/**
 	 * Creates and returns a FieldElement object from the given map of parameters. The class to
 	 * instantiate is given by the "class" property of the parameter map. Calls the no-argument
@@ -48,12 +52,12 @@ public abstract class FieldElement {
 	 */
 	public static FieldElement createFromParameters(Map params, FieldElementCollection collection, World world)
 	        throws DependencyNotAvailableException {
-	    if (!params.containsKey("class")) {
+	    if (!params.containsKey(CLASS_PROPERTY)) {
 	        throw new IllegalArgumentException("class not specified for element: " + params);
 	    }
 	    Class elementClass = null;
 		// if package not specified, use this package
-		String className = (String)params.get("class");
+		String className = (String)params.get(CLASS_PROPERTY);
 		if (className.indexOf('.')==-1) {
 			className = "com.dozingcatsoftware.bouncy.elements." + className;
 		}
@@ -63,7 +67,7 @@ public abstract class FieldElement {
 		catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-			
+
 		FieldElement self;
         try {
             self = (FieldElement) elementClass.newInstance();
@@ -85,22 +89,22 @@ public abstract class FieldElement {
 	        throws DependencyNotAvailableException {
 		this.parameters = params;
 		this.box2dWorld = world;
-		this.elementID = (String)params.get("id");
-		
-		List<Integer> colorList = (List<Integer>)params.get("color");
+		this.elementID = (String)params.get(ID_PROPERTY);
+
+		List<Number> colorList = (List<Number>)params.get(COLOR_PROPERTY);
 		if (colorList!=null) {
 			this.initialColor = Color.fromList(colorList);
 		}
-		
-		if (params.containsKey("score")) {
-			this.score = ((Number)params.get("score")).longValue();
+
+		if (params.containsKey(SCORE_PROPERTY)) {
+			this.score = ((Number)params.get(SCORE_PROPERTY)).longValue();
 		}
-		
+
 		this.finishCreateElement(params, collection);
 		this.createBodies(world);
 	}
 
-	/** Called after creation to determine if tick() needs to be called after every frame is simulated. Default returns false, 
+	/** Called after creation to determine if tick() needs to be called after every frame is simulated. Default returns false,
 	 * subclasses must override to return true in order for tick() to be called. This is an optimization to avoid needless
 	 * method calls in the game loop.
 	 */
@@ -114,13 +118,13 @@ public abstract class FieldElement {
 	public void tick(Field field) {
 		if (flashCounter>0) flashCounter--;
 	}
-	
+
 	/** Called when the player activates one or more flippers. The default implementation does nothing; subclasses can override.
 	 */
 	public void flippersActivated(Field field, List<FlipperElement> flippers) {
-		
+
 	}
-	
+
 	/** Causes the colors returned by red/blue/greenColorComponent methods to be inverted for the given number of frames. This can be used
 	 * to flash an element when it is hit by a ball, see PegElement.
 	 */
@@ -149,19 +153,19 @@ public abstract class FieldElement {
 	/** Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
 	 */
 	public abstract void draw(IFieldRenderer renderer);
-	
+
 	/** Called when a ball collides with a Body in this element. The default implementation does nothing (allowing objects to
 	 * bounce off each other normally), subclasses can override (e.g. to apply extra force)
 	 */
 	public void handleCollision(Body ball, Body bodyHit, Field field) {
 	}
-	
+
 	/** Returns this element's ID as specified in the JSON definition, or null if the ID is not specified.
 	 */
 	public String getElementID() {
 		return elementID;
 	}
-	
+
 	/** Returns the parameter map from which this element was created.
 	 */
 	public Map getParameters() {
@@ -230,21 +234,5 @@ public abstract class FieldElement {
 	            this.newColor :
 	            (this.initialColor != null) ? this.initialColor : defaultColor;
 	    return (flashCounter > 0) ? baseColor.inverted() : baseColor;
-	}
-
-	/**
-	 * Returns the point at which this element starts, for example the first endpoint of a wall.
-	 * Default implementation throws UnsupportedOperationException, subclasses should override.
-	 */
-	public Point getStartPoint() {
-	    throw new UnsupportedOperationException();
-	}
-
-    /**
-     * Returns the point at which this element ends, for example the second endpoint of a wall.
-     * Default implementation throws UnsupportedOperationException, subclasses should override.
-     */
-	public Point getEndPoint() {
-	    throw new UnsupportedOperationException();
 	}
 }

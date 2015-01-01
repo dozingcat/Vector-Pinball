@@ -18,17 +18,18 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 	public CanvasFieldView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	
+
 	FieldViewManager manager;
-	
+
 	Paint paint = new Paint(); {paint.setAntiAlias(true);}
 	Paint textPaint = new Paint(); {textPaint.setARGB(255, 255, 255, 255);}
 	Canvas canvas;
 
-	public void setManager(FieldViewManager value) {
+	@Override
+    public void setManager(FieldViewManager value) {
 		this.manager = value;
 	}
-	
+
 
     /** Called when the view is touched. Activates flippers, starts a new game if one is not in progress, and
      * launches a ball if one is not in play.
@@ -37,7 +38,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     public boolean onTouchEvent(MotionEvent event) {
 		return manager.handleTouchEvent(event);
     }
-	
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return manager.handleKeyDown(keyCode, event);
@@ -51,20 +52,20 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 	/** Main draw method, called from FieldDriver's game thread. Calls each FieldElement's draw() method passing
 	 * itself as the IFieldRenderer implementation.
 	 */
-	public void doDraw() {
+	@Override public void doDraw() {
 		Canvas c = this.getHolder().lockCanvas();
 		if (c == null) return;
 		c.drawARGB(255, 0, 0, 0);
 		paint.setStrokeWidth(manager.highQuality ? 2 : 0);
 		// call draw() on each FieldElement, draw balls separately
 		this.canvas = c;
-		
+
 		for(FieldElement element : manager.getField().getFieldElementsArray()) {
 			element.draw(this);
 		}
 
 		manager.getField().drawBalls(this);
-		
+
 		if (manager.showFPS()) {
 			if (manager.getDebugMessage()!=null) {
 				c.drawText(""+manager.getDebugMessage(), 10, 10, textPaint);
@@ -72,20 +73,20 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 		}
 		this.getHolder().unlockCanvasAndPost(c);
 	}
-	
-	
+
+
 	// Implementation of IFieldRenderer drawing methods that FieldElement classes can call. Assumes cacheScaleAndOffsets has been called.
 	@Override
 	public void drawLine(float x1, float y1, float x2, float y2, Color color) {
 		this.paint.setARGB(255, color.red, color.green, color.blue);
 		this.canvas.drawLine(manager.world2pixelX(x1), manager.world2pixelY(y1), manager.world2pixelX(x2), manager.world2pixelY(y2), this.paint);
 	}
-	
+
 	@Override
 	public void fillCircle(float cx, float cy, float radius, Color color) {
 		drawCircle(cx, cy, radius, color, Paint.Style.FILL);
 	}
-	
+
 	@Override
 	public void frameCircle(float cx, float cy, float radius, Color color) {
 		drawCircle(cx, cy, radius, color, Paint.Style.STROKE);
@@ -97,5 +98,5 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 		float rad = radius * manager.getCachedScale();
 		this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);
 	}
-	
+
 }
