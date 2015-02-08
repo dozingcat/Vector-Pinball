@@ -289,9 +289,11 @@ public class Field implements ContactListener {
 
 
     ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
-    /** Removes balls that are not in play, as determined by optional "deadzone" property of launch parameters in field layout.
+    /**
+     * Removes balls that are not in play, as determined by optional "deadzone" property of
+     * launch parameters in field layout.
      */
-    public void handleDeadBalls() {
+    public void removeDeadBalls() {
     	List<Float> deadRect = layout.getLaunchDeadZone();
     	if (deadRect==null) return;
 
@@ -308,11 +310,7 @@ public class Field implements ContactListener {
     	for(int i=0; i<deadBalls.size(); i++) {
     		this.balls.remove(deadBalls.get(i));
     	}
-
-    	if (deadBalls.size()>0) {
-    		launchBall();
-        	deadBalls.clear();
-    	}
+    	deadBalls.clear();
     }
 
     /** Called by FieldView to draw the balls currently in play.

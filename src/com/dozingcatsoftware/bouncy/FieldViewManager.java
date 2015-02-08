@@ -196,7 +196,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	void doFlippers(boolean launch, boolean left, boolean right) {
 	    if (launch) {
             // remove "dead" balls and launch if none already in play
-            field.handleDeadBalls();
+            field.removeDeadBalls();
             if (field.getBalls().size()==0) field.launchBall();
 	    }
 	    if (left && right) {

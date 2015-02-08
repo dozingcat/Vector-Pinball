@@ -4,11 +4,11 @@
 		"height": 30,
 		
 		"delegate": "Field1Delegate",
-		"targetTimeRatio": 2.3,
-		"gravity": 4.0,
+		"targetTimeRatio": "2.3",
+		"gravity": "4.0",
 		
 		"numballs": 3,
-		"ballradius": 0.5,
+		"ballradius": "0.5",
 		"ballcolor": [192, 192, 224],
 		"launchPosition": ["19.3", "3.0"],
 		"launchVelocity": ["0", "15.4"],

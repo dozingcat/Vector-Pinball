@@ -123,10 +123,6 @@ public class FieldLayout {
 	static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
 	static List<?> listForKey(Map<?, ?> map, Object key) {
-        Set<?> keys = map.keySet();
-        if (keys.contains("launchPosition")) {
-            System.out.println("wtf");
-        }
 		if (map.containsKey(key)) return (List<?>) map.get(key);
 		return Collections.EMPTY_LIST;
 	}
