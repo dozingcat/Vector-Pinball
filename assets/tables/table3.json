@@ -10,7 +10,10 @@
         "numballs": 3,
         "ballradius": 0.5,
         "ballcolor": [192, 192, 224],
-        "launch": {"position": [19.3, 3.0], "velocity": [0, 16.0], "random_velocity": [0, 0.6], "deadzone": [18.8, 0, 20, 1.4]},
+        "launchPosition": ["19.3", "3.0"],
+        "launchVelocity": ["0", "16.0"],
+        "launchVelocityRandomDelta": ["0", "0.6"],
+        "launchDeadZone": ["18.8", "0", "20", "1.4"],
         
         "variables": {
         },

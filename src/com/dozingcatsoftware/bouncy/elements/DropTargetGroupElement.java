@@ -68,10 +68,10 @@ public class DropTargetGroupElement extends FieldElement {
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		// Individual targets can be specified in "positions" list.
 	    if (hasParameterKey(POSITIONS_PROPERTY)) {
-	        List<List<Number>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+	        List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
 	        positions = new float[positionList.size()][];
 	        for (int i = 0; i < positionList.size(); i++) {
-	            List<Number> coords = positionList.get(i);
+	            List<Object> coords = positionList.get(i);
 	            positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
                                             asFloat(coords.get(2)), asFloat(coords.get(3))};
 	        }

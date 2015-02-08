@@ -1,6 +1,8 @@
 package com.dozingcatsoftware.bouncy;
 
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
+import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloatList;
+import static com.dozingcatsoftware.bouncy.util.MathUtils.asInt;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +27,23 @@ import com.dozingcatsoftware.bouncy.elements.FlipperElement;
 import com.dozingcatsoftware.bouncy.util.JSONUtils;
 
 public class FieldLayout {
+
+    static final String WIDTH_PROPERTY = "width";
+    static final String HEIGHT_PROPERTY = "height";
+    static final String DELEGATE_PROPERTY = "delegate";
+    static final String TARGET_TIME_RATIO_PROPERTY = "targetTimeRatio";
+    static final String GRAVITY_PROPERTY = "gravity";
+    static final String NUM_BALLS_PROPERTY = "numballs";
+    static final String BALL_RADIUS_PROPERTY = "ballradius";
+    static final String BALL_COLOR_PROPERTY = "ballcolor";
+    static final String SECONDARY_BALL_COLOR_PROPERTY = "secondaryBallColor";
+    static final String LAUNCH_POSITION_PROPERTY = "launchPosition";
+    static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
+    static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
+    static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+
+    static final String VARIABLES_PROPERTY = "variables";
+    static final String ELEMENTS_PROPERTY = "elements";
 
 	static int _numLevels = -1;
 	static Map<Object, Map> _layoutMap = new HashMap();
@@ -85,18 +104,29 @@ public class FieldLayout {
 		return layout;
 	}
 
+    Map<String, Object> allParameters;
 	FieldElementCollection fieldElements;
 	float width;
 	float height;
+	float gravity;
+	int numberOfBalls;
+	float ballRadius;
 	Color ballColor;
 	Color secondaryBallColor;
 	float targetTimeRatio;
-	Map allParameters;
+	List<Float> launchPosition;
+	List<Float> launchVelocity;
+	List<Float> launchVelocityRandomDelta;
+	List<Float> launchDeadZoneRect;
 
 	static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
 	static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
 	static List<?> listForKey(Map<?, ?> map, Object key) {
+        Set<?> keys = map.keySet();
+        if (keys.contains("launchPosition")) {
+            System.out.println("wtf");
+        }
 		if (map.containsKey(key)) return (List<?>) map.get(key);
 		return Collections.EMPTY_LIST;
 	}
@@ -104,7 +134,7 @@ public class FieldLayout {
 	private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
 	    FieldElementCollection elements = new FieldElementCollection();
 
-	    Map<String, Object> variables = (Map<String, Object>) layoutMap.get("variables");
+	    Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
 	    if (variables != null) {
 	        for (String varname : variables.keySet()) {
 	            elements.setVariable(varname, variables.get(varname));
@@ -113,7 +143,7 @@ public class FieldLayout {
 
 	    Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
 	    // Initial pass
-	    for (Object obj : listForKey(layoutMap, "elements")) {
+	    for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
 	        if (!(obj instanceof Map)) continue;
             Map<String, Object> params = (Map<String, Object>) obj;
 	        try {
@@ -128,15 +158,23 @@ public class FieldLayout {
 	}
 
 	void initFromLevel(Map<String, Object> layoutMap, World world) {
-		this.width = asFloat(layoutMap.get("width"), 20.0f);
-		this.height = asFloat(layoutMap.get("height"), 30.0f);
-		this.targetTimeRatio = asFloat(layoutMap.get("targetTimeRatio"));
-		this.ballColor = (layoutMap.containsKey("ballcolor"))
-		        ? Color.fromList((List<Number>)layoutMap.get("ballcolor"))
+		this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
+		this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
+		this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
+		this.targetTimeRatio = asFloat(layoutMap.get(TARGET_TIME_RATIO_PROPERTY));
+		this.numberOfBalls = asInt(layoutMap.get(NUM_BALLS_PROPERTY), 3);
+		this.ballRadius = asFloat(layoutMap.get(BALL_RADIUS_PROPERTY), 0.5f);
+		this.ballColor = (layoutMap.containsKey(BALL_COLOR_PROPERTY))
+		        ? Color.fromList((List<Number>)layoutMap.get(BALL_COLOR_PROPERTY))
 		        : DEFAULT_BALL_COLOR;
-		this.secondaryBallColor = (layoutMap.containsKey("secondaryBallColor"))
-		        ? Color.fromList((List<Number>)layoutMap.get("secondaryBallColor"))
+		this.secondaryBallColor = (layoutMap.containsKey(SECONDARY_BALL_COLOR_PROPERTY))
+		        ? Color.fromList((List<Number>)layoutMap.get(SECONDARY_BALL_COLOR_PROPERTY))
 		        : DEFAULT_SECONDARY_BALL_COLOR;
+        this.launchPosition = asFloatList(listForKey(layoutMap, LAUNCH_POSITION_PROPERTY));
+        this.launchVelocity = asFloatList(listForKey(layoutMap, LAUNCH_VELOCITY_PROPERTY));
+        this.launchVelocityRandomDelta = asFloatList(listForKey(layoutMap, LAUNCH_RANDOM_VELOCITY_PROPERTY));
+        this.launchDeadZoneRect = asFloatList(listForKey(layoutMap, LAUNCH_DEAD_ZONE_PROPERTY));
+
 		this.allParameters = layoutMap;
 		this.fieldElements = createFieldElements(layoutMap, world);
 	}
@@ -156,7 +194,7 @@ public class FieldLayout {
 	}
 
 	public float getBallRadius() {
-		return asFloat(allParameters.get("ballradius"), 0.5f);
+		return ballRadius;
 	}
 
 	public Color getBallColor() {
@@ -168,30 +206,29 @@ public class FieldLayout {
 	}
 
 	public int getNumberOfBalls() {
-		return (allParameters.containsKey("numballs")) ? ((Number)allParameters.get("numballs")).intValue() : 3;
+	    return numberOfBalls;
 	}
 
-	public List<Number> getLaunchPosition() {
-		Map launchMap = (Map)allParameters.get("launch");
-		return (List<Number>)launchMap.get("position");
+	public List<Float> getLaunchPosition() {
+	    return launchPosition;
 	}
 
-	public List<Number> getLaunchDeadZone() {
-		Map launchMap = (Map)allParameters.get("launch");
-		return (List<Number>)launchMap.get("deadzone");
+	public List<Float> getLaunchDeadZone() {
+	    return launchDeadZoneRect;
 	}
 
 	// can apply random velocity increment if specified by "random_velocity" key
 	public List<Float> getLaunchVelocity() {
-		Map launchMap = (Map)allParameters.get("launch");
-		List<Number> velocity = (List<Number>)launchMap.get("velocity");
-		float vx = velocity.get(0).floatValue();
-		float vy = velocity.get(1).floatValue();
+		float vx = launchVelocity.get(0).floatValue();
+		float vy = launchVelocity.get(1).floatValue();
 
-		if (launchMap.containsKey("random_velocity")) {
-			List<Number> delta = (List<Number>)launchMap.get("random_velocity");
-			if (delta.get(0).floatValue()>0) vx += delta.get(0).floatValue() * RAND.nextFloat();
-			if (delta.get(1).floatValue()>0) vy += delta.get(1).floatValue() * RAND.nextFloat();
+		if (launchVelocityRandomDelta.size() >= 2) {
+			if (launchVelocityRandomDelta.get(0) > 0) {
+			    vx += launchVelocityRandomDelta.get(0) * RAND.nextFloat();
+			}
+			if (launchVelocityRandomDelta.get(1) > 0) {
+			    vy += launchVelocityRandomDelta.get(1) * RAND.nextFloat();
+			}
 		}
 		return Arrays.asList(vx, vy);
 	}
@@ -212,11 +249,11 @@ public class FieldLayout {
 
 	/** Returns the magnitude of the gravity vector. */
 	public float getGravity() {
-		return asFloat(allParameters.get("gravity"), 4.0f);
+		return gravity;
 	}
 
 	public String getDelegateClassName() {
-		return (String)allParameters.get("delegate");
+		return (String)allParameters.get(DELEGATE_PROPERTY);
 	}
 
 	/** Returns a value from the "values" map, used to store information independent of the FieldElements.

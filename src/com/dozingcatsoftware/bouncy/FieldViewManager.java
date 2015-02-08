@@ -3,20 +3,20 @@ package com.dozingcatsoftware.bouncy;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 /** This class handles the common functionality for Canvas and OpenGL-based views, including mapping world coordinates
  * to pixels and handling touch events.
  */
 
 public class FieldViewManager implements SurfaceHolder.Callback {
-	
+
 	IFieldRenderer view;
 	boolean canDraw;
 	Runnable startGameAction;
@@ -34,7 +34,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 			}
 		}
 	}
-	
+
 	public boolean canDraw() {
 		return canDraw;
 	}
@@ -42,61 +42,61 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	boolean showFPS;
 	boolean highQuality;
 	boolean independentFlippers;
-	
+
 	Field field;
-	
+
 	float zoom = 1.0f;
 	float maxZoom = 1.0f;
-	
+
 	// x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as elements are drawn.
-	// They shouldn't change between calls to draw() either, but better safe than sorry. 
+	// They shouldn't change between calls to draw() either, but better safe than sorry.
 	float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
-	
+
 	String debugMessage;
 	double fps;
-	
+
 	public void setField(Field value) {
 		field = value;
 	}
 	public Field getField() {
 		return field;
 	}
-	
+
 	public void setDebugMessage(String value) {
 		debugMessage = value;
 	}
 	public String getDebugMessage() {
 		return debugMessage;
 	}
-	
+
 	public void setShowFPS(boolean value) {
 		showFPS = value;
 	}
 	public boolean showFPS() {
 		return showFPS;
 	}
-	
+
 	public void setIndependentFlippers(boolean value) {
 		independentFlippers = value;
 	}
-	
+
 	public void setHighQuality(boolean value) {
 		highQuality = value;
 	}
 	public boolean isHighQuality() {
 		return highQuality;
 	}
-	
+
 	public void setStartGameAction(Runnable action) {
 		startGameAction = action;
 	}
-	
+
 	float getScale() {
 		float xs = view.getWidth() / field.getWidth();
 		float ys = view.getHeight() / field.getHeight();
 		return Math.min(xs, ys) * this.zoom;
 	}
-	
+
 	float getCachedScale() {
 		return cachedScale;
 	}
@@ -105,7 +105,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	public void setZoom(float value) {
 		maxZoom = value;
 	}
-	
+
 	/** Saves scale and x and y offsets for use by world2pixel methods, avoiding repeated method calls and math operations. */
 	public void cacheScaleAndOffsets() {
 		zoom = maxZoom;
@@ -125,9 +125,9 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 			}
 			else if (balls.size()==0) {
 				// use launch position
-				List<Number> position = field.layout.getLaunchPosition();
-				x = position.get(0).floatValue();
-				y = position.get(1).floatValue();
+				List<Float> position = field.layout.getLaunchPosition();
+				x = position.get(0);
+				y = position.get(1);
 			}
 			else {
 				// for multiple balls, take position with smallest y
@@ -151,24 +151,24 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 		cachedScale = getScale();
 		cachedHeight = view.getHeight();
 	}
-	
+
 	// world2pixel methods assume cacheScaleAndOffsets has been called previously
-	/** Converts an x coordinate from world coordinates to the view's pixel coordinates. 
+	/** Converts an x coordinate from world coordinates to the view's pixel coordinates.
 	 */
 	public float world2pixelX(float x) {
 		return (x-cachedXOffset) * cachedScale;
 		//return x * getScale() + getXOffset();
 	}
-	
+
 	/** Converts an x coordinate from world coordinates to the view's pixel coordinates. In world coordinates, positive y is up,
-	 * in pixel coordinates, positive y is down. 
+	 * in pixel coordinates, positive y is down.
 	 */
 	public float world2pixelY(float y) {
 	    //return ((y-cachedYOffset) * cachedScale);
 		return cachedHeight - ((y-cachedYOffset) * cachedScale);
 		//return getHeight() - (y * getScale()) - getYOffset();
 	}
-	
+
 	// for compatibility with Android 1.6, use reflection for multitouch features
 	boolean hasMultitouch;
 	Method getPointerCountMethod;
@@ -177,7 +177,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 	int MOTIONEVENT_ACTION_POINTER_UP;
 	int MOTIONEVENT_ACTION_POINTER_INDEX_MASK;
 	int MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
-	
+
 	{
 		try {
 			getPointerCountMethod = MotionEvent.class.getMethod("getPointerCount");
@@ -192,7 +192,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 			hasMultitouch = false;
 		}
 	}
-	
+
 	void doFlippers(boolean launch, boolean left, boolean right) {
 	    if (launch) {
             // remove "dead" balls and launch if none already in play
@@ -263,20 +263,20 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         }
         return true;
     }
-    
+
     public boolean handleKeyUp(int keyCode, KeyEvent event) {
         synchronized(field) {
             doFlippers(true, true, true);
         }
         return false;
     }
-    
+
     public void draw() {
     	cacheScaleAndOffsets();
     	view.doDraw();
     }
 
-	// SurfaceHolder.Callback methods	
+	// SurfaceHolder.Callback methods
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 	}

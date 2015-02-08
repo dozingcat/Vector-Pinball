@@ -29,14 +29,14 @@ import com.dozingcatsoftware.bouncy.elements.RolloverGroupElement;
 import com.dozingcatsoftware.bouncy.elements.SensorElement;
 
 public class Field implements ContactListener {
-	
+
 	FieldLayout layout;
 	World world;
-	
+
 	Set<Body> layoutBodies;
 	List<Body> balls;
 	Set<Body> ballsAtTargets;
-	
+
 	// allow access to model objects from Box2d bodies
 	Map<Body, FieldElement> bodyToFieldElement;
 	Map<String, FieldElement> fieldElementsByID;
@@ -44,45 +44,45 @@ public class Field implements ContactListener {
 	// store FieldElements in arrays for optimized iteration
 	FieldElement[] fieldElementsArray;
 	FieldElement[] fieldElementsToTick;
-	
+
 	Random RAND = new Random();
-	
+
 	long gameTime;
 	PriorityQueue<ScheduledAction> scheduledActions;
-	
+
 	Delegate delegate;
-	
+
 	GameState gameState = new GameState();
 	GameMessage gameMessage;
-	
+
 	// interface to allow custom behavior for various game events
 	public static interface Delegate {
 		public void gameStarted(Field field);
-		
+
 		public void ballLost(Field field);
-		
+
 		public void gameEnded(Field field);
-		
+
 		public void tick(Field field, long nanos);
-		
+
 		public void processCollision(Field field, FieldElement element, Body hitBody, Body ball);
-		
+
 		public void flippersActivated(Field field, List<FlipperElement> flippers);
-		
+
 		public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup);
-		
+
 		public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
-		
+
 		public void ballInSensorRange(Field field, SensorElement sensor, Body ball);
 
 		public boolean isFieldActive(Field field);
 	}
-	
+
 	// helper class to represent actions scheduled in the future
 	static class ScheduledAction implements Comparable<ScheduledAction> {
 		Long actionTime;
 		Runnable action;
-		
+
 		@Override
 		public int compareTo(ScheduledAction another) {
 			// sort by action time so these objects can be added to a PriorityQueue in the right order
@@ -100,12 +100,12 @@ public class Field implements ContactListener {
 		boolean doSleep = true;
 		world = new World(gravity, doSleep);
 		world.setContactListener(this);
-		
+
 		layout = FieldLayout.layoutForLevel(level, world);
 		world.setGravity(new Vector2(0.0f, -layout.getGravity()));
 		balls = new ArrayList<Body>();
 		ballsAtTargets = new HashSet<Body>();
-		
+
 		scheduledActions = new PriorityQueue<ScheduledAction>();
 		gameTime = 0;
 
@@ -127,7 +127,7 @@ public class Field implements ContactListener {
 		}
 		fieldElementsToTick = tickElements.toArray(new FieldElement[0]);
 		fieldElementsArray = layout.getFieldElements().toArray(new FieldElement[0]);
-		
+
 		delegate = null;
 		String delegateClass = layout.getDelegateClassName();
 		if (delegateClass!=null) {
@@ -142,30 +142,30 @@ public class Field implements ContactListener {
 			}
 		}
 		else {
-			// use no-op delegate if no class specified, so that field.getDelegate() is always non-null 
+			// use no-op delegate if no class specified, so that field.getDelegate() is always non-null
 			delegate = new BaseFieldDelegate();
-		}		
+		}
 	}
-	
+
 	public void startGame() {
 		gameState.setTotalBalls(layout.getNumberOfBalls());
 		gameState.startNewGame();
 		getDelegate().gameStarted(this);
 	}
-	
+
 	/** Returns the FieldElement with the given value for its "id" attribute, or null if there is no such element.
 	 */
 	public FieldElement getFieldElementByID(String elementID) {
 		return fieldElementsByID.get(elementID);
 	}
-	
+
 	/** Called to advance the game's state by the specified number of nanoseconds. iters is the number of times to call
 	 * the Box2D World.step method; more iterations produce better accuracy. After updating physics, processes element
 	 * collisions, calls tick() on every FieldElement, and performs scheduled actions.
 	 */
     void tick(long nanos, int iters) {
     	float dt = (float)((nanos/1000000000.0) / iters);
-    	
+
     	for(int i=0; i<iters; i++) {
         	clearBallContacts();
         	world.step(dt, 10, 10);
@@ -176,11 +176,11 @@ public class Field implements ContactListener {
     	processElementTicks();
     	processScheduledActions();
     	processGameMessages();
-    	
+
     	getDelegate().tick(this, nanos);
     }
-    
-    /** Calls the tick() method of every FieldElement in the layout. 
+
+    /** Calls the tick() method of every FieldElement in the layout.
      */
     void processElementTicks() {
     	int size = fieldElementsToTick.length;
@@ -188,8 +188,8 @@ public class Field implements ContactListener {
     		fieldElementsToTick[i].tick(this);
     	}
     }
-    
-    /** Runs actions that were scheduled with scheduleAction and whose execution time has arrived. 
+
+    /** Runs actions that were scheduled with scheduleAction and whose execution time has arrived.
      */
     void processScheduledActions() {
     	while (true) {
@@ -203,7 +203,7 @@ public class Field implements ContactListener {
     		}
     	}
     }
-    
+
     /** Schedules an action to be run after the given interval in milliseconds has elapsed. Interval is in game time,
      * not real time.
      */
@@ -214,14 +214,14 @@ public class Field implements ContactListener {
     	sa.action = action;
     	scheduledActions.add(sa);
     }
-    
+
     /** Launches a new ball. The position and velocity of the ball are controlled by the "launch" key in the field layout JSON.
      */
     public Body launchBall() {
-    	List<Number> position = layout.getLaunchPosition();
+    	List<Float> position = layout.getLaunchPosition();
     	List<Float> velocity = layout.getLaunchVelocity();
     	float radius = layout.getBallRadius();
-    	
+
 		Body ball = Box2DFactory.createCircle(world, position.get(0).floatValue(), position.get(1).floatValue(), radius, false);
 		ball.setBullet(true);
 		ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
@@ -230,7 +230,7 @@ public class Field implements ContactListener {
 
 		return ball;
     }
-    
+
     /** Removes a ball from play. If this results in no balls remaining on the field, calls doBallLost.
      */
     public void removeBall(Body ball) {
@@ -240,14 +240,14 @@ public class Field implements ContactListener {
     		this.doBallLost();
     	}
     }
-    
+
     /** Removes a ball from play, but does not call doBallLost for end-of-ball processing even if no balls remain.
      */
     public void removeBallWithoutBallLoss(Body ball) {
     	world.destroyBody(ball);
     	this.balls.remove(ball);
     }
-    
+
     /** Called when a ball has ended. Ends the game if that was the last ball, otherwise updates GameState to the next ball.
      * Shows a game message to indicate the ball number or game over.
      */
@@ -258,12 +258,13 @@ public class Field implements ContactListener {
 		String msg = null;
 		if (hasExtraBall) msg = "Shoot Again";
 		else if (this.gameState.isGameInProgress()) msg = "Ball " + this.gameState.getBallNumber();
-		
+
 		if (msg!=null) {
 			// game is still going, show message after delay
 			final String msg2 = msg; // must be final for closure, yay Java
 			this.scheduleAction(1500, new Runnable() {
-				public void run() {
+				@Override
+                public void run() {
 					showGameMessage(msg2, 1500, false); // no sound effect
 				}
 			});
@@ -271,10 +272,10 @@ public class Field implements ContactListener {
 		else {
 			endGame();
 		}
-		
+
 		getDelegate().ballLost(this);
     }
-    
+
     /** Returns true if there are active elements in motion. Returns false if there are no active elements,
      * indicating that tick() can be called with larger time steps, less frequently, or not at all.
      */
@@ -285,25 +286,25 @@ public class Field implements ContactListener {
     	if (getDelegate().isFieldActive(this)) return true;
     	return this.getBalls().size() > 0;
     }
-    
-    
+
+
     ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
     /** Removes balls that are not in play, as determined by optional "deadzone" property of launch parameters in field layout.
      */
     public void handleDeadBalls() {
-    	List<Number> deadRect = layout.getLaunchDeadZone();
+    	List<Float> deadRect = layout.getLaunchDeadZone();
     	if (deadRect==null) return;
 
     	for(int i=0; i<this.balls.size(); i++) {
     		Body ball = this.balls.get(i);
     		Vector2 bpos = ball.getPosition();
-    		if (bpos.x > deadRect.get(0).floatValue() && bpos.y > deadRect.get(1).floatValue() && 
-    			bpos.x < deadRect.get(2).floatValue() && bpos.y < deadRect.get(3).floatValue()) {
+    		if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
+    			bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
     			deadBalls.add(ball);
     	    	world.destroyBody(ball);
     		}
     	}
-    	
+
     	for(int i=0; i<deadBalls.size(); i++) {
     		this.balls.remove(deadBalls.get(i));
     	}
@@ -333,7 +334,7 @@ public class Field implements ContactListener {
             renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
     	}
     }
-    
+
     ArrayList<FlipperElement> activatedFlippers = new ArrayList<FlipperElement>();
     /** Called to engage or disengage all flippers. If called with an argument of true, and all flippers were not previously engaged,
      * calls the flipperActivated methods of all field elements and the field's delegate.
@@ -352,7 +353,7 @@ public class Field implements ContactListener {
     		}
     		flipper.setFlipperEngaged(engaged);
     	}
-    	
+
     	if (engaged && !allFlippersPreviouslyActive) {
    			VPSoundpool.playFlipper();
     		for(FieldElement element : this.getFieldElementsArray()) {
@@ -361,20 +362,20 @@ public class Field implements ContactListener {
     		getDelegate().flippersActivated(this, activatedFlippers);
     	}
     }
-    
+
     public void setAllFlippersEngaged(boolean engaged) {
     	setFlippersEngaged(this.getFlipperElements(), engaged);
     }
-    
+
     public void setLeftFlippersEngaged(boolean engaged) {
     	setFlippersEngaged(layout.getLeftFlipperElements(), engaged);
     }
     public void setRightFlippersEngaged(boolean engaged) {
     	setFlippersEngaged(layout.getRightFlipperElements(), engaged);
     }
-    
+
     /** Ends a game in progress by removing all balls in play, calling setGameInProgress(false) on the GameState, and setting a
-     * "Game Over" message for display by the score view. 
+     * "Game Over" message for display by the score view.
      */
     public void endGame() {
     	VPSoundpool.playStart(); // play startup sound at end of game
@@ -399,11 +400,11 @@ public class Field implements ContactListener {
 
 	// contact support
 	Map<Body, List<Fixture>> ballContacts = new HashMap();
-	
+
 	void clearBallContacts() {
 		ballContacts.clear();
 	}
-	
+
 	/** Called after Box2D world step method, to notify FieldElements that the ball collided with.
 	 */
 	void processBallContacts() {
@@ -423,10 +424,10 @@ public class Field implements ContactListener {
 						VPSoundpool.playScore();
 					}
 				}
-			}			
+			}
 		}
 	}
-	
+
 
 	// ContactListener methods
 	@Override
@@ -457,7 +458,7 @@ public class Field implements ContactListener {
 	}
 	// end ContactListener methods
 
-	/** Displays a message in the score view for the specified duration in milliseconds. 
+	/** Displays a message in the score view for the specified duration in milliseconds.
 	 * Duration is in real world time, not simulated game time.
 	 */
 	public void showGameMessage(String text, long duration, boolean playSound) {
@@ -467,11 +468,11 @@ public class Field implements ContactListener {
 		gameMessage.duration = duration;
 		gameMessage.creationTime = System.currentTimeMillis();
 	}
-	
+
 	public void showGameMessage(String text, long duration) {
 		showGameMessage(text, duration, true);
 	}
-	
+
 	// updates time remaining on current game message
 	void processGameMessages() {
 		if (gameMessage!=null) {
@@ -480,13 +481,13 @@ public class Field implements ContactListener {
 			}
 		}
 	}
-	
+
 	/** Adds the given value to the game score. The value is multiplied by the GameState's current multipler.
 	 */
 	public void addScore(long s) {
 		gameState.addScore(s);
 	}
-	
+
 	// accessors
 	public float getWidth() {
 		return layout.getWidth();
@@ -494,7 +495,7 @@ public class Field implements ContactListener {
 	public float getHeight() {
 		return layout.getHeight();
 	}
-	
+
 	public Set<Body> getLayoutBodies() {
 		return layoutBodies;
 	}
@@ -513,31 +514,31 @@ public class Field implements ContactListener {
 	public FieldElement[] getFieldElementsArray() {
 		return fieldElementsArray;
 	}
-	
+
 	public GameMessage getGameMessage() {
 		return gameMessage;
 	}
-	
+
 	public GameState getGameState() {
 		return gameState;
 	}
-	
+
 	public long getGameTime() {
 		return gameTime;
 	}
-	
+
 	public float getTargetTimeRatio() {
 		return layout.getTargetTimeRatio();
 	}
-	
+
 	public World getBox2DWorld() {
 		return world;
 	}
-	
+
 	public Delegate getDelegate() {
 		return delegate;
 	}
-	
+
 	public Object getValueWithKey(String key) {
 		return layout.getValueWithKey(key);
 	}
