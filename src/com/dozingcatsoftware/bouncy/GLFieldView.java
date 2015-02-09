@@ -3,10 +3,6 @@ package com.dozingcatsoftware.bouncy;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.dozingcatsoftware.bouncy.elements.FieldElement;
-import com.dozingcatsoftware.bouncy.util.GLVertexList;
-import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
-
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
@@ -14,20 +10,25 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import com.dozingcatsoftware.bouncy.elements.FieldElement;
+import com.dozingcatsoftware.bouncy.util.GLVertexList;
+import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
+
 public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurfaceView.Renderer {
-	
+
 	public GLFieldView(Context context, AttributeSet attrs) {
 		super(context, attrs);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
-	
+
 	FieldViewManager manager;
-	
-	public void setManager(FieldViewManager value) {
+
+	@Override
+    public void setManager(FieldViewManager value) {
 		this.manager = value;
 	}
-	
+
 
     /** Called when the view is touched. Activates flippers, starts a new game if one is not in progress, and
      * launches a ball if one is not in play.
@@ -50,8 +51,8 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
 	GLVertexListManager vertexListManager = new GLVertexListManager();
 	GLVertexList lineVertexList;
-	
-	
+
+
 	static float[] SIN_VALUES = new float[20];
 	static float[] COS_VALUES = new float[20];
 	static {
@@ -61,22 +62,22 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 			COS_VALUES[i] = (float)Math.cos(angle);
 		}
 	}
-	
+
 	void startGLElements(GL10 gl) {
 		vertexListManager.begin();
 		lineVertexList = vertexListManager.addVertexListForMode(GL10.GL_LINES);
 	}
-	
+
 	void endGLElements(GL10 gl) {
 		vertexListManager.end();
-		
-        gl.glEnable(GL10.GL_DITHER);        
+
+        gl.glEnable(GL10.GL_DITHER);
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glMatrixMode(GL10.GL_MODELVIEW); 
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
-        
+
         gl.glLineWidth(2);
-        
+
         vertexListManager.render(gl);
 	}
 
@@ -89,23 +90,24 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 		float rf = color.red/255f;
 		float gf = color.green/255f;
 		float bf = color.blue/255f;
-		lineVertexList.addColor(rf, gf, bf);
-		lineVertexList.addColor(rf, gf, bf);
+		float af = color.alpha/255f;
+		lineVertexList.addColor(rf, gf, bf, af);
+		lineVertexList.addColor(rf, gf, bf, af);
 	}
-	
+
 	@Override
 	public void fillCircle(float cx, float cy, float radius, Color color) {
 		drawCircle(cx, cy, radius, color, GL10.GL_TRIANGLE_FAN);
 	}
-	
+
 	@Override
 	public void frameCircle(float cx, float cy, float radius, Color color) {
 		drawCircle(cx, cy, radius, color, GL10.GL_LINE_LOOP);
 	}
-	
+
 	void drawCircle(float cx, float cy, float radius, Color color, int mode) {
 		GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
-		circleVertexList.addColor(color.red/255f, color.green/255f, color.blue/255f);
+		circleVertexList.addColor(color.red/255f, color.green/255f, color.blue/255f, color.alpha/255f);
 
 		for(int i=0; i<SIN_VALUES.length; i++) {
 			float x = cx + radius*COS_VALUES[i];
@@ -113,7 +115,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 			circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
 		}
 	}
-	
+
 	Object renderLock = new Object();
 	boolean renderDone;
 
@@ -123,7 +125,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 		if (field==null) return;
 		synchronized(field) {
 			startGLElements(gl);
-			
+
 			for(FieldElement element : field.getFieldElementsArray()) {
 				element.draw(this);
 			}
@@ -138,7 +140,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 			renderLock.notify();
 		}
 	}
-	
+
 	/* requestRender() returns immediately and schedules onDrawFrame for execution on a separate thread. In this case,
 	 * we want to block until onDrawFrame returns so that the simulation thread in FieldDriver stays in sync with the
 	 * rendering thread. (Without the locks, FieldDriver registers 60fps even if the actual drawing is much slower).
@@ -148,9 +150,9 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 		synchronized(renderLock) {
 			renderDone = false;
 		}
-		
+
 		this.requestRender();
-		
+
 		synchronized(renderLock) {
 			while (!renderDone) {
 				try {
@@ -172,8 +174,10 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 	    gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 	    gl.glShadeModel(GL10.GL_FLAT);
 	    gl.glDisable(GL10.GL_DEPTH_TEST);
-	    //gl.glEnable(GL10.GL_BLEND);
-	    //gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA); 
+
+	    // Alpha support.
+	    gl.glEnable(GL10.GL_BLEND);
+	    gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
 	    gl.glMatrixMode(GL10.GL_PROJECTION);
 	    gl.glLoadIdentity();
