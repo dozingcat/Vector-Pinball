@@ -162,7 +162,7 @@ public abstract class FieldElement {
 
 	/** Returns this element's ID as specified in the JSON definition, or null if the ID is not specified.
 	 */
-	public String getElementID() {
+	public String getElementId() {
 		return elementID;
 	}
 

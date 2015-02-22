@@ -19,8 +19,8 @@ public class FieldElementCollection {
 
     public void addElement(FieldElement element) {
         allElements.add(element);
-        if (element.getElementID() != null) {
-            elementsById.put(element.getElementID(), element);
+        if (element.getElementId() != null) {
+            elementsById.put(element.getElementId(), element);
         }
         if (element instanceof FlipperElement) {
             FlipperElement flipper = (FlipperElement) element;

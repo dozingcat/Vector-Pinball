@@ -18,8 +18,8 @@ public class Field1Delegate extends BaseFieldDelegate {
 		field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
 		
 		// extra ball for ramp shot if extra ball rollovers all lit
-		if ("RampRollovers".equals(rolloverGroup.getElementID())) {
-			RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
+		if ("RampRollovers".equals(rolloverGroup.getElementId())) {
+			RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
 			if (extraBallRollovers.allRolloversActive()) {
 				extraBallRollovers.setAllRolloversActivated(false);
 				startMultiball(field);
@@ -41,17 +41,17 @@ public class Field1Delegate extends BaseFieldDelegate {
 	@Override
 	public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
 		// activate ball saver for left and right groups
-		String id = targetGroup.getElementID();
+		String id = targetGroup.getElementId();
 		if ("DropTargetLeftSave".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-left")).setRetracted(false);
+			((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
 			field.showGameMessage("Left Save Enabled", 1500);
 		}
 		else if ("DropTargetRightSave".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(false);
+			((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
 			field.showGameMessage("Right Save Enabled", 1500);
 		}
 		// for all groups, increment extra ball rollover
-		RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
+		RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
 		if (extraBallRollovers != null && !extraBallRollovers.allRolloversActive()) {
 			extraBallRollovers.activateFirstUnactivatedRollover();
 			if (extraBallRollovers.allRolloversActive()) {
@@ -62,17 +62,17 @@ public class Field1Delegate extends BaseFieldDelegate {
 	
 	// support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
 	void setLaunchBarrierEnabled(Field field, boolean enabled) {
-		WallElement barrier = (WallElement)field.getFieldElementByID("LaunchBarrier");
+		WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
 		barrier.setRetracted(!enabled);
 	}
 
 	@Override
 	public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
 		// enable launch barrier 
-		if ("LaunchBarrierSensor".equals(sensor.getElementID())) {
+		if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
 			setLaunchBarrierEnabled(field, true);
 		}
-		else if ("LaunchBarrierRetract".equals(sensor.getElementID())) {
+		else if ("LaunchBarrierRetract".equals(sensor.getElementId())) {
 			setLaunchBarrierEnabled(field, false);
 		}
 	}

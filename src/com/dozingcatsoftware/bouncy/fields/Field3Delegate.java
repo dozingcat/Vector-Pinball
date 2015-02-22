@@ -140,15 +140,15 @@ public class Field3Delegate extends BaseFieldDelegate {
         upperTargetGroupCompleted = 0;
         lowerTargetGroupCompleted = 0;
 
-        field.getFieldElementByID("UpperTargetIndicator").setNewColor(null);
-        field.getFieldElementByID("LowerTargetIndicator").setNewColor(null);
-        field.getFieldElementByID("BumperIndicator").setNewColor(null);
+        field.getFieldElementById("UpperTargetIndicator").setNewColor(null);
+        field.getFieldElementById("LowerTargetIndicator").setNewColor(null);
+        field.getFieldElementById("BumperIndicator").setNewColor(null);
         setMultiballRolloverActive(field, false);
     }
 
     @Override
     public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-        String id = rolloverGroup.getElementID();
+        String id = rolloverGroup.getElementId();
         if ("LeftRampRollover".equals(id) || "RightRampRollover".equals(id)) {
             startBumperBonus();
             if (multiballStatus==MultiballStatus.INACTIVE && isMultiballRolloverActive(field)) {
@@ -170,13 +170,13 @@ public class Field3Delegate extends BaseFieldDelegate {
     @Override
     public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
         // activate ball saver for left and right groups
-        String id = targetGroup.getElementID();
+        String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementByID("BallSaver-left")).setRetracted(false);
+            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
             field.showGameMessage("Left Save Enabled", 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(false);
+            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
             field.showGameMessage("Right Save Enabled", 1500);
         }
         else if ("LowerMultiballTargets".equals(id)) {
@@ -185,7 +185,7 @@ public class Field3Delegate extends BaseFieldDelegate {
                 bumperBonusDurationNanos += bumperBonusDurationIncrement;
                 ++lowerTargetGroupCompleted;
                 double ratio = ((double) lowerTargetGroupCompleted) / maxLowerTargetGroupCompleted;
-                field.getFieldElementByID("LowerTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
+                field.getFieldElementById("LowerTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
                 checkForEnableMultiball(field);
             }
         }
@@ -195,7 +195,7 @@ public class Field3Delegate extends BaseFieldDelegate {
                 bumperBonusMultiplier += bumperBonusMultiplierIncrement;
                 ++upperTargetGroupCompleted;
                 double ratio = ((double)upperTargetGroupCompleted) / maxUpperTargetGroupCompleted;
-                field.getFieldElementByID("UpperTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
+                field.getFieldElementById("UpperTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
                 checkForEnableMultiball(field);
             }
         }
@@ -252,24 +252,24 @@ public class Field3Delegate extends BaseFieldDelegate {
             }
             bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
             double ratio = ((double)bumperEnergy) / maxBumperEnergy;
-            field.getFieldElementByID("BumperIndicator").setNewColor(colorForTemperatureRatio(ratio));
+            field.getFieldElementById("BumperIndicator").setNewColor(colorForTemperatureRatio(ratio));
             checkForEnableMultiball(field);
         }
     }
     
     // support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement)field.getFieldElementByID("LaunchBarrier");
+        WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
     @Override
     public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
         // enable launch barrier 
-        if ("LaunchBarrierSensor".equals(sensor.getElementID())) {
+        if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);
         }
-        else if ("LaunchBarrierRetract".equals(sensor.getElementID())) {
+        else if ("LaunchBarrierRetract".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, false);
         }
     }
@@ -302,10 +302,10 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     boolean isMultiballRolloverActive(Field field) {
         return multiballStatus==MultiballStatus.INACTIVE &&
-                ((RolloverGroupElement) field.getFieldElementByID("BumperIndicator")).isRolloverActiveAtIndex(0);
+                ((RolloverGroupElement) field.getFieldElementById("BumperIndicator")).isRolloverActiveAtIndex(0);
     }
     void setMultiballRolloverActive(Field field, boolean ready) {
-        ((RolloverGroupElement) field.getFieldElementByID("BumperIndicator")).setAllRolloversActivated(ready);
+        ((RolloverGroupElement) field.getFieldElementById("BumperIndicator")).setAllRolloversActivated(ready);
     }
 
     void startMultiball(final Field field) {
@@ -347,8 +347,8 @@ public class Field3Delegate extends BaseFieldDelegate {
             if (nextVal > 2) nextVal -= 2;
             multiballFlashValues[i] = nextVal;
         }
-        field.getFieldElementByID("UpperTargetIndicator").setNewColor(colorForMultiballFlasher(0));
-        field.getFieldElementByID("LowerTargetIndicator").setNewColor(colorForMultiballFlasher(1));
-        field.getFieldElementByID("BumperIndicator").setNewColor(colorForMultiballFlasher(2));
+        field.getFieldElementById("UpperTargetIndicator").setNewColor(colorForMultiballFlasher(0));
+        field.getFieldElementById("LowerTargetIndicator").setNewColor(colorForMultiballFlasher(1));
+        field.getFieldElementById("BumperIndicator").setNewColor(colorForMultiballFlasher(2));
     }
 }

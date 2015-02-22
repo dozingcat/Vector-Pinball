@@ -36,7 +36,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 		/** Creates a RotatingGroup by computing the distance and angle to center from the first element ID in the ids array.
 		 */
 		public static RotatingGroup create(Field field, String[] ids, double cx, double cy, double speed) {
-			FieldElement element = field.getFieldElementByID(ids[0]);
+			FieldElement element = field.getFieldElementById(ids[0]);
 			Body body = element.getBodies().get(0);
 			Vector2 position = body.getPosition();
 			double radius = Math.hypot(position.x - cx, position.y - cy);
@@ -51,7 +51,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			for(int i=0; i<elementIDs.length; i++) {
 				double angle = currentAngle + angleIncrement*i;
 
-				FieldElement element = field.getFieldElementByID(elementIDs[i]);
+				FieldElement element = field.getFieldElementById(elementIDs[i]);
 				Body body = element.getBodies().get(0);
 				double x = centerX + radius*Math.cos(angle);
 				double y = centerY + radius*Math.sin(angle);
@@ -65,7 +65,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	RotatingGroup[] rotatingGroups;
 
 	RotatingGroup createRotatingGroup(Field field, String centerID, String[] ids, double speed) {
-		FieldElement centerElement = field.getFieldElementByID(centerID);
+		FieldElement centerElement = field.getFieldElementById(centerID);
 		Vector2 centerPosition = centerElement.getBodies().get(0).getPosition();
 		return RotatingGroup.create(field, ids, centerPosition.x, centerPosition.y, speed);
 	}
@@ -122,10 +122,10 @@ public class Field2Delegate extends BaseFieldDelegate {
 	@Override
 	public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
 		// when center red bumper is hit, start multiball if all center rollovers are lit, otherwise retract left barrier
-		String elementID = element.getElementID();
+		String elementID = element.getElementId();
 		if ("CenterBumper1".equals(elementID)) {
-			WallElement barrier = (WallElement)field.getFieldElementByID("LeftTubeBarrier");
-			RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
+			WallElement barrier = (WallElement)field.getFieldElementById("LeftTubeBarrier");
+			RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
 
 			if (multiballRollovers.allRolloversActive()) {
 				barrier.setRetracted(false);
@@ -145,14 +145,14 @@ public class Field2Delegate extends BaseFieldDelegate {
 	public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
 		// activate ball saver for left and right groups, "increment" multiball rollover for left/right/center column
 		int startRolloverIndex = -1;
-		String id = targetGroup.getElementID();
+		String id = targetGroup.getElementId();
 		if ("DropTargetLeft".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-left")).setRetracted(false);
+			((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
 			field.showGameMessage("Left Save Enabled", 1500);
 			startRolloverIndex = 0;
 		}
 		else if ("DropTargetRight".equals(id)) {
-			((WallElement)field.getFieldElementByID("BallSaver-right")).setRetracted(false);
+			((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
 			field.showGameMessage("Right Save Enabled", 1500);
 			startRolloverIndex = 2;
 		}
@@ -162,7 +162,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 
 		// activate next rollover for appropriate column if possible
 		if (startRolloverIndex>=0) {
-			RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementByID("ExtraBallRollovers");
+			RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
 			int numRollovers = multiballRollovers.numberOfRollovers();
 			while (startRolloverIndex < numRollovers) {
 				if (!multiballRollovers.isRolloverActiveAtIndex(startRolloverIndex)) {
@@ -183,13 +183,13 @@ public class Field2Delegate extends BaseFieldDelegate {
 
 	// support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
 	void setLaunchBarrierEnabled(Field field, boolean enabled) {
-		WallElement barrier = (WallElement)field.getFieldElementByID("LaunchBarrier");
+		WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
 		barrier.setRetracted(!enabled);
 	}
 
 	@Override
 	public void ballInSensorRange(final Field field, SensorElement sensor, Body ball) {
-		String sensorID = sensor.getElementID();
+		String sensorID = sensor.getElementId();
 		// enable launch barrier
 		if ("LaunchBarrierSensor".equals(sensorID)) {
 			setLaunchBarrierEnabled(field, true);
@@ -203,7 +203,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 				field.scheduleAction(1000, new Runnable() {
 					@Override
                     public void run() {
-						WallElement barrier = (WallElement)field.getFieldElementByID("LeftTubeBarrier");
+						WallElement barrier = (WallElement)field.getFieldElementById("LeftTubeBarrier");
 						barrier.setRetracted(false);
 					}
 				});

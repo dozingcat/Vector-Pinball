@@ -14,46 +14,25 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /**
  * This FieldElement subclass is used to identify areas on the table that should cause custom behavior
- * when the ball enters. SensorElements have no bodies and don't draw anything. The area they monitor
- * can be a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list, or a circle defined
- * by the "center" and "radius" parameters. During every tick() invocation, a sensor determines if any of
- * the field's balls are within its area, and if so calls the field delegate's ballInSensorRange method.
+ * when the ball enters. A SensorElement has no bodies and don't draw anything. The area it monitors
+ * is a rectangle defined by the "rect" parameter as a [xmin,ymin,xmax,ymax] list. During every tick()
+ * invocation, a sensor determines if any of the field's balls are within its area, and if so calls
+ * the field delegate's ballInSensorRange method.
  * @author brian
- *
  */
 
 public class SensorElement extends FieldElement {
 
-    public static final String CENTER_PROPERTY = "center";
-    public static final String RADIUS_PROPERTY = "radius";
     public static final String RECT_PROPERTY = "rect";
 
 	float xmin, ymin, xmax, ymax;
-	boolean circular = false;
-	float cx, cy; // center for circular areas
-	float radiusSquared;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-        if (params.containsKey(CENTER_PROPERTY) && params.containsKey(RADIUS_PROPERTY)) {
-            this.circular = true;
-            List centerPos = (List)params.get(CENTER_PROPERTY);
-            this.cx = asFloat(centerPos.get(0));
-            this.cy = asFloat(centerPos.get(1));
-            float radius = asFloat(params.get(RADIUS_PROPERTY));
-            this.radiusSquared = radius*radius;
-            // create bounding box to allow rejecting balls without making distance calculations
-            this.xmin = this.cx - radius/2;
-            this.xmax = this.cx + radius/2;
-            this.ymin = this.cy - radius/2;
-            this.ymax = this.cy + radius/2;
-        }
-        else {
-            List rectPos = (List)params.get(RECT_PROPERTY);
-            this.xmin = asFloat(rectPos.get(0));
-            this.ymin = asFloat(rectPos.get(1));
-            this.xmax = asFloat(rectPos.get(2));
-            this.ymax = asFloat(rectPos.get(3));
-        }
+        List rectPos = (List)params.get(RECT_PROPERTY);
+        this.xmin = asFloat(rectPos.get(0));
+        this.ymin = asFloat(rectPos.get(1));
+        this.xmax = asFloat(rectPos.get(2));
+        this.ymax = asFloat(rectPos.get(3));
 	}
 
 	@Override public void createBodies(World world) {
@@ -70,11 +49,6 @@ public class SensorElement extends FieldElement {
 		if (bpos.x < xmin || bpos.x > xmax || bpos.y < ymin || bpos.y > ymax) {
 			return false;
 		}
-		// if circle, test (squared) distance to center
-		if (this.circular) {
-			float distSquared = (bpos.x-this.cx) * (bpos.x-this.cx) + (bpos.y-this.cy)*(bpos.y-this.cy);
-			if (distSquared > this.radiusSquared) return false;
-		}
 		return true;
 	}
 
@@ -90,7 +64,7 @@ public class SensorElement extends FieldElement {
 	}
 
 	@Override public List<Body> getBodies() {
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	@Override public void draw(IFieldRenderer renderer) {
