@@ -34,19 +34,21 @@ public class WallElement extends FieldElement {
     public static final String KICK_PROPERTY = "kick";
     public static final String KILL_PROPERTY = "kill";
     public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
     public static final String DISABLED_PROPERTY = "disabled";
 
-	Body wallBody;
-	List<Body> bodySet;
-	float x1, y1, x2, y2;
-	float kick;
+    Body wallBody;
+    List<Body> bodySet;
+    float x1, y1, x2, y2;
+    float kick;
 
-	boolean killBall;
-	boolean retractWhenHit;
-	float restitution;
-	boolean disabled;
+    boolean killBall;
+    boolean retractWhenHit;
+    float restitution;
+    boolean disabled;
+    boolean ignoreBall;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
         List pos = (List)params.get(POSITION_PROPERTY);
         this.x1 = asFloat(pos.get(0));
         this.y1 = asFloat(pos.get(1));
@@ -58,76 +60,82 @@ public class WallElement extends FieldElement {
         this.killBall = (Boolean.TRUE.equals(params.get(KILL_PROPERTY)));
         this.retractWhenHit = (Boolean.TRUE.equals(params.get(RETRACT_WHEN_HIT_PROPERTY)));
         this.disabled = Boolean.TRUE.equals(params.get(DISABLED_PROPERTY));
-	}
+        this.ignoreBall = Boolean.TRUE.equals(params.get(IGNORE_BALL_PROPERTY));
+    }
 
-	@Override public void createBodies(World world) {
+    @Override public void createBodies(World world) {
+        if (ignoreBall) {
+            bodySet = Collections.emptyList();
+            return;
+        }
+
         wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution);
         bodySet = Collections.singletonList(wallBody);
         if (disabled) {
             setRetracted(true);
         }
-	}
+    }
 
-	public boolean isRetracted() {
-		return !wallBody.isActive();
-	}
+    public boolean isRetracted() {
+        return wallBody!=null && !wallBody.isActive();
+    }
 
-	public void setRetracted(boolean retracted) {
-		if (retracted!=this.isRetracted()) {
-			wallBody.setActive(!retracted);
-		}
-	}
+    public void setRetracted(boolean retracted) {
+        if (retracted!=this.isRetracted()) {
+            wallBody.setActive(!retracted);
+        }
+    }
 
-	@Override public List<Body> getBodies() {
-		return bodySet;
-	}
+    @Override public List<Body> getBodies() {
+        return bodySet;
+    }
 
-	@Override public boolean shouldCallTick() {
-		// tick() only needs to be called if this wall provides a kick which makes it flash
-		return (this.kick > 0.01f);
-	}
+    @Override public boolean shouldCallTick() {
+        // tick() only needs to be called if this wall provides a kick which makes it flash
+        return (this.kick > 0.01f);
+    }
 
-	Vector2 impulseForBall(Body ball) {
-		if (this.kick <= 0.01f) return null;
-		// rotate wall direction 90 degrees for normal, choose direction toward ball
-		float ix = this.y2 - this.y1;
-		float iy = this.x1 - this.x2;
-		float mag = (float)Math.sqrt(ix*ix + iy*iy);
-		float scale = this.kick / mag;
-		ix *= scale;
-		iy *= scale;
+    Vector2 impulseForBall(Body ball) {
+        if (this.kick <= 0.01f) return null;
+        // rotate wall direction 90 degrees for normal, choose direction toward ball
+        float ix = this.y2 - this.y1;
+        float iy = this.x1 - this.x2;
+        float mag = (float)Math.sqrt(ix*ix + iy*iy);
+        float scale = this.kick / mag;
+        ix *= scale;
+        iy *= scale;
 
-		// dot product of (ball center - wall center) and impulse direction should be positive, if not flip impulse
-		Vector2 balldiff = ball.getWorldCenter().cpy().sub(this.x1, this.y1);
-		float dotprod = balldiff.x * ix + balldiff.y * iy;
-		if (dotprod<0) {
-			ix = -ix;
-			iy = -iy;
-		}
+        // dot product of (ball center - wall center) and impulse direction should be positive, if not flip impulse
+        Vector2 balldiff = ball.getWorldCenter().cpy().sub(this.x1, this.y1);
+        float dotprod = balldiff.x * ix + balldiff.y * iy;
+        if (dotprod<0) {
+            ix = -ix;
+            iy = -iy;
+        }
 
-		return new Vector2(ix, iy);
-	}
+        return new Vector2(ix, iy);
+    }
 
 
-	@Override public void handleCollision(Body ball, Body bodyHit, Field field) {
-		if (retractWhenHit) {
-			this.setRetracted(true);
-		}
+    @Override public void handleCollision(Body ball, Body bodyHit, Field field) {
+        if (retractWhenHit) {
+            this.setRetracted(true);
+        }
 
-		if (killBall) {
-			field.removeBall(ball);
-		}
-		else {
-			Vector2 impulse = this.impulseForBall(ball);
-			if (impulse!=null) {
-				ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
-				flashForFrames(3);
-			}
-		}
-	}
+        if (killBall) {
+            field.removeBall(ball);
+        }
+        else {
+            Vector2 impulse = this.impulseForBall(ball);
+            if (impulse!=null) {
+                ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+                flashForFrames(3);
+            }
+        }
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-		if (isRetracted()) return;
-		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        if (isRetracted()) return;
+        renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
+    }
 }

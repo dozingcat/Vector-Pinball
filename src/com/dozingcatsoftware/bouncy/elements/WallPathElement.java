@@ -24,11 +24,12 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 public class WallPathElement extends FieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-	List wallBodies = new ArrayList();
-	float[][] lineSegments;
+    List<Body> wallBodies = new ArrayList<Body>();
+    float[][] lineSegments;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
         List positions = (List)params.get(POSITIONS_PROPERTY);
         // N positions produce N-1 line segments
         lineSegments = new float[positions.size()-1][];
@@ -40,22 +41,24 @@ public class WallPathElement extends FieldElement {
                     asFloat(endpos.get(0)), asFloat(endpos.get(1))};
             lineSegments[i] = segment;
         }
-	}
+    }
 
-	@Override public void createBodies(World world) {
+    @Override public void createBodies(World world) {
+        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
+
         for (float[] segment : this.lineSegments) {
             Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
             this.wallBodies.add(wall);
         }
-	}
+    }
 
-	@Override public List<Body> getBodies() {
-		return wallBodies;
-	}
+    @Override public List<Body> getBodies() {
+        return wallBodies;
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-		for (float[] segment : this.lineSegments) {
-			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
-		}
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        for (float[] segment : this.lineSegments) {
+            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
+        }
+    }
 }

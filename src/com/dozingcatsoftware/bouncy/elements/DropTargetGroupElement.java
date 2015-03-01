@@ -61,106 +61,106 @@ public class DropTargetGroupElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
-	// store all bodies and positions, use Body's active flag to determine which targets have been hit
-	List<Body> allBodies = new ArrayList<Body>();
-	float[][] positions;
+    // store all bodies and positions, use Body's active flag to determine which targets have been hit
+    List<Body> allBodies = new ArrayList<Body>();
+    float[][] positions;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		// Individual targets can be specified in "positions" list.
-	    if (hasParameterKey(POSITIONS_PROPERTY)) {
-	        List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
-	        positions = new float[positionList.size()][];
-	        for (int i = 0; i < positionList.size(); i++) {
-	            List<Object> coords = positionList.get(i);
-	            positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
-                                            asFloat(coords.get(2)), asFloat(coords.get(3))};
-	        }
-	    }
-	    else {
-	        float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
-	        float[] wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
-	        float gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
-	        float startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
-	        float targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
-	        float gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
-	        int numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
+    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+        // Individual targets can be specified in "positions" list.
+        List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+        if (positionList!=null && !positionList.isEmpty()) {
+            positions = new float[positionList.size()][];
+            for (int i = 0; i < positionList.size(); i++) {
+                List<Object> coords = positionList.get(i);
+                positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
+                        asFloat(coords.get(2)), asFloat(coords.get(3))};
+            }
+        }
+        else {
+            float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
+            float[] wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
+            float gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
+            float startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
+            float targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
+            float gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
+            int numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
-	        positions = new float[numTargets][];
-	        double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
-	        double perpToWallAngle = wallAngle + TAU/4;
-	        for (int i = 0; i < numTargets; i++) {
-	            double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
-	            double alongWallEnd = alongWallStart + targetWidth;
+            positions = new float[numTargets][];
+            double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
+            double perpToWallAngle = wallAngle + TAU/4;
+            for (int i = 0; i < numTargets; i++) {
+                double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
+                double alongWallEnd = alongWallStart + targetWidth;
                 float x1 = (float) (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
-                                                   (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 float y1 = (float) (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
-                                                   (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 float x2 = (float) (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) +
-                                                   (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 float y2 = (float) (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
-                                                   (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 positions[i] = new float[] {x1, y1, x2, y2};
-	        }
-	    }
-	}
+            }
+        }
+    }
 
-	@Override public void createBodies(World world) {
-		for (float[] parray : positions) {
-			float restitution = 0f;
-			Body wallBody = Box2DFactory.createThinWall(world, parray[0], parray[1], parray[2], parray[3], restitution);
-			allBodies.add(wallBody);
-		}
-	}
+    @Override public void createBodies(World world) {
+        for (float[] parray : positions) {
+            float restitution = 0f;
+            Body wallBody = Box2DFactory.createThinWall(world, parray[0], parray[1], parray[2], parray[3], restitution);
+            allBodies.add(wallBody);
+        }
+    }
 
-	@Override public List<Body> getBodies() {
-		return allBodies;
-	}
+    @Override public List<Body> getBodies() {
+        return allBodies;
+    }
 
-	/** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
-	public boolean allTargetsHit() {
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			if (allBodies.get(i).isActive()) return false;
-		}
-		return true;
-	}
+    /** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
+    public boolean allTargetsHit() {
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            if (allBodies.get(i).isActive()) return false;
+        }
+        return true;
+    }
 
-	@Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
-		bodyHit.setActive(false);
-		// if all hit, notify delegate and check for reset parameter
-		if (allTargetsHit()) {
-			field.getDelegate().allDropTargetsInGroupHit(field, this);
+    @Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
+        bodyHit.setActive(false);
+        // if all hit, notify delegate and check for reset parameter
+        if (allTargetsHit()) {
+            field.getDelegate().allDropTargetsInGroupHit(field, this);
 
-			float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
-			if (restoreTime>0) {
-				field.scheduleAction((long)(restoreTime*1000), new Runnable() {
-					@Override
+            float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
+            if (restoreTime>0) {
+                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
+                    @Override
                     public void run() {
-						makeAllTargetsVisible();
-					}
-				});
-			}
-		}
-	}
+                        makeAllTargetsVisible();
+                    }
+                });
+            }
+        }
+    }
 
-	/** Makes all targets visible by calling Body.setActive(true) on each target body */
-	public void makeAllTargetsVisible() {
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			allBodies.get(i).setActive(true);
-		}
-	}
+    /** Makes all targets visible by calling Body.setActive(true) on each target body */
+    public void makeAllTargetsVisible() {
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            allBodies.get(i).setActive(true);
+        }
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-		// draw line for each target
-	    Color color = currentColor(DEFAULT_COLOR);
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			Body body = allBodies.get(i);
-			if (body.isActive()) {
-				float[] parray = positions[i];
-				renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
-			}
-		}
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        // draw line for each target
+        Color color = currentColor(DEFAULT_COLOR);
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            Body body = allBodies.get(i);
+            if (body.isActive()) {
+                float[] parray = positions[i];
+                renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
+            }
+        }
+    }
 }
