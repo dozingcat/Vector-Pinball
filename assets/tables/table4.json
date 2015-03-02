@@ -1,0 +1,493 @@
+{
+    "delegate": "Field4Delegate",
+    "ballcolor": [192, 192, 224],
+    "ballradius": "0.48",
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "18.7", "23"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["19.9", "0.1", "19.9", "23"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "54.5",
+            "minangle": "0",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": ["0.1", "0.1", "18.7", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "19.9", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["0.1", "4", "6", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "4", "12.7", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": ["0.1", "4", "0.1", "9.28"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "8.5", "1.45", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "8.5", "17.35", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchBarrier",
+            "position": ["15.05", "27.53", "15.75", "28.74"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "TopRampSensor",
+            "rect": [14.07, 27.630000000000003, 15.07, 29.1]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierRetract",
+            "rect": ["16.0", "26.5", "17.0", "28.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "4.8", "6.25", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "4.8", "12.45", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-left",
+            "kick": "5.0",
+            "position": ["0.15", "5.0", "1.35", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-right",
+            "kick": "5.0",
+            "position": ["17.45", "5.0", "18.65", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["3.2", "8.77", "5.7", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "3.2", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["5.95", "4", "5.7", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "2.95", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "5.8", "5.95", "4"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["15.6", "8.77", "13.1", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.6", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.85", "4", "13.1", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.85", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "5.8", "12.85", "4"]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "FlipperRollovers",
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["0.775", "7.0"]
+                }, 
+                {
+                    "position": ["2.2", "7.0"]
+                }, 
+                {
+                    "position": ["16.6", "7.0"]
+                }, 
+                {
+                    "position": ["18.025", "7.0"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": true
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["6.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "-2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["12.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "65",
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 15,
+            "xradius": "8",
+            "yradius": "5.6"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "200",
+            "minangle": "180",
+            "xradius": "8",
+            "yradius": "5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "200",
+            "minangle": "180",
+            "xradius": "9.9",
+            "yradius": "8"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [1.4, 18.640000000000004, "0.7", "20.26"]
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.3",
+            "maxangle": "-18",
+            "minangle": "-68",
+            "position": [1.446666666666668, 18.353333333333328],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "WallPathElement",
+            "positions": [
+                [1.4, 18.64], 
+                [1.0199999999999998, 18.48], 
+                [2.0, 16.12]
+            ]
+        }, 
+        {
+            "center": ["3.1", "9.28"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "120",
+            "segments": 15,
+            "xradius": "3",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.61", "12.76", "2.0", "16.12"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.3",
+            "gapFromWall": "0.2",
+            "id": "DropTargetLeftSave",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "0.75",
+            "wallEnd": ["1.61", "12.76"],
+            "wallStart": ["2.0", "16.12"]
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [204, 0, 0],
+            "kick": "1.0",
+            "position": [10.373333333333335, 24.046666666666667],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 15,
+            "xradius": "6.5",
+            "yradius": "4.2"
+        }, 
+        {
+            "center": [10.04, 23.040000000000003],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-60",
+            "segments": 15,
+            "xradius": "8.7",
+            "yradius": "5.5"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 165, 32],
+            "id": "RightRampGoldKicker",
+            "ignoreBall": false,
+            "kick": "4",
+            "position": [14.693299999999999, 25.973300000000002, 15.5133, 27.24]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.2", "12.76", "17.2", "17.4"]
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [218, 165, 32],
+            "kick": "1.0",
+            "position": [3.4600333333333353, 24.513333333333335],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [218, 165, 32],
+            "kick": "1.0",
+            "position": [6.446666666666666, 25.67333333333334],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [204, 204, 0],
+            "kick": "1.0",
+            "position": [12.72666666666667, 22.466666666666665],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [218, 165, 32],
+            "kick": "1.0",
+            "position": [5.633299999999998, 23.40666666666666],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [0, 204, 0],
+            "kick": "1.0",
+            "position": [12.940000000000007, 24.813333333333325],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "center": ["10", "25.7"],
+            "class": "WallArcElement",
+            "maxangle": "175",
+            "minangle": "90",
+            "radius": "1.5",
+            "segments": 5
+        }, 
+        {
+            "class": "WallElement",
+            "position": [8.120000000000001, 23.140000000000004, 8.5, 25.82]
+        }, 
+        {
+            "center": [6.6800000000000015, 23.520000000000003],
+            "class": "WallArcElement",
+            "maxangle": "-15",
+            "minangle": "-75",
+            "radius": "1.5",
+            "segments": 5
+        }, 
+        {
+            "class": "WallElement",
+            "position": [3.6000000000000005, 20.799999999999997, 7.08, 22.08]
+        }, 
+        {
+            "center": ["15.7", "9.28"],
+            "class": "WallArcElement",
+            "maxangle": "60",
+            "minangle": "0",
+            "xradius": "3",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 165, 32],
+            "id": "0f0",
+            "kick": "2",
+            "position": ["17.6", "17.8", "18.1", "18.84"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 165, 32],
+            "id": "MultiballBarrier1",
+            "position": ["16.80", "17.8", "16.30", "18.84"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 165, 32],
+            "id": "MultiballKicker",
+            "kick": "6",
+            "position": ["18.66", "13.18", "17.32", "13.18"]
+        }, 
+        {
+            "center": [17.200000000000003, 18.000000000000004],
+            "class": "WallArcElement",
+            "maxangle": "130",
+            "minangle": "0",
+            "radius": "1.5",
+            "segments": 10
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 165, 32],
+            "id": "MultiballBarrier2",
+            "position": ["17.2", "17.8", "17.2", "19.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.25",
+            "gapFromWall": "0.2",
+            "id": "DropTargetRightSave",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "0.8",
+            "wallEnd": ["17.2", "13"],
+            "wallStart": ["17.2", "12.76"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.3",
+            "gapFromWall": "-0.2",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "1.0",
+            "wallEnd": ["7.08", "22.08"],
+            "wallStart": ["3.6", "20.8"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "RightRampSensor",
+            "rect": ["15.3", "25.66", "16.3", "26.66"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "TopRampSensor",
+            "rect": [13.059999999999999, 28.34, 14.059999999999999, 29.34]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [218, 164, 32],
+            "id": "TopRampGoldBlocker",
+            "position": [15.04, 27.56, 13.639999999999999, 28.08]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "BehindGoldSensor",
+            "rect": ["14", "26.5", "15", "27.5"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-70",
+            "segments": 10,
+            "xradius": "6.5",
+            "yradius": "3.0"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [12.320000000000002, 17.559999999999995, "14.38", "18.27"]
+        }
+    ],
+    "gravity": "4",
+    "height": "30",
+    "launchDeadZone": ["18.8", "0", "20", "1.4"],
+    "launchPosition": ["19.3", "3.0"],
+    "launchVelocity": ["0", "16"],
+    "launchVelocityRandomDelta": ["0", "0.6"],
+    "name": "New Table",
+    "numballs": 3,
+    "script": "// Initialized in gameStarted.\u000adef launchBarrier = null;\u000adef goldTopBlocker = null;\u000adef goldRightKicker = null;\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    goldTopBlocker = field.getFieldElementById(\"TopRampGoldBlocker\");\u000a    goldRightKicker = field.getFieldElementById(\"RightRampGoldKicker\");\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a    goldRightKicker.setRetracted(true);\u000a  },\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'TopRampSensor') {\u000a      launchBarrier.setRetracted(false);\u000a      goldTopBlocker.setRetracted(true);\u000a      goldRightKicker.setRetracted(false);\u000a    }\u000a    else if (sensorId == \"RightRampSensor\") {\u000a      goldTopBlocker.setRetracted(false);\u000a      goldRightKicker.setRetracted(true);\u000a    }\u000a    else if (sensorId == \"BehindGoldSensor\") {\u000a      goldTopBlocker.setRetracted(false);\u000a      goldRightKicker.setRetracted(false);\u000a    }\u000a  },\u000a]",
+    "targetTimeRatio": "2.3",
+    "version": 1,
+    "width": "20"
+}
