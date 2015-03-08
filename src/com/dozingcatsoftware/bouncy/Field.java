@@ -498,6 +498,10 @@ public class Field implements ContactListener {
         return gameState.getScoreMultiplier();
     }
 
+    public void setScoreMultiplier(double multiplier) {
+        gameState.setScoreMultiplier(multiplier);
+    }
+
     // Accessors.
     public float getWidth() {
         return layout.getWidth();
