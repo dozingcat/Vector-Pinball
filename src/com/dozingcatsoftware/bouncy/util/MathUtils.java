@@ -100,4 +100,10 @@ public class MathUtils {
     public static double toDegrees(double radians) {
         return (radians * 360/TAU);
     }
+
+    public static float clamp(float x, float min, float max) {
+        if (x < min) return min;
+        if (x > max) return max;
+        return x;
+    }
 }

@@ -34,7 +34,8 @@ public class Color {
             return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue());
         }
         else if (rgb.size() == 4) {
-            return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue(), rgb.get(3).intValue());
+            return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue(),
+                    rgb.get(3).intValue());
         }
         else {
             throw new IllegalArgumentException("Invalid color size: " + rgb.size());

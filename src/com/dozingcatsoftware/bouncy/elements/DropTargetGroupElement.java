@@ -61,17 +61,18 @@ public class DropTargetGroupElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
-    // store all bodies and positions, use Body's active flag to determine which targets have been hit
+    // Store all bodies and positions, use Body's active flag to determine which targets have been hit.
     List<Body> allBodies = new ArrayList<Body>();
     float[][] positions;
 
-    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         // Individual targets can be specified in "positions" list.
-        List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+        @SuppressWarnings("unchecked")
+        List<List<?>> positionList = (List<List<?>>) getRawParameterValueForKey(POSITIONS_PROPERTY);
         if (positionList!=null && !positionList.isEmpty()) {
             positions = new float[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
-                List<Object> coords = positionList.get(i);
+                List<?> coords = positionList.get(i);
                 positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
                         asFloat(coords.get(2)), asFloat(coords.get(3))};
             }
@@ -107,7 +108,8 @@ public class DropTargetGroupElement extends FieldElement {
     @Override public void createBodies(World world) {
         for (float[] parray : positions) {
             float restitution = 0f;
-            Body wallBody = Box2DFactory.createThinWall(world, parray[0], parray[1], parray[2], parray[3], restitution);
+            Body wallBody = Box2DFactory.createThinWall(
+                    world, parray[0], parray[1], parray[2], parray[3], restitution);
             allBodies.add(wallBody);
         }
     }
@@ -119,7 +121,7 @@ public class DropTargetGroupElement extends FieldElement {
     /** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
     public boolean allTargetsHit() {
         int bsize = allBodies.size();
-        for(int i=0; i<bsize; i++) {
+        for (int i=0; i<bsize; i++) {
             if (allBodies.get(i).isActive()) return false;
         }
         return true;
@@ -146,7 +148,7 @@ public class DropTargetGroupElement extends FieldElement {
     /** Makes all targets visible by calling Body.setActive(true) on each target body */
     public void makeAllTargetsVisible() {
         int bsize = allBodies.size();
-        for(int i=0; i<bsize; i++) {
+        for (int i=0; i<bsize; i++) {
             allBodies.get(i).setActive(true);
         }
     }

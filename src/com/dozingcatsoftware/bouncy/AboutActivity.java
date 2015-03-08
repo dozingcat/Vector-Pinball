@@ -14,30 +14,31 @@ public class AboutActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.about);
-        
-        // get text to display by replacing "[TABLE_RULES]" with contents of string resource table[level]_rules
+
+        // Get text to display by replacing "[TABLE_RULES]" with the contents of string resource
+        // with ID table[level]_rules.
         String baseText = getString(R.string.about_text);
         String tableRulesText = null;
         try {
-        	String fieldName = "table" + getIntent().getIntExtra("level", 1) + "_rules";
-        	int tableRulesID = (Integer)R.string.class.getField(fieldName).get(null);
-        	tableRulesText = getString(tableRulesID);
+            String fieldName = "table" + getIntent().getIntExtra("level", 1) + "_rules";
+            int tableRulesID = (Integer)R.string.class.getField(fieldName).get(null);
+            tableRulesText = getString(tableRulesID);
         }
         catch(Exception ex) {
-        	tableRulesText = null;
+            tableRulesText = null;
         }
         if (tableRulesText==null) tableRulesText = "";
         String displayText = baseText.replace("[TABLE_RULES]", tableRulesText);
-        
+
         TextView tv = (TextView)findViewById(R.id.aboutTextView);
         tv.setText(displayText);
     }
-    
+
     public static Intent startForLevel(Context context, int level) {
-		Intent aboutIntent = new Intent(context, AboutActivity.class);
-		aboutIntent.putExtra("level", level);
-		context.startActivity(aboutIntent);
-		return aboutIntent;
+        Intent aboutIntent = new Intent(context, AboutActivity.class);
+        aboutIntent.putExtra("level", level);
+        context.startActivity(aboutIntent);
+        return aboutIntent;
     }
 
 }

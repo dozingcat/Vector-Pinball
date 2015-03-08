@@ -16,11 +16,11 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 import com.dozingcatsoftware.bouncy.VPSoundpool;
 
 /**
- * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
- * (and optionally deactivated) when a ball passes over them. Individual rollovers in the group are represented by
- * instances of the Rollover nested class, which specify center, radius, and color. Parameters at the collection level
- * control whether the rollovers should cycle when flippers are activated, and whether rollovers can toggle from on to off.
- * @author brian
+ * This class represents a collection of rollover elements. They are activated (and optionally
+ * deactivated) when a ball passes over them. Individual rollovers in the group are represented by
+ * instances of the Rollover nested class, which specify center, radius, and color. Parameters at
+ * the collection level control whether the rollovers should cycle when flippers are activated,
+ * and whether rollovers can toggle from on to off.
  */
 
 public class RolloverGroupElement extends FieldElement {
@@ -39,7 +39,7 @@ public class RolloverGroupElement extends FieldElement {
     static class Rollover {
         float cx, cy;
         float radius;
-        float radiusSquared; // optimization when computing whether ball is in range
+        float radiusSquared; // Optimization when computing whether ball is in range.
         Color color;
         long score;
         float resetDelay;
@@ -57,32 +57,30 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
     boolean isVisible = true;
 
-    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @SuppressWarnings("unchecked")
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         this.canToggleOff = Boolean.TRUE.equals(params.get(TOGGLE_OFF_PROPERTY));
         this.cycleOnFlipper = Boolean.TRUE.equals(params.get(CYCLE_ON_FLIPPER_PROPERTY));
         this.ignoreBall = Boolean.TRUE.equals(params.get(IGNORE_BALL_PROPERTY));
         this.defaultRadius = asFloat(params.get(RADIUS_PROPERTY));
         this.defaultResetDelay = asFloat(params.get(RESET_DELAY_PROPERTY));
 
-        List<Map> rolloverMaps = (List<Map>)params.get(ROLLOVERS_PROPERTY);
-        for(Map rmap : rolloverMaps) {
+        List<Map<String, ?>> rolloverMaps = (List<Map<String, ?>>)params.get(ROLLOVERS_PROPERTY);
+        for(Map<String, ?> rmap : rolloverMaps) {
             Rollover rollover = new Rollover();
             rollovers.add(rollover);
 
-            List pos = (List)rmap.get(POSITION_PROPERTY);
+            List<?> pos = (List<?>)rmap.get(POSITION_PROPERTY);
             rollover.cx = asFloat(pos.get(0));
             rollover.cy = asFloat(pos.get(1));
-            // radius, color, score, and reset delay can be specified for each rollover, if not present use default from group
-            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ?
-                    asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
-                    rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ?
-                            Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
-                            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ?
-                                    ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
-                                    rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ?
-                                            asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
+            // radius, color, score, and reset delay can be specified for each rollover.
+            // If not present use default from group.
+            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ? asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
+            rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ? Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
+            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ? ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
+            rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ? asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
 
-                                            rollover.radiusSquared = rollover.radius * rollover.radius;
+            rollover.radiusSquared = rollover.radius * rollover.radius;
         }
     }
 
@@ -91,7 +89,7 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     @Override public List<Body> getBodies() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     List<Rollover> hitRollovers = new ArrayList<Rollover>(); // avoid object allocation in rolloversHitByBalls

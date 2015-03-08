@@ -12,7 +12,7 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field2Delegate extends BaseFieldDelegate {
 
-    static final double TAU = 2*Math.PI; // pi is wrong
+    static final double TAU = 2*Math.PI; // pi is wrong.
 
     static class RotatingGroup {
         String[] elementIDs;
@@ -33,7 +33,9 @@ public class Field2Delegate extends BaseFieldDelegate {
             this.angleIncrement = TAU / ids.length;
         }
 
-        /** Creates a RotatingGroup by computing the distance and angle to center from the first element ID in the ids array.
+        /**
+         * Creates a RotatingGroup by computing the distance and angle to center from the first
+         * element ID in the ids array.
          */
         public static RotatingGroup create(Field field, String[] ids, double cx, double cy, double speed) {
             FieldElement element = field.getFieldElementById(ids[0]);
@@ -71,13 +73,18 @@ public class Field2Delegate extends BaseFieldDelegate {
     }
 
     void setupRotatingGroups(Field field) {
+        // Read rotation params from variables defined in the field.
         float b1Speed = ((Number)field.getValueWithKey("RotatingBumper1Speed")).floatValue();
         float b2Speed = ((Number)field.getValueWithKey("RotatingBumper2Speed")).floatValue();
         float b2cx = ((Number)field.getValueWithKey("RotatingBumper2CenterX")).floatValue();
         float b2cy = ((Number)field.getValueWithKey("RotatingBumper2CenterY")).floatValue();
+        String[] group1Ids = {
+                "RotatingBumper1A", "RotatingBumper1B", "RotatingBumper1C", "RotatingBumper1D"
+        };
         rotatingGroups = new RotatingGroup[] {
-                createRotatingGroup(field, "CenterBumper1", new String[] {"RotatingBumper1A", "RotatingBumper1B", "RotatingBumper1C", "RotatingBumper1D"}, b1Speed),
-                RotatingGroup.create(field, new String[] {"RotatingBumper2A", "RotatingBumper2B"}, b2cx, b2cy, b2Speed)
+                createRotatingGroup(field, "CenterBumper1", group1Ids, b1Speed),
+                RotatingGroup.create(field, new String[] {"RotatingBumper2A", "RotatingBumper2B"},
+                        b2cx, b2cy, b2Speed)
         };
     }
 
@@ -106,26 +113,25 @@ public class Field2Delegate extends BaseFieldDelegate {
     }
 
     /** Always return true so the rotating bumpers animate smoothly */
-    @Override
-    public boolean isFieldActive(Field field) {
+    @Override public boolean isFieldActive(Field field) {
         return true;
     }
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-        // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+        // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
         field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
     }
 
-    @Override
-    public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
-        // when center red bumper is hit, start multiball if all center rollovers are lit, otherwise retract left barrier
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+        // When center red bumper is hit, start multiball if all center rollovers are lit,
+        // otherwise retract left barrier.
         String elementID = element.getElementId();
         if ("CenterBumper1".equals(elementID)) {
             WallElement barrier = (WallElement)field.getFieldElementById("LeftTubeBarrier");
-            RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
+            RolloverGroupElement multiballRollovers =
+                    (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
 
             if (multiballRollovers.allRolloversActive()) {
                 barrier.setRetracted(false);

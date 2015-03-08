@@ -10,51 +10,33 @@ import com.dozingcatsoftware.bouncy.elements.RolloverGroupElement;
 import com.dozingcatsoftware.bouncy.elements.SensorElement;
 
 
-/** This class implements the Field.Delegate interface and does nothing for each of the interface methods. Real delegates
- * can subclass this class to avoid having to create empty implementations for events they don't care about. If a field 
- * definition doesn't specify a delegate class, an instance of this class will be used as a placeholder delegate. 
- * @author brian
+/**
+ * This class implements the Field.Delegate interface and does nothing for each of the interface
+ * methods. Real delegates can subclass this class to avoid having to create empty implementations
+ * for events they don't care about. If a field definition doesn't specify a delegate class, an
+ * instance of this class will be used as a placeholder delegate.
  */
 public class BaseFieldDelegate implements Field.Delegate {
 
-	@Override
-	public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
-	}
+    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {}
 
-	@Override
-	public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-	}
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {}
 
-	@Override
-	public void flippersActivated(Field field, List<FlipperElement> flippers) {
-	}
+    @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
-	@Override
-	public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
-	}
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {}
 
-	@Override
-	public void gameStarted(Field field) {
-	}
+    @Override public void gameStarted(Field field) {}
 
-	@Override
-	public void ballLost(Field field) {
-	}
+    @Override public void ballLost(Field field) {}
 
-	@Override
-	public void gameEnded(Field field) {
-	}
+    @Override public void gameEnded(Field field) {}
 
-	@Override
-	public void tick(Field field, long nanos) {
-	}
-	
-	@Override
-	public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
-	}
+    @Override public void tick(Field field, long nanos) {}
 
-	@Override
-	public boolean isFieldActive(Field field) {
-		return false;
-	}
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {}
+
+    @Override public boolean isFieldActive(Field field) {
+        return false;
+    }
 }

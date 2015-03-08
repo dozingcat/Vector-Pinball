@@ -14,21 +14,19 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /**
  * This FieldElement subclass approximates a circular wall with a series of straight wall segments
- * whose endpoints lie on a circle or ellipse. These elements are defined in the layout JSON as follows:
+ * whose endpoints lie on a circle or ellipse. It is defined in the layout JSON as follows:
  * {
  *     "class": "WallArcElement",
- *     "center": [5.5, 10], // center of circle or ellipse
- *     "xradius": 2.5, // radius in the horizontal direction
- *     "yradius": 2, // radius in the y direction
- *     "minangle": 45, // starting angle in degrees, 0 is to the right of the center, 90 is up.
- *     "maxangle": 135, // ending angle in degrees
- *     "segments": 10, // number of straight wall segments to use to approximate the arc.
- *     "color": [255,0,0] // optional RGB values for the arc's color
+ *     "center": [5.5, 10], // Center of circle or ellipse.
+ *     "xradius": 2.5, // Radius in the horizontal direction.
+ *     "yradius": 2, // Radius in the y direction.
+ *     "minangle": 45, // Starting angle in degrees, 0 is to the right of the center, 90 is up.
+ *     "maxangle": 135, // Ending angle in degrees.
+ *     "segments": 10, // Number of straight wall segments to use to approximate the arc.
+ *     "color": [255,0,0] // Optional RGB values for the arc's color.
  * }
  *
  * For circular walls, the "radius" attribute can be used instead of xradius and yradius.
- *
- * @author brian
  */
 
 public class WallArcElement extends FieldElement {
@@ -45,8 +43,8 @@ public class WallArcElement extends FieldElement {
     public List<Body> wallBodies = new ArrayList<Body>();
     float[][] lineSegments;
 
-    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-        List centerPos = (List)params.get(CENTER_PROPERTY);
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+        List<?> centerPos = (List<?>)params.get(CENTER_PROPERTY);
         float cx = asFloat(centerPos.get(0));
         float cy = asFloat(centerPos.get(1));
 

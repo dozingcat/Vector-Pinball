@@ -13,8 +13,9 @@ import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
-/** This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits. The impulse magnitude is controlled
- * by the "kick" parameter in the configuration map.
+/**
+ * This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits.
+ * The impulse magnitude is controlled by the "kick" parameter in the configuration map.
  */
 
 public class BumperElement extends FieldElement {
@@ -25,59 +26,59 @@ public class BumperElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
-	Body pegBody;
-	List pegBodySet;
+    Body bumperBody;
+    List<Body> bumperBodySet;
 
-	float radius;
-	float cx, cy;
-	float kick;
+    float radius;
+    float cx, cy;
+    float kick;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List pos = (List)params.get(POSITION_PROPERTY);
-		this.radius = asFloat(params.get(RADIUS_PROPERTY));
-		this.cx = asFloat(pos.get(0));
-		this.cy = asFloat(pos.get(1));
-		this.kick = asFloat(params.get(KICK_PROPERTY));
-	}
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+        List<?> pos = (List<?>)params.get(POSITION_PROPERTY);
+        this.radius = asFloat(params.get(RADIUS_PROPERTY));
+        this.cx = asFloat(pos.get(0));
+        this.cy = asFloat(pos.get(1));
+        this.kick = asFloat(params.get(KICK_PROPERTY));
+    }
 
-	@Override public void createBodies(World world) {
-		pegBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
-		pegBodySet = Collections.singletonList(pegBody);
-	}
+    @Override public void createBodies(World world) {
+        bumperBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
+        bumperBodySet = Collections.singletonList(bumperBody);
+    }
 
-	@Override public List<Body> getBodies() {
-		return pegBodySet;
-	}
+    @Override public List<Body> getBodies() {
+        return bumperBodySet;
+    }
 
-	@Override public boolean shouldCallTick() {
-		// needs to call tick to decrement flash counter (but can use superclass tick() implementation)
-		return true;
-	}
+    @Override public boolean shouldCallTick() {
+        // Needs to call tick to decrement flash counter, but can use superclass tick() implementation.
+        return true;
+    }
 
 
-	Vector2 impulseForBall(Body ball) {
-		if (this.kick <= 0.01f) return null;
-		// compute unit vector from center of peg to ball, and scale by kick value to get impulse
-		Vector2 ballpos = ball.getWorldCenter();
-		Vector2 thisPos = pegBody.getPosition();
-		float ix = ballpos.x - thisPos.x;
-		float iy = ballpos.y - thisPos.y;
-		float mag = (float)Math.sqrt(ix*ix + iy*iy);
-		float scale = this.kick / mag;
-		return new Vector2(ix*scale, iy*scale);
-	}
+    Vector2 impulseForBall(Body ball) {
+        if (this.kick <= 0.01f) return null;
+        // Compute unit vector from center of bumper to ball, and scale by kick value to get impulse.
+        Vector2 ballpos = ball.getWorldCenter();
+        Vector2 thisPos = bumperBody.getPosition();
+        float ix = ballpos.x - thisPos.x;
+        float iy = ballpos.y - thisPos.y;
+        float mag = (float)Math.sqrt(ix*ix + iy*iy);
+        float scale = this.kick / mag;
+        return new Vector2(ix*scale, iy*scale);
+    }
 
-	@Override public void handleCollision(Body ball, Body bodyHit, Field field) {
-		Vector2 impulse = this.impulseForBall(ball);
-		if (impulse!=null) {
-			ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
-			flashForFrames(3);
-		}
-	}
+    @Override public void handleCollision(Body ball, Body bodyHit, Field field) {
+        Vector2 impulse = this.impulseForBall(ball);
+        if (impulse!=null) {
+            ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+            flashForFrames(3);
+        }
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-		float px = pegBody.getPosition().x;
-		float py = pegBody.getPosition().y;
-		renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        float px = bumperBody.getPosition().x;
+        float py = bumperBody.getPosition().y;
+        renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
+    }
 }

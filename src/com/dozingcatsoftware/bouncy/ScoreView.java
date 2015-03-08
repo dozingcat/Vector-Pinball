@@ -11,10 +11,9 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 
-/** This class displays the score and game messages above the game view. When there is no game in progress, it cycles
- * between a "Touch to Start" message, last score, and high score.
- * @author brian
- *
+/**
+ * This class displays the score and game messages above the game view. When there is no game in progress, it cycles
+ * between a "Touch to Start" message, last score, and high scores.
  */
 
 public class ScoreView extends View {
@@ -45,9 +44,10 @@ public class ScoreView extends View {
         super(context, attrs);
         textPaint.setARGB(255, 255, 255, 0);
         textPaint.setAntiAlias(true);
-        // setTextSize uses absolute pixels, get screen density to scale
+        // setTextSize uses absolute pixels, get screen density to scale.
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager =
+                (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
         textPaint.setTextSize(24 * metrics.density);
 
@@ -63,8 +63,7 @@ public class ScoreView extends View {
         remainingBallPaint.setStyle(Paint.Style.FILL);
     }
 
-    @Override
-    public void draw(Canvas c) {
+    @Override public void draw(Canvas c) {
         GameMessage msg = null;
         boolean gameInProgress = false;
         boolean ballInPlay = false;
@@ -73,7 +72,7 @@ public class ScoreView extends View {
         double multiplier = 0;
         long score = 0;
         synchronized(field) {
-            // show custom message if present
+            // Show custom message if present.
             msg = field.getGameMessage();
             GameState state = field.getGameState();
             gameInProgress = state.isGameInProgress();
@@ -87,8 +86,8 @@ public class ScoreView extends View {
         c.drawARGB(255, 8, 8, 8);
         String displayString = (msg!=null) ? msg.text : null;
         if (displayString==null) {
-            // show score if game is in progress, otherwise cycle between
-            // "Touch to start"/previous score/high score
+            // Show score if game is in progress, otherwise cycle between
+            // "Touch to start"/previous score/high score.
             if (gameInProgress) {
                 displayString = SCORE_FORMAT.format(score);
             }
@@ -110,7 +109,8 @@ public class ScoreView extends View {
         int height = this.getHeight();
         textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
         // textRect ends up being too high
-        c.drawText(displayString, width/2 - textRect.width()/2, height/2 + textRect.height()/2, textPaint);
+        c.drawText(displayString, width/2 - textRect.width()/2, height/2 + textRect.height()/2,
+                textPaint);
         if (showFPS && fps>0) {
             c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
         }
@@ -122,7 +122,8 @@ public class ScoreView extends View {
             float ballCenterY = height - (ballOuterMargin + ballRadius);
             float ballCenterX = 0;
             for (int i=0; i<totalBalls; i++) {
-                ballCenterX = width - ballOuterMargin - ballRadius - (i * (2*ballRadius + ballBetweenSpace));
+                ballCenterX = width - ballOuterMargin - ballRadius -
+                        (i * (2*ballRadius + ballBetweenSpace));
                 // "Remove" ball from display when launched.
                 boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
                 c.drawCircle(ballCenterX, ballCenterY, ballRadius,
@@ -132,9 +133,9 @@ public class ScoreView extends View {
             if (multiplier > 1) {
                 int intValue = (int) multiplier;
                 String multiplierString = (multiplier == intValue) ?
-                        intValue + "x" :
-                            String.format("%.2fx", multiplier);
-                c.drawText(multiplierString, ballCenterX-ballRadius, height * 0.4f, multiplierPaint);
+                        intValue + "x" : String.format("%.2fx", multiplier);
+                c.drawText(multiplierString, ballCenterX-ballRadius, height * 0.4f,
+                        multiplierPaint);
             }
         }
     }
@@ -143,8 +144,8 @@ public class ScoreView extends View {
         return System.currentTimeMillis();
     }
 
-    // Returns message to show when game is not in progress. Can be "Touch to start", high score, or previous score.
-    // If cycle parameter is true, moves to next message if possible.
+    // Returns message to show when game is not in progress. Can be "Touch to start", high score,
+    // or previous score. If cycle parameter is true, moves to next message if possible.
     String displayedGameOverMessage(boolean cycle) {
         String msg = null;
         if (cycle) {

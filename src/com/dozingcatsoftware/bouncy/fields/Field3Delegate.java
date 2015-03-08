@@ -160,7 +160,7 @@ public class Field3Delegate extends BaseFieldDelegate {
             }
         }
         else {
-            // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+            // Rollover groups increment field multiplier when all rollovers are activated.
             rolloverGroup.setAllRolloversActivated(false);
             field.getGameState().incrementScoreMultiplier();
             field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
@@ -169,7 +169,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
-        // activate ball saver for left and right groups
+        // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
@@ -258,7 +258,8 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
-    // support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
+    // Support for enabling launch barrier after ball passes by it and hits sensor,
+    // and disabling for new ball or new game.
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
         WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);

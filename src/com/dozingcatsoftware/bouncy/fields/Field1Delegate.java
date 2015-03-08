@@ -10,16 +10,16 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field1Delegate extends BaseFieldDelegate {
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-        // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+        // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
         field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
 
         // Multiball for ramp shot if extra ball rollovers all lit.
         if ("RampRollovers".equals(rolloverGroup.getElementId())) {
-            RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
+            RolloverGroupElement extraBallRollovers =
+                    (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
             if (extraBallRollovers.allRolloversActive()) {
                 extraBallRollovers.setAllRolloversActivated(false);
                 startMultiball(field);
@@ -32,15 +32,14 @@ public class Field1Delegate extends BaseFieldDelegate {
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {
-                if (field.getBalls().size()<3) field.launchBall();
+                if (field.getBalls().size() <3 ) field.launchBall();
             }
         };
         field.scheduleAction(1000, launchBall);
         field.scheduleAction(3500, launchBall);
     }
 
-    @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
@@ -52,7 +51,8 @@ public class Field1Delegate extends BaseFieldDelegate {
             field.showGameMessage("Right Save Enabled", 1500);
         }
         // For all groups, increment extra ball rollover.
-        RolloverGroupElement extraBallRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
+        RolloverGroupElement extraBallRollovers =
+                (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
         if (extraBallRollovers != null && !extraBallRollovers.allRolloversActive()) {
             extraBallRollovers.activateFirstUnactivatedRollover();
             if (extraBallRollovers.allRolloversActive()) {
@@ -61,14 +61,14 @@ public class Field1Delegate extends BaseFieldDelegate {
         }
     }
 
-    // Support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game.
+    // Support for enabling launch barrier after ball passes by it and hits sensor,
+    // and disabling for new ball or new game.
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
         WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
-    @Override
-    public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
         // Enable launch barrier.
         if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);
@@ -78,13 +78,11 @@ public class Field1Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void gameStarted(Field field) {
+    @Override public void gameStarted(Field field) {
         setLaunchBarrierEnabled(field, false);
     }
 
-    @Override
-    public void ballLost(Field field) {
+    @Override public void ballLost(Field field) {
         setLaunchBarrierEnabled(field, false);
     }
 
