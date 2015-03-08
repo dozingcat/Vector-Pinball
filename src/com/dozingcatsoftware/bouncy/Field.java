@@ -494,7 +494,7 @@ public class Field implements ContactListener {
         gameState.incrementScoreMultiplier();
     }
 
-    public int getScoreMultiplier() {
+    public double getScoreMultiplier() {
         return gameState.getScoreMultiplier();
     }
 

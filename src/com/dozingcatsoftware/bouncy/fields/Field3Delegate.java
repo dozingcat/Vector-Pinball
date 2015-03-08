@@ -163,10 +163,10 @@ public class Field3Delegate extends BaseFieldDelegate {
             // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
             rolloverGroup.setAllRolloversActivated(false);
             field.getGameState().incrementScoreMultiplier();
-            field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
+            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
         }
     }
-    
+
     @Override
     public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
         // activate ball saver for left and right groups
@@ -201,6 +201,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
+    @Override
     public void tick(Field field, long nanos) {
         if (bumperBonusActive) {
             bumperBonusNanosElapsed += nanos;
@@ -248,15 +249,15 @@ public class Field3Delegate extends BaseFieldDelegate {
                 extraEnergy = fractionRemaining * bumperBonusMultiplier;
                 // Round score to nearest multiple of 10.
                 double bonusScore = element.getScore() * extraEnergy;
-                field.addScore(10 * ((long)Math.round(bonusScore / 10)));
+                field.addScore(10 * (Math.round(bonusScore / 10)));
             }
             bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
-            double ratio = ((double)bumperEnergy) / maxBumperEnergy;
+            double ratio = (bumperEnergy) / maxBumperEnergy;
             field.getFieldElementById("BumperIndicator").setNewColor(colorForTemperatureRatio(ratio));
             checkForEnableMultiball(field);
         }
     }
-    
+
     // support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
         WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
@@ -265,7 +266,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
-        // enable launch barrier 
+        // enable launch barrier
         if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);
         }
@@ -312,6 +313,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         field.showGameMessage("Multiball!", 2000);
         multiballStatus = MultiballStatus.PENDING;
         Runnable launchBall = new Runnable() {
+            @Override
             public void run() {
                 if (field.getBalls().size()<3) field.launchBall();
                 if (multiballStatus != MultiballStatus.ACTIVE) {

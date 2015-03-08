@@ -15,7 +15,7 @@ public class Field1Delegate extends BaseFieldDelegate {
         // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
-        field.showGameMessage(field.getGameState().getScoreMultiplier() + "x Multiplier", 1500);
+        field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
 
         // Multiball for ramp shot if extra ball rollovers all lit.
         if ("RampRollovers".equals(rolloverGroup.getElementId())) {
