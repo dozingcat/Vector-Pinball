@@ -24,7 +24,8 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  *             setRetracted(field, true) is called.
  * "ignoreBall": if true, the wall will be drawn but will not interact with the ball.
  *
- * Walls can be removed from the field by calling setRetracted(field, true), and restored with setRetracted(field, false).
+ * A wall can be removed from the field by calling setRetracted(field, true). A retracted wall will
+ * not be drawn and will not interact with the ball. setRetracted(field, true) will restore it.
  */
 
 public class WallElement extends FieldElement {
@@ -108,12 +109,11 @@ public class WallElement extends FieldElement {
         // Dot product of (ball center - wall center) and impulse direction should be positive,
         // if not flip impulse.
         Vector2 balldiff = ball.getWorldCenter().cpy().sub(this.x1, this.y1);
-        float dotprod = balldiff.x * ix + balldiff.y * iy;
-        if (dotprod<0) {
+        float dotprod = balldiff.x*ix + balldiff.y*iy;
+        if (dotprod < 0) {
             ix = -ix;
             iy = -iy;
         }
-
         return new Vector2(ix, iy);
     }
 

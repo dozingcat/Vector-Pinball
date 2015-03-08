@@ -133,6 +133,7 @@ public class Field4Delegate extends BaseFieldDelegate {
         for (RolloverGroupElement rollover : lockedBallRollovers) {
             rollover.setRolloverActiveAtIndex(0, false);
             rollover.setVisible(false);
+            rollover.setIgnoreBall(true);
         }
 
         // Kickers in the ball lock zone start disabled except the bottom one.
@@ -206,12 +207,7 @@ public class Field4Delegate extends BaseFieldDelegate {
             String suffix = id.substring(7);
             // Increment multiplier.
             long multiplier = (long) (field.getScoreMultiplier()*100);
-            if ("Red".equals(suffix) || "Green".equals(suffix) || "Blue".equals(suffix)) {
-                multiplier += bumperMultiplierIncrease;
-            }
-            else {
-                multiplier += 2*bumperMultiplierIncrease;
-            }
+            multiplier += bumperMultiplierIncrease;
             field.setScoreMultiplier(multiplier / 100.0);
             // Unlock next multiball target if all bumpers hit.
             if (ballsLocked < 3) {

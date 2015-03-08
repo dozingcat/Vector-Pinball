@@ -18,8 +18,9 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /**
- * FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a Box2D RevoluteJoint
- * where a thin wall rotates around an invisible anchor. Flippers are defined in the layout JSON as follows:
+ * FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a
+ * Box2D RevoluteJoint where a thin wall rotates around an invisible anchor. Flippers are defined
+ * in the layout JSON as follows:
  * {
  *     "class": "FlipperElement",
  *     "position": [5.5, 10], // x,y of fixed end of flipper which it rotates around

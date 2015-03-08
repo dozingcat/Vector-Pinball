@@ -155,7 +155,6 @@ public class FieldLayout {
         return elements;
     }
 
-    @SuppressWarnings("unchecked")
     void initFromLevel(Map<String, ?> layoutMap, World world) {
         this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
@@ -220,7 +219,7 @@ public class FieldLayout {
         return launchDeadZoneRect;
     }
 
-    // can apply random velocity increment if specified by "random_velocity" key
+    // Can apply random velocity increment if specified by "launchVelocityRandomDelta" key.
     public List<Float> getLaunchVelocity() {
         float vx = launchVelocity.get(0).floatValue();
         float vy = launchVelocity.get(1).floatValue();

@@ -92,7 +92,8 @@ public class RolloverGroupElement extends FieldElement {
         return Collections.emptyList();
     }
 
-    List<Rollover> hitRollovers = new ArrayList<Rollover>(); // avoid object allocation in rolloversHitByBalls
+    // Avoid object allocation in rolloversHitByBalls.
+    List<Rollover> hitRollovers = new ArrayList<Rollover>();
 
     /** Returns a set of all rollovers which have balls within their specified radius. */
     protected List<Rollover> rolloversHitByBalls(List<Body> balls) {
@@ -175,7 +176,7 @@ public class RolloverGroupElement extends FieldElement {
                 activeRollovers.add(rollover);
                 field.addScore(rollover.score);
                 VPSoundpool.playRollover();
-                // set timer to clear rollover if reset parameter is present and >0
+                // Set timer to clear rollover if reset parameter is present and >0.
                 if (rollover.resetDelay > 0) {
                     field.scheduleAction((long)(rollover.resetDelay*1000), new Runnable() {
                         @Override
@@ -197,7 +198,7 @@ public class RolloverGroupElement extends FieldElement {
             rolloversHitOnPreviousTick.add(hitRollovers.get(i));
         }
 
-        // notify delegate if all rollovers are now active and they weren't previously
+        // Notify delegate if all rollovers are now active and they weren't previously.
         if (!allActivePrevious && allRolloversActive()) {
             field.getDelegate().allRolloversInGroupActivated(field, this);
         }
@@ -205,7 +206,7 @@ public class RolloverGroupElement extends FieldElement {
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
         if (this.cycleOnFlipper) {
-            // cycle to right if any right flipper is activated
+            // Cycle to right if any right flipper is activated.
             boolean hasRightFlipper = false;
             for(int i=0; !hasRightFlipper && i<flippers.size(); i++) {
                 hasRightFlipper = flippers.get(i).isRightFlipper();
@@ -215,9 +216,11 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
-    /** Cycles the states of all rollover elements by "rotating" left or right. For example, if this group has three rollovers
-     * whose states are (on, on, off), after calling this method with toRight=true the states will be (off, on, on).
-     * The state of the last rollover wraps around to the first, so (off, off, on) -> (on, off, off).
+    /**
+     * Cycles the states of all rollover elements by "rotating" left or right. For example, if this
+     * group has three rollovers whose states are (on, on, off), after calling this method with
+     * toRight=true the states will be (off, on, on). The state of the last rollover wraps around
+     * to the first, so (off, off, on) -> (on, off, off).
      */
     public void cycleRollovers(boolean toRight) {
         newActiveRollovers.clear();
@@ -235,8 +238,7 @@ public class RolloverGroupElement extends FieldElement {
         }
     }
 
-    /** Sets all rollovers to be active or inactive according to the boolean argument.
-     */
+    /** Sets all rollovers to be active or inactive according to the boolean argument. */
     public void setAllRolloversActivated(boolean active) {
         activeRollovers.clear();
         if (active) {

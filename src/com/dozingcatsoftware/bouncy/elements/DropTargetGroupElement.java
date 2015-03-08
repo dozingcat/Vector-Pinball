@@ -14,9 +14,9 @@ import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
 /**
- * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all
- * targets are hit, the Field delegate is notified, and if the reset parameter is set, the targets will reappear after
- * a delay.
+ * This FieldElement subclass represents a set of drop targets, which are segments that disappear
+ * when hit. When all targets are hit, the Field delegate is notified, and if the reset parameter
+ * is set, the targets will reappear after a delay.
  *
  * The positions of the targets can be given as a list of [x1,y1,x2,y2] line segments. Example:
  * {
@@ -44,7 +44,6 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  *   "gapBetweenTargets": 0.2,
  *   "numTargets": 4
  * }
- *
  */
 
 public class DropTargetGroupElement extends FieldElement {

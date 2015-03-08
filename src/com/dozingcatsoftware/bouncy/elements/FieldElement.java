@@ -133,9 +133,7 @@ public abstract class FieldElement {
      * Called when the player activates one or more flippers. The default implementation does
      * nothing; subclasses can override.
      */
-    public void flippersActivated(Field field, List<FlipperElement> flippers) {
-
-    }
+    public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
     /**
      * Causes the colors returned by red/blue/greenColorComponent methods to be inverted for the
@@ -175,16 +173,14 @@ public abstract class FieldElement {
      * nothing (allowing objects to bounce off each other normally). Subclasses can override to
      * perform other actions like applying extra force.
      */
-    public void handleCollision(Body ball, Body bodyHit, Field field) {
-    }
+    public void handleCollision(Body ball, Body bodyHit, Field field) {}
 
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {
         return elementID;
     }
 
-    /** Returns the parameter map from which this element was created.
-     */
+    /** Returns the parameter map from which this element was created. */
     public Map<String, ?> getParameters() {
         return parameters;
     }

@@ -48,7 +48,7 @@ public class WallArcElement extends FieldElement {
         float cx = asFloat(centerPos.get(0));
         float cy = asFloat(centerPos.get(1));
 
-        // can specify "radius" for circle, or "xradius" and "yradius" for ellipse
+        // Can specify "radius" for circle, or "xradius" and "yradius" for ellipse.
         float xradius, yradius;
         if (params.containsKey(RADIUS_PROPERTY)) {
             xradius = yradius = asFloat(params.get(RADIUS_PROPERTY));
@@ -63,7 +63,7 @@ public class WallArcElement extends FieldElement {
         float minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
         float maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         float diff = maxangle - minangle;
-        // create numsegments line segments to approximate circular arc
+        // Create numsegments line segments to approximate circular arc.
         lineSegments = new float[numsegments][];
         for(int i=0; i<numsegments; i++) {
             float angle1 = minangle + i * diff / numsegments;
@@ -80,7 +80,8 @@ public class WallArcElement extends FieldElement {
         if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
 
         for (float[] segment : this.lineSegments) {
-            Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
+            Body wall = Box2DFactory.createThinWall(
+                    world, segment[0], segment[1], segment[2], segment[3], 0f);
             this.wallBodies.add(wall);
         }
     }
