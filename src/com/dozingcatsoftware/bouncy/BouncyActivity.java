@@ -1,6 +1,9 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,8 +44,10 @@ public class BouncyActivity extends Activity {
 
     Field field = new Field();
     int level = 1;
-    long highScore = 0;
-    static String HIGHSCORE_PREFS_KEY = "highScore";
+    List<Long> highScores;
+    static int MAX_NUM_HIGH_SCORES = 5;
+    static String HIGHSCORES_PREFS_KEY = "highScores";
+    static String OLD_HIGHSCORE_PREFS_KEY = "highScore";
     static String INITIAL_LEVEL_PREFS_KEY = "initialLevel";
     boolean useZoom = true;
 
@@ -77,8 +82,8 @@ public class BouncyActivity extends Activity {
         fieldDriver.setFieldViewManager(fieldViewManager);
         fieldDriver.setField(field);
 
-        highScore = this.highScoreFromPreferencesForCurrentLevel();
-        scoreView.setHighScore(highScore);
+        highScores = this.highScoresFromPreferencesForCurrentLevel();
+        scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
         switchTableButton = (Button)findViewById(R.id.switchTableButton);
@@ -102,8 +107,8 @@ public class BouncyActivity extends Activity {
             protected Void doInBackground(Void... params) {
                 VPSoundpool.loadSounds();
                 return null;
-            }}
-                ).execute();
+            }
+        }).execute();
 
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
@@ -118,18 +123,12 @@ public class BouncyActivity extends Activity {
         catch (Exception ignored) {}
     }
 
-
-    void gotoPreferences() {
-        Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
-        startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
+    @Override public void onPause() {
+        pauseGame();
+        super.onPause();
     }
 
-    void gotoAbout() {
-        AboutActivity.startForLevel(this, this.level);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
+    @Override public void onWindowFocusChanged(boolean hasWindowFocus) {
         // This handles the main activity pausing and resuming.
         super.onWindowFocusChanged(hasWindowFocus);
         if (!hasWindowFocus) {
@@ -150,14 +149,13 @@ public class BouncyActivity extends Activity {
     }
 
     public void pauseGame() {
+        VPSoundpool.pauseMusic();
         if (field.getGameState().isPaused()) return;
         field.getGameState().setPaused(true);
 
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
         if (glFieldView != null) glFieldView.onPause();
-
-        VPSoundpool.pauseMusic();
     }
 
     public void unpauseGame() {
@@ -181,21 +179,28 @@ public class BouncyActivity extends Activity {
         buttonPanel.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onDestroy() {
+    @Override public void onDestroy() {
         VPSoundpool.cleanup();
         super.onDestroy();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
         switch(requestCode) {
-        case ACTIVITY_PREFERENCES:
-            updateFromPreferences();
-            break;
+            case ACTIVITY_PREFERENCES:
+                updateFromPreferences();
+                break;
         }
+    }
+
+    void gotoPreferences() {
+        Intent settingsActivity = new Intent(getBaseContext(), BouncyPreferences.class);
+        startActivityForResult(settingsActivity, ACTIVITY_PREFERENCES);
+    }
+
+    void gotoAbout() {
+        AboutActivity.startForLevel(this, this.level);
     }
 
     // Update settings from preferences, called at launch and when preferences activity finishes.
@@ -252,7 +257,7 @@ public class BouncyActivity extends Activity {
      * update high score in preferences and ScoreView. Also show button panel if game has ended.
      */
     void updateHighScoreAndButtonPanel() {
-        // we only need to check the first time the game is over, when the button panel isn't visible
+        // We only need to check once when the game is over, before the button panel is visible.
         if (buttonPanel.getVisibility()==View.VISIBLE) return;
         synchronized(field) {
             if (!field.getGameState().isGameInProgress()) {
@@ -263,7 +268,10 @@ public class BouncyActivity extends Activity {
                 buttonPanel.setVisibility(View.VISIBLE);
 
                 long score = field.getGameState().getScore();
-                if (score > this.highScore) {
+                // Add to high scores list if the score beats the lowest existing high score,
+                // or if all the high score slots aren't taken.
+                if (score>highScores.get(this.highScores.size()-1) ||
+                        highScores.size()<MAX_NUM_HIGH_SCORES) {
                     this.updateHighScoreForCurrentLevel(score);
                 }
             }
@@ -272,32 +280,64 @@ public class BouncyActivity extends Activity {
 
     // Store separate high scores for each field, using unique suffix in prefs key.
     String highScorePrefsKeyForLevel(int theLevel) {
-        return HIGHSCORE_PREFS_KEY + "." + theLevel;
+        return HIGHSCORES_PREFS_KEY + "." + theLevel;
     }
 
-    /** Returns the high score stored in SharedPreferences, or 0 if no score is stored. */
-    long highScoreFromPreferences(int theLevel) {
+    /**
+     * Returns a list of the high score stored in SharedPreferences. Always returns a nonempty
+     * list, which will be [0] if no high scores have been stored.
+     */
+    List<Long> highScoresFromPreferences(int theLevel) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        long score = prefs.getLong(highScorePrefsKeyForLevel(theLevel), 0);
-        if (score==0 && theLevel==1) {
-            // check for no level suffix, to read pre-1.3 scores
-            score = prefs.getLong(HIGHSCORE_PREFS_KEY, 0);
+        String scoresAsString = prefs.getString(highScorePrefsKeyForLevel(theLevel), "");
+        if (scoresAsString.length() > 0) {
+            try {
+                String[] fields = scoresAsString.split(",");
+                List<Long> scores = new ArrayList<Long>();
+                for (String f : fields) {
+                    scores.add(Long.valueOf(f));
+                }
+                return scores;
+            }
+            catch (NumberFormatException ex) {
+                return Collections.singletonList(0L);
+            }
         }
-        return score;
+        else {
+            // Check pre-1.5 single high score.
+            long oldPrefsScore = prefs.getLong(OLD_HIGHSCORE_PREFS_KEY + "." + level, 0);
+            return Collections.singletonList(oldPrefsScore);
+        }
     }
 
-    long highScoreFromPreferencesForCurrentLevel() {
-        return highScoreFromPreferences(level);
+    void writeHighScoresToPreferences(int level, List<Long> scores) {
+        StringBuilder scoresAsString = new StringBuilder();
+        scoresAsString.append(scores.get(0));
+        for (int i=1; i<scores.size(); i++) {
+            scoresAsString.append(",").append(scores.get(i));
+        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(highScorePrefsKeyForLevel(level), scoresAsString.toString());
+        editor.commit();
+    }
+
+    List<Long> highScoresFromPreferencesForCurrentLevel() {
+        return highScoresFromPreferences(level);
     }
 
     /** Updates the high score in the ScoreView display, and persists it to SharedPreferences. */
     void updateHighScore(int theLevel, long score) {
-        this.highScore = score;
-        scoreView.setHighScore(score);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putLong(highScorePrefsKeyForLevel(theLevel), score);
-        editor.commit();
+        List<Long> newHighScores = new ArrayList<Long>(this.highScores);
+        newHighScores.add(score);
+        Collections.sort(newHighScores);
+        Collections.reverse(newHighScores);
+        if (newHighScores.size() > MAX_NUM_HIGH_SCORES) {
+            newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
+        }
+        this.highScores = newHighScores;
+        writeHighScoresToPreferences(theLevel, this.highScores);
+        scoreView.setHighScores(this.highScores);
     }
 
     void updateHighScoreForCurrentLevel(long score) {
@@ -370,7 +410,7 @@ public class BouncyActivity extends Activity {
             field.resetForLevel(this, level);
         }
         this.setInitialLevel(level);
-        this.highScore = this.highScoreFromPreferencesForCurrentLevel();
-        scoreView.setHighScore(highScore);
+        this.highScores = this.highScoresFromPreferencesForCurrentLevel();
+        scoreView.setHighScores(highScores);
     }
 }

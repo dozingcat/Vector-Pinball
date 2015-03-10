@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -29,10 +30,15 @@ public class ScoreView extends View {
     Paint remainingBallPaint = new Paint();
     Paint multiplierPaint = new Paint();
 
-    long highScore;
+    List<Long> highScores;
     Long lastUpdateTime;
 
-    int gameOverMessageIndex = 0; // 0: "Touch to start", 1: last score, 2: high score
+    static final int TOUCH_TO_START_MESSAGE = 0;
+    static final int LAST_SCORE_MESSAGE = 1;
+    static final int HIGH_SCORE_MESSAGE = 2;
+
+    int gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
+    int highScoreIndex = 0;
     int gameOverMessageCycleTime = 3500;
 
     double fps;
@@ -92,16 +98,15 @@ public class ScoreView extends View {
                 displayString = SCORE_FORMAT.format(score);
             }
             else {
-                boolean cycle = false;
                 long now = currentMillis();
                 if (lastUpdateTime==null) {
                     lastUpdateTime = now;
                 }
                 else if (now - lastUpdateTime > gameOverMessageCycleTime) {
-                    cycle = true;
+                    cycleGameOverMessage();
                     lastUpdateTime = now;
                 }
-                displayString = displayedGameOverMessage(cycle);
+                displayString = displayedGameOverMessage();
             }
         }
 
@@ -144,28 +149,55 @@ public class ScoreView extends View {
         return System.currentTimeMillis();
     }
 
-    // Returns message to show when game is not in progress. Can be "Touch to start", high score,
-    // or previous score. If cycle parameter is true, moves to next message if possible.
-    String displayedGameOverMessage(boolean cycle) {
-        String msg = null;
-        if (cycle) {
-            gameOverMessageIndex = (gameOverMessageIndex+1) % 3;
+    // Cycles to the next message to show when there is not game in progress. This can be
+    // "Touch to start", the last score if available, or one of the previous high scores.
+    void cycleGameOverMessage() {
+        switch (gameOverMessageIndex) {
+            case TOUCH_TO_START_MESSAGE:
+                if (field.getScore() > 0) {
+                    gameOverMessageIndex = LAST_SCORE_MESSAGE;
+                }
+                else if (highScores.get(0) > 0) {
+                    gameOverMessageIndex = HIGH_SCORE_MESSAGE;
+                    highScoreIndex = 0;
+                }
+                break;
+            case LAST_SCORE_MESSAGE:
+                if (highScores.get(0) > 0) {
+                    gameOverMessageIndex = HIGH_SCORE_MESSAGE;
+                    highScoreIndex = 0;
+                }
+                break;
+            case HIGH_SCORE_MESSAGE:
+                highScoreIndex++;
+                if (highScoreIndex >= highScores.size() || highScores.get(highScoreIndex)<=0) {
+                    highScoreIndex = 0;
+                    gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
         }
-        while (msg==null) {
-            switch(gameOverMessageIndex) {
-            case 0:
+    }
+
+    // Returns message to show when game is not in progress.
+    String displayedGameOverMessage() {
+        switch (gameOverMessageIndex) {
+            case TOUCH_TO_START_MESSAGE:
                 return "Touch to start";
-            case 1:
-                long score = field.getGameState().getScore();
-                if (score > 0) return "Last Score: " + SCORE_FORMAT.format(score);
-                break;
-            case 2:
-                if (this.highScore > 0) return "High Score: " + SCORE_FORMAT.format(this.highScore);
-                break;
-            }
-            gameOverMessageIndex = (gameOverMessageIndex+1) % 3;
+            case LAST_SCORE_MESSAGE:
+                return "Last Score: " + SCORE_FORMAT.format(field.getScore());
+            case HIGH_SCORE_MESSAGE:
+                String formattedScore = SCORE_FORMAT.format(this.highScores.get(highScoreIndex));
+                if (highScoreIndex == 0) {
+                    return "High Score: " + formattedScore;
+                }
+                else {
+                    return "#" + (1+highScoreIndex) + " Score: " + formattedScore;
+                }
+            default:
+                throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
         }
-        return msg;
     }
 
     public void setHighQuality(boolean highQuality) {
@@ -177,8 +209,8 @@ public class ScoreView extends View {
     public void setField(Field value) {
         field = value;
     }
-    public void setHighScore(long value) {
-        highScore = value;
+    public void setHighScores(List<Long> value) {
+        highScores = value;
     }
     public void setFPS(double value) {
         fps = value;
