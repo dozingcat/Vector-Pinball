@@ -5,6 +5,8 @@ The graphics are deliberately simple; currently everything is drawn with lines a
 
 The GitHub project page is: https://github.com/dozingcat/Vector-Pinball/ . See devnotes.txt for an overview of the code layout.
 
+There is a very experimental table editor at https://github.com/dozingcat/Vector-Pinball-Editor/
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
