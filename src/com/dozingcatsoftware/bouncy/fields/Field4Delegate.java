@@ -206,7 +206,7 @@ public class Field4Delegate extends BaseFieldDelegate {
         if (id!=null && id.startsWith("Bumper.")) {
             String suffix = id.substring(7);
             // Increment multiplier.
-            long multiplier = (long) (field.getScoreMultiplier()*100);
+            long multiplier = (long) Math.round(field.getScoreMultiplier()*100);
             multiplier += bumperMultiplierIncrease;
             field.setScoreMultiplier(multiplier / 100.0);
             // Unlock next multiball target if all bumpers hit.
