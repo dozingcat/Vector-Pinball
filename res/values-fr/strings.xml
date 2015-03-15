@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vector Pinball</string>
+    
+    <string name="independent_flippers_pref_title">Flippers indépendants</string>
+    <string name="independent_flippers_pref_summary_on">Un appui active le flipper du même côté de l\'écran</string>
+    <string name="independent_flippers_pref_summary_off">N\'importe quel appui active les 2 flippers</string>
+
+    <string name="high_quality_pref_title">Haute qualité</string>
+    <string name="high_quality_pref_summary_on">Meilleure qualité mais plus lent</string>
+    <string name="high_quality_pref_summary_off">Moins bonne quality mais plus rapide</string>
+    
+    <string name="sound_pref_title">Son</string>
+    <string name="music_pref_title">Musique de fond</string>
+    <string name="show_fps_pref_title">Montrer les FPS</string>
+    <string name="zoom_pref_title">Zoom du terrain</string>
+    <string name="use_opengl_pref_title">Rendu OpenGL</string>
+
+    <string name="change_table_button_label">Changer de terrain</string>
+    <string name="help_button_label">Aide/À propos</string>
+    <string name="preferences_button_label">Préférences</string>
+    <string name="end_game_button_label">Fin de partie</string>
+</resources>
