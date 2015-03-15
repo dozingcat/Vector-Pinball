@@ -37,13 +37,11 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         return manager.handleTouchEvent(event);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         return manager.handleKeyDown(keyCode, event);
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    @Override public boolean onKeyUp(int keyCode, KeyEvent event) {
         return manager.handleKeyUp(keyCode, event);
     }
 
@@ -51,14 +49,26 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
     GLVertexListManager vertexListManager = new GLVertexListManager();
     GLVertexList lineVertexList;
 
-
+    // Lookup tables for sin/cos, used to draw circles by approximating with polygons.
+    // In high quality mode the polygons have more sides.
     static float[] SIN_VALUES = new float[20];
     static float[] COS_VALUES = new float[20];
+    static float[] HQ_SIN_VALUES = new float[40];
+    static float[] HQ_COS_VALUES = new float[40];
+
     static {
-        for(int i=0; i<SIN_VALUES.length; i++) {
-            double angle = 2*Math.PI * i / SIN_VALUES.length;
-            SIN_VALUES[i] = (float)Math.sin(angle);
-            COS_VALUES[i] = (float)Math.cos(angle);
+        buildSinCosTables(SIN_VALUES, COS_VALUES);
+        buildSinCosTables(HQ_SIN_VALUES, HQ_COS_VALUES);
+    }
+
+    static void buildSinCosTables(float[] sinValues, float[] cosValues) {
+        if (sinValues.length != cosValues.length) {
+            throw new IllegalArgumentException("Array lengths don't match");
+        }
+        for(int i=0; i<sinValues.length; i++) {
+            double angle = 2*Math.PI * i / sinValues.length;
+            sinValues[i] = (float)Math.sin(angle);
+            cosValues[i] = (float)Math.cos(angle);
         }
     }
 
@@ -107,9 +117,15 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         circleVertexList.addColor(color.red/255f, color.green/255f, color.blue/255f,
                 color.alpha/255f);
 
-        for(int i=0; i<SIN_VALUES.length; i++) {
-            float x = cx + radius*COS_VALUES[i];
-            float y = cy + radius*SIN_VALUES[i];
+        float[] sinValues = SIN_VALUES;
+        float[] cosValues = COS_VALUES;
+        if (manager.highQuality) {
+            sinValues = HQ_SIN_VALUES;
+            cosValues = HQ_COS_VALUES;
+        }
+        for(int i=0; i<sinValues.length; i++) {
+            float x = cx + radius*sinValues[i];
+            float y = cy + radius*cosValues[i];
             circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
         }
     }
@@ -117,8 +133,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
     final Object renderLock = new Object();
     boolean renderDone;
 
-    @Override
-    public void onDrawFrame(GL10 gl) {
+    @Override public void onDrawFrame(GL10 gl) {
         Field field = manager.getField();
         if (field==null) return;
         synchronized(field) {
