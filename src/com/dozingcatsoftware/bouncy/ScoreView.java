@@ -188,12 +188,14 @@ public class ScoreView extends View {
             case LAST_SCORE_MESSAGE:
                 return "Last Score: " + SCORE_FORMAT.format(field.getScore());
             case HIGH_SCORE_MESSAGE:
-                String formattedScore = SCORE_FORMAT.format(this.highScores.get(highScoreIndex));
-                if (highScoreIndex == 0) {
+                // highScoreIndex could be too high if we just switched from a different table.
+                int index = Math.min(highScoreIndex, this.highScores.size() - 1);
+                String formattedScore = SCORE_FORMAT.format(this.highScores.get(index));
+                if (index == 0) {
                     return "High Score: " + formattedScore;
                 }
                 else {
-                    return "#" + (1+highScoreIndex) + " Score: " + formattedScore;
+                    return "#" + (1+index) + " Score: " + formattedScore;
                 }
             default:
                 throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
