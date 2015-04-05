@@ -20,6 +20,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         super(context, attrs);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setFocusable(true);
     }
 
     FieldViewManager manager;

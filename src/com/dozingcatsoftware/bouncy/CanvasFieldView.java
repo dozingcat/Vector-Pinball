@@ -18,6 +18,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
     public CanvasFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setFocusable(true);
     }
 
     FieldViewManager manager;
@@ -39,7 +40,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     @Override public boolean onTouchEvent(MotionEvent event) {
         return manager.handleTouchEvent(event);
     }
-
+    
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         return manager.handleKeyDown(keyCode, event);
     }

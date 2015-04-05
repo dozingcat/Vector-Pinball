@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 import android.view.KeyEvent;
@@ -186,19 +187,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         }
     }
 
-    void doFlippers(boolean launch, boolean left, boolean right) {
-        if (launch) {
-            // Remove "dead" balls and launch if none already in play.
-            field.removeDeadBalls();
-            if (field.getBalls().size()==0) field.launchBall();
-        }
-        if (left && right) {
-            field.setAllFlippersEngaged(true);
-        }
-        else {
-            field.setLeftFlippersEngaged(left);
-            field.setRightFlippersEngaged(right);
-        }
+    void launchBallIfNeeded() {
+        // Remove "dead" balls and launch if none already in play.
+        field.removeDeadBalls();
+        if (field.getBalls().size()==0) field.launchBall();
     }
 
     /**
@@ -207,7 +199,6 @@ public class FieldViewManager implements SurfaceHolder.Callback {
      */
     public boolean handleTouchEvent(MotionEvent event) {
         int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
-        boolean launch = actionType==MotionEvent.ACTION_DOWN;
         synchronized(field) {
             if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
                 if (startGameAction!=null) {
@@ -238,29 +229,65 @@ public class FieldViewManager implements SurfaceHolder.Callback {
                             }
                         }
                     }
-                    field.setLeftFlippersEngaged(left);
-                    field.setRightFlippersEngaged(right);
                 }
                 catch(Exception ignored) {}
             }
             else {
                 left = right = !(event.getAction()==MotionEvent.ACTION_UP);
             }
-            doFlippers(launch, left, right);
+            if (actionType == MotionEvent.ACTION_DOWN) {
+                launchBallIfNeeded();
+            }
+            field.setLeftFlippersEngaged(left);
+            field.setRightFlippersEngaged(right);
         }
         return true;
     }
 
+    static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT);
+    static List<Integer> RIGHT_FLIPPER_KEYS = Arrays.asList(KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_DPAD_RIGHT);
+    static List<Integer> ALL_FLIPPER_KEYS =
+            Arrays.asList(KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER);
+
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
-        synchronized(field) {
-            doFlippers(true, true, true);
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            synchronized(field) {
+                // Don't let a pressed flipper key start a game, but do launch a ball if needed.
+                if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
+                    return false;
+                }
+                boolean isActionKey = updateFlippersForKeyCode(keyCode, true);
+                if (isActionKey) launchBallIfNeeded();
+                return isActionKey;
+            }
         }
-        return true;
+        return false;
     }
 
     public boolean handleKeyUp(int keyCode, KeyEvent event) {
-        synchronized(field) {
-            doFlippers(true, true, true);
+        if (event.getAction() == KeyEvent.ACTION_UP) {
+            synchronized(field) {
+                if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
+                    return false;
+                }
+                return updateFlippersForKeyCode(keyCode, false);
+            }
+        }
+        return false;
+    }
+
+    private boolean updateFlippersForKeyCode(int keyCode, boolean isPressed) {
+        if (LEFT_FLIPPER_KEYS.contains(keyCode)) {
+            field.setLeftFlippersEngaged(isPressed);
+            return true;
+        }
+        if (RIGHT_FLIPPER_KEYS.contains(keyCode)) {
+            field.setRightFlippersEngaged(isPressed);
+            return true;
+        }
+        if (ALL_FLIPPER_KEYS.contains(keyCode)) {
+            field.setAllFlippersEngaged(isPressed);
+            return true;
         }
         return false;
     }
