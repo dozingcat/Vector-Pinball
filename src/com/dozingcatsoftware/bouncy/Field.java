@@ -56,7 +56,10 @@ public class Field implements ContactListener {
     GameState gameState = new GameState();
     GameMessage gameMessage;
 
-    // interface to allow custom behavior for various game events
+    AudioPlayer audioPlayer = AudioPlayer.NoOpPlayer.getInstance();
+    Clock clock = Clock.SystemClock.getInstance();
+
+    // Interface to allow custom behavior for various game events.
     public static interface Delegate {
         public void gameStarted(Field field);
 
@@ -84,8 +87,7 @@ public class Field implements ContactListener {
         Long actionTime;
         Runnable action;
 
-        @Override
-        public int compareTo(ScheduledAction another) {
+        @Override public int compareTo(ScheduledAction another) {
             // Sort by action time so these objects can be inserted into a PriorityQueue.
             return actionTime.compareTo(another.actionTime);
         }
@@ -168,7 +170,7 @@ public class Field implements ContactListener {
      * and performs scheduled actions.
      */
     void tick(long nanos, int iters) {
-        float dt = (float)((nanos/1000000000.0) / iters);
+        float dt = (nanos/1e9f) / iters;
 
         for(int i=0; i<iters; i++) {
             clearBallContacts();
@@ -230,11 +232,11 @@ public class Field implements ContactListener {
         float radius = layout.getBallRadius();
 
         Body ball = Box2DFactory.createCircle(
-                world, position.get(0).floatValue(), position.get(1).floatValue(), radius, false);
+                world, position.get(0), position.get(1), radius, false);
         ball.setBullet(true);
         ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         this.balls.add(ball);
-        VPSoundpool.playBall();
+        audioPlayer.playBall();
 
         return ball;
     }
@@ -292,9 +294,9 @@ public class Field implements ContactListener {
      * not at all.
      */
     public boolean hasActiveElements() {
-        // HACK: to allow flippers to drop properly at beginning of game, we need accurate simulation
+        // HACK: to allow flippers to drop properly at beginning of game, we need accurate simulation.
         if (this.gameTime < 500) return true;
-        // allow delegate to return true even if there are no balls
+        // Allow delegate to return true even if there are no balls.
         if (getDelegate().isFieldActive(this)) return true;
         return this.getBalls().size() > 0;
     }
@@ -366,7 +368,7 @@ public class Field implements ContactListener {
         }
 
         if (engaged && !allFlippersPreviouslyActive) {
-            VPSoundpool.playFlipper();
+            audioPlayer.playFlipper();
             for(FieldElement element : this.getFieldElementsArray()) {
                 element.flippersActivated(this, activatedFlippers);
             }
@@ -390,7 +392,7 @@ public class Field implements ContactListener {
      * on the GameState, and setting a "Game Over" message for display by the score view.
      */
     public void endGame() {
-        VPSoundpool.playStart(); // play startup sound at end of game
+        audioPlayer.playStart(); // play startup sound at end of game
         for(Body ball : this.getBalls()) {
             world.destroyBody(ball);
         }
@@ -409,7 +411,7 @@ public class Field implements ContactListener {
         world.setGravity(new Vector2(gx, gy));
     }
 
-    // contact support
+    // Contact support.
     Map<Body, List<Fixture>> ballContacts = new HashMap<Body, List<Fixture>>();
 
     void clearBallContacts() {
@@ -433,7 +435,7 @@ public class Field implements ContactListener {
                     }
                     if (element.getScore()!=0) {
                         this.gameState.addScore(element.getScore());
-                        VPSoundpool.playScore();
+                        audioPlayer.playScore();
                     }
                 }
             }
@@ -447,7 +449,7 @@ public class Field implements ContactListener {
     }
 
     @Override public void endContact(Contact contact) {
-        // A ball can have multiple contacts, so store list of contacted fixtures.
+        // A ball can have multiple contacts (e.g. against two walls), so store list of contacted fixtures.
         Body ball = null;
         Fixture fixture = null;
         if (balls.contains(contact.getFixtureA().getBody())) {
@@ -481,21 +483,21 @@ public class Field implements ContactListener {
      * Duration is in real world time, not simulated game time.
      */
     public void showGameMessage(String text, long duration, boolean playSound) {
-        if (playSound) VPSoundpool.playMessage();
+        if (playSound) audioPlayer.playMessage();
         gameMessage = new GameMessage();
         gameMessage.text = text;
         gameMessage.duration = duration;
-        gameMessage.creationTime = System.currentTimeMillis();
+        gameMessage.creationTime = clock.currentTimeMillis();
     }
 
     public void showGameMessage(String text, long duration) {
         showGameMessage(text, duration, true);
     }
 
-    // Updates time remaining on current game message.
+    /** Updates time remaining on current game message, and removes it if expired. */
     void processGameMessages() {
         if (gameMessage!=null) {
-            if (System.currentTimeMillis() - gameMessage.creationTime > gameMessage.duration) {
+            if (clock.currentTimeMillis() - gameMessage.creationTime > gameMessage.duration) {
                 gameMessage = null;
             }
         }
@@ -579,4 +581,17 @@ public class Field implements ContactListener {
         return layout.getValueWithKey(key);
     }
 
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
+    }
+    public void setAudioPlayer(AudioPlayer player) {
+        audioPlayer = player;
+    }
+
+    public Clock getClock() {
+        return clock;
+    }
+    public void setClock(Clock clock) {
+        this.clock = clock;
+    }
 }

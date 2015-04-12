@@ -68,6 +68,7 @@ public class BouncyActivity extends Activity {
         FieldLayout.setContext(this);
         this.level = getInitialLevel();
         field.resetForLevel(this, level);
+        field.setAudioPlayer(new VPSoundpool.Player());
 
         canvasFieldView = (CanvasFieldView)findViewById(R.id.canvasFieldView);
         glFieldView = (GLFieldView)findViewById(R.id.glFieldView);

@@ -213,4 +213,30 @@ public class VPSoundpool {
         androidpad = null;
         Log.v(LOG_TAG, "cleanup finished");
     }
+
+    public static class Player implements AudioPlayer {
+        @Override public void playStart() {
+            VPSoundpool.playStart();
+        }
+
+        @Override public void playBall() {
+            VPSoundpool.playBall();
+        }
+
+        @Override public void playFlipper() {
+            VPSoundpool.playFlipper();
+        }
+
+        @Override public void playScore() {
+            VPSoundpool.playScore();
+        }
+
+        @Override public void playMessage() {
+            VPSoundpool.playMessage();
+        }
+
+        @Override public void playRollover() {
+            VPSoundpool.playRollover();
+        }
+    }
 }
