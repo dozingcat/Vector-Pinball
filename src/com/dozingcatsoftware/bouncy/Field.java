@@ -411,32 +411,32 @@ public class Field implements ContactListener {
         world.setGravity(new Vector2(gx, gy));
     }
 
-    // Contact support.
-    Map<Body, List<Fixture>> ballContacts = new HashMap<Body, List<Fixture>>();
+    // Contact support. Keep parallel lists of balls and the fixtures they contact.
+    // A ball can have multiple contacts in the same tick, e.g. against two walls.
+    ArrayList<Body> contactedBalls = new ArrayList<Body>();
+    ArrayList<Fixture> contactedFixtures = new ArrayList<Fixture>();
 
     void clearBallContacts() {
-        ballContacts.clear();
+        contactedBalls.clear();
+        contactedFixtures.clear();
     }
 
     /**
      * Called after Box2D world step method, to notify FieldElements that the ball collided with.
      */
     void processBallContacts() {
-        if (ballContacts.size()==0) return;
-        for(Body ball : ballContacts.keySet()) {
-            List<Fixture> fixtures = ballContacts.get(ball);
-            for(int i=0; i<fixtures.size(); i++) {
-                Fixture f = fixtures.get(i);
-                FieldElement element = bodyToFieldElement.get(f.getBody());
-                if (element!=null) {
-                    element.handleCollision(ball, f.getBody(), this);
-                    if (delegate!=null) {
-                        delegate.processCollision(this, element, f.getBody(), ball);
-                    }
-                    if (element.getScore()!=0) {
-                        this.gameState.addScore(element.getScore());
-                        audioPlayer.playScore();
-                    }
+        for(int i=0; i<contactedBalls.size(); i++) {
+            Body ball = contactedBalls.get(i);
+            Fixture f = contactedFixtures.get(i);
+            FieldElement element = bodyToFieldElement.get(f.getBody());
+            if (element!=null) {
+                element.handleCollision(ball, f.getBody(), this);
+                if (delegate!=null) {
+                    delegate.processCollision(this, element, f.getBody(), ball);
+                }
+                if (element.getScore()!=0) {
+                    this.gameState.addScore(element.getScore());
+                    audioPlayer.playScore();
                 }
             }
         }
@@ -449,23 +449,20 @@ public class Field implements ContactListener {
     }
 
     @Override public void endContact(Contact contact) {
-        // A ball can have multiple contacts (e.g. against two walls), so store list of contacted fixtures.
         Body ball = null;
         Fixture fixture = null;
         if (balls.contains(contact.getFixtureA().getBody())) {
             ball = contact.getFixtureA().getBody();
             fixture = contact.getFixtureB();
         }
-        if (balls.contains(contact.getFixtureB().getBody())) {
+        else if (balls.contains(contact.getFixtureB().getBody())) {
             ball = contact.getFixtureB().getBody();
             fixture = contact.getFixtureA();
         }
+
         if (ball!=null) {
-            List<Fixture> fixtures = ballContacts.get(ball);
-            if (fixtures==null) {
-                ballContacts.put(ball, fixtures = new ArrayList<Fixture>());
-            }
-            fixtures.add(fixture);
+            contactedBalls.add(ball);
+            contactedFixtures.add(fixture);
         }
     }
 
