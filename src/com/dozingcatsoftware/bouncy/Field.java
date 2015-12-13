@@ -56,6 +56,15 @@ public class Field implements ContactListener {
     GameState gameState = new GameState();
     GameMessage gameMessage;
 
+    // Used in checkForStuckBall() to see if the ball hasn't moved recently.
+    float lastBallPositionX;
+    float lastBallPositionY;
+    long nanosSinceBallMoved = -1;
+    // Duration after which the ball is considered stuck if it hasn't moved significantly,
+    // if it's a single ball and no flippers are active. Normally the time ratio is around 2,
+    // so this will be about 5 real-world seconds.
+    static final long STUCK_BALL_NANOS = 10000000000L;
+
     AudioPlayer audioPlayer = AudioPlayer.NoOpPlayer.getInstance();
     Clock clock = Clock.SystemClock.getInstance();
 
@@ -182,6 +191,7 @@ public class Field implements ContactListener {
         processElementTicks();
         processScheduledActions();
         processGameMessages();
+        checkForStuckBall(nanos);
 
         getDelegate().tick(this, nanos);
     }
@@ -497,6 +507,49 @@ public class Field implements ContactListener {
             if (clock.currentTimeMillis() - gameMessage.creationTime > gameMessage.duration) {
                 gameMessage = null;
             }
+        }
+    }
+
+    /**
+     * Checks whether the ball appears to be stuck, and nudges it if so.
+     */
+    void checkForStuckBall(long nanos) {
+        // Only do this for single balls. This means it's theoretically possible for multiple
+        // balls to be simultaneously stuck during multiball; that would be impressive.
+        if (this.getBalls().size() != 1) {
+            nanosSinceBallMoved = -1;
+            return;
+        }
+        Body ball = this.getBalls().get(0);
+        Vector2 pos = ball.getPosition();
+        if (nanosSinceBallMoved < 0) {
+            // New ball.
+            lastBallPositionX = pos.x;
+            lastBallPositionY = pos.y;
+            nanosSinceBallMoved = 0;
+            return;
+        }
+        if (ball.getLinearVelocity().len2() > 0.01f ||
+                pos.dst2(lastBallPositionX, lastBallPositionY) > 0.01f) {
+            // Ball has moved since last time; reset counter.
+            lastBallPositionX = pos.x;
+            lastBallPositionY = pos.y;
+            nanosSinceBallMoved = 0;
+            return;
+        }
+        // Don't add time if any flipper is activated (the flipper could be trapping the ball).
+        List<FlipperElement> flippers = this.getFlipperElements();
+        for (int i=0; i<flippers.size(); i++) {
+            if (flippers.get(i).isFlipperEngaged()) return;
+        }
+        // Increment time counter and bump if the ball hasn't moved in a while.
+        nanosSinceBallMoved += nanos;
+        if (nanosSinceBallMoved > STUCK_BALL_NANOS) {
+            showGameMessage("Bump!", 1000);
+            // Could make the bump impulse table-specific if needed.
+            Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
+            ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+            nanosSinceBallMoved = 0;
         }
     }
 
