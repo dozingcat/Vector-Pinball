@@ -4,13 +4,13 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.physics.box2d.Body;
+
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.physics.box2d.Body;
 
 /**
  * This class handles the common functionality for Canvas and OpenGL-based views, including mapping
@@ -238,8 +238,16 @@ public class FieldViewManager implements SurfaceHolder.Callback {
             if (actionType == MotionEvent.ACTION_DOWN) {
                 launchBallIfNeeded();
             }
-            field.setLeftFlippersEngaged(left);
-            field.setRightFlippersEngaged(right);
+            // Treat both active separately because setAllFlippersEngaged will cycle the rollovers,
+            // as opposed to separate calls to set(Left|Right)FlippersEngaged which would result in
+            // cycling one way and then immediately back the other, for no net change.
+            if (left && right) {
+                field.setAllFlippersEngaged(true);
+            }
+            else {
+                field.setLeftFlippersEngaged(left);
+                field.setRightFlippersEngaged(right);
+            }
         }
         return true;
     }

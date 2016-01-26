@@ -3,8 +3,8 @@
     <string name="app_name">Vector Pinball</string>
     
     <string name="independent_flippers_pref_title">Independent Flippers</string>
-    <string name="independent_flippers_pref_summary_on">A touch activates the flipper on the same side of the screen</string>
-    <string name="independent_flippers_pref_summary_off">Any touch activates both flippers</string>
+    <string name="independent_flippers_pref_summary_on">A touch activates the flippers on the same side of the screen</string>
+    <string name="independent_flippers_pref_summary_off">Any touch activates all flippers</string>
 
     <string name="high_quality_pref_title">High Quality</string>
     <string name="high_quality_pref_summary_on">Higher quality but slower graphics</string>
