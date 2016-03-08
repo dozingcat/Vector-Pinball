@@ -24,7 +24,7 @@ public class BaseFieldDelegate implements Field.Delegate {
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {}
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
 
     @Override public void gameStarted(Field field) {}
 
@@ -34,7 +34,7 @@ public class BaseFieldDelegate implements Field.Delegate {
 
     @Override public void tick(Field field, long nanos) {}
 
-    @Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {}
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {}
 
     @Override public boolean isFieldActive(Field field) {
         return false;

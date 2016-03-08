@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
@@ -126,7 +127,7 @@ public class DropTargetGroupElement extends FieldElement {
         return true;
     }
 
-    @Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
+    @Override public void handleCollision(Ball ball, Body bodyHit, final Field field) {
         bodyHit.setActive(false);
         // if all hit, notify delegate and check for reset parameter
         if (allTargetsHit()) {

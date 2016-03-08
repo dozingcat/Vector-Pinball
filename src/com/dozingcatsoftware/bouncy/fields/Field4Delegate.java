@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.BaseFieldDelegate;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
@@ -164,7 +165,7 @@ public class Field4Delegate extends BaseFieldDelegate {
     }
 
 
-    @Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
         String id = sensor.getElementId();
         // Enable launch barrier.
         if ("LaunchBarrierRetract".equals(id)) {
@@ -201,12 +202,12 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         String id = element.getElementId();
         if (id!=null && id.startsWith("Bumper.")) {
             String suffix = id.substring(7);
             // Increment multiplier.
-            long multiplier = (long) Math.round(field.getScoreMultiplier()*100);
+            long multiplier = Math.round(field.getScoreMultiplier()*100);
             multiplier += bumperMultiplierIncrease;
             field.setScoreMultiplier(multiplier / 100.0);
             // Unlock next multiball target if all bumpers hit.

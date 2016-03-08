@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
@@ -26,6 +27,9 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  *
  * A wall can be removed from the field by calling setRetracted(field, true). A retracted wall will
  * not be drawn and will not interact with the ball. setRetracted(field, true) will restore it.
+ *
+ * After creation, a wall can be moved with setStartAndDirection or setStartAndAngle.
+ * The length of the wall cannot be changed; just its position and orientation.
  */
 
 public class WallElement extends FieldElement {
@@ -42,12 +46,14 @@ public class WallElement extends FieldElement {
     List<Body> bodySet;
     float x1, y1, x2, y2;
     float kick;
+    float length;
 
     boolean killBall;
     boolean retractWhenHit;
     float restitution;
     boolean disabled;
     boolean ignoreBall;
+    boolean visible = true;
 
     @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         List<?> pos = (List<?>)params.get(POSITION_PROPERTY);
@@ -55,6 +61,7 @@ public class WallElement extends FieldElement {
         this.y1 = asFloat(pos.get(1));
         this.x2 = asFloat(pos.get(2));
         this.y2 = asFloat(pos.get(3));
+        this.length = (float) Math.hypot(x2-x1, y2-y1);
         this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
 
         this.kick = asFloat(params.get(KICK_PROPERTY));
@@ -87,6 +94,13 @@ public class WallElement extends FieldElement {
         }
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
     @Override public List<Body> getBodies() {
         return bodySet;
     }
@@ -96,20 +110,22 @@ public class WallElement extends FieldElement {
         return (this.kick > 0.01f);
     }
 
-    Vector2 impulseForBall(Body ball) {
+    Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
         // Rotate wall direction 90 degrees for normal, choose direction toward ball.
         float ix = this.y2 - this.y1;
         float iy = this.x1 - this.x2;
-        float mag = (float)Math.sqrt(ix*ix + iy*iy);
+        float mag = (float)Math.hypot(ix, iy);
         float scale = this.kick / mag;
         ix *= scale;
         iy *= scale;
 
         // Dot product of (ball center - wall center) and impulse direction should be positive,
         // if not flip impulse.
-        Vector2 balldiff = ball.getWorldCenter().cpy().sub(this.x1, this.y1);
-        float dotprod = balldiff.x*ix + balldiff.y*iy;
+        Vector2 ballpos = ball.getPosition();
+        float diffx = ballpos.x - this.x1;
+        float diffy = ballpos.y - this.y1;
+        float dotprod = diffx*ix + diffy*iy;
         if (dotprod < 0) {
             ix = -ix;
             iy = -iy;
@@ -117,8 +133,7 @@ public class WallElement extends FieldElement {
         return new Vector2(ix, iy);
     }
 
-
-    @Override public void handleCollision(Body ball, Body bodyHit, Field field) {
+    @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
         if (retractWhenHit) {
             this.setRetracted(true);
         }
@@ -129,14 +144,30 @@ public class WallElement extends FieldElement {
         else {
             Vector2 impulse = this.impulseForBall(ball);
             if (impulse!=null) {
-                ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+                ball.applyLinearImpulse(impulse);
                 flashForFrames(3);
             }
         }
     }
 
+    // (x1, y1) is one end of the wall. (x2, y2) is the direction the wall will point,
+    // but not necessarily the endpoint because the wall's length will not change.
+    public void setStartAndDirection(float x1, float y1, float x2, float y2) {
+        setStartAndAngle(x1, y1, (float)Math.atan2(y2-y1, x2-x1));
+    }
+
+    public void setStartAndAngle(float x1, float y1, float angle) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x1 + (float)(this.length * Math.cos(angle));
+        this.y2 = y1 + (float)(this.length * Math.sin(angle));
+        // The "origin" is the midpoint of the wall, so we reposition it by calling
+        // setTransform with the midpoint.
+        wallBody.setTransform((x1+x2) / 2f, (y1+y2) / 2f, angle);
+    }
+
     @Override public void draw(IFieldRenderer renderer) {
-        if (isRetracted()) return;
+        if (!visible || isRetracted()) return;
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
     }
 }

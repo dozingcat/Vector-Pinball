@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.physics.box2d.Body;
 
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -121,10 +120,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
             zoom = 1.0f;
         }
         else {
-            List<Body> balls = field.getBalls();
+            List<Ball> balls = field.getBalls();
             float x=-1, y=-1;
             if (balls.size()==1) {
-                Body b = balls.get(0);
+                Ball b = balls.get(0);
                 x = b.getPosition().x;
                 y = b.getPosition().y;
             }

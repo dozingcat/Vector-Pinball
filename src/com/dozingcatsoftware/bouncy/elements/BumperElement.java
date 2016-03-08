@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
@@ -56,22 +57,22 @@ public class BumperElement extends FieldElement {
     }
 
 
-    Vector2 impulseForBall(Body ball) {
+    Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
         // Compute unit vector from center of bumper to ball, and scale by kick value to get impulse.
-        Vector2 ballpos = ball.getWorldCenter();
+        Vector2 ballpos = ball.getPosition();
         Vector2 thisPos = bumperBody.getPosition();
         float ix = ballpos.x - thisPos.x;
         float iy = ballpos.y - thisPos.y;
-        float mag = (float)Math.sqrt(ix*ix + iy*iy);
+        float mag = (float)Math.hypot(ix, iy);
         float scale = this.kick / mag;
         return new Vector2(ix*scale, iy*scale);
     }
 
-    @Override public void handleCollision(Body ball, Body bodyHit, Field field) {
+    @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
         Vector2 impulse = this.impulseForBall(ball);
         if (impulse!=null) {
-            ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+            ball.applyLinearImpulse(impulse);
             flashForFrames(3);
         }
     }

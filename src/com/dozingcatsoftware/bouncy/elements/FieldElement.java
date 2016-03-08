@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
@@ -173,7 +174,7 @@ public abstract class FieldElement {
      * nothing (allowing objects to bounce off each other normally). Subclasses can override to
      * perform other actions like applying extra force.
      */
-    public void handleCollision(Body ball, Body bodyHit, Field field) {}
+    public void handleCollision(Ball ball, Body bodyHit, Field field) {}
 
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {

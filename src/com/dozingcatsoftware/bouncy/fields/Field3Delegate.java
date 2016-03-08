@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.BaseFieldDelegate;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
@@ -240,7 +241,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         // Add bumper bonus if active.
         if (element instanceof BumperElement) {
             double extraEnergy = 0;
@@ -266,7 +267,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     @Override
-    public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+    public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
         // enable launch barrier
         if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);

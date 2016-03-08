@@ -2,6 +2,7 @@ package com.dozingcatsoftware.bouncy.fields;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.BaseFieldDelegate;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
@@ -124,7 +125,7 @@ public class Field2Delegate extends BaseFieldDelegate {
         field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         // When center red bumper is hit, start multiball if all center rollovers are lit,
         // otherwise retract left barrier.
         String elementID = element.getElementId();
@@ -194,7 +195,7 @@ public class Field2Delegate extends BaseFieldDelegate {
     }
 
     @Override
-    public void ballInSensorRange(final Field field, SensorElement sensor, Body ball) {
+    public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
         String sensorID = sensor.getElementId();
         // enable launch barrier
         if ("LaunchBarrierSensor".equals(sensorID)) {

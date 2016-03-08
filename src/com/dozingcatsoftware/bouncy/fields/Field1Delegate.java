@@ -1,6 +1,6 @@
 package com.dozingcatsoftware.bouncy.fields;
 
-import com.badlogic.gdx.physics.box2d.Body;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.BaseFieldDelegate;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
@@ -68,7 +68,7 @@ public class Field1Delegate extends BaseFieldDelegate {
         barrier.setRetracted(!enabled);
     }
 
-    @Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
         // Enable launch barrier.
         if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);

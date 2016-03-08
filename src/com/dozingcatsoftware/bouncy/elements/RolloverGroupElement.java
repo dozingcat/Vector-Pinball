@@ -10,10 +10,10 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
-
 /**
  * This class represents a collection of rollover elements. They are activated (and optionally
  * deactivated) when a ball passes over them. Individual rollovers in the group are represented by
@@ -95,7 +95,7 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> hitRollovers = new ArrayList<Rollover>();
 
     /** Returns a set of all rollovers which have balls within their specified radius. */
-    protected List<Rollover> rolloversHitByBalls(List<Body> balls) {
+    protected List<Rollover> rolloversHitByBalls(List<Ball> balls) {
         hitRollovers.clear();
 
         int rsize = this.rollovers.size();
@@ -103,7 +103,7 @@ public class RolloverGroupElement extends FieldElement {
             Rollover rollover = this.rollovers.get(i);
             boolean hit = false;
             for(int j=0; j<balls.size(); j++) {
-                Body ball = balls.get(j);
+                Ball ball = balls.get(j);
                 Vector2 position = ball.getPosition();
                 float xdiff = position.x - rollover.cx;
                 float ydiff = position.y - rollover.cy;

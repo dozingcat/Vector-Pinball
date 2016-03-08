@@ -58,7 +58,9 @@ public class Box2DFactory {
         float hx = Math.abs((xmax - xmin) / 2);
         float hy = Math.abs((ymax - ymin) / 2);
         PolygonShape wallshape = new PolygonShape();
-        wallshape.setAsBox(hx, hy, new Vector2(0f, 0f), angle);
+        // Don't set the angle here; instead call setTransform on the body below. This allows future
+        // calls to setTransform to adjust the rotation as expected.
+        wallshape.setAsBox(hx, hy, new Vector2(0f, 0f), 0f);
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = wallshape;
@@ -70,6 +72,7 @@ public class Box2DFactory {
         Body wall = world.createBody(bd);
         wall.createFixture(fdef);
         wall.setType(BodyDef.BodyType.StaticBody);
+        wall.setTransform(cx, cy, angle);
         return wall;
     }
 
@@ -79,7 +82,7 @@ public class Box2DFactory {
         float cx = (x1 + x2) / 2;
         float cy = (y1 + y2) / 2;
         float angle = (float)Math.atan2(y2-y1, x2-x1);
-        float mag = (float)Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+        float mag = (float)Math.hypot(y2-y1, x2-x1);
         return createWall(world, cx - mag/2, cy-0.05f, cx + mag/2, cy+0.05f, angle, restitution);
     }
 
