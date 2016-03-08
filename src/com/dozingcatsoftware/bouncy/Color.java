@@ -34,8 +34,8 @@ public class Color {
             return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue());
         }
         else if (rgb.size() == 4) {
-            return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue(),
-                    rgb.get(3).intValue());
+            return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(),
+                    rgb.get(2).intValue(), rgb.get(3).intValue());
         }
         else {
             throw new IllegalArgumentException("Invalid color size: " + rgb.size());
@@ -54,5 +54,17 @@ public class Color {
                 (int) (this.green + (other.green - this.green) * fraction),
                 (int) (this.blue + (other.blue - this.blue) * fraction),
                 (int) (this.alpha + (other.alpha - this.alpha) * fraction));
+    }
+
+    @Override public boolean equals(Object obj) {
+        if (obj instanceof Color) {
+            Color other = (Color)obj;
+            return (red==other.red && green==other.green && blue==other.blue && alpha==other.alpha);
+        }
+        return false;
+    }
+
+    @Override public int hashCode() {
+        return (red<<24) | (green<<16) | (blue<<8) | alpha;
     }
 }
