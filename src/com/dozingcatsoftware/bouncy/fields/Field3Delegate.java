@@ -147,6 +147,14 @@ public class Field3Delegate extends BaseFieldDelegate {
         setMultiballRolloverActive(field, false);
     }
 
+    private void restoreLeftBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+    }
+
+    private void restoreRightBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+    }
+
     @Override
     public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
         String id = rolloverGroup.getElementId();
@@ -173,11 +181,11 @@ public class Field3Delegate extends BaseFieldDelegate {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            restoreLeftBallSaver(field);
             field.showGameMessage("Left Save Enabled", 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            restoreRightBallSaver(field);
             field.showGameMessage("Right Save Enabled", 1500);
         }
         else if ("LowerMultiballTargets".equals(id)) {
@@ -314,6 +322,9 @@ public class Field3Delegate extends BaseFieldDelegate {
     void startMultiball(final Field field) {
         field.showGameMessage("Multiball!", 2000);
         multiballStatus = MultiballStatus.PENDING;
+        restoreLeftBallSaver(field);
+        restoreRightBallSaver(field);
+
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {

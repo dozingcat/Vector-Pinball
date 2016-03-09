@@ -101,8 +101,19 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
     }
 
+    private void restoreLeftBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+    }
+
+    private void restoreRightBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+    }
+
     void startMultiball(final Field field) {
         field.showGameMessage("Multiball!", 2000);
+        restoreLeftBallSaver(field);
+        restoreRightBallSaver(field);
+
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {
@@ -154,12 +165,12 @@ public class Field2Delegate extends BaseFieldDelegate {
         int startRolloverIndex = -1;
         String id = targetGroup.getElementId();
         if ("DropTargetLeft".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            restoreLeftBallSaver(field);
             field.showGameMessage("Left Save Enabled", 1500);
             startRolloverIndex = 0;
         }
         else if ("DropTargetRight".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            restoreRightBallSaver(field);
             field.showGameMessage("Right Save Enabled", 1500);
             startRolloverIndex = 2;
         }

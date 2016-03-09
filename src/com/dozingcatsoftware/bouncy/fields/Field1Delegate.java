@@ -27,8 +27,19 @@ public class Field1Delegate extends BaseFieldDelegate {
         }
     }
 
-    void startMultiball(final Field field) {
+    private void restoreLeftBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+    }
+
+    private void restoreRightBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+    }
+
+    private void startMultiball(final Field field) {
         field.showGameMessage("Multiball!", 2000);
+        restoreLeftBallSaver(field);
+        restoreRightBallSaver(field);
+
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {
@@ -43,11 +54,11 @@ public class Field1Delegate extends BaseFieldDelegate {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            restoreLeftBallSaver(field);
             field.showGameMessage("Left Save Enabled", 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            restoreRightBallSaver(field);
             field.showGameMessage("Right Save Enabled", 1500);
         }
         // For all groups, increment extra ball rollover.
@@ -63,7 +74,7 @@ public class Field1Delegate extends BaseFieldDelegate {
 
     // Support for enabling launch barrier after ball passes by it and hits sensor,
     // and disabling for new ball or new game.
-    void setLaunchBarrierEnabled(Field field, boolean enabled) {
+    private void setLaunchBarrierEnabled(Field field, boolean enabled) {
         WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }

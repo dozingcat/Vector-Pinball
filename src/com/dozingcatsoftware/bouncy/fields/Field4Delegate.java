@@ -58,6 +58,14 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
+    private void restoreLeftBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+    }
+
+    private void restoreRightBallSaver(Field field) {
+        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+    }
+
     void clearMultiballStatus() {
         setAllMultiballStatusRolloversActive(false);
         setIgnoreBallForMultiballStatusRollovers(true);
@@ -73,6 +81,8 @@ public class Field4Delegate extends BaseFieldDelegate {
 
     void startMultiball(final Field field) {
         field.showGameMessage("Multiball!", 3000);
+        restoreLeftBallSaver(field);
+        restoreRightBallSaver(field);
         lockedBallRollovers.get(2).setIgnoreBall(true);
         lockedBallRollovers.get(2).setVisible(false);
         ballsLocked = 3;
@@ -190,11 +200,11 @@ public class Field4Delegate extends BaseFieldDelegate {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            restoreLeftBallSaver(field);
             field.showGameMessage("Left Save Enabled", 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            restoreRightBallSaver(field);
             field.showGameMessage("Right Save Enabled", 1500);
         }
         else if ("DropTargetTop".equals(id)) {
