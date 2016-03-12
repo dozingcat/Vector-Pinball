@@ -115,9 +115,14 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         zoom = maxZoom;
         // Don't zoom if game is over or multiball is active.
         if (zoom<=1.0f || !field.getGameState().isGameInProgress() || field.getBalls().size()>1) {
-            cachedXOffset = 0;
-            cachedYOffset = 0;
             zoom = 1.0f;
+            cachedScale = getScale();
+            // Center the entire table horizontally and put at at the top vertically.
+            // Negative offsets so the 0 coordinate will be on the screen.
+            float horizontalSpaceLeft = view.getWidth() - (field.getWidth() * cachedScale);
+            cachedXOffset = (horizontalSpaceLeft > 0) ? -horizontalSpaceLeft/(2*cachedScale) : 0;
+            float verticalSpaceLeft = view.getHeight() - (field.getHeight() * cachedScale);
+            cachedYOffset = (verticalSpaceLeft > 0) ? -verticalSpaceLeft/cachedScale : 0;
         }
         else {
             List<Ball> balls = field.getBalls();
@@ -139,9 +144,8 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 
             cachedYOffset = y - field.getHeight()/(2.0f * zoom);
             cachedYOffset = MathUtils.clamp(cachedYOffset, 0, field.getHeight()*maxOffsetRatio);
+            cachedScale = getScale();
         }
-
-        cachedScale = getScale();
         cachedHeight = view.getHeight();
     }
 
