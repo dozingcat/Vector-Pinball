@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.badlogic.gdx.physics.box2d.Box2D;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,11 +15,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-
-import com.badlogic.gdx.physics.box2d.Box2D;
 
 public class BouncyActivity extends Activity {
 
@@ -147,6 +148,19 @@ public class BouncyActivity extends Activity {
                 unpauseGame();
             }
         }
+    }
+
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // When a game is in progress, pause rather than exit when the back button is pressed.
+        // This prevents accidentally quitting the game.
+        if (keyCode==KeyEvent.KEYCODE_BACK) {
+            if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
+                pauseGame();
+                showPausedButtons();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public void pauseGame() {
