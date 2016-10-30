@@ -19,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 public class BouncyActivity extends Activity {
 
@@ -34,6 +35,7 @@ public class BouncyActivity extends Activity {
     View buttonPanel;
     Button switchTableButton;
     Button endGameButton;
+    CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
 
     Handler handler = new Handler();
@@ -90,6 +92,7 @@ public class BouncyActivity extends Activity {
         buttonPanel = findViewById(R.id.buttonPanel);
         switchTableButton = (Button)findViewById(R.id.switchTableButton);
         endGameButton = (Button)findViewById(R.id.endGameButton);
+        unlimitedBallsToggle = (CheckBox)findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -191,6 +194,7 @@ public class BouncyActivity extends Activity {
     void showPausedButtons() {
         endGameButton.setVisibility(View.VISIBLE);
         switchTableButton.setVisibility(View.GONE);
+        unlimitedBallsToggle.setVisibility(View.GONE);
         buttonPanel.setVisibility(View.VISIBLE);
     }
 
@@ -275,19 +279,24 @@ public class BouncyActivity extends Activity {
         // We only need to check once when the game is over, before the button panel is visible.
         if (buttonPanel.getVisibility()==View.VISIBLE) return;
         synchronized(field) {
+            GameState state = field.getGameState();
             if (!field.getGameState().isGameInProgress()) {
                 // game just ended, show button panel and set end game timestamp
                 this.endGameTime = System.currentTimeMillis();
                 endGameButton.setVisibility(View.GONE);
                 switchTableButton.setVisibility(View.VISIBLE);
+                unlimitedBallsToggle.setVisibility(View.VISIBLE);
                 buttonPanel.setVisibility(View.VISIBLE);
 
-                long score = field.getGameState().getScore();
-                // Add to high scores list if the score beats the lowest existing high score,
-                // or if all the high score slots aren't taken.
-                if (score>highScores.get(this.highScores.size()-1) ||
-                        highScores.size()<MAX_NUM_HIGH_SCORES) {
-                    this.updateHighScoreForCurrentLevel(score);
+                // No high scores for unlimited balls.
+                if (!state.hasUnlimitedBalls()) {
+                    long score = field.getGameState().getScore();
+                    // Add to high scores list if the score beats the lowest existing high score,
+                    // or if all the high score slots aren't taken.
+                    if (score > highScores.get(this.highScores.size()-1) ||
+                            highScores.size() < MAX_NUM_HIGH_SCORES) {
+                        this.updateHighScoreForCurrentLevel(score);
+                    }
                 }
             }
         }
@@ -384,7 +393,13 @@ public class BouncyActivity extends Activity {
         if (!field.getGameState().isGameInProgress()) {
             buttonPanel.setVisibility(View.GONE);
             field.resetForLevel(this, level);
-            field.startGame();
+
+            if (unlimitedBallsToggle.isChecked()) {
+                field.startGameWithUnlimitedBalls();
+            }
+            else {
+                field.startGame();
+            }
             VPSoundpool.playStart();
             endGameTime = null;
         }

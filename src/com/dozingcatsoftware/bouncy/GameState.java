@@ -15,6 +15,7 @@ public class GameState {
     int ballNumber;
     int extraBalls;
     int totalBalls = 3;
+    boolean unlimitedBalls;
 
     long score;
     double scoreMultiplier;
@@ -45,7 +46,7 @@ public class GameState {
         if (extraBalls>0) {
             --extraBalls;
         }
-        else if (ballNumber < totalBalls) {
+        else if (unlimitedBalls || ballNumber < totalBalls) {
             ++ballNumber;
         }
         else {
@@ -98,6 +99,13 @@ public class GameState {
     }
     public void setTotalBalls(int totalBalls) {
         this.totalBalls = totalBalls;
+    }
+
+    public boolean hasUnlimitedBalls() {
+        return unlimitedBalls;
+    }
+    public void setUnlimitedBalls(boolean unlimited) {
+        this.unlimitedBalls = unlimited;
     }
 
     public long getScore() {

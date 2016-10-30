@@ -155,10 +155,18 @@ public class Field implements ContactListener {
         }
     }
 
-    public void startGame() {
+    private void _startGame(boolean unlimitedBalls) {
         gameState.setTotalBalls(layout.getNumberOfBalls());
+        gameState.setUnlimitedBalls(unlimitedBalls);
         gameState.startNewGame();
         getDelegate().gameStarted(this);
+    }
+
+    public void startGame() {
+        _startGame(false);
+    }
+    public void startGameWithUnlimitedBalls() {
+        _startGame(true);
     }
 
     /**

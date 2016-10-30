@@ -23,6 +23,7 @@ public final class R {
         public static final int preferencesButton=0x7f080008;
         public static final int scoreView=0x7f080001;
         public static final int switchTableButton=0x7f080006;
+        public static final int unlimitedBallsToggle=0x7f080009;
     }
     public static final class layout {
         public static final int about=0x7f030000;
@@ -53,6 +54,7 @@ public final class R {
         public static final int table3_rules=0x7f06000f;
         public static final int table4_rules=0x7f060010;
         public static final int table5_rules=0x7f060011;
+        public static final int unlimited_balls_label=0x7f060016;
         public static final int use_opengl_pref_title=0x7f06000b;
         public static final int zoom_pref_title=0x7f06000a;
     }

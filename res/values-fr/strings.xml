@@ -20,4 +20,5 @@
     <string name="help_button_label">Aide/À propos</string>
     <string name="preferences_button_label">Préférences</string>
     <string name="end_game_button_label">Fin de partie</string>
+    <string name="unlimited_balls_label">Balles illimitées</string>
 </resources>

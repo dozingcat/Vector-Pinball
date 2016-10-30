@@ -74,6 +74,7 @@ public class ScoreView extends View {
         boolean gameInProgress = false;
         boolean ballInPlay = false;
         int totalBalls = 0;
+        boolean unlimitedBalls = false;
         int currentBall = 0;
         double multiplier = 0;
         long score = 0;
@@ -83,9 +84,10 @@ public class ScoreView extends View {
             GameState state = field.getGameState();
             gameInProgress = state.isGameInProgress();
             totalBalls = state.getTotalBalls();
+            unlimitedBalls = state.hasUnlimitedBalls();
             currentBall = state.getBallNumber();
             multiplier = state.getScoreMultiplier();
-            score = (gameInProgress) ? state.getScore() : 0;
+            score = state.getScore();
             ballInPlay = field.getBalls().size() > 0;
         }
 
@@ -95,7 +97,7 @@ public class ScoreView extends View {
             // Show score if game is in progress, otherwise cycle between
             // "Touch to start"/previous score/high score.
             if (gameInProgress) {
-                displayString = SCORE_FORMAT.format(score);
+                displayString = formatScore(score, unlimitedBalls);
             }
             else {
                 long now = currentMillis();
@@ -103,10 +105,10 @@ public class ScoreView extends View {
                     lastUpdateTime = now;
                 }
                 else if (now - lastUpdateTime > gameOverMessageCycleTime) {
-                    cycleGameOverMessage();
+                    cycleGameOverMessage(score);
                     lastUpdateTime = now;
                 }
-                displayString = displayedGameOverMessage();
+                displayString = displayedGameOverMessage(score, unlimitedBalls);
             }
         }
 
@@ -125,22 +127,33 @@ public class ScoreView extends View {
             float ballOuterMargin = 2 * ballRadius;
             float ballBetweenSpace = ballRadius;
             float ballCenterY = height - (ballOuterMargin + ballRadius);
-            float ballCenterX = 0;
-            for (int i=0; i<totalBalls; i++) {
-                ballCenterX = width - ballOuterMargin - ballRadius -
-                        (i * (2*ballRadius + ballBetweenSpace));
-                // "Remove" ball from display when launched.
-                boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
-                c.drawCircle(ballCenterX, ballCenterY, ballRadius,
-                        isRemaining ? remainingBallPaint : usedBallPaint);
+            float ballRightmostCenterX = width - ballOuterMargin - ballRadius;
+            float distanceBetweenBallCenters = 2*ballRadius + ballBetweenSpace;
+            if (unlimitedBalls) {
+                // Attempt to show an "infinite" series of balls getting progressively smaller.
+                float vanishingBallRadius = ballRadius;
+                for (int i=4; i>=0; i--) {
+                    float ballCenterX = ballRightmostCenterX - (i * distanceBetweenBallCenters);
+                    c.drawCircle(ballCenterX, ballCenterY, vanishingBallRadius, remainingBallPaint);
+                    vanishingBallRadius *= 0.8f;
+                }
             }
-            // Draw multiplier if >1. Use X position of leftmost ball.
+            else {
+                for (int i=0; i<totalBalls; i++) {
+                    float ballCenterX = ballRightmostCenterX - (i * distanceBetweenBallCenters);
+                    // "Remove" ball from display when launched.
+                    boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
+                    c.drawCircle(ballCenterX, ballCenterY, ballRadius,
+                            isRemaining ? remainingBallPaint : usedBallPaint);
+                }
+            }
+            // Draw multiplier if >1. Use X position of ball third from the right.
             if (multiplier > 1) {
                 int intValue = (int) multiplier;
                 String multiplierString = (multiplier == intValue) ?
                         intValue + "x" : String.format("%.2fx", multiplier);
-                c.drawText(multiplierString, ballCenterX-ballRadius, height * 0.4f,
-                        multiplierPaint);
+                float messageStartX = ballRightmostCenterX - 2 * distanceBetweenBallCenters;
+                c.drawText(multiplierString, messageStartX, height * 0.4f, multiplierPaint);
             }
         }
     }
@@ -151,10 +164,10 @@ public class ScoreView extends View {
 
     // Cycles to the next message to show when there is not game in progress. This can be
     // "Touch to start", the last score if available, or one of the previous high scores.
-    void cycleGameOverMessage() {
+    void cycleGameOverMessage(long lastScore) {
         switch (gameOverMessageIndex) {
             case TOUCH_TO_START_MESSAGE:
-                if (field.getScore() > 0) {
+                if (lastScore > 0) {
                     gameOverMessageIndex = LAST_SCORE_MESSAGE;
                 }
                 else if (highScores.get(0) > 0) {
@@ -181,16 +194,17 @@ public class ScoreView extends View {
     }
 
     // Returns message to show when game is not in progress.
-    String displayedGameOverMessage() {
+    String displayedGameOverMessage(long lastScore, boolean unlimitedBalls) {
         switch (gameOverMessageIndex) {
             case TOUCH_TO_START_MESSAGE:
                 return "Touch to start";
             case LAST_SCORE_MESSAGE:
-                return "Last Score: " + SCORE_FORMAT.format(field.getScore());
+                return "Last Score: " + formatScore(lastScore, unlimitedBalls);
             case HIGH_SCORE_MESSAGE:
                 // highScoreIndex could be too high if we just switched from a different table.
                 int index = Math.min(highScoreIndex, this.highScores.size() - 1);
-                String formattedScore = SCORE_FORMAT.format(this.highScores.get(index));
+                // High scores are never recorded when using unlimited balls.
+                String formattedScore = formatScore(this.highScores.get(index), false);
                 if (index == 0) {
                     return "High Score: " + formattedScore;
                 }
@@ -200,6 +214,11 @@ public class ScoreView extends View {
             default:
                 throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
         }
+    }
+
+    private String formatScore(long score, boolean unlimitedBalls) {
+        String s = SCORE_FORMAT.format(score);
+        return (unlimitedBalls) ? s + "*" : s;
     }
 
     public void setHighQuality(boolean highQuality) {
