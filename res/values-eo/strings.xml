@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vektora Flipero</string>
+    
+    <string name="independent_flippers_pref_title">Sendependaj puŝiloj</string>
+    <string name="independent_flippers_pref_summary_on">Frapeto aktivigas puŝilon ĉe sama flanko de ekrano</string>
+    <string name="independent_flippers_pref_summary_off">Ĉiu frapeto aktivigas ambaŭ puŝilojn</string>
+
+    <string name="high_quality_pref_title">Alta kvalito</string>
+    <string name="high_quality_pref_summary_on">Pli kvalita sed malpli rapida grafiko</string>
+    <string name="high_quality_pref_summary_off">Malpli kvalita sed pli rapida grafiko</string>
+    
+    <string name="sound_pref_title">Sonefektoj</string>
+    <string name="music_pref_title">Fona muziko</string>
+    <string name="show_fps_pref_title">Montri kadrojn sekunde (FPS)</string>
+    <string name="zoom_pref_title">Pligrandigi ludkampon</string>
+    <string name="use_opengl_pref_title">OpenGL-bildigado</string>
+
+    <string name="change_table_button_label">Ŝanĝi ludkampon</string>
+	<string name="help_button_label">Helpo</string>
+	<string name="preferences_button_label">Agordoj</string>
+	<string name="end_game_button_label">Fini ludon</string>
+	<string name="unlimited_balls_label">Senlimanombraj globoj</string>
+
+</resources>
