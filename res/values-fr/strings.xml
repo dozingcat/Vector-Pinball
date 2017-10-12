@@ -8,7 +8,7 @@
 
     <string name="high_quality_pref_title">Haute qualité</string>
     <string name="high_quality_pref_summary_on">Meilleure qualité mais plus lent</string>
-    <string name="high_quality_pref_summary_off">Moins bonne quality mais plus rapide</string>
+    <string name="high_quality_pref_summary_off">Moins bonne qualité mais plus rapide</string>
     
     <string name="sound_pref_title">Son</string>
     <string name="music_pref_title">Musique de fond</string>
@@ -17,7 +17,7 @@
     <string name="use_opengl_pref_title">Rendu OpenGL</string>
 
     <string name="change_table_button_label">Changer de terrain</string>
-    <string name="help_button_label">Aide/À propos</string>
+    <string name="help_button_label">Aide</string>
     <string name="preferences_button_label">Préférences</string>
     <string name="end_game_button_label">Fin de partie</string>
     <string name="unlimited_balls_label">Balles illimitées</string>
