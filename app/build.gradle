@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 21
+        targetSdkVersion 28
     }
 
     buildTypes {
@@ -18,7 +17,8 @@ android {
     }
 }
 
+// jars and native libraries retrieved from https://oss.sonatype.org/content/repositories/releases/com/badlogicgames/gdx/
 dependencies {
-    compile files('libs/gdx-box2d.jar')
-    compile files('libs/gdx.jar')
+    implementation files('libs/gdx-box2d-1.9.9.jar')
+    implementation files('libs/gdx-1.9.9.jar')
 }

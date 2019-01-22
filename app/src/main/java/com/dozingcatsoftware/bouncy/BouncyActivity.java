@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -61,10 +62,15 @@ public class BouncyActivity extends Activity {
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
 
+    private static final String TAG = "BouncyActivity";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String arch = System.getProperty("os.arch");
+        Log.i(TAG, "App started, os.arch=" + arch);
+        
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
