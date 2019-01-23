@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dozingcatsoftware.bouncy"
     android:installLocation="auto"
-    android:versionCode="21"
-    android:versionName="1.5.6" >
+    android:versionCode="22"
+    android:versionName="1.6.0" >
 
     <application
         android:allowBackup="true"
