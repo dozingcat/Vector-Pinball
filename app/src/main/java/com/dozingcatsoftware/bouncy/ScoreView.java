@@ -24,7 +24,6 @@ public class ScoreView extends View {
     Rect textRect = new Rect();
 
     Paint fpsPaint = new Paint();
-    Rect fpsRect = new Rect();
 
     Paint usedBallPaint = new Paint();
     Paint remainingBallPaint = new Paint();
@@ -58,7 +57,7 @@ public class ScoreView extends View {
         textPaint.setTextSize(24 * metrics.density);
 
         fpsPaint.setARGB(255, 255, 255, 0);
-        fpsPaint.setTextSize(6 * metrics.density);
+        fpsPaint.setTextSize(9 * metrics.density);
 
         multiplierPaint.setARGB(255, 32, 224, 32);
         multiplierPaint.setTextSize(12 * metrics.density);
@@ -67,9 +66,9 @@ public class ScoreView extends View {
         usedBallPaint.setStyle(Paint.Style.STROKE);
         remainingBallPaint.setARGB(255, 224, 224, 224);
         remainingBallPaint.setStyle(Paint.Style.FILL);
-    }
+}
 
-    @Override public void draw(Canvas c) {
+    @Override public void onDraw(Canvas c) {
         GameMessage msg = null;
         boolean gameInProgress = false;
         boolean ballInPlay = false;

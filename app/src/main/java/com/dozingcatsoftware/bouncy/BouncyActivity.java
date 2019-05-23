@@ -53,10 +53,13 @@ public class BouncyActivity extends Activity {
     static String HIGHSCORES_PREFS_KEY = "highScores";
     static String OLD_HIGHSCORE_PREFS_KEY = "highScore";
     static String INITIAL_LEVEL_PREFS_KEY = "initialLevel";
-    boolean useZoom = true;
 
-    static long END_GAME_DELAY = 1000; // delay after ending a game, before a touch will start a new game
-    Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY;
+    boolean useZoom = true;
+    static final float ZOOM_FACTOR = 1.5f;
+
+    // Delay after ending a game, before a touch will start a new game.
+    static final long END_GAME_DELAY_MS = 1000;
+    Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY_MS;
 
     FieldDriver fieldDriver = new FieldDriver();
     FieldViewManager fieldViewManager = new FieldViewManager();
@@ -263,7 +266,7 @@ public class BouncyActivity extends Activity {
         }
 
         useZoom = prefs.getBoolean("zoom", true);
-        fieldViewManager.setZoom(useZoom ? 1.4f : 1.0f);
+        fieldViewManager.setZoom(useZoom ? ZOOM_FACTOR : 1.0f);
 
         VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
@@ -395,7 +398,9 @@ public class BouncyActivity extends Activity {
             return;
         }
         // Avoids accidental starts due to touches just after game ends.
-        if (endGameTime==null || (System.currentTimeMillis() < endGameTime+END_GAME_DELAY)) return;
+        if (endGameTime == null || (System.currentTimeMillis() < endGameTime + END_GAME_DELAY_MS)) {
+            return;
+        }
         if (!field.getGameState().isGameInProgress()) {
             buttonPanel.setVisibility(View.GONE);
             field.resetForLevel(this, level);

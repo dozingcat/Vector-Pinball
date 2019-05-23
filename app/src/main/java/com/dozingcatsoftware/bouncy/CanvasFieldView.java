@@ -24,7 +24,6 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     FieldViewManager manager;
 
     Paint paint = new Paint(); {paint.setAntiAlias(true);}
-    Paint textPaint = new Paint(); {textPaint.setARGB(255, 255, 255, 255);}
     Canvas canvas;
 
     @Override
@@ -67,11 +66,6 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
         manager.getField().drawBalls(this);
 
-        if (manager.showFPS()) {
-            if (manager.getDebugMessage()!=null) {
-                c.drawText(""+manager.getDebugMessage(), 10, 10, textPaint);
-            }
-        }
         this.getHolder().unlockCanvasAndPost(c);
     }
 

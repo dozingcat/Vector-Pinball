@@ -40,41 +40,22 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         return canDraw;
     }
 
-    boolean showFPS;
     boolean highQuality;
     boolean independentFlippers;
 
     Field field;
 
-    float zoom = 1.0f;
     float maxZoom = 1.0f;
 
     // x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as
     // elements are drawn.
-    float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
-
-    String debugMessage;
-    double fps;
+    private float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
 
     public void setField(Field value) {
         field = value;
     }
     public Field getField() {
         return field;
-    }
-
-    public void setDebugMessage(String value) {
-        debugMessage = value;
-    }
-    public String getDebugMessage() {
-        return debugMessage;
-    }
-
-    public void setShowFPS(boolean value) {
-        showFPS = value;
-    }
-    public boolean showFPS() {
-        return showFPS;
     }
 
     public void setIndependentFlippers(boolean value) {
@@ -92,10 +73,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         startGameAction = action;
     }
 
-    float getScale() {
+    float getScale(float zoom) {
         float xs = view.getWidth() / field.getWidth();
         float ys = view.getHeight() / field.getHeight();
-        return Math.min(xs, ys) * this.zoom;
+        return Math.min(xs, ys) * zoom;
     }
 
     float getCachedScale() {
@@ -111,42 +92,45 @@ public class FieldViewManager implements SurfaceHolder.Callback {
      * Saves scale and x and y offsets for use by world2pixel methods, avoiding repeated method
      * calls and math operations.
      */
-    public void cacheScaleAndOffsets() {
-        zoom = maxZoom;
+    private void cacheScaleAndOffsets() {
+        cachedHeight = view.getHeight();
         // Don't zoom if game is over or multiball is active.
-        if (zoom<=1.0f || !field.getGameState().isGameInProgress() || field.getBalls().size()>1) {
-            zoom = 1.0f;
-            cachedScale = getScale();
+        List<Ball> balls = field.getBalls();
+        if (maxZoom <= 1.0f || !field.getGameState().isGameInProgress() || balls.size() > 1) {
+            cachedScale = getScale(1.0f);
             // Center the entire table horizontally and put at at the top vertically.
             // Negative offsets so the 0 coordinate will be on the screen.
-            float horizontalSpaceLeft = view.getWidth() - (field.getWidth() * cachedScale);
-            cachedXOffset = (horizontalSpaceLeft > 0) ? -horizontalSpaceLeft/(2*cachedScale) : 0;
-            float verticalSpaceLeft = view.getHeight() - (field.getHeight() * cachedScale);
-            cachedYOffset = (verticalSpaceLeft > 0) ? -verticalSpaceLeft/cachedScale : 0;
+            float spaceLeftX = view.getWidth() - (field.getWidth() * cachedScale);
+            cachedXOffset = (spaceLeftX > 0) ? -spaceLeftX / (2 * cachedScale) : 0;
+            float spaceLeftY = view.getHeight() - (field.getHeight() * cachedScale);
+            cachedYOffset = (spaceLeftY > 0) ? -spaceLeftY / cachedScale : 0;
         }
         else {
-            List<Ball> balls = field.getBalls();
-            float x=-1, y=-1;
+            cachedScale = getScale(maxZoom);
+            // Center the zoomed view on the ball if available, or the launch position if not.
+            float centerX, centerY;
             if (balls.size()==1) {
                 Ball b = balls.get(0);
-                x = b.getPosition().x;
-                y = b.getPosition().y;
+                centerX = b.getPosition().x;
+                centerY = b.getPosition().y;
             }
             else {
-                // use launch position
                 List<Float> position = field.layout.getLaunchPosition();
-                x = position.get(0);
-                y = position.get(1);
+                centerX = position.get(0);
+                centerY = position.get(1);
             }
-            float maxOffsetRatio = 1.0f - 1.0f/zoom;
-            cachedXOffset = x - field.getWidth()/(2.0f * zoom);
-            cachedXOffset = MathUtils.clamp(cachedXOffset, 0, field.getWidth()*maxOffsetRatio);
+            // `spanX` and `spanY` are how many world units are visible when zoomed. We don't want
+            // the zoomed view to extend to less than 0, or greater than the field size.
+            float spanX = view.getWidth() / cachedScale;
+            float rawXOffset = centerX - spanX / 2;
+            float maxXOffset = field.getWidth() - spanX;
+            cachedXOffset = MathUtils.clamp(rawXOffset, 0, maxXOffset);
 
-            cachedYOffset = y - field.getHeight()/(2.0f * zoom);
-            cachedYOffset = MathUtils.clamp(cachedYOffset, 0, field.getHeight()*maxOffsetRatio);
-            cachedScale = getScale();
+            float spanY = view.getHeight() / cachedScale;
+            float rawYOffset = centerY - spanY / 2;
+            float maxYOffset = field.getHeight() - spanY;
+            cachedYOffset = MathUtils.clamp(rawYOffset, 0, maxYOffset);
         }
-        cachedHeight = view.getHeight();
     }
 
     // world2pixel methods assume cacheScaleAndOffsets has been called previously.

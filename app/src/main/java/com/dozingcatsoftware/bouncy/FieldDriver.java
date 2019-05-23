@@ -15,7 +15,6 @@ public class FieldDriver {
 
     boolean running;
     Thread gameThread;
-    boolean canDraw = false;
 
     FrameRateManager frameRateManager = new FrameRateManager(
             new double[] {60, 50, 45, 40, 30},
@@ -100,7 +99,6 @@ public class FieldDriver {
 
             // For debugging, show frames per second and other info.
             if (frameRateManager.getTotalFrames() % 100 == 0) {
-                fieldViewManager.setDebugMessage(frameRateManager.fpsDebugInfo());
                 setAverageFPS(frameRateManager.currentFramesPerSecond());
             }
         }
