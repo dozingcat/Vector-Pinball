@@ -18,12 +18,13 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field5Delegate extends BaseFieldDelegate {
 
-    private enum BallColor {BLUE, RED, YELLOW, GREEN};
-    private enum MultiballStatus {NOT_READY, READY, STARTING, ACTIVE};
+    private enum BallColor {BLUE, RED, YELLOW, GREEN}
+
+    private enum MultiballStatus {NOT_READY, READY, STARTING, ACTIVE}
 
     private static final BallColor[] BALL_COLOR_VALUES = BallColor.values();
 
-    private static final double TAU = 2*Math.PI;
+    private static final double TAU = 2 * Math.PI;
     private static final boolean IGNORE_BALL_COLOR = false;
 
     private static final long JACKPOT_BASE_SCORE = 50000;
@@ -81,7 +82,7 @@ public class Field5Delegate extends BaseFieldDelegate {
     private double triangleCenterY = 18.86f;
     // Equilateral triangle with sides of length 2. Base is sqrt(3),
     // center is 2/3 from vertex to base.
-    private double triangleRadius = Math.sqrt(3.0) * 2/3;
+    private double triangleRadius = Math.sqrt(3.0) * 2 / 3;
     private List<WallElement> triangleWalls;
     private RolloverGroupElement triangleCenterRollover;
 
@@ -109,7 +110,7 @@ public class Field5Delegate extends BaseFieldDelegate {
 
     private boolean hasBallWithColor(Field field, BallColor ballColor) {
         List<Ball> balls = field.getBalls();
-        for (int i=0; i<balls.size(); i++) {
+        for (int i = 0; i < balls.size(); i++) {
             if (ballColor == getBallColor(balls.get(i))) {
                 return true;
             }
@@ -130,7 +131,7 @@ public class Field5Delegate extends BaseFieldDelegate {
         for (BallColor ballColor : BALL_COLOR_VALUES) {
             boolean hasColor = hasBallWithColor(field, ballColor) || IGNORE_BALL_COLOR;
             List<RolloverGroupElement> rollovers = centerRolloversByColor.get(ballColor);
-            for (int i=0; i<rollovers.size(); i++) {
+            for (int i = 0; i < rollovers.size(); i++) {
                 RolloverGroupElement ro = rollovers.get(i);
                 ro.setIgnoreBall(!hasColor);
                 if (hasColor) {
@@ -153,9 +154,9 @@ public class Field5Delegate extends BaseFieldDelegate {
         for (BallColor ballColor : BALL_COLOR_VALUES) {
             List<RolloverGroupElement> rollovers = centerRolloversByColor.get(ballColor);
             List<WallElement> lines = centerLinesByColor.get(ballColor);
-            for (int i=0; i<rollovers.size(); i++) {
+            for (int i = 0; i < rollovers.size(); i++) {
                 RolloverGroupElement r1 = rollovers.get(i);
-                RolloverGroupElement r2 = rollovers.get(i==rollovers.size()-1 ? 0 : i+1);
+                RolloverGroupElement r2 = rollovers.get(i == rollovers.size() - 1 ? 0 : i + 1);
                 boolean lineVisible = r1.allRolloversActive() && r2.allRolloversActive();
                 lines.get(i).setVisible(lineVisible);
                 allLinesVisible = allLinesVisible && lineVisible;
@@ -164,7 +165,7 @@ public class Field5Delegate extends BaseFieldDelegate {
         if (allLinesVisible) {
             if (multiballStatus == MultiballStatus.ACTIVE) {
                 multiballJackpotCount += 1;
-                String prefix = (multiballJackpotCount > 1) ? multiballJackpotCount+"x " : "";
+                String prefix = (multiballJackpotCount > 1) ? multiballJackpotCount + "x " : "";
                 field.showGameMessage(prefix + "Jackpot!", 3000);
                 field.addScore(JACKPOT_BASE_SCORE * multiballJackpotCount);
                 // This will make a recursive call to updateCenterLines,
@@ -197,7 +198,7 @@ public class Field5Delegate extends BaseFieldDelegate {
     private void resetCenter(Field field) {
         for (BallColor ballColor : BALL_COLOR_VALUES) {
             List<RolloverGroupElement> rollovers = centerRolloversByColor.get(ballColor);
-            for (int i=0; i<rollovers.size(); i++) {
+            for (int i = 0; i < rollovers.size(); i++) {
                 rollovers.get(i).setRolloverActiveAtIndex(0, false);
             }
         }
@@ -211,15 +212,15 @@ public class Field5Delegate extends BaseFieldDelegate {
     }
 
     private void restoreLeftBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-left")).setRetracted(false);
     }
 
     private void restoreRightBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
     }
 
     private void startMultiball(final Field field) {
-        for (int i=0; i<triangleWalls.size(); i++) {
+        for (int i = 0; i < triangleWalls.size(); i++) {
             triangleWalls.get(i).setRetracted(false);
         }
         triangleRotationSpeedMultiplier = -2.0;
@@ -265,68 +266,69 @@ public class Field5Delegate extends BaseFieldDelegate {
     private void resetExtraBallIfNeeded() {
         if (extraBallRollover.allRolloversActive()) {
             extraBallRollover.setRolloverActiveAtIndex(0, false);
-            for (int i=0; i<extraBallBarriers.size(); i++) {
+            for (int i = 0; i < extraBallBarriers.size(); i++) {
                 extraBallBarriers.get(i).setRetracted(false);
             }
         }
     }
 
     @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement)field.getFieldElementById("LaunchBarrier");
+        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
 
-        triangleRotationAngle = TAU/4;
+        triangleRotationAngle = TAU / 4;
         triangleWalls = Arrays.asList(
-                (WallElement)field.getFieldElementById("TriangleWall1"),
-                (WallElement)field.getFieldElementById("TriangleWall2"),
-                (WallElement)field.getFieldElementById("TriangleWall3"));
-        triangleCenterRollover = (RolloverGroupElement)field.getFieldElementById("TriangleCenter");
+                (WallElement) field.getFieldElementById("TriangleWall1"),
+                (WallElement) field.getFieldElementById("TriangleWall2"),
+                (WallElement) field.getFieldElementById("TriangleWall3"));
+        triangleCenterRollover = (RolloverGroupElement) field.getFieldElementById("TriangleCenter");
 
         previousSensorIds = new HashMap<Ball, String>();
 
         centerRolloversByColor = buildBallColorMap(
                 Arrays.asList(
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Blue_1"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Blue_2"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Blue_3")),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_1"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_2"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_3")),
                 Arrays.asList(
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Red_1"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Red_2"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Red_3")),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_1"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_2"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_3")),
                 Arrays.asList(
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Yellow_1"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Yellow_2"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Yellow_3")),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_1"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_2"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_3"
+                        )),
                 Arrays.asList(
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Green_1"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Green_2"),
-                        (RolloverGroupElement)field.getFieldElementById("CenterRollover_Green_3")));
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_1"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_2"),
+                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_3")));
 
         centerLinesByColor = buildBallColorMap(
                 Arrays.asList(
-                        (WallElement)field.getFieldElementById("CenterLine_Blue_1_2"),
-                        (WallElement)field.getFieldElementById("CenterLine_Blue_2_3"),
-                        (WallElement)field.getFieldElementById("CenterLine_Blue_3_1")),
+                        (WallElement) field.getFieldElementById("CenterLine_Blue_1_2"),
+                        (WallElement) field.getFieldElementById("CenterLine_Blue_2_3"),
+                        (WallElement) field.getFieldElementById("CenterLine_Blue_3_1")),
                 Arrays.asList(
-                        (WallElement)field.getFieldElementById("CenterLine_Red_1_2"),
-                        (WallElement)field.getFieldElementById("CenterLine_Red_2_3"),
-                        (WallElement)field.getFieldElementById("CenterLine_Red_3_1")),
+                        (WallElement) field.getFieldElementById("CenterLine_Red_1_2"),
+                        (WallElement) field.getFieldElementById("CenterLine_Red_2_3"),
+                        (WallElement) field.getFieldElementById("CenterLine_Red_3_1")),
                 Arrays.asList(
-                        (WallElement)field.getFieldElementById("CenterLine_Yellow_1_2"),
-                        (WallElement)field.getFieldElementById("CenterLine_Yellow_2_3"),
-                        (WallElement)field.getFieldElementById("CenterLine_Yellow_3_1")),
+                        (WallElement) field.getFieldElementById("CenterLine_Yellow_1_2"),
+                        (WallElement) field.getFieldElementById("CenterLine_Yellow_2_3"),
+                        (WallElement) field.getFieldElementById("CenterLine_Yellow_3_1")),
                 Arrays.asList(
-                        (WallElement)field.getFieldElementById("CenterLine_Green_1_2"),
-                        (WallElement)field.getFieldElementById("CenterLine_Green_2_3"),
-                        (WallElement)field.getFieldElementById("CenterLine_Green_3_1")));
+                        (WallElement) field.getFieldElementById("CenterLine_Green_1_2"),
+                        (WallElement) field.getFieldElementById("CenterLine_Green_2_3"),
+                        (WallElement) field.getFieldElementById("CenterLine_Green_3_1")));
 
         rampBonuses = buildBallColorMap(0, 0, 0, 0);
 
-        extraBallRollover = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollover");
+        extraBallRollover = (RolloverGroupElement) field.getFieldElementById("ExtraBallRollover");
         extraBallBarriers = Arrays.asList(
-                (WallElement)field.getFieldElementById("ExtraBallBarrier_Blue"),
-                (WallElement)field.getFieldElementById("ExtraBallBarrier_Red"),
-                (WallElement)field.getFieldElementById("ExtraBallBarrier_Yellow"),
-                (WallElement)field.getFieldElementById("ExtraBallBarrier_Green"));
+                (WallElement) field.getFieldElementById("ExtraBallBarrier_Blue"),
+                (WallElement) field.getFieldElementById("ExtraBallBarrier_Red"),
+                (WallElement) field.getFieldElementById("ExtraBallBarrier_Yellow"),
+                (WallElement) field.getFieldElementById("ExtraBallBarrier_Green"));
 
         updateCenterRollovers(field);
         updateCenterLines(field);
@@ -364,7 +366,8 @@ public class Field5Delegate extends BaseFieldDelegate {
         previousSensorIds.put(ball, sensorId);
     }
 
-    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override
+    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
@@ -388,11 +391,12 @@ public class Field5Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
+    @Override
+    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
         String id = rollovers.getElementId();
         if ("FlipperRollovers".equals(id)) {
             field.incrementScoreMultiplier();
-            field.showGameMessage(((int)field.getScoreMultiplier()) + "x Multiplier", 1500);
+            field.showGameMessage(((int) field.getScoreMultiplier()) + "x Multiplier", 1500);
             rollovers.setAllRolloversActivated(false);
         }
         else if (rollovers == triangleCenterRollover) {
@@ -407,10 +411,11 @@ public class Field5Delegate extends BaseFieldDelegate {
         updateCenterLines(field);
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body bodyHit, Ball ball) {
+    @Override
+    public void processCollision(Field field, FieldElement element, Body bodyHit, Ball ball) {
         if (multiballStatus == MultiballStatus.READY) {
             if (triangleWalls.contains(element)) {
-                ((WallElement)element).setRetracted(true);
+                ((WallElement) element).setRetracted(true);
             }
         }
     }
@@ -420,29 +425,29 @@ public class Field5Delegate extends BaseFieldDelegate {
     }
 
     @Override public void tick(Field field, long nanos) {
-        if (triangleWalls!=null && triangleRotationSpeedMultiplier!=0) {
+        if (triangleWalls != null && triangleRotationSpeedMultiplier != 0) {
             triangleRotationAngle +=
-                (triangleRotationSpeedMultiplier * triangleRotationBaseSpeed) * nanos/1e9;
+                    triangleRotationSpeedMultiplier * triangleRotationBaseSpeed * (nanos / 1e9);
             if (triangleRotationAngle < 0) triangleRotationAngle += TAU;
             if (triangleRotationAngle >= TAU) triangleRotationAngle -= TAU;
             double a0 = triangleRotationAngle;
-            double a1 = triangleRotationAngle + TAU/3;
-            double a2 = triangleRotationAngle - TAU/3;
-            float x0 = (float)(triangleCenterX + triangleRadius*Math.cos(a0));
-            float y0 = (float)(triangleCenterY + triangleRadius*Math.sin(a0));
-            float x1 = (float)(triangleCenterX + triangleRadius*Math.cos(a1));
-            float y1 = (float)(triangleCenterY + triangleRadius*Math.sin(a1));
-            float x2 = (float)(triangleCenterX + triangleRadius*Math.cos(a2));
-            float y2 = (float)(triangleCenterY + triangleRadius*Math.sin(a2));
-            // change wall position?
+            double a1 = triangleRotationAngle + TAU / 3;
+            double a2 = triangleRotationAngle - TAU / 3;
+            float x0 = (float) (triangleCenterX + triangleRadius * Math.cos(a0));
+            float y0 = (float) (triangleCenterY + triangleRadius * Math.sin(a0));
+            float x1 = (float) (triangleCenterX + triangleRadius * Math.cos(a1));
+            float y1 = (float) (triangleCenterY + triangleRadius * Math.sin(a1));
+            float x2 = (float) (triangleCenterX + triangleRadius * Math.cos(a2));
+            float y2 = (float) (triangleCenterY + triangleRadius * Math.sin(a2));
+            // Change wall positions.
             triangleWalls.get(0).setStartAndDirection(x0, y0, x1, y1);
             triangleWalls.get(1).setStartAndDirection(x1, y1, x2, y2);
             triangleWalls.get(2).setStartAndDirection(x2, y2, x0, y0);
-          }
+        }
 
-          // Check for exiting multiball.
-          if (field.getBalls().size()<=1 && multiballStatus == MultiballStatus.ACTIVE) {
+        // Check for exiting multiball.
+        if (field.getBalls().size() <= 1 && multiballStatus == MultiballStatus.ACTIVE) {
             endMultiball(field);
-          }
+        }
     }
 }

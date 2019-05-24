@@ -14,7 +14,7 @@ public interface AudioPlayer {
 
     void playRollover();
 
-    public static class NoOpPlayer implements AudioPlayer {
+    class NoOpPlayer implements AudioPlayer {
         private static final NoOpPlayer INSTANCE = new NoOpPlayer();
 
         public static NoOpPlayer getInstance() {

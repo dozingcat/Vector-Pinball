@@ -3,7 +3,7 @@ package com.dozingcatsoftware.bouncy;
 public class GameState {
 
     // Defines how score multiplier is affected when ball is lost.
-    public static enum MultiplierBehavior {
+    public enum MultiplierBehavior {
         REMOVE,  // Reset to 1.
         HOLD,    // Don't change.
         ROUND_HALF_DOWN,  // Reduce by half and round down, the default.
@@ -33,17 +33,17 @@ public class GameState {
 
     public void doNextBall() {
         switch (multiplierBehavior) {
-        case REMOVE:
-            scoreMultiplier = 1;
-            break;
-        case HOLD:
-            break;
-        case ROUND_HALF_DOWN:
-            scoreMultiplier = Math.max(1, Math.floor(scoreMultiplier/2));
-            break;
+            case REMOVE:
+                scoreMultiplier = 1;
+                break;
+            case HOLD:
+                break;
+            case ROUND_HALF_DOWN:
+                scoreMultiplier = Math.max(1, Math.floor(scoreMultiplier / 2));
+                break;
         }
 
-        if (extraBalls>0) {
+        if (extraBalls > 0) {
             --extraBalls;
         }
         else if (unlimitedBalls || ballNumber < totalBalls) {
@@ -69,6 +69,7 @@ public class GameState {
     public boolean isGameInProgress() {
         return gameInProgress;
     }
+
     public void setGameInProgress(boolean value) {
         gameInProgress = value;
     }
@@ -76,6 +77,7 @@ public class GameState {
     public boolean isPaused() {
         return paused;
     }
+
     public void setPaused(boolean value) {
         paused = value;
     }
@@ -83,6 +85,7 @@ public class GameState {
     public int getBallNumber() {
         return ballNumber;
     }
+
     public void setBallNumber(int ballNumber) {
         this.ballNumber = ballNumber;
     }
@@ -90,6 +93,7 @@ public class GameState {
     public int getExtraBalls() {
         return extraBalls;
     }
+
     public void setExtraBalls(int extraBalls) {
         this.extraBalls = extraBalls;
     }
@@ -97,6 +101,7 @@ public class GameState {
     public int getTotalBalls() {
         return totalBalls;
     }
+
     public void setTotalBalls(int totalBalls) {
         this.totalBalls = totalBalls;
     }
@@ -104,6 +109,7 @@ public class GameState {
     public boolean hasUnlimitedBalls() {
         return unlimitedBalls;
     }
+
     public void setUnlimitedBalls(boolean unlimited) {
         this.unlimitedBalls = unlimited;
     }
@@ -111,6 +117,7 @@ public class GameState {
     public long getScore() {
         return score;
     }
+
     public void setScore(long score) {
         this.score = score;
     }
@@ -118,6 +125,7 @@ public class GameState {
     public double getScoreMultiplier() {
         return scoreMultiplier;
     }
+
     public void setScoreMultiplier(double scoreMultiplier) {
         this.scoreMultiplier = scoreMultiplier;
     }
@@ -125,6 +133,7 @@ public class GameState {
     public MultiplierBehavior getMultiplierBehavior() {
         return multiplierBehavior;
     }
+
     public void setMultiplierBehavior(MultiplierBehavior behavior) {
         multiplierBehavior = behavior;
     }

@@ -46,7 +46,6 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  *   "numTargets": 4
  * }
  */
-
 public class DropTargetGroupElement extends FieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
@@ -61,15 +60,16 @@ public class DropTargetGroupElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
-    // Store all bodies and positions, use Body's active flag to determine which targets have been hit.
+    // Store all bodies and positions, use Body's active flag to determine which targets were hit.
     List<Body> allBodies = new ArrayList<Body>();
     float[][] positions;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection) {
         // Individual targets can be specified in "positions" list.
         @SuppressWarnings("unchecked")
         List<List<?>> positionList = (List<List<?>>) getRawParameterValueForKey(POSITIONS_PROPERTY);
-        if (positionList!=null && !positionList.isEmpty()) {
+        if (positionList != null && !positionList.isEmpty()) {
             positions = new float[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
                 List<?> coords = positionList.get(i);
@@ -81,25 +81,25 @@ public class DropTargetGroupElement extends FieldElement {
             float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
             float[] wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
             float gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
-            float startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
+            float startDistanceAlongWall =
+                    getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
             float targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
             float gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
             int numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
             positions = new float[numTargets][];
             double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
-            double perpToWallAngle = wallAngle + TAU/4;
+            double perpToWallAngle = wallAngle + TAU / 4;
             for (int i = 0; i < numTargets; i++) {
-                double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
+                double alongWallStart =
+                        startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
                 double alongWallEnd = alongWallStart + targetWidth;
-                float x1 = (float) (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
-                        (gapFromWall * Math.cos(perpToWallAngle)));
-                float y1 = (float) (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
-                        (gapFromWall * Math.sin(perpToWallAngle)));
-                float x2 = (float) (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) +
-                        (gapFromWall * Math.cos(perpToWallAngle)));
-                float y2 = (float) (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
-                        (gapFromWall * Math.sin(perpToWallAngle)));
+                double gapX = gapFromWall * Math.cos(perpToWallAngle);
+                double gapY = gapFromWall * Math.sin(perpToWallAngle);
+                float x1 = (float) (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) + gapX);
+                float y1 = (float) (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) + gapY);
+                float x2 = (float) (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) + gapX);
+                float y2 = (float) (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) + gapY);
                 positions[i] = new float[] {x1, y1, x2, y2};
             }
         }
@@ -121,7 +121,7 @@ public class DropTargetGroupElement extends FieldElement {
     /** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
     public boolean allTargetsHit() {
         int bsize = allBodies.size();
-        for (int i=0; i<bsize; i++) {
+        for (int i = 0; i < bsize; i++) {
             if (allBodies.get(i).isActive()) return false;
         }
         return true;
@@ -134,10 +134,9 @@ public class DropTargetGroupElement extends FieldElement {
             field.getDelegate().allDropTargetsInGroupHit(field, this);
 
             float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
-            if (restoreTime>0) {
-                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
-                    @Override
-                    public void run() {
+            if (restoreTime > 0) {
+                field.scheduleAction((long) (restoreTime * 1000), new Runnable() {
+                    @Override public void run() {
                         makeAllTargetsVisible();
                     }
                 });
@@ -148,7 +147,7 @@ public class DropTargetGroupElement extends FieldElement {
     /** Makes all targets visible by calling Body.setActive(true) on each target body */
     public void makeAllTargetsVisible() {
         int bsize = allBodies.size();
-        for (int i=0; i<bsize; i++) {
+        for (int i = 0; i < bsize; i++) {
             allBodies.get(i).setActive(true);
         }
     }
@@ -157,7 +156,7 @@ public class DropTargetGroupElement extends FieldElement {
         // draw line for each target
         Color color = currentColor(DEFAULT_COLOR);
         int bsize = allBodies.size();
-        for(int i=0; i<bsize; i++) {
+        for (int i = 0; i < bsize; i++) {
             Body body = allBodies.get(i);
             if (body.isActive()) {
                 float[] parray = positions[i];

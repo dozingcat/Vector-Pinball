@@ -24,6 +24,9 @@ public class FieldDriver {
     // Sleep this long when field.hasActiveElements() is false.
     static long INACTIVE_FRAME_MSECS = 250;
 
+    private static long MILLION = 1000000;
+    private static long BILLION = MILLION * 1000;
+
     public void setFieldViewManager(FieldViewManager value) {
         this.fieldViewManager = value;
     }
@@ -50,7 +53,8 @@ public class FieldDriver {
         try {
             gameThread.join();
         }
-        catch(InterruptedException ex) {}
+        catch (InterruptedException ex) {
+        }
     }
 
 
@@ -63,23 +67,23 @@ public class FieldDriver {
         while (running) {
             frameRateManager.frameStarted();
             boolean fieldActive = true;
-            if (field!=null && fieldViewManager.canDraw()) {
+            if (field != null && fieldViewManager.canDraw()) {
                 try {
-                    synchronized(field) {
+                    synchronized (field) {
                         long nanosPerFrame =
-                                (long)(1000000000L / frameRateManager.targetFramesPerSecond());
-                        long fieldTickNanos = (long)(nanosPerFrame*field.getTargetTimeRatio());
+                                (long) (BILLION / frameRateManager.targetFramesPerSecond());
+                        long fieldTickNanos = (long) (nanosPerFrame * field.getTargetTimeRatio());
                         // If field isn't doing anything, sleep for a long time.
                         fieldActive = field.hasActiveElements();
                         if (!fieldActive) {
-                            fieldTickNanos =
-                                    (long)(INACTIVE_FRAME_MSECS*1000000*field.getTargetTimeRatio());
+                            fieldTickNanos = (long)
+                                    (INACTIVE_FRAME_MSECS * MILLION * field.getTargetTimeRatio());
                         }
                         field.tick(fieldTickNanos, 4);
                     }
                     drawField();
                 }
-                catch(Exception ex) {
+                catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -91,7 +95,8 @@ public class FieldDriver {
                 try {
                     Thread.sleep(INACTIVE_FRAME_MSECS);
                 }
-                catch(InterruptedException ignored) {}
+                catch (InterruptedException ignored) {
+                }
                 continue;
             }
 
@@ -119,8 +124,8 @@ public class FieldDriver {
     public double getAverageFPS() {
         return averageFPS;
     }
+
     public void setAverageFPS(double value) {
         averageFPS = value;
     }
-
 }

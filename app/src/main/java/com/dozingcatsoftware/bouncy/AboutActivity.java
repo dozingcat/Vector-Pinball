@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 public class AboutActivity extends Activity {
     /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.about);
@@ -21,16 +20,16 @@ public class AboutActivity extends Activity {
         String tableRulesText = null;
         try {
             String fieldName = "table" + getIntent().getIntExtra("level", 1) + "_rules";
-            int tableRulesID = (Integer)R.string.class.getField(fieldName).get(null);
+            int tableRulesID = (Integer) R.string.class.getField(fieldName).get(null);
             tableRulesText = getString(tableRulesID);
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             tableRulesText = null;
         }
-        if (tableRulesText==null) tableRulesText = "";
+        if (tableRulesText == null) tableRulesText = "";
         String displayText = baseText.replace("[TABLE_RULES]", tableRulesText);
 
-        TextView tv = (TextView)findViewById(R.id.aboutTextView);
+        TextView tv = (TextView) findViewById(R.id.aboutTextView);
         tv.setText(displayText);
     }
 
@@ -40,5 +39,4 @@ public class AboutActivity extends Activity {
         context.startActivity(aboutIntent);
         return aboutIntent;
     }
-
 }

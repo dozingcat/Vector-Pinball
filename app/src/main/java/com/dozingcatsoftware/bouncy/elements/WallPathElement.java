@@ -27,14 +27,15 @@ public class WallPathElement extends FieldElement {
     List<Body> wallBodies = new ArrayList<Body>();
     float[][] lineSegments;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection) {
         @SuppressWarnings("unchecked")
-        List<List<?>> positions = (List<List<?>>)params.get(POSITIONS_PROPERTY);
-        // N positions produce N-1 line segments
-        lineSegments = new float[positions.size()-1][];
-        for(int i=0; i<lineSegments.length; i++) {
+        List<List<?>> positions = (List<List<?>>) params.get(POSITIONS_PROPERTY);
+        // N positions produce N-1 line segments.
+        lineSegments = new float[positions.size() - 1][];
+        for (int i = 0; i < lineSegments.length; i++) {
             List<?> startpos = positions.get(i);
-            List<?> endpos = positions.get(i+1);
+            List<?> endpos = positions.get(i + 1);
 
             float[] segment = {asFloat(startpos.get(0)), asFloat(startpos.get(1)),
                     asFloat(endpos.get(0)), asFloat(endpos.get(1))};
@@ -46,7 +47,8 @@ public class WallPathElement extends FieldElement {
         if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
 
         for (float[] segment : this.lineSegments) {
-            Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
+            Body wall = Box2DFactory.createThinWall(
+                    world, segment[0], segment[1], segment[2], segment[3], 0f);
             this.wallBodies.add(wall);
         }
     }
@@ -57,7 +59,9 @@ public class WallPathElement extends FieldElement {
 
     @Override public void draw(IFieldRenderer renderer) {
         for (float[] segment : this.lineSegments) {
-            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
+            renderer.drawLine(
+                    segment[0], segment[1], segment[2], segment[3],
+                    currentColor(DEFAULT_WALL_COLOR));
         }
     }
 }

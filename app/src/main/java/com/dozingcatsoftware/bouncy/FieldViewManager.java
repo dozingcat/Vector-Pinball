@@ -23,12 +23,12 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     Runnable startGameAction;
 
     public void setFieldView(IFieldRenderer view) {
-        if (this.view!=view) {
+        if (this.view != view) {
             this.view = view;
             view.setManager(this);
             if (view instanceof SurfaceView) {
                 canDraw = false;
-                ((SurfaceView)view).getHolder().addCallback(this);
+                ((SurfaceView) view).getHolder().addCallback(this);
             }
             else {
                 canDraw = true;
@@ -54,6 +54,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     public void setField(Field value) {
         field = value;
     }
+
     public Field getField() {
         return field;
     }
@@ -65,6 +66,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     public void setHighQuality(boolean value) {
         highQuality = value;
     }
+
     public boolean isHighQuality() {
         return highQuality;
     }
@@ -109,7 +111,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
             cachedScale = getScale(maxZoom);
             // Center the zoomed view on the ball if available, or the launch position if not.
             float centerX, centerY;
-            if (balls.size()==1) {
+            if (balls.size() == 1) {
                 Ball b = balls.get(0);
                 centerX = b.getPosition().x;
                 centerY = b.getPosition().y;
@@ -134,9 +136,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     }
 
     // world2pixel methods assume cacheScaleAndOffsets has been called previously.
+
     /** Converts an x coordinate from world coordinates to the view's pixel coordinates. */
     public float world2pixelX(float x) {
-        return (x-cachedXOffset) * cachedScale;
+        return (x - cachedXOffset) * cachedScale;
     }
 
     /**
@@ -144,7 +147,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
      * In world coordinates, positive y is up, in pixel coordinates, positive y is down.
      */
     public float world2pixelY(float y) {
-        return cachedHeight - ((y-cachedYOffset) * cachedScale);
+        return cachedHeight - ((y - cachedYOffset) * cachedScale);
     }
 
     // For compatibility with Android 1.6, use reflection for multitouch features.
@@ -169,7 +172,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
                     MotionEvent.class.getField("ACTION_POINTER_INDEX_SHIFT").getInt(null);
             hasMultitouch = true;
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             hasMultitouch = false;
         }
     }
@@ -177,7 +180,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     void launchBallIfNeeded() {
         // Remove "dead" balls and launch if none already in play.
         field.removeDeadBalls();
-        if (field.getBalls().size()==0) field.launchBall();
+        if (field.getBalls().size() == 0) field.launchBall();
     }
 
     /**
@@ -186,41 +189,44 @@ public class FieldViewManager implements SurfaceHolder.Callback {
      */
     public boolean handleTouchEvent(MotionEvent event) {
         int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
-        synchronized(field) {
+        synchronized (field) {
             if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
-                if (startGameAction!=null) {
+                if (startGameAction != null) {
                     startGameAction.run();
                     return true;
                 }
             }
             // activate or deactivate flippers
-            boolean left=false, right=false;
+            boolean left = false, right = false;
             if (this.independentFlippers && this.hasMultitouch) {
                 try {
                     // Determine whether to activate left and/or right flippers,
                     // using reflection for Android 2.2 multitouch APIs.
-                    if (actionType!=MotionEvent.ACTION_UP) {
-                        int npointers = (Integer)getPointerCountMethod.invoke(event);
+                    if (actionType != MotionEvent.ACTION_UP) {
+                        int npointers = (Integer) getPointerCountMethod.invoke(event);
                         // If pointer was lifted (ACTION_POINTER_UP), get its index so we don't
                         // count it as pressed.
                         int liftedPointerIndex = -1;
-                        if (actionType==MOTIONEVENT_ACTION_POINTER_UP) {
-                            liftedPointerIndex = (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >> MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
+                        if (actionType == MOTIONEVENT_ACTION_POINTER_UP) {
+                            liftedPointerIndex =
+                                    (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >>
+                                            MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
                         }
                         float halfwidth = view.getWidth() / 2;
-                        for (int i=0; i<npointers; i++) {
+                        for (int i = 0; i < npointers; i++) {
                             if (i != liftedPointerIndex) {
-                                float touchx = (Float)getXMethod.invoke(event, i);
+                                float touchx = (Float) getXMethod.invoke(event, i);
                                 if (touchx < halfwidth) left = true;
                                 else right = true;
                             }
                         }
                     }
                 }
-                catch(Exception ignored) {}
+                catch (Exception ignored) {
+                }
             }
             else {
-                left = right = !(event.getAction()==MotionEvent.ACTION_UP);
+                left = right = !(event.getAction() == MotionEvent.ACTION_UP);
             }
             if (actionType == MotionEvent.ACTION_DOWN) {
                 launchBallIfNeeded();
@@ -239,14 +245,16 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         return true;
     }
 
-    static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT);
-    static List<Integer> RIGHT_FLIPPER_KEYS = Arrays.asList(KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_DPAD_RIGHT);
-    static List<Integer> ALL_FLIPPER_KEYS =
-            Arrays.asList(KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER);
+    static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(
+            KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT);
+    static List<Integer> RIGHT_FLIPPER_KEYS = Arrays.asList(
+            KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_DPAD_RIGHT);
+    static List<Integer> ALL_FLIPPER_KEYS = Arrays.asList(
+            KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER);
 
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-            synchronized(field) {
+            synchronized (field) {
                 // Don't let a pressed flipper key start a game, but do launch a ball if needed.
                 if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
                     return false;
@@ -261,7 +269,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 
     public boolean handleKeyUp(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP) {
-            synchronized(field) {
+            synchronized (field) {
                 if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
                     return false;
                 }
@@ -304,5 +312,4 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     @Override public void surfaceDestroyed(SurfaceHolder holder) {
         canDraw = false;
     }
-
 }

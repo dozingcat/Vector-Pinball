@@ -59,11 +59,11 @@ public class Field4Delegate extends BaseFieldDelegate {
     }
 
     private void restoreLeftBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-left")).setRetracted(false);
     }
 
     private void restoreRightBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
     }
 
     void clearMultiballStatus() {
@@ -93,22 +93,24 @@ public class Field4Delegate extends BaseFieldDelegate {
         jackpot = baseJackpot;
 
         field.scheduleAction(1000, new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 lockedBallKickers.get(1).setRetracted(true);
                 lockedBallKickers.get(2).setRetracted(true);
                 lockedBallRollovers.get(1).setIgnoreBall(true);
                 lockedBallRollovers.get(1).setVisible(false);
-                if (field.getBalls().size() < 3) field.launchBall();
+                if (field.getBalls().size() < 3) {
+                    field.launchBall();
+                }
             }
         });
         field.scheduleAction(3500, new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 isMultiballStarting = false;
                 lockedBallRollovers.get(0).setIgnoreBall(true);
                 lockedBallRollovers.get(0).setVisible(false);
-                if (field.getBalls().size() < 3) field.launchBall();
+                if (field.getBalls().size() < 3) {
+                    field.launchBall();
+                }
             }
         });
     }
@@ -119,7 +121,7 @@ public class Field4Delegate extends BaseFieldDelegate {
         // Increase multiplier by jackpot percentage. This can actually
         // cause an overflow if the player scores a whole lot of jackpots.
         double multiplier = field.getScoreMultiplier();
-        long newMultiplierPercent = (long) (multiplier * (100+jackpot));
+        long newMultiplierPercent = (long) (multiplier * (100 + jackpot));
         field.setScoreMultiplier(newMultiplierPercent / 100.0);
         jackpot += jackpotIncrease;
         setAllMultiballStatusRolloversActive(false);
@@ -133,14 +135,14 @@ public class Field4Delegate extends BaseFieldDelegate {
                 (WallElement) field.getFieldElementById("MultiballKicker1"),
                 (WallElement) field.getFieldElementById("MultiballKicker2"),
                 (WallElement) field.getFieldElementById("MultiballKicker3")
-                );
+        );
 
         // Locked ball rollovers start hidden and disabled.
         lockedBallRollovers = Arrays.asList(
                 (RolloverGroupElement) field.getFieldElementById("LockedBallRollover1"),
                 (RolloverGroupElement) field.getFieldElementById("LockedBallRollover2"),
                 (RolloverGroupElement) field.getFieldElementById("LockedBallRollover3")
-                );
+        );
         for (RolloverGroupElement rollover : lockedBallRollovers) {
             rollover.setRolloverActiveAtIndex(0, false);
             rollover.setVisible(false);
@@ -152,7 +154,7 @@ public class Field4Delegate extends BaseFieldDelegate {
                 (WallElement) field.getFieldElementById("LockedBallKicker1"),
                 (WallElement) field.getFieldElementById("LockedBallKicker2"),
                 (WallElement) field.getFieldElementById("LockedBallKicker3")
-                );
+        );
         lockedBallKickers.get(1).setRetracted(true);
         lockedBallKickers.get(2).setRetracted(true);
 
@@ -196,7 +198,8 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override
+    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
@@ -212,12 +215,13 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
+    @Override
+    public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         String id = element.getElementId();
-        if (id!=null && id.startsWith("Bumper.")) {
+        if (id != null && id.startsWith("Bumper.")) {
             String suffix = id.substring(7);
             // Increment multiplier.
-            long multiplier = Math.round(field.getScoreMultiplier()*100);
+            long multiplier = Math.round(field.getScoreMultiplier() * 100);
             multiplier += bumperMultiplierIncrease;
             field.setScoreMultiplier(multiplier / 100.0);
             // Unlock next multiball target if all bumpers hit.
@@ -239,7 +243,8 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
+    @Override
+    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
         if (rollovers == lockedBallRollovers.get(0)) {
             field.removeBallWithoutBallLoss(field.getBalls().get(0));
             lockedBallKickers.get(1).setRetracted(false);
@@ -272,7 +277,7 @@ public class Field4Delegate extends BaseFieldDelegate {
     }
 
     @Override public void tick(Field field, long nanos) {
-        if (inMultiball && !isMultiballStarting && field.getBalls().size()<=1) {
+        if (inMultiball && !isMultiballStarting && field.getBalls().size() <= 1) {
             clearMultiballStatus();
         }
     }

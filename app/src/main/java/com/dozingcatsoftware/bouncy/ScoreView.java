@@ -13,10 +13,9 @@ import android.view.View;
 import android.view.WindowManager;
 
 /**
- * This class displays the score and game messages above the game view. When there is no game in progress, it cycles
- * between a "Touch to Start" message, last score, and high scores.
+ * This class displays the score and game messages above the game view. When there is no game in
+ * progress, it cycles between a "Touch to Start" message, last score, and high scores.
  */
-
 public class ScoreView extends View {
 
     Field field;
@@ -52,7 +51,7 @@ public class ScoreView extends View {
         // setTextSize uses absolute pixels, get screen density to scale.
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager windowManager =
-                (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
         textPaint.setTextSize(24 * metrics.density);
 
@@ -66,7 +65,7 @@ public class ScoreView extends View {
         usedBallPaint.setStyle(Paint.Style.STROKE);
         remainingBallPaint.setARGB(255, 224, 224, 224);
         remainingBallPaint.setStyle(Paint.Style.FILL);
-}
+    }
 
     @Override public void onDraw(Canvas c) {
         GameMessage msg = null;
@@ -77,7 +76,7 @@ public class ScoreView extends View {
         int currentBall = 0;
         double multiplier = 0;
         long score = 0;
-        synchronized(field) {
+        synchronized (field) {
             // Show custom message if present.
             msg = field.getGameMessage();
             GameState state = field.getGameState();
@@ -91,8 +90,8 @@ public class ScoreView extends View {
         }
 
         c.drawARGB(255, 8, 8, 8);
-        String displayString = (msg!=null) ? msg.text : null;
-        if (displayString==null) {
+        String displayString = (msg != null) ? msg.text : null;
+        if (displayString == null) {
             // Show score if game is in progress, otherwise cycle between
             // "Touch to start"/previous score/high score.
             if (gameInProgress) {
@@ -100,7 +99,7 @@ public class ScoreView extends View {
             }
             else {
                 long now = currentMillis();
-                if (lastUpdateTime==null) {
+                if (lastUpdateTime == null) {
                     lastUpdateTime = now;
                 }
                 else if (now - lastUpdateTime > gameOverMessageCycleTime) {
@@ -115,9 +114,11 @@ public class ScoreView extends View {
         int height = this.getHeight();
         textPaint.getTextBounds(displayString, 0, displayString.length(), textRect);
         // textRect ends up being too high
-        c.drawText(displayString, width/2 - textRect.width()/2, height/2 + textRect.height()/2,
+        c.drawText(
+                displayString,
+                width / 2 - textRect.width() / 2, height / 2 + textRect.height() / 2,
                 textPaint);
-        if (showFPS && fps>0) {
+        if (showFPS && fps > 0) {
             c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
         }
         if (gameInProgress) {
@@ -127,18 +128,18 @@ public class ScoreView extends View {
             float ballBetweenSpace = ballRadius;
             float ballCenterY = height - (ballOuterMargin + ballRadius);
             float ballRightmostCenterX = width - ballOuterMargin - ballRadius;
-            float distanceBetweenBallCenters = 2*ballRadius + ballBetweenSpace;
+            float distanceBetweenBallCenters = 2 * ballRadius + ballBetweenSpace;
             if (unlimitedBalls) {
                 // Attempt to show an "infinite" series of balls getting progressively smaller.
                 float vanishingBallRadius = ballRadius;
-                for (int i=4; i>=0; i--) {
+                for (int i = 4; i >= 0; i--) {
                     float ballCenterX = ballRightmostCenterX - (i * distanceBetweenBallCenters);
                     c.drawCircle(ballCenterX, ballCenterY, vanishingBallRadius, remainingBallPaint);
                     vanishingBallRadius *= 0.8f;
                 }
             }
             else {
-                for (int i=0; i<totalBalls; i++) {
+                for (int i = 0; i < totalBalls; i++) {
                     float ballCenterX = ballRightmostCenterX - (i * distanceBetweenBallCenters);
                     // "Remove" ball from display when launched.
                     boolean isRemaining = (currentBall + i + (ballInPlay ? 1 : 0) <= totalBalls);
@@ -182,13 +183,14 @@ public class ScoreView extends View {
                 break;
             case HIGH_SCORE_MESSAGE:
                 highScoreIndex++;
-                if (highScoreIndex >= highScores.size() || highScores.get(highScoreIndex)<=0) {
+                if (highScoreIndex >= highScores.size() || highScores.get(highScoreIndex) <= 0) {
                     highScoreIndex = 0;
                     gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
                 }
                 break;
             default:
-                throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
+                throw new IllegalStateException(
+                        "Unknown gameOverMessageIndex: " + gameOverMessageIndex);
         }
     }
 
@@ -208,10 +210,11 @@ public class ScoreView extends View {
                     return "High Score: " + formattedScore;
                 }
                 else {
-                    return "#" + (1+index) + " Score: " + formattedScore;
+                    return "#" + (1 + index) + " Score: " + formattedScore;
                 }
             default:
-                throw new IllegalStateException("Unknown gameOverMessageIndex: " + gameOverMessageIndex);
+                throw new IllegalStateException(
+                        "Unknown gameOverMessageIndex: " + gameOverMessageIndex);
         }
     }
 
@@ -229,12 +232,15 @@ public class ScoreView extends View {
     public void setField(Field value) {
         field = value;
     }
+
     public void setHighScores(List<Long> value) {
         highScores = value;
     }
+
     public void setFPS(double value) {
         fps = value;
     }
+
     public void setShowFPS(boolean value) {
         showFPS = value;
     }
