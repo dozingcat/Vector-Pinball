@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
+import com.dozingcatsoftware.bouncy.util.MathUtils;
 
 /**
  * FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a
@@ -24,7 +25,8 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
  * {
  *     "class": "FlipperElement",
  *     "position": [5.5, 10], // x,y of fixed end of flipper which it rotates around
- *     "length": 2.5, // length of the flipper. Negative if the flipper rotates around its right end.
+ *     "length": 2.5, // length of the flipper. Negative if the flipper rotates around its right
+ *     end.
  *     "minangle": -20, // minimum angle from the horizontal. Negative angles are below horizontal.
  *     "maxangle": 20, // maximum angle from the horizontal.
  *     "upspeed": 7, // rate at which the flipper rotates up when activated (in radians/sec?)
@@ -54,9 +56,10 @@ public class FlipperElement extends FieldElement {
     float minangle, maxangle;
     float cx, cy;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+    @Override
+    public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         @SuppressWarnings("unchecked")
-        List<Object> pos = (List<Object>)params.get(POSITION_PROPERTY);
+        List<Object> pos = (List<Object>) params.get(POSITION_PROPERTY);
 
         this.cx = asFloat(pos.get(0));
         this.cy = asFloat(pos.get(1));
@@ -73,7 +76,8 @@ public class FlipperElement extends FieldElement {
         // The flipper needs to be slightly extended past anchorBody to rotate correctly.
         float ext = (this.flipperLength > 0) ? -0.05f : +0.05f;
         // Width larger than 0.12 slows rotation?
-        this.flipperBody = Box2DFactory.createWall(world, cx+ext, cy-0.12f, cx+flipperLength, cy+0.12f, 0f);
+        this.flipperBody = Box2DFactory.createWall(
+                world, cx + ext, cy - 0.12f, cx + flipperLength, cy + 0.12f, 0f);
         flipperBody.setType(BodyDef.BodyType.DynamicBody);
         flipperBody.setBullet(true);
         flipperBody.getFixtureList().get(0).setDensity(5.0f);
@@ -83,19 +87,20 @@ public class FlipperElement extends FieldElement {
         jointDef.enableLimit = true;
         jointDef.enableMotor = true;
         // counterclockwise rotations are positive, so flip angles for flippers extending left
-        jointDef.lowerAngle = (this.flipperLength>0) ? this.minangle : -this.maxangle;
-        jointDef.upperAngle = (this.flipperLength>0) ? this.maxangle : -this.minangle;
+        jointDef.lowerAngle = (this.flipperLength > 0) ? this.minangle : -this.maxangle;
+        jointDef.upperAngle = (this.flipperLength > 0) ? this.maxangle : -this.minangle;
         jointDef.maxMotorTorque = 1000f;
 
-        this.joint = (RevoluteJoint)world.createJoint(jointDef);
+        this.joint = (RevoluteJoint) world.createJoint(jointDef);
 
         flipperBodySet = Collections.singletonList(flipperBody);
-        this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is first created.
+        this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is
+        // first created.
     }
 
     /** Returns true if the flipper rotates around its right end. */
     boolean isReversed() {
-        return (flipperLength<0);
+        return (flipperLength < 0);
     }
 
     /** Returns true if the flipper should be activated by a left flipper button. */
@@ -127,8 +132,7 @@ public class FlipperElement extends FieldElement {
         return flipperBodySet;
     }
 
-    @Override
-    public boolean shouldCallTick() {
+    @Override public boolean shouldCallTick() {
         return true;
     }
 
@@ -152,35 +156,24 @@ public class FlipperElement extends FieldElement {
     public void setFlipperEngaged(boolean active) {
         // Only adjust speed if state is changing, so we don't accelerate flipper that's been
         // slowed down in tick()
-        if (active!=this.isFlipperEngaged()) {
+        if (active != this.isFlipperEngaged()) {
             float speed = (active) ? upspeed : -downspeed;
             setEffectiveMotorSpeed(speed);
         }
     }
 
-    public float getFlipperLength() {
-        return flipperLength;
-    }
-
-    public RevoluteJoint getJoint() {
-        return joint;
-    }
-
-    public Body getAnchorBody() {
-        return anchorBody;
-    }
-
     @Override public void draw(IFieldRenderer renderer) {
         // Draw single line segment from anchor point.
         Vector2 position = anchorBody.getPosition();
-        float angle = joint.getJointAngle();
         // HACK: angle can briefly get out of range, always draw between min and max.
-        if (angle<jointDef.lowerAngle) angle = jointDef.lowerAngle;
-        if (angle>jointDef.upperAngle) angle = jointDef.upperAngle;
+        float angle = MathUtils.clamp(
+                joint.getJointAngle(), jointDef.lowerAngle, jointDef.upperAngle);
+        if (angle < jointDef.lowerAngle) angle = jointDef.lowerAngle;
+        if (angle > jointDef.upperAngle) angle = jointDef.upperAngle;
         float x1 = position.x;
         float y1 = position.y;
-        float x2 = position.x + flipperLength * (float)Math.cos(angle);
-        float y2 = position.y + flipperLength * (float)Math.sin(angle);
+        float x2 = position.x + flipperLength * (float) Math.cos(angle);
+        float y2 = position.y + flipperLength * (float) Math.sin(angle);
 
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
     }

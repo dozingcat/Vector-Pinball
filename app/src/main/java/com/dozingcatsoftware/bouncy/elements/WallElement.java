@@ -55,13 +55,14 @@ public class WallElement extends FieldElement {
     boolean ignoreBall;
     boolean visible = true;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
-        List<?> pos = (List<?>)params.get(POSITION_PROPERTY);
+    @Override public void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection) {
+        List<?> pos = (List<?>) params.get(POSITION_PROPERTY);
         this.x1 = asFloat(pos.get(0));
         this.y1 = asFloat(pos.get(1));
         this.x2 = asFloat(pos.get(2));
         this.y2 = asFloat(pos.get(3));
-        this.length = (float) Math.hypot(x2-x1, y2-y1);
+        this.length = (float) Math.hypot(x2 - x1, y2 - y1);
         this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
 
         this.kick = asFloat(params.get(KICK_PROPERTY));
@@ -85,18 +86,15 @@ public class WallElement extends FieldElement {
     }
 
     public boolean isRetracted() {
-        return wallBody!=null && !wallBody.isActive();
+        return wallBody != null && !wallBody.isActive();
     }
 
     public void setRetracted(boolean retracted) {
-        if (retracted!=this.isRetracted()) {
+        if (retracted != this.isRetracted()) {
             wallBody.setActive(!retracted);
         }
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
@@ -115,7 +113,7 @@ public class WallElement extends FieldElement {
         // Rotate wall direction 90 degrees for normal, choose direction toward ball.
         float ix = this.y2 - this.y1;
         float iy = this.x1 - this.x2;
-        float mag = (float)Math.hypot(ix, iy);
+        float mag = (float) Math.hypot(ix, iy);
         float scale = this.kick / mag;
         ix *= scale;
         iy *= scale;
@@ -125,7 +123,7 @@ public class WallElement extends FieldElement {
         Vector2 ballpos = ball.getPosition();
         float diffx = ballpos.x - this.x1;
         float diffy = ballpos.y - this.y1;
-        float dotprod = diffx*ix + diffy*iy;
+        float dotprod = diffx * ix + diffy * iy;
         if (dotprod < 0) {
             ix = -ix;
             iy = -iy;
@@ -143,7 +141,7 @@ public class WallElement extends FieldElement {
         }
         else {
             Vector2 impulse = this.impulseForBall(ball);
-            if (impulse!=null) {
+            if (impulse != null) {
                 ball.applyLinearImpulse(impulse);
                 flashForFrames(3);
             }
@@ -153,17 +151,17 @@ public class WallElement extends FieldElement {
     // (x1, y1) is one end of the wall. (x2, y2) is the direction the wall will point,
     // but not necessarily the endpoint because the wall's length will not change.
     public void setStartAndDirection(float x1, float y1, float x2, float y2) {
-        setStartAndAngle(x1, y1, (float)Math.atan2(y2-y1, x2-x1));
+        setStartAndAngle(x1, y1, (float) Math.atan2(y2 - y1, x2 - x1));
     }
 
     public void setStartAndAngle(float x1, float y1, float angle) {
         this.x1 = x1;
         this.y1 = y1;
-        this.x2 = x1 + (float)(this.length * Math.cos(angle));
-        this.y2 = y1 + (float)(this.length * Math.sin(angle));
+        this.x2 = x1 + (float) (this.length * Math.cos(angle));
+        this.y2 = y1 + (float) (this.length * Math.sin(angle));
         // The "origin" is the midpoint of the wall, so we reposition it by calling
         // setTransform with the midpoint.
-        wallBody.setTransform((x1+x2) / 2f, (y1+y2) / 2f, angle);
+        wallBody.setTransform((x1 + x2) / 2f, (y1 + y2) / 2f, angle);
     }
 
     @Override public void draw(IFieldRenderer renderer) {

@@ -34,7 +34,8 @@ public class Color {
             return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue());
         }
         else if (rgb.size() == 4) {
-            return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(),
+            return fromRGB(
+                    rgb.get(0).intValue(), rgb.get(1).intValue(),
                     rgb.get(2).intValue(), rgb.get(3).intValue());
         }
         else {
@@ -58,13 +59,13 @@ public class Color {
 
     @Override public boolean equals(Object obj) {
         if (obj instanceof Color) {
-            Color other = (Color)obj;
-            return (red==other.red && green==other.green && blue==other.blue && alpha==other.alpha);
+            Color o = (Color) obj;
+            return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;
         }
         return false;
     }
 
     @Override public int hashCode() {
-        return (red<<24) | (green<<16) | (blue<<8) | alpha;
+        return (red << 24) | (green << 16) | (blue << 8) | alpha;
     }
 }

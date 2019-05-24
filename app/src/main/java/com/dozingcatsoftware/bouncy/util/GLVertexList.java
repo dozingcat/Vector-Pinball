@@ -30,11 +30,11 @@ public class GLVertexList {
     }
 
     public void addVertex(float x, float y) {
-        if (vertexCoords==null) {
+        if (vertexCoords == null) {
             vertexCoords = new float[10];
         }
-        else if (vertexIndex+1 >= vertexCoords.length) {
-            float[] newArray = new float[2*vertexCoords.length];
+        else if (vertexIndex + 1 >= vertexCoords.length) {
+            float[] newArray = new float[2 * vertexCoords.length];
             System.arraycopy(vertexCoords, 0, newArray, 0, vertexIndex);
             vertexCoords = newArray;
             vertexBuffer = null;
@@ -46,11 +46,11 @@ public class GLVertexList {
     }
 
     public void addColor(float r, float g, float b, float alpha) {
-        if (colorComponents==null) {
+        if (colorComponents == null) {
             colorComponents = new float[20];
         }
-        else if (colorIndex+4 >= colorComponents.length) {
-            float[] newArray = new float[2*colorComponents.length];
+        else if (colorIndex + 4 >= colorComponents.length) {
+            float[] newArray = new float[2 * colorComponents.length];
             System.arraycopy(colorComponents, 0, newArray, 0, colorIndex);
             colorComponents = newArray;
             colorBuffer = null;
@@ -61,20 +61,16 @@ public class GLVertexList {
         colorComponents[colorIndex++] = alpha;
     }
 
-    public void addColor(float r, float g, float b) {
-        addColor(r, g, b, 1.0f);
-    }
-
     public void end() {
         // update buffers, (re)creating if needed
-        if (vertexBuffer==null || vertexBuffer.capacity()<vertexIndex) {
+        if (vertexBuffer == null || vertexBuffer.capacity() < vertexIndex) {
             vertexBuffer = makeFloatBuffer(vertexIndex);
         }
         vertexBuffer.put(vertexCoords, 0, vertexIndex);
         vertexBuffer.position(0);
 
-        if (colorIndex>0) {
-            if (colorBuffer==null || colorBuffer.capacity()<colorIndex) {
+        if (colorIndex > 0) {
+            if (colorBuffer == null || colorBuffer.capacity() < colorIndex) {
                 colorBuffer = makeFloatBuffer(colorIndex);
             }
             colorBuffer.put(colorComponents, 0, colorIndex);
@@ -84,7 +80,7 @@ public class GLVertexList {
 
     public void render(GL10 gl) {
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-        if (colorIndex>4) {
+        if (colorIndex > 4) {
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
         }
         else {
@@ -92,27 +88,16 @@ public class GLVertexList {
         }
 
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
-        if (colorIndex>4) {
+        if (colorIndex > 4) {
             gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
         }
-        else if (colorIndex==4) {
+        else if (colorIndex == 4) {
             // single color
             gl.glColor4f(
                     colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
         }
 
         gl.glDrawArrays(glMode, 0, numVertices);
-    }
-
-    public FloatBuffer getVertexBuffer() {
-        return vertexBuffer;
-    }
-    public FloatBuffer getColorBuffer() {
-        return colorBuffer;
-    }
-
-    public int getVertexCount() {
-        return numVertices;
     }
 
     static FloatBuffer makeFloatBuffer(int size) {
@@ -122,6 +107,4 @@ public class GLVertexList {
         texBuffer.position(0);
         return texBuffer;
     }
-
-
 }

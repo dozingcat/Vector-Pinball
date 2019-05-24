@@ -66,10 +66,10 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         if (sinValues.length != cosValues.length) {
             throw new IllegalArgumentException("Array lengths don't match");
         }
-        for(int i=0; i<sinValues.length; i++) {
-            double angle = 2*Math.PI * i / sinValues.length;
-            sinValues[i] = (float)Math.sin(angle);
-            cosValues[i] = (float)Math.cos(angle);
+        for (int i = 0; i < sinValues.length; i++) {
+            double angle = 2 * Math.PI * i / sinValues.length;
+            sinValues[i] = (float) Math.sin(angle);
+            cosValues[i] = (float) Math.cos(angle);
         }
     }
 
@@ -97,10 +97,10 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         lineVertexList.addVertex(manager.world2pixelX(x1), manager.world2pixelY(y1));
         lineVertexList.addVertex(manager.world2pixelX(x2), manager.world2pixelY(y2));
 
-        float rf = color.red/255f;
-        float gf = color.green/255f;
-        float bf = color.blue/255f;
-        float af = color.alpha/255f;
+        float rf = color.red / 255f;
+        float gf = color.green / 255f;
+        float bf = color.blue / 255f;
+        float af = color.alpha / 255f;
         lineVertexList.addColor(rf, gf, bf, af);
         lineVertexList.addColor(rf, gf, bf, af);
     }
@@ -115,8 +115,8 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
     void drawCircle(float cx, float cy, float radius, Color color, int mode) {
         GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
-        circleVertexList.addColor(color.red/255f, color.green/255f, color.blue/255f,
-                color.alpha/255f);
+        circleVertexList.addColor(color.red / 255f, color.green / 255f, color.blue / 255f,
+                color.alpha / 255f);
 
         float[] sinValues = SIN_VALUES;
         float[] cosValues = COS_VALUES;
@@ -124,9 +124,9 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
             sinValues = HQ_SIN_VALUES;
             cosValues = HQ_COS_VALUES;
         }
-        for(int i=0; i<sinValues.length; i++) {
-            float x = cx + radius*sinValues[i];
-            float y = cy + radius*cosValues[i];
+        for (int i = 0; i < sinValues.length; i++) {
+            float x = cx + radius * sinValues[i];
+            float y = cy + radius * cosValues[i];
             circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
         }
     }
@@ -136,11 +136,11 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
     @Override public void onDrawFrame(GL10 gl) {
         Field field = manager.getField();
-        if (field==null) return;
-        synchronized(field) {
+        if (field == null) return;
+        synchronized (field) {
             startGLElements(gl);
 
-            for(FieldElement element : field.getFieldElementsArray()) {
+            for (FieldElement element : field.getFieldElementsArray()) {
                 element.draw(this);
             }
 
@@ -149,7 +149,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
             endGLElements(gl);
         }
 
-        synchronized(renderLock) {
+        synchronized (renderLock) {
             renderDone = true;
             renderLock.notify();
         }
@@ -161,18 +161,19 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
      * FieldDriver registers 60fps even if the actual drawing is much slower).
      */
     @Override public void doDraw() {
-        synchronized(renderLock) {
+        synchronized (renderLock) {
             renderDone = false;
         }
 
         this.requestRender();
 
-        synchronized(renderLock) {
+        synchronized (renderLock) {
             while (!renderDone) {
                 try {
                     renderLock.wait();
                 }
-                catch(InterruptedException ex) {}
+                catch (InterruptedException ex) {
+                }
             }
         }
     }

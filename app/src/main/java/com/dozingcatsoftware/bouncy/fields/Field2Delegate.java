@@ -13,7 +13,7 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field2Delegate extends BaseFieldDelegate {
 
-    static final double TAU = 2*Math.PI; // pi is wrong.
+    static final double TAU = 2 * Math.PI; // pi is wrong.
 
     static class RotatingGroup {
         String[] elementIDs;
@@ -24,7 +24,9 @@ public class Field2Delegate extends BaseFieldDelegate {
         double currentAngle;
         double angleIncrement;
 
-        public RotatingGroup(String[] ids, double cx, double cy, double radius, double startAngle, double speed) {
+        public RotatingGroup(
+                String[] ids, double cx, double cy, double radius, double startAngle,
+                double speed) {
             this.elementIDs = ids;
             this.centerX = cx;
             this.centerY = cy;
@@ -38,7 +40,8 @@ public class Field2Delegate extends BaseFieldDelegate {
          * Creates a RotatingGroup by computing the distance and angle to center from the first
          * element ID in the ids array.
          */
-        public static RotatingGroup create(Field field, String[] ids, double cx, double cy, double speed) {
+        public static RotatingGroup create(
+                Field field, String[] ids, double cx, double cy, double speed) {
             FieldElement element = field.getFieldElementById(ids[0]);
             Body body = element.getBodies().get(0);
             Vector2 position = body.getPosition();
@@ -48,17 +51,17 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
 
         public void applyRotation(Field field, double dt) {
-            currentAngle += dt*rotationSpeed;
-            if (currentAngle>TAU) currentAngle -= TAU;
-            if (currentAngle<0) currentAngle += TAU;
-            for(int i=0; i<elementIDs.length; i++) {
-                double angle = currentAngle + angleIncrement*i;
+            currentAngle += dt * rotationSpeed;
+            if (currentAngle > TAU) currentAngle -= TAU;
+            if (currentAngle < 0) currentAngle += TAU;
+            for (int i = 0; i < elementIDs.length; i++) {
+                double angle = currentAngle + angleIncrement * i;
 
                 FieldElement element = field.getFieldElementById(elementIDs[i]);
                 Body body = element.getBodies().get(0);
-                double x = centerX + radius*Math.cos(angle);
-                double y = centerY + radius*Math.sin(angle);
-                body.setTransform((float)x, (float)y, body.getAngle());
+                double x = centerX + radius * Math.cos(angle);
+                double y = centerY + radius * Math.sin(angle);
+                body.setTransform((float) x, (float) y, body.getAngle());
             }
         }
 
@@ -75,10 +78,10 @@ public class Field2Delegate extends BaseFieldDelegate {
 
     void setupRotatingGroups(Field field) {
         // Read rotation params from variables defined in the field.
-        float b1Speed = ((Number)field.getValueWithKey("RotatingBumper1Speed")).floatValue();
-        float b2Speed = ((Number)field.getValueWithKey("RotatingBumper2Speed")).floatValue();
-        float b2cx = ((Number)field.getValueWithKey("RotatingBumper2CenterX")).floatValue();
-        float b2cy = ((Number)field.getValueWithKey("RotatingBumper2CenterY")).floatValue();
+        float b1Speed = ((Number) field.getValueWithKey("RotatingBumper1Speed")).floatValue();
+        float b2Speed = ((Number) field.getValueWithKey("RotatingBumper2Speed")).floatValue();
+        float b2cx = ((Number) field.getValueWithKey("RotatingBumper2CenterX")).floatValue();
+        float b2cy = ((Number) field.getValueWithKey("RotatingBumper2CenterY")).floatValue();
         String[] group1Ids = {
                 "RotatingBumper1A", "RotatingBumper1B", "RotatingBumper1C", "RotatingBumper1D"
         };
@@ -89,24 +92,23 @@ public class Field2Delegate extends BaseFieldDelegate {
         };
     }
 
-    @Override
-    public void tick(Field field, long nanos) {
-        if (rotatingGroups==null) {
+    @Override public void tick(Field field, long nanos) {
+        if (rotatingGroups == null) {
             setupRotatingGroups(field);
         }
 
-        double seconds = nanos/1e9;
-        for(int i=0; i<rotatingGroups.length; i++) {
+        double seconds = nanos / 1e9;
+        for (int i = 0; i < rotatingGroups.length; i++) {
             rotatingGroups[i].applyRotation(field, seconds);
         }
     }
 
     private void restoreLeftBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-left")).setRetracted(false);
     }
 
     private void restoreRightBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
     }
 
     void startMultiball(final Field field) {
@@ -117,33 +119,38 @@ public class Field2Delegate extends BaseFieldDelegate {
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {
-                if (field.getBalls().size()<3) field.launchBall();
+                if (field.getBalls().size() < 3) field.launchBall();
             }
         };
         field.scheduleAction(1000, launchBall);
         field.scheduleAction(3500, launchBall);
     }
 
-    /** Always return true so the rotating bumpers animate smoothly */
+    /**
+     * Always return true so the rotating bumpers animate smoothly
+     */
     @Override public boolean isFieldActive(Field field) {
         return true;
     }
 
-    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+    @Override
+    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
         // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
-        field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+        field.showGameMessage(((int) field.getGameState().getScoreMultiplier()) + "x Multiplier",
+                1500);
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
+    @Override
+    public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         // When center red bumper is hit, start multiball if all center rollovers are lit,
         // otherwise retract left barrier.
         String elementID = element.getElementId();
         if ("CenterBumper1".equals(elementID)) {
-            WallElement barrier = (WallElement)field.getFieldElementById("LeftTubeBarrier");
+            WallElement barrier = (WallElement) field.getFieldElementById("LeftTubeBarrier");
             RolloverGroupElement multiballRollovers =
-                    (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
+                    (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
 
             if (multiballRollovers.allRolloversActive()) {
                 barrier.setRetracted(false);
@@ -152,7 +159,7 @@ public class Field2Delegate extends BaseFieldDelegate {
             }
             else {
                 // don't retract during multiball
-                if (field.getBalls().size()==1) {
+                if (field.getBalls().size() == 1) {
                     barrier.setRetracted(true);
                 }
             }
@@ -161,7 +168,8 @@ public class Field2Delegate extends BaseFieldDelegate {
 
     @Override
     public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
-        // activate ball saver for left and right groups, "increment" multiball rollover for left/right/center column
+        // activate ball saver for left and right groups, "increment" multiball rollover for
+        // left/right/center column
         int startRolloverIndex = -1;
         String id = targetGroup.getElementId();
         if ("DropTargetLeft".equals(id)) {
@@ -179,8 +187,9 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
 
         // activate next rollover for appropriate column if possible
-        if (startRolloverIndex>=0) {
-            RolloverGroupElement multiballRollovers = (RolloverGroupElement)field.getFieldElementById("ExtraBallRollovers");
+        if (startRolloverIndex >= 0) {
+            RolloverGroupElement multiballRollovers =
+                    (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
             int numRollovers = multiballRollovers.numberOfRollovers();
             while (startRolloverIndex < numRollovers) {
                 if (!multiballRollovers.isRolloverActiveAtIndex(startRolloverIndex)) {
@@ -199,9 +208,10 @@ public class Field2Delegate extends BaseFieldDelegate {
 
     }
 
-    // support for enabling launch barrier after ball passes by it and hits sensor, and disabling for new ball or new game
+    // support for enabling launch barrier after ball passes by it and hits sensor, and disabling
+    // for new ball or new game
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
@@ -221,7 +231,8 @@ public class Field2Delegate extends BaseFieldDelegate {
                 field.scheduleAction(1000, new Runnable() {
                     @Override
                     public void run() {
-                        WallElement barrier = (WallElement)field.getFieldElementById("LeftTubeBarrier");
+                        WallElement barrier = (WallElement) field.getFieldElementById(
+                                "LeftTubeBarrier");
                         barrier.setRetracted(false);
                     }
                 });
@@ -229,13 +240,11 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void gameStarted(Field field) {
+    @Override public void gameStarted(Field field) {
         setLaunchBarrierEnabled(field, false);
     }
 
-    @Override
-    public void ballLost(Field field) {
+    @Override public void ballLost(Field field) {
         setLaunchBarrierEnabled(field, false);
     }
 }

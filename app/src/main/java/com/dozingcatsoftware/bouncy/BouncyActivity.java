@@ -24,7 +24,6 @@ import android.widget.CheckBox;
 
 public class BouncyActivity extends Activity {
 
-    // Using libgdx 1.4.1 with Box2D extension.
     static {
         Box2D.init();
     }
@@ -42,8 +41,7 @@ public class BouncyActivity extends Activity {
     Handler handler = new Handler();
 
     Runnable callTick = new Runnable() {
-        @Override
-        public void run() {tick();}
+        @Override public void run() {tick();}
     };
 
     Field field = new Field();
@@ -73,7 +71,7 @@ public class BouncyActivity extends Activity {
         super.onCreate(savedInstanceState);
         String arch = System.getProperty("os.arch");
         Log.i(TAG, "App started, os.arch=" + arch);
-        
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
@@ -82,14 +80,15 @@ public class BouncyActivity extends Activity {
         field.resetForLevel(this, level);
         field.setAudioPlayer(new VPSoundpool.Player());
 
-        canvasFieldView = (CanvasFieldView)findViewById(R.id.canvasFieldView);
-        glFieldView = (GLFieldView)findViewById(R.id.glFieldView);
+        canvasFieldView = (CanvasFieldView) findViewById(R.id.canvasFieldView);
+        glFieldView = (GLFieldView) findViewById(R.id.glFieldView);
 
         fieldViewManager.setField(field);
-        fieldViewManager.setStartGameAction(new Runnable() {@Override
-            public void run() {doStartGame(null);}});
+        fieldViewManager.setStartGameAction(new Runnable() {
+            @Override public void run() {doStartGame(null);}
+        });
 
-        scoreView = (ScoreView)findViewById(R.id.scoreView);
+        scoreView = (ScoreView) findViewById(R.id.scoreView);
         scoreView.setField(field);
 
         fieldDriver.setFieldViewManager(fieldViewManager);
@@ -99,9 +98,9 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
-        switchTableButton = (Button)findViewById(R.id.switchTableButton);
-        endGameButton = (Button)findViewById(R.id.endGameButton);
-        unlimitedBallsToggle = (CheckBox)findViewById(R.id.unlimitedBallsToggle);
+        switchTableButton = (Button) findViewById(R.id.switchTableButton);
+        endGameButton = (Button) findViewById(R.id.endGameButton);
+        unlimitedBallsToggle = (CheckBox) findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -117,8 +116,7 @@ public class BouncyActivity extends Activity {
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
         (new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
+            @Override protected Void doInBackground(Void... params) {
                 VPSoundpool.loadSounds();
                 return null;
             }
@@ -134,7 +132,8 @@ public class BouncyActivity extends Activity {
             Method setUiMethod = View.class.getMethod("setSystemUiVisibility", int.class);
             setUiMethod.invoke(scoreView, 1);
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) {
+        }
     }
 
     @Override public void onPause() {
@@ -152,7 +151,8 @@ public class BouncyActivity extends Activity {
             // If game is in progress, we want to return to the paused menu rather than immediately
             // resuming. We need to draw the current field, which currently doesn't work reliably
             // for OpenGL views. For now the game will resume immediately when using OpenGL.
-            if (field.getGameState().isGameInProgress() && glFieldView.getVisibility()==View.GONE) {
+            if (field.getGameState().isGameInProgress() &&
+                    glFieldView.getVisibility() == View.GONE) {
                 fieldDriver.drawField();
                 showPausedButtons();
             }
@@ -165,7 +165,7 @@ public class BouncyActivity extends Activity {
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         // When a game is in progress, pause rather than exit when the back button is pressed.
         // This prevents accidentally quitting the game.
-        if (keyCode==KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
                 pauseGame();
                 showPausedButtons();
@@ -215,7 +215,7 @@ public class BouncyActivity extends Activity {
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        switch(requestCode) {
+        switch (requestCode) {
             case ACTIVITY_PREFERENCES:
                 updateFromPreferences();
                 break;
@@ -242,14 +242,14 @@ public class BouncyActivity extends Activity {
         boolean highQuality = prefs.getBoolean("highQuality", false);
         boolean previousHighQuality = fieldViewManager.isHighQuality();
         fieldViewManager.setHighQuality(highQuality);
-        if (previousHighQuality!=fieldViewManager.isHighQuality()) {
+        if (previousHighQuality != fieldViewManager.isHighQuality()) {
             fieldDriver.resetFrameRate();
         }
         scoreView.setHighQuality(highQuality);
 
         boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
         if (useOpenGL) {
-            if (glFieldView.getVisibility()!=View.VISIBLE) {
+            if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldView(glFieldView);
@@ -257,7 +257,7 @@ public class BouncyActivity extends Activity {
             }
         }
         else {
-            if (canvasFieldView.getVisibility()!=View.VISIBLE) {
+            if (canvasFieldView.getVisibility() != View.VISIBLE) {
                 glFieldView.setVisibility(View.GONE);
                 canvasFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldView(canvasFieldView);
@@ -286,8 +286,8 @@ public class BouncyActivity extends Activity {
      */
     void updateHighScoreAndButtonPanel() {
         // We only need to check once when the game is over, before the button panel is visible.
-        if (buttonPanel.getVisibility()==View.VISIBLE) return;
-        synchronized(field) {
+        if (buttonPanel.getVisibility() == View.VISIBLE) return;
+        synchronized (field) {
             GameState state = field.getGameState();
             if (!field.getGameState().isGameInProgress()) {
                 // game just ended, show button panel and set end game timestamp
@@ -302,7 +302,7 @@ public class BouncyActivity extends Activity {
                     long score = field.getGameState().getScore();
                     // Add to high scores list if the score beats the lowest existing high score,
                     // or if all the high score slots aren't taken.
-                    if (score > highScores.get(this.highScores.size()-1) ||
+                    if (score > highScores.get(this.highScores.size() - 1) ||
                             highScores.size() < MAX_NUM_HIGH_SCORES) {
                         this.updateHighScoreForCurrentLevel(score);
                     }
@@ -346,7 +346,7 @@ public class BouncyActivity extends Activity {
     void writeHighScoresToPreferences(int level, List<Long> scores) {
         StringBuilder scoresAsString = new StringBuilder();
         scoresAsString.append(scores.get(0));
-        for (int i=1; i<scores.size(); i++) {
+        for (int i = 1; i < scores.size(); i++) {
             scoresAsString.append(",").append(scores.get(i));
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -380,7 +380,7 @@ public class BouncyActivity extends Activity {
     int getInitialLevel() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         int startLevel = prefs.getInt(INITIAL_LEVEL_PREFS_KEY, 1);
-        if (startLevel<1 || startLevel>FieldLayout.numberOfLevels()) startLevel = 1;
+        if (startLevel < 1 || startLevel > FieldLayout.numberOfLevels()) startLevel = 1;
         return startLevel;
     }
 
@@ -446,8 +446,8 @@ public class BouncyActivity extends Activity {
     }
 
     public void doSwitchTable(View view) {
-        level = (level==FieldLayout.numberOfLevels()) ? 1 : level+1;
-        synchronized(field) {
+        level = (level == FieldLayout.numberOfLevels()) ? 1 : level + 1;
+        synchronized (field) {
             field.resetForLevel(this, level);
         }
         this.setInitialLevel(level);

@@ -20,73 +20,73 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 public class Field3Delegate extends BaseFieldDelegate {
 
     static Color[] TEMPERATURE_COLORS = {
-        // Blue to cyan in steps of 16.
-        Color.fromRGB(0, 0, 255),
-        Color.fromRGB(0, 16, 255),
-        Color.fromRGB(0, 32, 255),
-        Color.fromRGB(0, 48, 255),
-        Color.fromRGB(0, 64, 255),
-        Color.fromRGB(0, 80, 255),
-        Color.fromRGB(0, 96, 255),
-        Color.fromRGB(0, 112, 255),
-        Color.fromRGB(0, 128, 255),
-        Color.fromRGB(0, 144, 255),
-        Color.fromRGB(0, 160, 255),
-        Color.fromRGB(0, 176, 255),
-        Color.fromRGB(0, 192, 255),
-        Color.fromRGB(0, 208, 255),
-        Color.fromRGB(0, 224, 255),
-        Color.fromRGB(0, 240, 255),
-        // Cyan to green in steps of 32.
-        Color.fromRGB(0, 255, 240),
-        Color.fromRGB(0, 255, 208),
-        Color.fromRGB(0, 255, 176),
-        Color.fromRGB(0, 255, 144),
-        Color.fromRGB(0, 255, 112),
-        Color.fromRGB(0, 255, 80),
-        Color.fromRGB(0, 255, 48),
-        Color.fromRGB(0, 255, 16),
-        // Green to yellow in steps of 32.
-        Color.fromRGB(16, 255, 0),
-        Color.fromRGB(48, 255, 0),
-        Color.fromRGB(80, 255, 0),
-        Color.fromRGB(112, 255, 0),
-        Color.fromRGB(144, 255, 0),
-        Color.fromRGB(176, 255, 0),
-        Color.fromRGB(208, 255, 0),
-        Color.fromRGB(240, 255, 0),
-        // Yellow to red in steps of 12.
-        Color.fromRGB(255, 240, 0),
-        Color.fromRGB(255, 228, 0),
-        Color.fromRGB(255, 216, 0),
-        Color.fromRGB(255, 204, 0),
-        Color.fromRGB(255, 192, 0),
-        Color.fromRGB(255, 180, 0),
-        Color.fromRGB(255, 168, 0),
-        Color.fromRGB(255, 156, 0),
-        Color.fromRGB(255, 144, 0),
-        Color.fromRGB(255, 132, 0),
-        Color.fromRGB(255, 120, 0),
-        Color.fromRGB(255, 108, 0),
-        Color.fromRGB(255, 96, 0),
-        Color.fromRGB(255, 84, 0),
-        Color.fromRGB(255, 72, 0),
-        Color.fromRGB(255, 60, 0),
-        Color.fromRGB(255, 48, 0),
-        Color.fromRGB(255, 36, 0),
-        Color.fromRGB(255, 24, 0),
-        Color.fromRGB(255, 12, 0),
-        Color.fromRGB(255, 0, 0),
+            // Blue to cyan in steps of 16.
+            Color.fromRGB(0, 0, 255),
+            Color.fromRGB(0, 16, 255),
+            Color.fromRGB(0, 32, 255),
+            Color.fromRGB(0, 48, 255),
+            Color.fromRGB(0, 64, 255),
+            Color.fromRGB(0, 80, 255),
+            Color.fromRGB(0, 96, 255),
+            Color.fromRGB(0, 112, 255),
+            Color.fromRGB(0, 128, 255),
+            Color.fromRGB(0, 144, 255),
+            Color.fromRGB(0, 160, 255),
+            Color.fromRGB(0, 176, 255),
+            Color.fromRGB(0, 192, 255),
+            Color.fromRGB(0, 208, 255),
+            Color.fromRGB(0, 224, 255),
+            Color.fromRGB(0, 240, 255),
+            // Cyan to green in steps of 32.
+            Color.fromRGB(0, 255, 240),
+            Color.fromRGB(0, 255, 208),
+            Color.fromRGB(0, 255, 176),
+            Color.fromRGB(0, 255, 144),
+            Color.fromRGB(0, 255, 112),
+            Color.fromRGB(0, 255, 80),
+            Color.fromRGB(0, 255, 48),
+            Color.fromRGB(0, 255, 16),
+            // Green to yellow in steps of 32.
+            Color.fromRGB(16, 255, 0),
+            Color.fromRGB(48, 255, 0),
+            Color.fromRGB(80, 255, 0),
+            Color.fromRGB(112, 255, 0),
+            Color.fromRGB(144, 255, 0),
+            Color.fromRGB(176, 255, 0),
+            Color.fromRGB(208, 255, 0),
+            Color.fromRGB(240, 255, 0),
+            // Yellow to red in steps of 12.
+            Color.fromRGB(255, 240, 0),
+            Color.fromRGB(255, 228, 0),
+            Color.fromRGB(255, 216, 0),
+            Color.fromRGB(255, 204, 0),
+            Color.fromRGB(255, 192, 0),
+            Color.fromRGB(255, 180, 0),
+            Color.fromRGB(255, 168, 0),
+            Color.fromRGB(255, 156, 0),
+            Color.fromRGB(255, 144, 0),
+            Color.fromRGB(255, 132, 0),
+            Color.fromRGB(255, 120, 0),
+            Color.fromRGB(255, 108, 0),
+            Color.fromRGB(255, 96, 0),
+            Color.fromRGB(255, 84, 0),
+            Color.fromRGB(255, 72, 0),
+            Color.fromRGB(255, 60, 0),
+            Color.fromRGB(255, 48, 0),
+            Color.fromRGB(255, 36, 0),
+            Color.fromRGB(255, 24, 0),
+            Color.fromRGB(255, 12, 0),
+            Color.fromRGB(255, 0, 0),
     };
 
     static Color colorForTemperatureRatio(double ratio) {
         int len = TEMPERATURE_COLORS.length;
         if (ratio <= 0) return TEMPERATURE_COLORS[0];
-        if (ratio >= 1) return TEMPERATURE_COLORS[len-1];
-        return TEMPERATURE_COLORS[(int) Math.round((len-1) * ratio)];
+        if (ratio >= 1) return TEMPERATURE_COLORS[len - 1];
+        return TEMPERATURE_COLORS[(int) Math.round((len - 1) * ratio)];
     }
 
-    static enum MultiballStatus {PENDING, ACTIVE, INACTIVE};
+    enum MultiballStatus {PENDING, ACTIVE, INACTIVE}
 
     static Random RAND = new Random();
 
@@ -148,11 +148,11 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     private void restoreLeftBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-left")).setRetracted(false);
     }
 
     private void restoreRightBallSaver(Field field) {
-        ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+        ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
     }
 
     @Override
@@ -160,11 +160,11 @@ public class Field3Delegate extends BaseFieldDelegate {
         String id = rolloverGroup.getElementId();
         if ("LeftRampRollover".equals(id) || "RightRampRollover".equals(id)) {
             startBumperBonus();
-            if (multiballStatus==MultiballStatus.INACTIVE && isMultiballRolloverActive(field)) {
+            if (multiballStatus == MultiballStatus.INACTIVE && isMultiballRolloverActive(field)) {
                 startMultiball(field);
             }
             // Double score if already in multiball.
-            if (multiballStatus==MultiballStatus.ACTIVE) {
+            if (multiballStatus == MultiballStatus.ACTIVE) {
                 field.addScore(rolloverGroup.getScore());
             }
         }
@@ -172,7 +172,8 @@ public class Field3Delegate extends BaseFieldDelegate {
             // Rollover groups increment field multiplier when all rollovers are activated.
             rolloverGroup.setAllRolloversActivated(false);
             field.getGameState().incrementScoreMultiplier();
-            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+            field.showGameMessage(((int) field.getGameState().getScoreMultiplier()) + "x " +
+                    "Multiplier", 1500);
         }
     }
 
@@ -194,7 +195,8 @@ public class Field3Delegate extends BaseFieldDelegate {
                 bumperBonusDurationNanos += bumperBonusDurationIncrement;
                 ++lowerTargetGroupCompleted;
                 double ratio = ((double) lowerTargetGroupCompleted) / maxLowerTargetGroupCompleted;
-                field.getFieldElementById("LowerTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
+                field.getFieldElementById("LowerTargetIndicator")
+                        .setNewColor(colorForTemperatureRatio(ratio));
                 checkForEnableMultiball(field);
             }
         }
@@ -203,22 +205,23 @@ public class Field3Delegate extends BaseFieldDelegate {
             if (upperTargetGroupCompleted < maxUpperTargetGroupCompleted) {
                 bumperBonusMultiplier += bumperBonusMultiplierIncrement;
                 ++upperTargetGroupCompleted;
-                double ratio = ((double)upperTargetGroupCompleted) / maxUpperTargetGroupCompleted;
-                field.getFieldElementById("UpperTargetIndicator").setNewColor(colorForTemperatureRatio(ratio));
+                double ratio = ((double) upperTargetGroupCompleted) / maxUpperTargetGroupCompleted;
+                field.getFieldElementById("UpperTargetIndicator")
+                        .setNewColor(colorForTemperatureRatio(ratio));
                 checkForEnableMultiball(field);
             }
         }
     }
 
-    @Override
-    public void tick(Field field, long nanos) {
+    @Override public void tick(Field field, long nanos) {
         if (bumperBonusActive) {
             bumperBonusNanosElapsed += nanos;
             if (bumperBonusNanosElapsed >= bumperBonusDurationNanos) {
                 endBumperBonus();
             }
             else {
-                double fractionElapsed = ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
+                double fractionElapsed =
+                        ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
                 Color color = colorForTemperatureRatio(1 - fractionElapsed);
                 for (FieldElement bumper : bumperElements) {
                     bumper.setNewColor(color);
@@ -249,12 +252,14 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
+    @Override
+    public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         // Add bumper bonus if active.
         if (element instanceof BumperElement) {
             double extraEnergy = 0;
             if (bumperBonusActive) {
-                double fractionRemaining = 1 - (((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos);
+                double fractionRemaining =
+                        1 - (((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos);
                 extraEnergy = fractionRemaining * bumperBonusMultiplier;
                 // Round score to nearest multiple of 10.
                 double bonusScore = element.getScore() * extraEnergy;
@@ -262,7 +267,8 @@ public class Field3Delegate extends BaseFieldDelegate {
             }
             bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
             double ratio = (bumperEnergy) / maxBumperEnergy;
-            field.getFieldElementById("BumperIndicator").setNewColor(colorForTemperatureRatio(ratio));
+            field.getFieldElementById("BumperIndicator")
+                    .setNewColor(colorForTemperatureRatio(ratio));
             checkForEnableMultiball(field);
         }
     }
@@ -270,7 +276,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     // Support for enabling launch barrier after ball passes by it and hits sensor,
     // and disabling for new ball or new game.
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
@@ -312,11 +318,14 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     boolean isMultiballRolloverActive(Field field) {
-        return multiballStatus==MultiballStatus.INACTIVE &&
-                ((RolloverGroupElement) field.getFieldElementById("BumperIndicator")).isRolloverActiveAtIndex(0);
+        return multiballStatus == MultiballStatus.INACTIVE &&
+                ((RolloverGroupElement) field.getFieldElementById("BumperIndicator"))
+                        .isRolloverActiveAtIndex(0);
     }
+
     void setMultiballRolloverActive(Field field, boolean ready) {
-        ((RolloverGroupElement) field.getFieldElementById("BumperIndicator")).setAllRolloversActivated(ready);
+        ((RolloverGroupElement) field.getFieldElementById("BumperIndicator"))
+                .setAllRolloversActivated(ready);
     }
 
     void startMultiball(final Field field) {
@@ -328,7 +337,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         Runnable launchBall = new Runnable() {
             @Override
             public void run() {
-                if (field.getBalls().size()<3) field.launchBall();
+                if (field.getBalls().size() < 3) field.launchBall();
                 if (multiballStatus != MultiballStatus.ACTIVE) {
                     multiballStatus = MultiballStatus.ACTIVE;
                     initializeMultiballFlashers();
@@ -347,7 +356,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         // Between a 2 and 5 second cycle. (0.2 to 0.5 delta per second).
         for (int i = 0; i < 3; i++) {
             multiballFlashValues[i] = 0;
-            multiballFlashIncrements[i] = 0.2 + 0.3*RAND.nextDouble();
+            multiballFlashIncrements[i] = 0.2 + 0.3 * RAND.nextDouble();
         }
     }
 

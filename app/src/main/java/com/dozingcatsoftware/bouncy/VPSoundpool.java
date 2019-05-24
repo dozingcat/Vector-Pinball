@@ -40,9 +40,6 @@ public class VPSoundpool {
 
     static int ID_ROLLOVER 		= 200;
 
-    static int ID_ANDROIDPAD 	= 300;
-    static int ID_DRUMBASSLOOP 	= 301;
-
     private static final String LOG_TAG = "VPSoundPool";
 
     public static void initSounds(Context theContext) {
@@ -64,18 +61,29 @@ public class VPSoundpool {
         mSoundPoolMap.clear();
         AssetManager assets = mContext.getAssets();
         try {
-            mSoundPoolMap.put(ID_DING_START+0, mSoundPool.load(assets.openFd("audio/bumper/dinga1.ogg"), 1));
-            mSoundPoolMap.put(ID_DING_START+1, mSoundPool.load(assets.openFd("audio/bumper/dingc1.ogg"), 1));
-            mSoundPoolMap.put(ID_DING_START+2, mSoundPool.load(assets.openFd("audio/bumper/dingc2.ogg"), 1));
-            mSoundPoolMap.put(ID_DING_START+3, mSoundPool.load(assets.openFd("audio/bumper/dingd1.ogg"), 1));
-            mSoundPoolMap.put(ID_DING_START+4, mSoundPool.load(assets.openFd("audio/bumper/dinge1.ogg"), 1));
-            mSoundPoolMap.put(ID_DING_START+5, mSoundPool.load(assets.openFd("audio/bumper/dingg1.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+0,
+                    mSoundPool.load(assets.openFd("audio/bumper/dinga1.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+1,
+                    mSoundPool.load(assets.openFd("audio/bumper/dingc1.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+2,
+                    mSoundPool.load(assets.openFd("audio/bumper/dingc2.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+3,
+                    mSoundPool.load(assets.openFd("audio/bumper/dingd1.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+4,
+                    mSoundPool.load(assets.openFd("audio/bumper/dinge1.ogg"), 1));
+            mSoundPoolMap.put(ID_DING_START+5,
+                    mSoundPool.load(assets.openFd("audio/bumper/dingg1.ogg"), 1));
 
-            mSoundPoolMap.put(ID_LAUNCH, mSoundPool.load(assets.openFd("audio/misc/andBounce2.ogg"), 1));
-            mSoundPoolMap.put(ID_FLIPPER, mSoundPool.load(assets.openFd("audio/misc/flipper1.ogg"), 1));
-            mSoundPoolMap.put(ID_MESSAGE, mSoundPool.load(assets.openFd("audio/misc/message2.ogg"), 1));
-            mSoundPoolMap.put(ID_START, mSoundPool.load(assets.openFd("audio/misc/startup1.ogg"), 1));
-            mSoundPoolMap.put(ID_ROLLOVER, mSoundPool.load(assets.openFd("audio/misc/rolloverE.ogg"), 1));
+            mSoundPoolMap.put(ID_LAUNCH,
+                    mSoundPool.load(assets.openFd("audio/misc/andBounce2.ogg"), 1));
+            mSoundPoolMap.put(ID_FLIPPER,
+                    mSoundPool.load(assets.openFd("audio/misc/flipper1.ogg"), 1));
+            mSoundPoolMap.put(ID_MESSAGE,
+                    mSoundPool.load(assets.openFd("audio/misc/message2.ogg"), 1));
+            mSoundPoolMap.put(ID_START,
+                    mSoundPool.load(assets.openFd("audio/misc/startup1.ogg"), 1));
+            mSoundPoolMap.put(ID_ROLLOVER,
+                    mSoundPool.load(assets.openFd("audio/misc/rolloverE.ogg"), 1));
 
             drumbass = MediaPlayer.create(mContext, R.raw.drumbassloop);
             androidpad = MediaPlayer.create(mContext, R.raw.androidpad);

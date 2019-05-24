@@ -43,7 +43,8 @@ public class Box2DFactory {
      * Creates a wall by constructing a rectangle whose corners are (xmin,ymin) and (xmax,ymax),
      * and rotating the box counterclockwise through the given angle. Restitution defaults to 0.
      */
-    public static Body createWall(World world, float xmin, float ymin, float xmax, float ymax, float angle) {
+    public static Body createWall(
+            World world, float xmin, float ymin, float xmax, float ymax, float angle) {
         return createWall(world, xmin, ymin, xmax, ymax, angle, 0f);
     }
 
@@ -51,7 +52,8 @@ public class Box2DFactory {
      * Creates a wall by constructing a rectangle whose corners are (xmin,ymin) and (xmax,ymax),
      * and rotating the box counterclockwise through the given angle, with specified restitution.
      */
-    public static Body createWall(World world, float xmin, float ymin, float xmax, float ymax,
+    public static Body createWall(
+            World world, float xmin, float ymin, float xmax, float ymax,
             float angle, float restitution) {
         float cx = (xmin + xmax) / 2;
         float cy = (ymin + ymax) / 2;
@@ -65,7 +67,7 @@ public class Box2DFactory {
         FixtureDef fdef = new FixtureDef();
         fdef.shape = wallshape;
         fdef.density = 1.0f;
-        if (restitution>0) fdef.restitution = restitution;
+        if (restitution > 0) fdef.restitution = restitution;
 
         BodyDef bd = new BodyDef();
         bd.position.set(cx, cy);
@@ -77,13 +79,15 @@ public class Box2DFactory {
     }
 
     /** Creates a segment-like thin wall with 0.05 thickness going from (x1,y1) to (x2,y2) */
-    public static Body createThinWall(World world, float x1, float y1, float x2, float y2, float restitution) {
+    public static Body createThinWall(
+            World world, float x1, float y1, float x2, float y2, float restitution) {
         // Determine center point and rotation angle for createWall.
         float cx = (x1 + x2) / 2;
         float cy = (y1 + y2) / 2;
-        float angle = (float)Math.atan2(y2-y1, x2-x1);
-        float mag = (float)Math.hypot(y2-y1, x2-x1);
-        return createWall(world, cx - mag/2, cy-0.05f, cx + mag/2, cy+0.05f, angle, restitution);
+        float angle = (float) Math.atan2(y2 - y1, x2 - x1);
+        float mag = (float) Math.hypot(y2 - y1, x2 - x1);
+        return createWall(
+                world, cx - mag / 2, cy - 0.05f, cx + mag / 2, cy + 0.05f, angle, restitution);
     }
 
 }
