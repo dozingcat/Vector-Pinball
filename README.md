@@ -6,7 +6,7 @@ It is released under version 3 of the GPL; see [COPYING](COPYING.txt) for the li
 The graphics are deliberately simple; currently everything is drawn with lines and circles.
 The focus is on gameplay and accurate physics.
 It uses the libgdx Java wrapper for the Box2D physics engine.
-Thanks to Peter Drescher for the sound effects; see [his article on creating them](http://broadcast.oreilly.com/2011/06/fmod-for-android.html).
+Thanks to Peter Drescher for the sound effects; see [his article on creating them](https://www.twittering.com/webarchive_articles/FMOD%20for%20Android%20-%20O'Reilly%20Broadcast.html).
 
 The GitHub project page is: [github.com/dozingcat/Vector-Pinball/](https://github.com/dozingcat/Vector-Pinball/).
 See [devnotes.txt](devnotes.txt) for an overview of the code layout.
