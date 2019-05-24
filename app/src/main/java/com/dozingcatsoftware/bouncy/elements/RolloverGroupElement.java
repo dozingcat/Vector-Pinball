@@ -14,6 +14,7 @@ import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
+
 /**
  * This class represents a collection of rollover elements. They are activated (and optionally
  * deactivated) when a ball passes over them. Individual rollovers in the group are represented by
@@ -57,27 +58,32 @@ public class RolloverGroupElement extends FieldElement {
     boolean isVisible = true;
 
     @SuppressWarnings("unchecked")
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection) {
         this.canToggleOff = Boolean.TRUE.equals(params.get(TOGGLE_OFF_PROPERTY));
         this.cycleOnFlipper = Boolean.TRUE.equals(params.get(CYCLE_ON_FLIPPER_PROPERTY));
         this.ignoreBall = Boolean.TRUE.equals(params.get(IGNORE_BALL_PROPERTY));
         this.defaultRadius = asFloat(params.get(RADIUS_PROPERTY));
         this.defaultResetDelay = asFloat(params.get(RESET_DELAY_PROPERTY));
 
-        List<Map<String, ?>> rolloverMaps = (List<Map<String, ?>>)params.get(ROLLOVERS_PROPERTY);
-        for(Map<String, ?> rmap : rolloverMaps) {
+        List<Map<String, ?>> rolloverMaps = (List<Map<String, ?>>) params.get(ROLLOVERS_PROPERTY);
+        for (Map<String, ?> rmap : rolloverMaps) {
             Rollover rollover = new Rollover();
             rollovers.add(rollover);
 
-            List<?> pos = (List<?>)rmap.get(POSITION_PROPERTY);
+            List<?> pos = (List<?>) rmap.get(POSITION_PROPERTY);
             rollover.cx = asFloat(pos.get(0));
             rollover.cy = asFloat(pos.get(1));
             // radius, color, score, and reset delay can be specified for each rollover.
             // If not present use default from group.
-            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ? asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
-            rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ? Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
-            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ? ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
-            rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ? asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
+            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ?
+                    asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
+            rollover.color = (rmap.containsKey(COLOR_PROPERTY))
+                    ? Color.fromList((List<Number>) rmap.get(COLOR_PROPERTY)) : null;
+            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ?
+                    ((Number) rmap.get(SCORE_PROPERTY)).longValue() : this.score;
+            rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ?
+                    asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
 
             rollover.radiusSquared = rollover.radius * rollover.radius;
         }
@@ -99,15 +105,15 @@ public class RolloverGroupElement extends FieldElement {
         hitRollovers.clear();
 
         int rsize = this.rollovers.size();
-        for(int i=0; i<rsize; i++) {
+        for (int i = 0; i < rsize; i++) {
             Rollover rollover = this.rollovers.get(i);
             boolean hit = false;
-            for(int j=0; j<balls.size(); j++) {
+            for (int j = 0; j < balls.size(); j++) {
                 Ball ball = balls.get(j);
                 Vector2 position = ball.getPosition();
                 float xdiff = position.x - rollover.cx;
                 float ydiff = position.y - rollover.cy;
-                float distanceSquared = xdiff*xdiff + ydiff*ydiff;
+                float distanceSquared = xdiff * xdiff + ydiff * ydiff;
                 if (distanceSquared <= rollover.radiusSquared) {
                     hit = true;
                     break;
@@ -129,7 +135,7 @@ public class RolloverGroupElement extends FieldElement {
      */
     public void activateFirstUnactivatedRollover() {
         int rsize = this.rollovers.size();
-        for(int i=0; i<rsize; i++) {
+        for (int i = 0; i < rsize; i++) {
             Rollover rollover = this.rollovers.get(i);
             if (!activeRollovers.contains(rollover)) {
                 activeRollovers.add(rollover);
@@ -167,19 +173,18 @@ public class RolloverGroupElement extends FieldElement {
         boolean allActivePrevious = this.allRolloversActive();
         List<Rollover> hitRollovers = rolloversHitByBalls(field.getBalls());
         // only update rollovers that are hit on this tick and weren't on the previous tick
-        for(final Rollover rollover : hitRollovers) {
+        for (final Rollover rollover : hitRollovers) {
             if (rolloversHitOnPreviousTick.contains(rollover)) continue;
-            // Inactive rollover becomes active, active rollover becomes inactive if toggleOff setting is true.
-            // Add score whenever the state changes.
+            // Inactive rollover becomes active, active rollover becomes inactive if toggleOff
+            // setting is true. Add score whenever the state changes.
             if (!activeRollovers.contains(rollover)) {
                 activeRollovers.add(rollover);
                 field.addScore(rollover.score);
                 field.getAudioPlayer().playRollover();
                 // Set timer to clear rollover if reset parameter is present and >0.
                 if (rollover.resetDelay > 0) {
-                    field.scheduleAction((long)(rollover.resetDelay*1000), new Runnable() {
-                        @Override
-                        public void run() {
+                    field.scheduleAction((long) (rollover.resetDelay * 1000), new Runnable() {
+                        @Override public void run() {
                             activeRollovers.remove(rollover);
                         }
                     });
@@ -193,7 +198,7 @@ public class RolloverGroupElement extends FieldElement {
         }
 
         rolloversHitOnPreviousTick.clear();
-        for(int i = 0; i < hitRollovers.size(); i++) {
+        for (int i = 0; i < hitRollovers.size(); i++) {
             rolloversHitOnPreviousTick.add(hitRollovers.get(i));
         }
 
@@ -207,7 +212,7 @@ public class RolloverGroupElement extends FieldElement {
         if (this.cycleOnFlipper) {
             // Cycle to right if any right flipper is activated.
             boolean hasRightFlipper = false;
-            for(int i=0; !hasRightFlipper && i<flippers.size(); i++) {
+            for (int i = 0; !hasRightFlipper && i < flippers.size(); i++) {
                 hasRightFlipper = flippers.get(i).isRightFlipper();
             }
             this.cycleRollovers(hasRightFlipper);
@@ -215,6 +220,7 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
+
     /**
      * Cycles the states of all rollover elements by "rotating" left or right. For example, if this
      * group has three rollovers whose states are (on, on, off), after calling this method with
@@ -223,16 +229,16 @@ public class RolloverGroupElement extends FieldElement {
      */
     public void cycleRollovers(boolean toRight) {
         newActiveRollovers.clear();
-        for(int i=0; i<this.rollovers.size(); i++) {
-            int prevIndex = (toRight) ? ((i==0) ? this.rollovers.size()-1 : i-1) :
-                ((i==this.rollovers.size()-1) ? 0 : i+1);
+        for (int i = 0; i < this.rollovers.size(); i++) {
+            int prevIndex = (toRight) ? ((i == 0) ? this.rollovers.size() - 1 : i - 1) :
+                    ((i == this.rollovers.size() - 1) ? 0 : i + 1);
             if (this.activeRollovers.contains(this.rollovers.get(prevIndex))) {
                 newActiveRollovers.add(this.rollovers.get(i));
             }
         }
 
         this.activeRollovers.clear();
-        for(int i=0; i<newActiveRollovers.size(); i++) {
+        for (int i = 0; i < newActiveRollovers.size(); i++) {
             this.activeRollovers.add(newActiveRollovers.get(i));
         }
     }
@@ -269,7 +275,7 @@ public class RolloverGroupElement extends FieldElement {
 
         // for each rollover, draw outlined circle for inactive or filled circle for active
         int rsize = this.rollovers.size();
-        for(int i=0; i<rsize; i++) {
+        for (int i = 0; i < rsize; i++) {
             Rollover rollover = this.rollovers.get(i);
             // use custom rollover color if available
             Color color = (rollover.color != null) ? rollover.color : groupColor;

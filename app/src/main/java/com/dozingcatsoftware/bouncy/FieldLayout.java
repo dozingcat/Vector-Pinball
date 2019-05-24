@@ -11,11 +11,9 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import android.content.Context;
 import android.util.Log;
@@ -57,16 +55,16 @@ public class FieldLayout {
     }
 
     public static int numberOfLevels() {
-        if (_numLevels>0) return _numLevels;
+        if (_numLevels > 0) return _numLevels;
         try {
             List<String> tableFiles = Arrays.asList(_context.getAssets().list("tables"));
             int count = 0;
-            while(tableFiles.contains("table"+(count+1)+".json")) {
+            while (tableFiles.contains("table" + (count + 1) + ".json")) {
                 count++;
             }
             _numLevels = count;
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
             Log.e("FieldLayout", "Error reading tables directory", ex);
         }
         return _numLevels;
@@ -81,21 +79,21 @@ public class FieldLayout {
 
             StringBuilder buffer = new StringBuilder();
             String line;
-            while ((line=br.readLine())!=null) {
+            while ((line = br.readLine()) != null) {
                 buffer.append(line);
             }
             fin.close();
             Map<String, Object> layoutMap = JSONUtils.mapFromJSONString(buffer.toString());
             return layoutMap;
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
     public static FieldLayout layoutForLevel(int level, World world) {
         Map<String, ?> levelLayout = _layoutMap.get(level);
-        if (levelLayout==null) {
+        if (levelLayout == null) {
             levelLayout = readFieldLayout(level);
             _layoutMap.put(level, levelLayout);
         }
@@ -138,18 +136,11 @@ public class FieldLayout {
             }
         }
 
-        Set<Map<String, ?>> unresolvedElements = new HashSet<Map<String, ?>>();
-        // Initial pass
         for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
             if (!(obj instanceof Map)) continue;
             @SuppressWarnings("unchecked")
             Map<String, ?> params = (Map<String, ?>) obj;
-            try {
-                elements.addElement(FieldElement.createFromParameters(params, elements, world));
-            }
-            catch (FieldElement.DependencyNotAvailableException ex) {
-                unresolvedElements.add(params);
-            }
+            elements.addElement(FieldElement.createFromParameters(params, elements, world));
         }
 
         return elements;
@@ -188,9 +179,11 @@ public class FieldLayout {
     public List<FlipperElement> getFlipperElements() {
         return fieldElements.getFlipperElements();
     }
+
     public List<FlipperElement> getLeftFlipperElements() {
         return fieldElements.getLeftFlipperElements();
     }
+
     public List<FlipperElement> getRightFlipperElements() {
         return fieldElements.getRightFlipperElements();
     }
@@ -238,6 +231,7 @@ public class FieldLayout {
     public float getWidth() {
         return width;
     }
+
     public float getHeight() {
         return height;
     }
@@ -257,7 +251,7 @@ public class FieldLayout {
     }
 
     public String getDelegateClassName() {
-        return (String)allParameters.get(DELEGATE_PROPERTY);
+        return (String) allParameters.get(DELEGATE_PROPERTY);
     }
 
     public Object getValueWithKey(String key) {

@@ -12,16 +12,15 @@ import android.hardware.SensorManager;
  * calling a bunch of SensorManager methods with rotation matrices; this class handles all of that
  * and just provides a callback method with azimuth, pitch, and roll values.
  */
-
 public class OrientationListener implements SensorEventListener {
 
-    public static interface Delegate {
+    public interface Delegate {
         /** Callback method for orientation updates. All values are in radians.
          * @param azimuth rotation around Z axis. 0=north, pi/2=east.
          * @param pitch rotation around X axis. 0=flat, negative=titled up, positive=tilted down.
          * @param roll rotation around Y axis. 0=flat, negative=tilted left, positive=tilted right.
          */
-        public void receivedOrientationValues(float azimuth, float pitch, float roll);
+        void receivedOrientationValues(float azimuth, float pitch, float roll);
     }
 
     Context context;
@@ -40,7 +39,7 @@ public class OrientationListener implements SensorEventListener {
         this.context = context;
         this.rate = rate;
         this.delegate = delegate;
-        sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
     /** Starts listening for sensor events and making callbacks to the delegate. */
@@ -71,16 +70,16 @@ public class OrientationListener implements SensorEventListener {
      * and calls the delegate with them.
      */
     @Override public void onSensorChanged(SensorEvent event) {
-        switch(event.sensor.getType()) {
-        case Sensor.TYPE_MAGNETIC_FIELD:
-            mags = event.values.clone();
-            break;
-        case Sensor.TYPE_ACCELEROMETER:
-            accels = event.values.clone();
-            break;
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                mags = event.values.clone();
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                accels = event.values.clone();
+                break;
         }
 
-        if (mags!=null && accels!=null) {
+        if (mags != null && accels != null) {
             SensorManager.getRotationMatrix(R, I, accels, mags);
             SensorManager.getOrientation(R, orientationValues);
             delegate.receivedOrientationValues(

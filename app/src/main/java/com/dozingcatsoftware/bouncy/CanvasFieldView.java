@@ -23,14 +23,17 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
     FieldViewManager manager;
 
-    Paint paint = new Paint(); {paint.setAntiAlias(true);}
-    Canvas canvas;
+    Paint paint = new Paint();
 
-    @Override
-    public void setManager(FieldViewManager value) {
-        this.manager = value;
+    {
+        paint.setAntiAlias(true);
     }
 
+    Canvas canvas;
+
+    @Override public void setManager(FieldViewManager value) {
+        this.manager = value;
+    }
 
     /**
      * Called when the view is touched. Activates flippers, starts a new game if one is not in
@@ -39,7 +42,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     @Override public boolean onTouchEvent(MotionEvent event) {
         return manager.handleTouchEvent(event);
     }
-    
+
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         return manager.handleKeyDown(keyCode, event);
     }
@@ -60,7 +63,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
         // call draw() on each FieldElement, draw balls separately
         this.canvas = c;
 
-        for(FieldElement element : manager.getField().getFieldElementsArray()) {
+        for (FieldElement element : manager.getField().getFieldElementsArray()) {
             element.draw(this);
         }
 
@@ -74,8 +77,10 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     // Assumes cacheScaleAndOffsets has been called.
     @Override public void drawLine(float x1, float y1, float x2, float y2, Color color) {
         this.paint.setARGB(color.alpha, color.red, color.green, color.blue);
-        this.canvas.drawLine(manager.world2pixelX(x1), manager.world2pixelY(y1),
-                manager.world2pixelX(x2), manager.world2pixelY(y2), this.paint);
+        this.canvas.drawLine(
+                manager.world2pixelX(x1), manager.world2pixelY(y1),
+                manager.world2pixelX(x2), manager.world2pixelY(y2),
+                this.paint);
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, Color color) {
@@ -92,5 +97,4 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
         float rad = radius * manager.getCachedScale();
         this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);
     }
-
 }

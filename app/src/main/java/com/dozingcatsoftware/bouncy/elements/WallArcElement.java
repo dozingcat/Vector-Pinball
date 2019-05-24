@@ -43,8 +43,9 @@ public class WallArcElement extends FieldElement {
     public List<Body> wallBodies = new ArrayList<Body>();
     float[][] lineSegments;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
-        List<?> centerPos = (List<?>)params.get(CENTER_PROPERTY);
+    @Override public void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection) {
+        List<?> centerPos = (List<?>) params.get(CENTER_PROPERTY);
         float cx = asFloat(centerPos.get(0));
         float cy = asFloat(centerPos.get(1));
 
@@ -58,20 +59,20 @@ public class WallArcElement extends FieldElement {
             yradius = asFloat(params.get(Y_RADIUS_PROPERTY));
         }
 
-        Number segments = (Number)params.get(NUM_SEGMENTS_PROPERTY);
-        int numsegments = (segments!=null) ? segments.intValue() : 5;
+        Number segments = (Number) params.get(NUM_SEGMENTS_PROPERTY);
+        int numsegments = (segments != null) ? segments.intValue() : 5;
         float minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
         float maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         float diff = maxangle - minangle;
-        // Create numsegments line segments to approximate circular arc.
+        // Create `numsegments` line segments to approximate circular arc.
         lineSegments = new float[numsegments][];
-        for(int i=0; i<numsegments; i++) {
+        for (int i = 0; i < numsegments; i++) {
             float angle1 = minangle + i * diff / numsegments;
-            float angle2 = minangle + (i+1) * diff / numsegments;
-            float x1 = cx + xradius * (float)Math.cos(angle1);
-            float y1 = cy + yradius * (float)Math.sin(angle1);
-            float x2 = cx + xradius * (float)Math.cos(angle2);
-            float y2 = cy + yradius * (float)Math.sin(angle2);
+            float angle2 = minangle + (i + 1) * diff / numsegments;
+            float x1 = cx + xradius * (float) Math.cos(angle1);
+            float y1 = cy + yradius * (float) Math.sin(angle1);
+            float x2 = cx + xradius * (float) Math.cos(angle2);
+            float y2 = cy + yradius * (float) Math.sin(angle2);
             lineSegments[i] = (new float[] {x1, y1, x2, y2});
         }
     }

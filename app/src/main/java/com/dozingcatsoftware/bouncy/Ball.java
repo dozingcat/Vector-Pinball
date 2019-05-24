@@ -22,21 +22,21 @@ public class Ball {
         this.secondaryColor = secondaryColor;
     }
 
-    public static Ball create(World world, float x, float y, float radius,
-            Color primaryColor, Color secondaryColor) {
+    public static Ball create(
+            World world, float x, float y, float radius, Color primaryColor, Color secondaryColor) {
         Body ballBody = Box2DFactory.createCircle(world, x, y, radius, false);
         ballBody.setBullet(true);
         // Default is radius of 0.5, if different we want the mass to be the same (could be
         // configurable if needed), so adjust density proportional to square of the radius.
         if (radius != 0.5f) {
-            ballBody.getFixtureList().get(0).setDensity((0.5f*0.5f) / (radius*radius));
+            ballBody.getFixtureList().get(0).setDensity((0.5f * 0.5f) / (radius * radius));
             ballBody.resetMassData();
         }
         return new Ball(ballBody, primaryColor, secondaryColor);
     }
 
     public void draw(IFieldRenderer renderer) {
-        CircleShape shape = (CircleShape)body.getFixtureList().get(0).getShape();
+        CircleShape shape = (CircleShape) body.getFixtureList().get(0).getShape();
         Vector2 center = body.getPosition();
         float radius = shape.getRadius();
         renderer.fillCircle(center.x, center.y, radius, primaryColor);
@@ -67,6 +67,7 @@ public class Ball {
     public Color getPrimaryColor() {
         return primaryColor;
     }
+
     public void setPrimaryColor(Color primaryColor) {
         this.primaryColor = primaryColor;
     }
@@ -74,8 +75,8 @@ public class Ball {
     public Color getSecondaryColor() {
         return secondaryColor;
     }
+
     public void setSecondaryColor(Color secondaryColor) {
         this.secondaryColor = secondaryColor;
     }
-
 }

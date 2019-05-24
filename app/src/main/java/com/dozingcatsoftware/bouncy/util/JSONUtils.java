@@ -17,14 +17,14 @@ public class JSONUtils {
      * is JSONObject.NULL, returns null. Otherwise, returns the argument unchanged.
      */
     public static Object objectFromJSONItem(Object jsonItem) {
-        if (jsonItem==JSONObject.NULL){
+        if (jsonItem == JSONObject.NULL) {
             return null;
         }
         if (jsonItem instanceof JSONArray) {
-            return listFromJSONArray((JSONArray)jsonItem);
+            return listFromJSONArray((JSONArray) jsonItem);
         }
         if (jsonItem instanceof JSONObject) {
-            return mapFromJSONObject((JSONObject)jsonItem);
+            return mapFromJSONObject((JSONObject) jsonItem);
         }
         return jsonItem;
     }
@@ -36,12 +36,11 @@ public class JSONUtils {
     public static List<Object> listFromJSONArray(JSONArray jsonArray) {
         List<Object> result = new ArrayList<Object>();
         try {
-            for(int i=0; i<jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 Object obj = objectFromJSONItem(jsonArray.get(i));
                 result.add(obj);
             }
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
         return result;
@@ -55,36 +54,23 @@ public class JSONUtils {
     public static Map<String, Object> mapFromJSONObject(JSONObject jsonObject) {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
-            for(Iterator<String> ki = jsonObject.keys(); ki.hasNext(); ) {
+            for (Iterator<String> ki = jsonObject.keys(); ki.hasNext(); ) {
                 String key = ki.next();
                 Object value = objectFromJSONItem(jsonObject.get(key));
                 result.put(key, value);
             }
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
         return result;
-    }
-
-    /** Parses the string argument as a JSON array and converts to a List. */
-    public static List<Object> listFromJSONString(String jsonString) {
-        try {
-            return listFromJSONArray(new JSONArray(jsonString));
-        }
-        catch (JSONException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     /** Parses the string argument as a JSON object and converts to a Map. */
     public static Map<String, Object> mapFromJSONString(String jsonString) {
         try {
             return mapFromJSONObject(new JSONObject(jsonString));
-        }
-        catch (JSONException ex) {
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }

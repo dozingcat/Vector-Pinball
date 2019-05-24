@@ -29,23 +29,11 @@ public abstract class FieldElement {
     Color initialColor;
     Color newColor;
 
-    int flashCounter=0; // Inverts colors when >0, decrements in tick().
+    int flashCounter = 0; // Inverts colors when >0, decrements in tick().
     long score = 0;
 
     // Default wall color shared by WallElement, WallArcElement, WallPathElement.
     static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
-
-    /**
-     * Exception thrown when an element can't be created because it depends on another element that
-     * hasn't been created yet.
-     */
-    public static class DependencyNotAvailableException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public DependencyNotAvailableException(String message) {
-            super(message);
-        }
-    }
 
     /**
      * Creates and returns a FieldElement object from the given map of parameters. The class to
@@ -55,32 +43,28 @@ public abstract class FieldElement {
      */
     @SuppressWarnings("unchecked")
     public static FieldElement createFromParameters(
-            Map<String, ?> params, FieldElementCollection collection, World world)
-                    throws DependencyNotAvailableException {
+            Map<String, ?> params, FieldElementCollection collection, World world) {
         if (!params.containsKey(CLASS_PROPERTY)) {
             throw new IllegalArgumentException("class not specified for element: " + params);
         }
         Class<? extends FieldElement> elementClass = null;
         // if package not specified, use this package
-        String className = (String)params.get(CLASS_PROPERTY);
-        if (className.indexOf('.')==-1) {
+        String className = (String) params.get(CLASS_PROPERTY);
+        if (className.indexOf('.') == -1) {
             className = "com.dozingcatsoftware.bouncy.elements." + className;
         }
         try {
             elementClass = (Class<? extends FieldElement>) Class.forName(className);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
         FieldElement self;
         try {
             self = elementClass.newInstance();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InstantiationException e) {
+        } catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
         self.initialize(params, collection, world);
@@ -92,20 +76,19 @@ public abstract class FieldElement {
      * subclasses to further initialize themselves. Subclasses should override finishCreate, and
      * should not override this method.
      */
-    public void initialize(Map<String, ?> params, FieldElementCollection collection, World world)
-            throws DependencyNotAvailableException {
+    public void initialize(Map<String, ?> params, FieldElementCollection collection, World world) {
         this.parameters = params;
         this.box2dWorld = world;
-        this.elementID = (String)params.get(ID_PROPERTY);
+        this.elementID = (String) params.get(ID_PROPERTY);
 
         @SuppressWarnings("unchecked")
-        List<Number> colorList = (List<Number>)params.get(COLOR_PROPERTY);
-        if (colorList!=null) {
+        List<Number> colorList = (List<Number>) params.get(COLOR_PROPERTY);
+        if (colorList != null) {
             this.initialColor = Color.fromList(colorList);
         }
 
         if (params.containsKey(SCORE_PROPERTY)) {
-            this.score = ((Number)params.get(SCORE_PROPERTY)).longValue();
+            this.score = ((Number) params.get(SCORE_PROPERTY)).longValue();
         }
 
         this.finishCreateElement(params, collection);
@@ -127,14 +110,15 @@ public abstract class FieldElement {
      * checking for balls within radius of rollovers. Subclasses should call super.tick(field).
      */
     public void tick(Field field) {
-        if (flashCounter>0) flashCounter--;
+        if (flashCounter > 0) flashCounter--;
     }
 
     /**
      * Called when the player activates one or more flippers. The default implementation does
      * nothing; subclasses can override.
      */
-    public void flippersActivated(Field field, List<FlipperElement> flippers) {}
+    public void flippersActivated(Field field, List<FlipperElement> flippers) {
+    }
 
     /**
      * Causes the colors returned by red/blue/greenColorComponent methods to be inverted for the
@@ -146,11 +130,9 @@ public abstract class FieldElement {
 
     /**
      * Must be overridden by subclasses, which should perform any setup required after creation.
-     * Throws DependencyNotAvailableException if the element can't be initialized because it's
-     * dependent on other uninitialized elements.
      */
-    public abstract void finishCreateElement(Map<String, ?> params, FieldElementCollection collection)
-            throws DependencyNotAvailableException;
+    public abstract void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection);
 
     /**
      * Must be overridden by subclasses, to create the element's Box2D bodies. This will be called
@@ -174,20 +156,12 @@ public abstract class FieldElement {
      * nothing (allowing objects to bounce off each other normally). Subclasses can override to
      * perform other actions like applying extra force.
      */
-    public void handleCollision(Ball ball, Body bodyHit, Field field) {}
+    public void handleCollision(Ball ball, Body bodyHit, Field field) {
+    }
 
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {
         return elementID;
-    }
-
-    /** Returns the parameter map from which this element was created. */
-    public Map<String, ?> getParameters() {
-        return parameters;
-    }
-
-    public boolean hasParameterKey(String key) {
-        return parameters.containsKey(key);
     }
 
     public Object getRawParameterValueForKey(String key) {
@@ -203,12 +177,6 @@ public abstract class FieldElement {
         // TODO: parse function/math expressions.
         Number num = (Number) parameters.get(key);
         return num.intValue();
-    }
-
-    public long getLongParameterValueForKey(String key) {
-        // TODO: parse function/math expressions.
-        Number num = (Number) parameters.get(key);
-        return num.longValue();
     }
 
     public float[] getFloatArrayParameterValueForKey(String key) {
@@ -247,7 +215,7 @@ public abstract class FieldElement {
     protected Color currentColor(Color defaultColor) {
         Color baseColor = (this.newColor != null) ?
                 this.newColor :
-                    (this.initialColor != null) ? this.initialColor : defaultColor;
+                (this.initialColor != null) ? this.initialColor : defaultColor;
         return (flashCounter > 0) ? baseColor.inverted() : baseColor;
     }
 }

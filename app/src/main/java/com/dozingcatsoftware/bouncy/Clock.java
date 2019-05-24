@@ -6,7 +6,7 @@ public interface Clock {
 
     long nanoTime();
 
-    public static class SystemClock implements Clock {
+    class SystemClock implements Clock {
         private static SystemClock INSTANCE = new SystemClock();
 
         public static SystemClock getInstance() {

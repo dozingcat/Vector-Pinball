@@ -56,15 +56,16 @@ public class FrameRateManager {
      * must be at least targetRates.length-1. (It can be longer, extra values are ignored).
      */
     public FrameRateManager(double[] targetRates, double[] minRates) {
-        if (targetRates==null || minRates==null || minRates.length < targetRates.length-1) {
-            throw new IllegalArgumentException("Must specify as many minimum rates as target rates minus one");
+        if (targetRates == null || minRates == null || minRates.length < targetRates.length - 1) {
+            throw new IllegalArgumentException(
+                    "Must specify as many minimum rates as target rates minus one");
         }
 
         this.unfudgedTargetFrameRates = targetRates;
         this.minimumFrameRates = minRates;
 
         this.targetFrameRates = new double[targetRates.length];
-        for(int i=0; i<targetRates.length; i++) {
+        for (int i = 0; i < targetRates.length; i++) {
             this.targetFrameRates[i] = targetFrameRateFudgeFactor * targetRates[i];
         }
 
@@ -92,7 +93,7 @@ public class FrameRateManager {
 
     void setCurrentRateIndex(int index) {
         currentRateIndex = index;
-        currentNanosPerFrame = (long)(BILLION / targetFrameRates[currentRateIndex]);
+        currentNanosPerFrame = (long) (BILLION / targetFrameRates[currentRateIndex]);
     }
 
     /** Internal method to reduce the target frame rate to the next lower value. */
@@ -127,7 +128,7 @@ public class FrameRateManager {
         previousFrameTimestamps.add(time);
         if (previousFrameTimestamps.size() > frameHistorySize) {
             long firstTime = previousFrameTimestamps.removeFirst();
-            double seconds = (time - firstTime) / (double)BILLION;
+            double seconds = (time - firstTime) / (double) BILLION;
             currentFPS = frameHistorySize / seconds;
 
             if (!frameRateLocked && currentRateIndex < minimumFrameRates.length) {
@@ -174,11 +175,6 @@ public class FrameRateManager {
         return unfudgedTargetFrameRates[currentRateIndex];
     }
 
-    /** Returns a string with the current frames per second, formatted to 1 decimal place. */
-    public String formattedCurrentFramesPerSecond() {
-        return String.format("%.1f", currentFPS);
-    }
-
     /**
      * Returns a String with debugging info, including current frame rate, target rate, and
      * whether the rate is locked.
@@ -188,25 +184,18 @@ public class FrameRateManager {
                 currentFPS, targetFramesPerSecond(), (frameRateLocked) ? "(locked)" : "");
     }
 
-    /** Returns the time of the last call to frameStarted(). */
-    public long lastFrameStartTime() {
-        return previousFrameTimestamps.getLast();
-    }
-
     /**
      * Returns the best number of nanoseconds to wait before starting the next frame, based on
-     * previously recorded frame start times. The argument is the system time in nanoseconds;
-     * clients should normally use the no-argument nanosToWaitUntilNextFrame(), which calls this
-     * method with an argument of System.nanoTime().
+     * previously recorded frame start times. The argument is the system time in nanoseconds.
      */
     public long nanosToWaitUntilNextFrame(long time) {
         long lastStartTime = previousFrameTimestamps.getLast();
         long singleFrameGoalTime = lastStartTime + currentNanosPerFrame;
         long waitTime = singleFrameGoalTime - time;
         // adjust based on previous frame rates
-        if (previousFrameTimestamps.size()==frameHistorySize) {
+        if (previousFrameTimestamps.size() == frameHistorySize) {
             long multiFrameGoalTime =
-                    previousFrameTimestamps.getFirst() + frameHistorySize*currentNanosPerFrame;
+                    previousFrameTimestamps.getFirst() + frameHistorySize * currentNanosPerFrame;
             long behind = singleFrameGoalTime - multiFrameGoalTime;
             // behind>0 means we're behind schedule and should decrease wait time
             // behind<0 means we're ahead of schedule, but don't adjust
@@ -214,13 +203,7 @@ public class FrameRateManager {
         }
 
         // always wait for at least 1 millisecond
-        if (waitTime < MILLION) waitTime = MILLION;
-        return waitTime;
-    }
-
-    /** Calls nanosToWaitUntilNextFrame() with the current system time. */
-    public long nanosToWaitUntilNextFrame() {
-        return nanosToWaitUntilNextFrame(System.nanoTime());
+        return Math.max(waitTime, MILLION);
     }
 
     /**
@@ -232,9 +215,9 @@ public class FrameRateManager {
     public long sleepUntilNextFrame() {
         long nanos = nanosToWaitUntilNextFrame(System.nanoTime());
         try {
-            Thread.sleep(nanos/MILLION, (int)(nanos%MILLION));
+            Thread.sleep(nanos / MILLION, (int) (nanos % MILLION));
+        } catch (InterruptedException ignored) {
         }
-        catch(InterruptedException ignored) {}
         return nanos;
     }
 
@@ -271,5 +254,4 @@ public class FrameRateManager {
     public long getTotalFrames() {
         return totalFrames;
     }
-
 }
