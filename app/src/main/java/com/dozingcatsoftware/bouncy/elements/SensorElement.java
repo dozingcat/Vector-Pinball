@@ -24,8 +24,12 @@ import com.dozingcatsoftware.bouncy.IFieldRenderer;
 public class SensorElement extends FieldElement {
 
     public static final String RECT_PROPERTY = "rect";
+    public static final String BALL_LAYER_TO_PROPERTY = "ballLayer";
+    public static final String BALL_LAYER_FROM_PROPERTY = "ballLayerFrom";
 
     float xmin, ymin, xmax, ymax;
+    private Number layerTo;
+    private Number layerFrom;
 
     @Override public void finishCreateElement(
             Map<String, ?> params, FieldElementCollection collection) {
@@ -34,6 +38,8 @@ public class SensorElement extends FieldElement {
         this.ymin = Math.min(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
         this.xmax = Math.max(asFloat(rectPos.get(0)), asFloat(rectPos.get(2)));
         this.ymax = Math.max(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
+        this.layerFrom = (Number)params.get(BALL_LAYER_FROM_PROPERTY);
+        this.layerTo = (Number)params.get(BALL_LAYER_TO_PROPERTY);
     }
 
     @Override public void createBodies(World world) {
@@ -58,8 +64,14 @@ public class SensorElement extends FieldElement {
         for (int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
             if (ballInRange(ball)) {
-                field.getDelegate().ballInSensorRange(field, this, ball);
-                return;
+                // Only trigger the sensor if the "from" layer is empty or it matches the ball.
+                if (this.layerFrom == null || this.layerFrom.intValue() == ball.getLayer()) {
+                    if (this.layerTo != null) {
+                        ball.moveToLayer(this.layerTo.intValue());
+                    }
+                    field.getDelegate().ballInSensorRange(field, this, ball);
+                    ball.setPreviousSensorId(this.getElementId());
+                }
             }
         }
     }
@@ -68,7 +80,7 @@ public class SensorElement extends FieldElement {
         return Collections.emptyList();
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // No UI.
     }
 }

@@ -11,7 +11,7 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 public class Field1Delegate extends BaseFieldDelegate {
 
     @Override public void allRolloversInGroupActivated(
-            Field field, RolloverGroupElement rolloverGroup) {
+            Field field, RolloverGroupElement rolloverGroup, Ball ball) {
         // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
@@ -53,7 +53,7 @@ public class Field1Delegate extends BaseFieldDelegate {
     }
 
     @Override public void allDropTargetsInGroupHit(
-            Field field, DropTargetGroupElement targetGroup) {
+            Field field, DropTargetGroupElement targetGroup, Ball ball) {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {

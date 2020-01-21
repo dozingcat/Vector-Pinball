@@ -18,16 +18,13 @@ import com.dozingcatsoftware.bouncy.elements.SensorElement;
  */
 public class BaseFieldDelegate implements Field.Delegate {
 
-    @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {}
+    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {}
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {}
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {}
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
-    @Override
-    public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
 
     @Override public void gameStarted(Field field) {}
 

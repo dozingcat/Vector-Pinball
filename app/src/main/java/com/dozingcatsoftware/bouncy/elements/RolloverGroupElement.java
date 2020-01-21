@@ -37,7 +37,7 @@ public class RolloverGroupElement extends FieldElement {
     public static final String SCORE_PROPERTY = "score";
 
     static class Rollover {
-        float cx, cy;
+        Vector2 position;
         float radius;
         float radiusSquared; // Optimization when computing whether ball is in range.
         Color color;
@@ -72,8 +72,7 @@ public class RolloverGroupElement extends FieldElement {
             rollovers.add(rollover);
 
             List<?> pos = (List<?>) rmap.get(POSITION_PROPERTY);
-            rollover.cx = asFloat(pos.get(0));
-            rollover.cy = asFloat(pos.get(1));
+            rollover.position = new Vector2(asFloat(pos.get(0)), asFloat(pos.get(1)));
             // radius, color, score, and reset delay can be specified for each rollover.
             // If not present use default from group.
             rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ?
@@ -97,33 +96,20 @@ public class RolloverGroupElement extends FieldElement {
         return Collections.emptyList();
     }
 
-    // Avoid object allocation in rolloversHitByBalls.
-    List<Rollover> hitRollovers = new ArrayList<Rollover>();
-
-    /** Returns a set of all rollovers which have balls within their specified radius. */
-    protected List<Rollover> rolloversHitByBalls(List<Ball> balls) {
+    /** Sets `hitRollovers` to the rollovers which have `ball` within their specified radius. */
+    private void getRolloversHitByBall(Ball ball, List<Rollover> hitRollovers) {
         hitRollovers.clear();
-
         int rsize = this.rollovers.size();
-        for (int i = 0; i < rsize; i++) {
+        for(int i = 0; i < rsize; i++) {
             Rollover rollover = this.rollovers.get(i);
-            boolean hit = false;
-            for (int j = 0; j < balls.size(); j++) {
-                Ball ball = balls.get(j);
-                Vector2 position = ball.getPosition();
-                float xdiff = position.x - rollover.cx;
-                float ydiff = position.y - rollover.cy;
-                float distanceSquared = xdiff * xdiff + ydiff * ydiff;
-                if (distanceSquared <= rollover.radiusSquared) {
-                    hit = true;
-                    break;
-                }
-            }
-            if (hit) {
+            Vector2 position = ball.getPosition();
+            float xdiff = position.x - rollover.position.x;
+            float ydiff = position.y - rollover.position.y;
+            float distanceSquared = xdiff * xdiff + ydiff * ydiff;
+            if (distanceSquared <= rollover.radiusSquared) {
                 hitRollovers.add(rollover);
             }
         }
-        return hitRollovers;
     }
 
     /** Returns true if all rollovers in the group are active. */
@@ -162,49 +148,87 @@ public class RolloverGroupElement extends FieldElement {
         }
     }
 
-    @Override
-    public boolean shouldCallTick() {
+    public Vector2 getRolloverCenterAtIndex(int index) {
+        return rollovers.get(index).position;
+    }
+
+    public void setRolloverCenterAtIndex(int index, double x, double y) {
+        Rollover r = rollovers.get(index);
+        r.position.x = (float) x;
+        r.position.y = (float) y;
+    }
+
+    public float getRolloverRadiusAtIndex(int index) {
+        return rollovers.get(index).radius;
+    }
+
+    public void setRolloverRadiusAtIndex(int index, float radius) {
+        rollovers.get(index).radius = radius;
+    }
+
+    public void setRolloverColorAtIndex(int index, Color color) {
+        rollovers.get(index).color = color;
+    }
+
+    @Override public boolean shouldCallTick() {
         return true;
     }
+
+    // Reuse these to avoid allocating memory in tick().
+    List<Rollover> rolloversHitByBall = new ArrayList<Rollover>();
+    List<Rollover> allHitRollovers = new ArrayList<Rollover>();
 
     @Override public void tick(Field field) {
         if (this.ignoreBall) return;
 
         boolean allActivePrevious = this.allRolloversActive();
-        List<Rollover> hitRollovers = rolloversHitByBalls(field.getBalls());
-        // only update rollovers that are hit on this tick and weren't on the previous tick
-        for (final Rollover rollover : hitRollovers) {
-            if (rolloversHitOnPreviousTick.contains(rollover)) continue;
-            // Inactive rollover becomes active, active rollover becomes inactive if toggleOff
-            // setting is true. Add score whenever the state changes.
-            if (!activeRollovers.contains(rollover)) {
-                activeRollovers.add(rollover);
-                field.addScore(rollover.score);
-                field.getAudioPlayer().playRollover();
-                // Set timer to clear rollover if reset parameter is present and >0.
-                if (rollover.resetDelay > 0) {
-                    field.scheduleAction((long) (rollover.resetDelay * 1000), new Runnable() {
-                        @Override public void run() {
-                            activeRollovers.remove(rollover);
-                        }
-                    });
+        allHitRollovers.clear();
+        List<Ball> balls = field.getBalls();
+        // With multiple balls this may not behave as expected, for example if two balls
+        // simultaneously activate the two remaining inactive rollovers, the ball object passed
+        // to `allRolloversInGroupActivated` will arbitrarily be one of them.
+        for (int i = 0; i < balls.size(); i++) {
+            final Ball ball = balls.get(i);
+            getRolloversHitByBall(ball, rolloversHitByBall);
+            for (int j = 0; j < rolloversHitByBall.size(); j++) {
+                final Rollover r = rolloversHitByBall.get(j);
+                if (allHitRollovers.contains(r)) {
+                    continue;
                 }
-            }
-            else if (this.canToggleOff) {
-                activeRollovers.remove(rollover);
-                field.addScore(rollover.score);
-                field.getAudioPlayer().playRollover();
+                allHitRollovers.add(r);
+                if (rolloversHitOnPreviousTick.contains(r)) {
+                    continue;
+                }
+                // Inactive rollover becomes active, active rollover becomes inactive if toggleOff
+                // setting is true. Add score whenever the state changes.
+                if (!activeRollovers.contains(r)) {
+                    activeRollovers.add(r);
+                    field.addScore(r.score);
+                    field.getAudioPlayer().playRollover();
+                    // Set timer to clear rollover if reset parameter is present and >0.
+                    if (r.resetDelay > 0) {
+                        field.scheduleAction((long)(r.resetDelay*1000), new Runnable() {
+                            @Override public void run() {
+                                activeRollovers.remove(r);
+                            }
+                        });
+                    }
+                    // Notify delegate if all rollovers are now active and they weren't previously.
+                    if (!allActivePrevious && allRolloversActive()) {
+                        field.getDelegate().allRolloversInGroupActivated(field, this, ball);
+                    }
+                }
+                else if (this.canToggleOff) {
+                    activeRollovers.remove(r);
+                    field.addScore(r.score);
+                    field.getAudioPlayer().playRollover();
+                }
             }
         }
 
         rolloversHitOnPreviousTick.clear();
-        for (int i = 0; i < hitRollovers.size(); i++) {
-            rolloversHitOnPreviousTick.add(hitRollovers.get(i));
-        }
-
-        // Notify delegate if all rollovers are now active and they weren't previously.
-        if (!allActivePrevious && allRolloversActive()) {
-            field.getDelegate().allRolloversInGroupActivated(field, this);
+        for(int i = 0; i < allHitRollovers.size(); i++) {
+            rolloversHitOnPreviousTick.add(allHitRollovers.get(i));
         }
     }
 
@@ -267,7 +291,7 @@ public class RolloverGroupElement extends FieldElement {
         this.isVisible = visible;
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         if (!this.isVisible) return;
 
         // default color defined at the group level
@@ -276,15 +300,15 @@ public class RolloverGroupElement extends FieldElement {
         // for each rollover, draw outlined circle for inactive or filled circle for active
         int rsize = this.rollovers.size();
         for (int i = 0; i < rsize; i++) {
-            Rollover rollover = this.rollovers.get(i);
+            Rollover r = this.rollovers.get(i);
             // use custom rollover color if available
-            Color color = (rollover.color != null) ? rollover.color : groupColor;
+            Color color = (r.color != null) ? r.color : groupColor;
 
-            if (activeRollovers.contains(rollover)) {
-                renderer.fillCircle(rollover.cx, rollover.cy, rollover.radius, color);
+            if (activeRollovers.contains(r)) {
+                renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
             }
             else {
-                renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, color);
+                renderer.frameCircle(r.position.x, r.position.y, r.radius, color);
             }
         }
     }

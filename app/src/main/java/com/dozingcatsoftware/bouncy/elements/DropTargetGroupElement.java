@@ -129,14 +129,15 @@ public class DropTargetGroupElement extends FieldElement {
 
     @Override public void handleCollision(Ball ball, Body bodyHit, final Field field) {
         bodyHit.setActive(false);
-        // if all hit, notify delegate and check for reset parameter
+        // If all hit, notify delegate and check for reset parameter.
         if (allTargetsHit()) {
-            field.getDelegate().allDropTargetsInGroupHit(field, this);
+            field.getDelegate().allDropTargetsInGroupHit(field, this, ball);
 
             float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
-            if (restoreTime > 0) {
-                field.scheduleAction((long) (restoreTime * 1000), new Runnable() {
-                    @Override public void run() {
+            if (restoreTime>0) {
+                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
+                    @Override
+                    public void run() {
                         makeAllTargetsVisible();
                     }
                 });
@@ -152,7 +153,7 @@ public class DropTargetGroupElement extends FieldElement {
         }
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // draw line for each target
         Color color = currentColor(DEFAULT_COLOR);
         int bsize = allBodies.size();

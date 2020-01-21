@@ -162,7 +162,7 @@ public class FlipperElement extends FieldElement {
         }
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // Draw single line segment from anchor point.
         Vector2 position = anchorBody.getPosition();
         // HACK: angle can briefly get out of range, always draw between min and max.

@@ -198,8 +198,8 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override public void allDropTargetsInGroupHit(
+            Field field, DropTargetGroupElement targetGroup, Ball ball) {
         // Activate ball saver for left and right groups.
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
@@ -243,8 +243,8 @@ public class Field4Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
+    @Override public void allRolloversInGroupActivated(
+            Field field, RolloverGroupElement rollovers, Ball ball) {
         if (rollovers == lockedBallRollovers.get(0)) {
             field.removeBallWithoutBallLoss(field.getBalls().get(0));
             lockedBallKickers.get(1).setRetracted(false);

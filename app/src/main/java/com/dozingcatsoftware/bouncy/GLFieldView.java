@@ -139,13 +139,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         if (field == null) return;
         synchronized (field) {
             startGLElements(gl);
-
-            for (FieldElement element : field.getFieldElementsArray()) {
-                element.draw(this);
-            }
-
-            field.drawBalls(this);
-
+            field.draw(this);
             endGLElements(gl);
         }
 

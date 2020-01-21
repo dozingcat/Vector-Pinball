@@ -1,6 +1,8 @@
 package com.dozingcatsoftware.bouncy;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,11 +30,9 @@ import android.content.Context;
 public class Field implements ContactListener {
 
     FieldLayout layout;
-    World world;
+    WorldLayers worlds;
 
-    Set<Body> layoutBodies;
     List<Ball> balls;
-    Set<Body> ballsAtTargets;
 
     // Allow access to model objects from Box2d bodies.
     Map<Body, FieldElement> bodyToFieldElement;
@@ -79,9 +79,9 @@ public class Field implements ContactListener {
 
         void flippersActivated(Field field, List<FlipperElement> flippers);
 
-        void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup);
+        void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
 
-        void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
+        void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball);
 
         void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
@@ -104,15 +104,10 @@ public class Field implements ContactListener {
      * to the starting state.
      */
     public void resetForLevel(Context context, int level) {
-        Vector2 gravity = new Vector2(0.0f, -1.0f);
-        boolean doSleep = true;
-        world = new World(gravity, doSleep);
-        world.setContactListener(this);
-
-        layout = FieldLayout.layoutForLevel(level, world);
-        world.setGravity(new Vector2(0.0f, -layout.getGravity()));
+        this.worlds = new WorldLayers(this);
+        this.layout = FieldLayout.layoutForLevel(level, worlds);
+        worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
         balls = new ArrayList<Ball>();
-        ballsAtTargets = new HashSet<Body>();
 
         scheduledActions = new PriorityQueue<ScheduledAction>();
         gameTime = 0;
@@ -189,7 +184,7 @@ public class Field implements ContactListener {
 
         for (int i = 0; i < iters; i++) {
             clearBallContacts();
-            world.step(dt, 10, 10);
+            worlds.step(dt, 10, 10);
             processBallContacts();
         }
 
@@ -247,7 +242,7 @@ public class Field implements ContactListener {
         List<Float> velocity = layout.getLaunchVelocity();
         float radius = layout.getBallRadius();
 
-        Ball ball = Ball.create(world, position.get(0), position.get(1), radius,
+        Ball ball = Ball.create(worlds, 0, position.get(0), position.get(1), radius,
                 layout.getBallColor(), layout.getSecondaryBallColor());
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         this.balls.add(ball);
@@ -257,7 +252,7 @@ public class Field implements ContactListener {
 
     /** Removes a ball from play. If there are no other balls on the field, calls doBallLost. */
     public void removeBall(Ball ball) {
-        world.destroyBody(ball.getBody());
+        ball.destroySelf();
         this.balls.remove(ball);
         if (this.balls.size() == 0) {
             this.doBallLost();
@@ -269,7 +264,7 @@ public class Field implements ContactListener {
      * no balls remain.
      */
     public void removeBallWithoutBallLoss(Ball ball) {
-        world.destroyBody(ball.getBody());
+        ball.destroySelf();
         this.balls.remove(ball);
     }
 
@@ -332,7 +327,7 @@ public class Field implements ContactListener {
             if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
                     bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
                 deadBalls.add(ball);
-                world.destroyBody(ball.getBody());
+                ball.destroySelf();
             }
         }
 
@@ -342,10 +337,41 @@ public class Field implements ContactListener {
         deadBalls.clear();
     }
 
-    /** Called by FieldView to draw the balls currently in play. */
-    public void drawBalls(IFieldRenderer renderer) {
+    // Reusable array for sorting elements and balls into the order in which they should be draw.
+    private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<IDrawable>();
+    private Comparator<IDrawable> drawOrdering = new Comparator<IDrawable>() {
+        @Override public int compare(IDrawable e1, IDrawable e2) {
+            boolean e1Ball = (e1 instanceof Ball);
+            boolean e2Ball = (e2 instanceof Ball);
+            if (e1Ball == e2Ball) {
+                return e1.getLayer() - e2.getLayer();
+            }
+            if (e1Ball) {
+                return (e1.getLayer() >= e2.getLayer()) ? 1 : -1;
+            }
+            else {
+                return (e2.getLayer() >= e1.getLayer()) ? -1 : 1;
+            }
+        }
+    };
+
+    /**
+     * Draws all field elements and balls. Levels are drawn low to high, and each ball is drawn
+     * after (i.e. on top of) all elements at its level.
+     */
+    public void draw(IFieldRenderer renderer) {
+        // Draw levels low to high, and draw each ball after everything else at its level.
+        elementsInDrawOrder.clear();
+        for (FieldElement elem : this.getFieldElementsArray()) {
+            elementsInDrawOrder.add(elem);
+        }
         for (int i = 0; i < this.balls.size(); i++) {
-            this.balls.get(i).draw(renderer);
+            elementsInDrawOrder.add(this.balls.get(i));
+        }
+        Collections.sort(elementsInDrawOrder, drawOrdering);
+
+        for (int i = 0; i < elementsInDrawOrder.size(); i++) {
+            this.elementsInDrawOrder.get(i).draw(this, renderer);
         }
     }
 
@@ -399,7 +425,7 @@ public class Field implements ContactListener {
     public void endGame() {
         audioPlayer.playStart(); // play startup sound at end of game
         for (Ball ball : this.getBalls()) {
-            world.destroyBody(ball.getBody());
+            ball.destroySelf();
         }
         this.balls.clear();
         this.getGameState().setGameInProgress(false);
@@ -562,6 +588,15 @@ public class Field implements ContactListener {
 
     public void addExtraBall() {
         gameState.addExtraBall();
+    }
+
+    public boolean hasBallAtLayer(int layer) {
+        for (int i = 0; i < this.balls.size(); i++) {
+            if (this.balls.get(i).getLayer() == layer) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
