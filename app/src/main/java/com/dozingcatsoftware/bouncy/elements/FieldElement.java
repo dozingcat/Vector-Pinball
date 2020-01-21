@@ -10,24 +10,32 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.Ball;
 import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
+import com.dozingcatsoftware.bouncy.IDrawable;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
+import com.dozingcatsoftware.bouncy.WorldLayers;
 
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
 
-public abstract class FieldElement {
+public abstract class FieldElement implements IDrawable {
 
     public static final String CLASS_PROPERTY = "class";
     public static final String ID_PROPERTY = "id";
     public static final String SCORE_PROPERTY = "score";
     public static final String COLOR_PROPERTY = "color";
+    public static final String LAYER_PROPERTY = "layer";
+    public static final String INACTIVE_LAYER_COLOR_PROPERTY = "inactiveLayerColor";
 
     Map<String, ?> parameters;
     World box2dWorld;
     String elementID;
+    int layer = 0;
     Color initialColor;
     Color newColor;
+    Color inactiveLayerColor;
+    // Between 0 and 1, increases if a ball is at this element's layer, decreases if not.
+    double layerColorFraction = 0;
 
     int flashCounter = 0; // Inverts colors when >0, decrements in tick().
     long score = 0;
@@ -43,7 +51,7 @@ public abstract class FieldElement {
      */
     @SuppressWarnings("unchecked")
     public static FieldElement createFromParameters(
-            Map<String, ?> params, FieldElementCollection collection, World world) {
+            Map<String, ?> params, FieldElementCollection collection, WorldLayers worlds) {
         if (!params.containsKey(CLASS_PROPERTY)) {
             throw new IllegalArgumentException("class not specified for element: " + params);
         }
@@ -62,12 +70,17 @@ public abstract class FieldElement {
         FieldElement self;
         try {
             self = elementClass.newInstance();
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
+        }
+        catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        self.initialize(params, collection, world);
+        catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+        // TODO: Have `initialize` take WorldLayers instead of a single World.
+        int layer = params.containsKey(LAYER_PROPERTY) ?
+                ((Number)params.get(LAYER_PROPERTY)).intValue() : 0;
+        self.initialize(params, collection, worlds.existingOrNewWorldForLayer(layer));
         return self;
     }
 
@@ -76,19 +89,25 @@ public abstract class FieldElement {
      * subclasses to further initialize themselves. Subclasses should override finishCreate, and
      * should not override this method.
      */
+    @SuppressWarnings("unchecked")
     public void initialize(Map<String, ?> params, FieldElementCollection collection, World world) {
         this.parameters = params;
         this.box2dWorld = world;
-        this.elementID = (String) params.get(ID_PROPERTY);
+        this.elementID = (String)params.get(ID_PROPERTY);
 
-        @SuppressWarnings("unchecked")
-        List<Number> colorList = (List<Number>) params.get(COLOR_PROPERTY);
-        if (colorList != null) {
-            this.initialColor = Color.fromList(colorList);
+        if (params.containsKey(COLOR_PROPERTY)) {
+            this.initialColor = Color.fromList((List<Number>) params.get(COLOR_PROPERTY));
+        }
+        if (params.containsKey(INACTIVE_LAYER_COLOR_PROPERTY)) {
+            this.inactiveLayerColor =
+                    Color.fromList((List<Number>) params.get(INACTIVE_LAYER_COLOR_PROPERTY));
         }
 
         if (params.containsKey(SCORE_PROPERTY)) {
-            this.score = ((Number) params.get(SCORE_PROPERTY)).longValue();
+            this.score = ((Number)params.get(SCORE_PROPERTY)).longValue();
+        }
+        if (params.containsKey(LAYER_PROPERTY)) {
+            this.layer = ((Number)params.get(LAYER_PROPERTY)).intValue();
         }
 
         this.finishCreateElement(params, collection);
@@ -97,11 +116,11 @@ public abstract class FieldElement {
 
     /**
      * Called after creation to determine if tick() needs to be called after every frame is
-     * simulated. Default returns false, subclasses must override to return true in order for
-     * tick() to be called. This is an optimization to avoid needless method calls in the game loop.
+     * simulated. Default returns false unless there is a separate inactive layer color. Subclasses
+     * can override. This is an optimization to avoid needless method calls in the game loop.
      */
     public boolean shouldCallTick() {
-        return false;
+        return (this.inactiveLayerColor != null);
     }
 
     /**
@@ -110,7 +129,19 @@ public abstract class FieldElement {
      * checking for balls within radius of rollovers. Subclasses should call super.tick(field).
      */
     public void tick(Field field) {
-        if (flashCounter > 0) flashCounter--;
+        if (this.flashCounter > 0) {
+            this.flashCounter--;
+        }
+        if (this.inactiveLayerColor != null) {
+            // Might want to make this configurable, but 10 ticks in the transition works well.
+            double increment = 0.1;
+            if (field.hasBallAtLayer(this.getLayer())) {
+                this.layerColorFraction = Math.min(this.layerColorFraction + increment, 1.0);
+            }
+            else {
+                this.layerColorFraction = Math.max(this.layerColorFraction - increment, 0.0);
+            }
+        }
     }
 
     /**
@@ -149,7 +180,7 @@ public abstract class FieldElement {
     /**
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
-    public abstract void draw(IFieldRenderer renderer);
+    public abstract void draw(Field field, IFieldRenderer renderer);
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does
@@ -162,6 +193,10 @@ public abstract class FieldElement {
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {
         return elementID;
+    }
+
+    @Override public int getLayer() {
+        return this.layer;
     }
 
     public Object getRawParameterValueForKey(String key) {
@@ -216,6 +251,9 @@ public abstract class FieldElement {
         Color baseColor = (this.newColor != null) ?
                 this.newColor :
                 (this.initialColor != null) ? this.initialColor : defaultColor;
+        if (this.inactiveLayerColor != null && this.layerColorFraction < 1) {
+            return this.inactiveLayerColor.blendedWith(baseColor, this.layerColorFraction);
+        }
         return (flashCounter > 0) ? baseColor.inverted() : baseColor;
     }
 }

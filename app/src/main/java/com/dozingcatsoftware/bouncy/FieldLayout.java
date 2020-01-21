@@ -18,7 +18,6 @@ import java.util.Random;
 import android.content.Context;
 import android.util.Log;
 
-import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 import com.dozingcatsoftware.bouncy.elements.FieldElementCollection;
 import com.dozingcatsoftware.bouncy.elements.FlipperElement;
@@ -44,7 +43,8 @@ public class FieldLayout {
     static final String ELEMENTS_PROPERTY = "elements";
 
     static int _numLevels = -1;
-    static Map<Integer, Map<String, ?>> _layoutMap = new HashMap<Integer, Map<String, ?>>();
+    static Map<Integer, Map<String, Object>> _layoutMap =
+            new HashMap<Integer, Map<String, Object>>();
     static Context _context;
     Random RAND = new Random();
 
@@ -91,14 +91,14 @@ public class FieldLayout {
         }
     }
 
-    public static FieldLayout layoutForLevel(int level, World world) {
-        Map<String, ?> levelLayout = _layoutMap.get(level);
+    public static FieldLayout layoutForLevel(int level, WorldLayers worlds) {
+        Map<String, Object> levelLayout = _layoutMap.get(level);
         if (levelLayout == null) {
             levelLayout = readFieldLayout(level);
             _layoutMap.put(level, levelLayout);
         }
         FieldLayout layout = new FieldLayout();
-        layout.initFromLevel(levelLayout, world);
+        layout.initFromLevel(levelLayout, worlds);
         return layout;
     }
 
@@ -125,7 +125,8 @@ public class FieldLayout {
         return Collections.emptyList();
     }
 
-    private FieldElementCollection createFieldElements(Map<String, ?> layoutMap, World world) {
+    private FieldElementCollection createFieldElements(
+            Map<String, Object> layoutMap, WorldLayers worlds) {
         FieldElementCollection elements = new FieldElementCollection();
 
         @SuppressWarnings("unchecked")
@@ -140,13 +141,13 @@ public class FieldLayout {
             if (!(obj instanceof Map)) continue;
             @SuppressWarnings("unchecked")
             Map<String, ?> params = (Map<String, ?>) obj;
-            elements.addElement(FieldElement.createFromParameters(params, elements, world));
+            elements.addElement(FieldElement.createFromParameters(params, elements, worlds));
         }
 
         return elements;
     }
 
-    void initFromLevel(Map<String, ?> layoutMap, World world) {
+    void initFromLevel(Map<String, Object> layoutMap, WorldLayers worlds) {
         this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
@@ -158,13 +159,13 @@ public class FieldLayout {
                 layoutMap, SECONDARY_BALL_COLOR_PROPERTY, DEFAULT_SECONDARY_BALL_COLOR);
         this.launchPosition = asFloatList(listForKey(layoutMap, LAUNCH_POSITION_PROPERTY));
         this.launchVelocity = asFloatList(listForKey(layoutMap, LAUNCH_VELOCITY_PROPERTY));
-        this.launchVelocityRandomDelta = asFloatList(
-                listForKey(layoutMap, LAUNCH_RANDOM_VELOCITY_PROPERTY));
+        this.launchVelocityRandomDelta = asFloatList(listForKey(layoutMap, LAUNCH_RANDOM_VELOCITY_PROPERTY));
         this.launchDeadZoneRect = asFloatList(listForKey(layoutMap, LAUNCH_DEAD_ZONE_PROPERTY));
 
         this.allParameters = layoutMap;
-        this.fieldElements = createFieldElements(layoutMap, world);
+        this.fieldElements = createFieldElements(layoutMap, worlds);
     }
+
 
     private Color colorFromMap(Map<String, ?> map, String key, Color defaultColor) {
         @SuppressWarnings("unchecked")

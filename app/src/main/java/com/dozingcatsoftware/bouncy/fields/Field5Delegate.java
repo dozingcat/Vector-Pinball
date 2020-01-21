@@ -366,8 +366,8 @@ public class Field5Delegate extends BaseFieldDelegate {
         previousSensorIds.put(ball, sensorId);
     }
 
-    @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override public void allDropTargetsInGroupHit(
+            Field field, DropTargetGroupElement targetGroup, Ball ball) {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
@@ -391,8 +391,8 @@ public class Field5Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers) {
+    @Override public void allRolloversInGroupActivated(
+            Field field, RolloverGroupElement rollovers, Ball ball) {
         String id = rollovers.getElementId();
         if ("FlipperRollovers".equals(id)) {
             field.incrementScoreMultiplier();

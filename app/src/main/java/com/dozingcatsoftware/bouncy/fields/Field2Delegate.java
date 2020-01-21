@@ -133,8 +133,8 @@ public class Field2Delegate extends BaseFieldDelegate {
         return true;
     }
 
-    @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+    @Override public void allRolloversInGroupActivated(
+            Field field, RolloverGroupElement rolloverGroup, Ball ball) {
         // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
         field.getGameState().incrementScoreMultiplier();
@@ -166,8 +166,8 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    @Override public void allDropTargetsInGroupHit(
+            Field field, DropTargetGroupElement targetGroup, Ball ball) {
         // activate ball saver for left and right groups, "increment" multiball rollover for
         // left/right/center column
         int startRolloverIndex = -1;

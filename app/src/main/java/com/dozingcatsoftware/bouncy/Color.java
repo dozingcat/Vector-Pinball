@@ -48,8 +48,12 @@ public class Color {
     }
 
     public Color blendedWith(Color other, double fraction) {
-        if (fraction < 0) fraction = 0;
-        if (fraction > 1) fraction = 1;
+        if (fraction <= 0) {
+            return this;
+        }
+        if (fraction >= 1) {
+            return other;
+        }
         return fromRGB(
                 (int) (this.red + (other.red - this.red) * fraction),
                 (int) (this.green + (other.green - this.green) * fraction),

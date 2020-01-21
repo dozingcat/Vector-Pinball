@@ -62,16 +62,10 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
         paint.setStrokeWidth(manager.highQuality ? 2 : 0);
         // call draw() on each FieldElement, draw balls separately
         this.canvas = c;
-
-        for (FieldElement element : manager.getField().getFieldElementsArray()) {
-            element.draw(this);
-        }
-
-        manager.getField().drawBalls(this);
+        manager.getField().draw(this);
 
         this.getHolder().unlockCanvasAndPost(c);
     }
-
 
     // Implementation of IFieldRenderer drawing methods that FieldElement classes can call.
     // Assumes cacheScaleAndOffsets has been called.

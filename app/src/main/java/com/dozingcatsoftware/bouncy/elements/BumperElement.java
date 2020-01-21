@@ -78,7 +78,7 @@ public class BumperElement extends FieldElement {
         }
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         float px = bumperBody.getPosition().x;
         float py = bumperBody.getPosition().y;
         renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
