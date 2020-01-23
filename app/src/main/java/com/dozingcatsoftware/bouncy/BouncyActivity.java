@@ -237,15 +237,17 @@ public class BouncyActivity extends Activity {
         fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", true));
         scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
-        // If switching quality modes or OpenGL/Canvas, reset frame rate manager because maximum
+        // If switching line width or OpenGL/Canvas, reset frame rate manager because maximum
         // achievable frame rate may change.
-        boolean highQuality = prefs.getBoolean("highQuality", false);
-        boolean previousHighQuality = fieldViewManager.isHighQuality();
-        fieldViewManager.setHighQuality(highQuality);
-        if (previousHighQuality != fieldViewManager.isHighQuality()) {
+        int lineWidth = 0;
+        try {
+            lineWidth = Integer.parseInt(prefs.getString("lineWidth", "0"));
+        }
+        catch (NumberFormatException ignored) {}
+        if (lineWidth != fieldViewManager.getCustomLineWidth()) {
+            fieldViewManager.setCustomLineWidth(lineWidth);
             fieldDriver.resetFrameRate();
         }
-        scoreView.setHighQuality(highQuality);
 
         boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
         if (useOpenGL) {

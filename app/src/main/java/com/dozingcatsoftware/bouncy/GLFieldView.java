@@ -51,11 +51,11 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
     GLVertexList lineVertexList;
 
     // Lookup tables for sin/cos, used to draw circles by approximating with polygons.
-    // In high quality mode the polygons have more sides.
+    // Larger circles are drawn with more points.
     static float[] SIN_VALUES = new float[20];
     static float[] COS_VALUES = new float[20];
-    static float[] HQ_SIN_VALUES = new float[40];
-    static float[] HQ_COS_VALUES = new float[40];
+    static float[] HQ_SIN_VALUES = new float[60];
+    static float[] HQ_COS_VALUES = new float[60];
 
     static {
         buildSinCosTables(SIN_VALUES, COS_VALUES);
@@ -86,7 +86,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
 
-        gl.glLineWidth(2);
+        gl.glLineWidth(manager.getLineWidth());
 
         vertexListManager.render(gl);
     }
@@ -118,12 +118,9 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         circleVertexList.addColor(color.red / 255f, color.green / 255f, color.blue / 255f,
                 color.alpha / 255f);
 
-        float[] sinValues = SIN_VALUES;
-        float[] cosValues = COS_VALUES;
-        if (manager.highQuality) {
-            sinValues = HQ_SIN_VALUES;
-            cosValues = HQ_COS_VALUES;
-        }
+        float radiusInPixels = manager.world2pixelX(radius) - manager.world2pixelX(0);
+        float[] sinValues = (radiusInPixels > 60) ? HQ_SIN_VALUES : SIN_VALUES;
+        float[] cosValues = (radiusInPixels > 60) ? HQ_COS_VALUES : COS_VALUES;
         for (int i = 0; i < sinValues.length; i++) {
             float x = cx + radius * sinValues[i];
             float y = cy + radius * cosValues[i];
@@ -185,6 +182,10 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         // Alpha support.
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+
+        // This is supposed to enable antialiased lines, but it seems to both not do that and
+        // to make the lines narrow, ignoring the glLineWidth call above.
+        // gl.glEnable(GL10.GL_LINE_SMOOTH);
 
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();

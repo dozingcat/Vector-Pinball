@@ -6,10 +6,6 @@
     <string name="independent_flippers_pref_summary_on">Stuknięcie aktywuje łapkę po tej samej stronie ekranu</string>
     <string name="independent_flippers_pref_summary_off">Każde stuknięcie aktywuje obie łapki</string>
 
-    <string name="high_quality_pref_title">Wysoka jakość</string>
-    <string name="high_quality_pref_summary_on">Wyższa jakość ale wolniejsza grafika</string>
-    <string name="high_quality_pref_summary_off">Mniejsza jakość ale szybsza grafika</string>
-    
     <string name="sound_pref_title">Dźwięk</string>
     <string name="music_pref_title">Muzyka</string>
     <string name="show_fps_pref_title">Pokaż FPS</string>

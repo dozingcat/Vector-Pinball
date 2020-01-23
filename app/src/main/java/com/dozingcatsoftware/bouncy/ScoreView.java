@@ -123,6 +123,9 @@ public class ScoreView extends View {
         }
         if (gameInProgress) {
             // Draw balls.
+            int ballPaintWidth = getWidth() / 240;
+            usedBallPaint.setStrokeWidth(ballPaintWidth);
+            remainingBallPaint.setStrokeWidth(ballPaintWidth);
             float ballRadius = width / 75f;
             float ballOuterMargin = 2 * ballRadius;
             float ballBetweenSpace = ballRadius;
@@ -221,12 +224,6 @@ public class ScoreView extends View {
     private String formatScore(long score, boolean unlimitedBalls) {
         String s = SCORE_FORMAT.format(score);
         return (unlimitedBalls) ? s + "*" : s;
-    }
-
-    public void setHighQuality(boolean highQuality) {
-        int ballWidth = highQuality ? 2 : 0;
-        remainingBallPaint.setStrokeWidth(ballWidth);
-        usedBallPaint.setStrokeWidth(ballWidth);
     }
 
     public void setField(Field value) {

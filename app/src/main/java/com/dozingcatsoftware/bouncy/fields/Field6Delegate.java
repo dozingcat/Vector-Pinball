@@ -27,7 +27,7 @@ public class Field6Delegate extends BaseFieldDelegate {
     // Distance from sun beyond which gravity is not applied.
     private final double gravityRangeSquared = 8.0 * 8.0;
 
-    private final long rampBonusDurationNanos = 10_000_000_000L;
+    private final long rampBonusDurationNanos = 12_000_000_000L;
     private long rampBonusNanosRemaining = 0;
     private int rampBonusMultiplier = 1;
 
@@ -91,7 +91,7 @@ public class Field6Delegate extends BaseFieldDelegate {
                 field.launchBall();
             }
         });
-        field.scheduleAction(1000, new Runnable() {
+        field.scheduleAction(4000, new Runnable() {
             @Override public void run() {
                 field.launchBall();
                 multiballStatus = MultiballStatus.ACTIVE;
@@ -190,10 +190,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
-        launchBarrier.setRetracted(true);
-
+    void initializePlanets(Field field) {
         sun = (RolloverGroupElement) field.getFieldElementById("Sun");
         sun.setAllRolloversActivated(true);
         orbits = (RolloverGroupElement) field.getFieldElementById("Orbits");
@@ -212,6 +209,12 @@ public class Field6Delegate extends BaseFieldDelegate {
             p.angularVelocity = (0.9 + 0.2 * rand.nextDouble()) / (i + 1);
             p.status = PlanetStatus.OFF;
         }
+    }
+
+    @Override public void gameStarted(Field field) {
+        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        launchBarrier.setRetracted(true);
+        initializePlanets(field);
     }
 
     @Override public boolean isFieldActive(Field field) {
@@ -293,10 +296,12 @@ public class Field6Delegate extends BaseFieldDelegate {
 
     @Override public void tick(Field field, long nanos) {
         if (planets == null) {
-            return;
+            initializePlanets(field);
         }
         // Check for exiting multiball.
-        if (field.getBalls().size()<=1 && multiballStatus == MultiballStatus.ACTIVE) {
+        boolean gameInProgress = field.getGameState().isGameInProgress();
+        if (gameInProgress && field.getBalls().size() <= 1 &&
+                multiballStatus == MultiballStatus.ACTIVE) {
             endMultiball(field);
         }
         // Sync planet states with active balls.
@@ -326,32 +331,34 @@ public class Field6Delegate extends BaseFieldDelegate {
             p.element.setRolloverCenterAtIndex(0, px, py);
         }
         // Apply gravity.
-        List<Ball> balls = field.getBalls();
-        for (int i = 0; i < balls.size(); i++) {
-            Ball ball = balls.get(i);
-            Vector2 ballPos = ball.getPosition();
-            Vector2 sunPos = sun.getRolloverCenterAtIndex(0);
-            double sdx = sunPos.x - ballPos.x;
-            double sdy = sunPos.y - ballPos.y;
-            double sunDistSq = sdx * sdx + sdy * sdy;
-            if (sunDistSq <= gravityRangeSquared) {
-                double sunAngle = Math.atan2(sdy, sdx);
-                double sunForce = sunGravityForce / (gravityDepthSquared + sunDistSq);
-                double forceX = sunForce * Math.cos(sunAngle);
-                double forceY = sunForce * Math.sin(sunAngle);
-                for (Planet planet : planets) {
-                    Vector2 planetPos = planet.element.getRolloverCenterAtIndex(0);
-                    double mass = Math.pow(planet.radius, 3);
-                    double pdx = planetPos.x - ballPos.x;
-                    double pdy = planetPos.y - ballPos.y;
-                    double planetDistSq = pdx * pdx + pdy * pdy;
-                    double planetAngle = Math.atan2(pdy, pdx);
-                    double planetForce =
-                            planetGravityForce * mass / (gravityDepthSquared + planetDistSq);
-                    forceX += planetForce * Math.cos(planetAngle);
-                    forceY += planetForce * Math.sin(planetAngle);
+        if (gameInProgress) {
+            List<Ball> balls = field.getBalls();
+            for (int i = 0; i < balls.size(); i++) {
+                Ball ball = balls.get(i);
+                Vector2 ballPos = ball.getPosition();
+                Vector2 sunPos = sun.getRolloverCenterAtIndex(0);
+                double sdx = sunPos.x - ballPos.x;
+                double sdy = sunPos.y - ballPos.y;
+                double sunDistSq = sdx * sdx + sdy * sdy;
+                if (sunDistSq <= gravityRangeSquared) {
+                    double sunAngle = Math.atan2(sdy, sdx);
+                    double sunForce = sunGravityForce / (gravityDepthSquared + sunDistSq);
+                    double fx = sunForce * Math.cos(sunAngle);
+                    double fy = sunForce * Math.sin(sunAngle);
+                    for (Planet planet : planets) {
+                        Vector2 planetPos = planet.element.getRolloverCenterAtIndex(0);
+                        double mass = Math.pow(planet.radius, 3);
+                        double pdx = planetPos.x - ballPos.x;
+                        double pdy = planetPos.y - ballPos.y;
+                        double planetDistSq = pdx * pdx + pdy * pdy;
+                        double planetAngle = Math.atan2(pdy, pdx);
+                        double planetForce =
+                                planetGravityForce * mass / (gravityDepthSquared + planetDistSq);
+                        fx += planetForce * Math.cos(planetAngle);
+                        fy += planetForce * Math.sin(planetAngle);
+                    }
+                    ball.applyLinearImpulse(new Vector2((float)(dt * fx), (float)(dt * fy)));
                 }
-                ball.applyLinearImpulse(new Vector2((float)(dt * forceX), (float)(dt * forceY)));
             }
         }
     }

@@ -6,10 +6,10 @@
     <string name="independent_flippers_pref_summary_on">A touch activates the flippers on the same side of the screen</string>
     <string name="independent_flippers_pref_summary_off">Any touch activates all flippers</string>
 
-    <string name="high_quality_pref_title">High Quality</string>
-    <string name="high_quality_pref_summary_on">Higher quality but slower graphics</string>
-    <string name="high_quality_pref_summary_off">Lower quality but faster graphics</string>
-    
+    <string name="line_width_pref_title">Line Width</string>
+    <string name="line_width_pref_summary">Width of lines in pixels (0 for default)</string>
+    <string name="line_width_pref_dialog_message">Enter the line width in pixels, or 0 to use a default width based on the screen resolution.</string>
+
     <string name="sound_pref_title">Sound</string>
     <string name="music_pref_title">Background Music</string>
     <string name="show_fps_pref_title">Show FPS</string>

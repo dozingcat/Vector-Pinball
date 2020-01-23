@@ -6,10 +6,6 @@
     <string name="independent_flippers_pref_summary_on">Frapeto aktivigas puŝilon ĉe sama flanko de ekrano</string>
     <string name="independent_flippers_pref_summary_off">Ĉiu frapeto aktivigas ambaŭ puŝilojn</string>
 
-    <string name="high_quality_pref_title">Alta kvalito</string>
-    <string name="high_quality_pref_summary_on">Pli kvalita sed malpli rapida grafiko</string>
-    <string name="high_quality_pref_summary_off">Malpli kvalita sed pli rapida grafiko</string>
-    
     <string name="sound_pref_title">Sonefektoj</string>
     <string name="music_pref_title">Fona muziko</string>
     <string name="show_fps_pref_title">Montri kadrojn sekunde (FPS)</string>

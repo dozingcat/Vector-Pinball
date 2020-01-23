@@ -40,12 +40,10 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         return canDraw;
     }
 
-    boolean highQuality;
-    boolean independentFlippers;
-
     Field field;
-
+    boolean independentFlippers;
     float maxZoom = 1.0f;
+    int customLineWidth = 0;
 
     // x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as
     // elements are drawn.
@@ -63,12 +61,22 @@ public class FieldViewManager implements SurfaceHolder.Callback {
         independentFlippers = value;
     }
 
-    public void setHighQuality(boolean value) {
-        highQuality = value;
+    // Line width can be specified directly, otherwise it's a fraction of the smaller width or
+    // height dimension. A factor of 1/240 works pretty well; on a 1080p display it's 4, which
+    // looks decent and performs reasonably; a Nexus 5x can do 40-50fps with the canvas view.
+    // (OpenGL can get 60fps but has lower visual quality due to not having antialiasing).
+    public void setCustomLineWidth(int lineWidth) {
+        customLineWidth = lineWidth;
     }
 
-    public boolean isHighQuality() {
-        return highQuality;
+    public int getCustomLineWidth() {
+        return customLineWidth;
+    }
+
+    public int getLineWidth() {
+        int w = customLineWidth;
+        int minDim = Math.min(view.getWidth(), view.getHeight());
+        return (w > 0) ? Math.min(w, minDim / 60) : minDim / 240;
     }
 
     public void setStartGameAction(Runnable action) {

@@ -6,10 +6,6 @@
     <string name="independent_flippers_pref_summary_on">Un appui active le flipper du même côté de l\'écran</string>
     <string name="independent_flippers_pref_summary_off">N\'importe quel appui active les 2 flippers</string>
 
-    <string name="high_quality_pref_title">Haute qualité</string>
-    <string name="high_quality_pref_summary_on">Meilleure qualité mais plus lent</string>
-    <string name="high_quality_pref_summary_off">Moins bonne quality mais plus rapide</string>
-    
     <string name="sound_pref_title">Son</string>
     <string name="music_pref_title">Musique de fond</string>
     <string name="show_fps_pref_title">Montrer les FPS</string>
