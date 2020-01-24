@@ -62,7 +62,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     }
 
     // Line width can be specified directly, otherwise it's a fraction of the smaller width or
-    // height dimension. A factor of 1/240 works pretty well; on a 1080p display it's 4, which
+    // height dimension. A factor of 1/216 works pretty well; on a 1080p display it's 5, which
     // looks decent and performs reasonably; a Nexus 5x can do 40-50fps with the canvas view.
     // (OpenGL can get 60fps but has lower visual quality due to not having antialiasing).
     public void setCustomLineWidth(int lineWidth) {
@@ -74,9 +74,11 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     }
 
     public int getLineWidth() {
-        int w = customLineWidth;
+        int cw = customLineWidth;
         int minDim = Math.min(view.getWidth(), view.getHeight());
-        return (w > 0) ? Math.min(w, minDim / 60) : minDim / 240;
+        // Line width of more than 1/60 of the screen size is too thick.
+        int lineWidth = (cw > 0) ? Math.min(cw, minDim / 60) : minDim / 216;
+        return Math.max(lineWidth, 1);
     }
 
     public void setStartGameAction(Runnable action) {

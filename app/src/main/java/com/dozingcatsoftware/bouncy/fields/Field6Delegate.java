@@ -42,22 +42,22 @@ public class Field6Delegate extends BaseFieldDelegate {
 
     private static final Color BLACK = Color.fromRGB(0, 0, 0);
     private final List<Color> planetColors = Arrays.asList(
-            Color.fromRGB(0xFF, 0x55, 0x00),
+            Color.fromRGB(0xFF, 0x99, 0x00),
             Color.fromRGB(0x00, 0x99, 0xFF),
-            Color.fromRGB(0x99, 0x00, 0x00),
+            Color.fromRGB(0xAA, 0x00, 0x00),
             Color.fromRGB(0x00, 0xAA, 0x66),
             Color.fromRGB(0xAA, 0x22, 0xCC));
     private final List<Color> ballColors = Arrays.asList(
-            Color.fromRGB(0xFF, 0x99, 0x44),
-            Color.fromRGB(0x77, 0xCC, 0xFF),
-            Color.fromRGB(0xCC, 0x66, 0x66),
-            Color.fromRGB(0x77, 0xCC, 0xAA),
+            Color.fromRGB(0xFF, 0xBB, 0x44),
+            Color.fromRGB(0x66, 0xBB, 0xFF),
+            Color.fromRGB(0xDD, 0x44, 0x44),
+            Color.fromRGB(0x77, 0xDD, 0xAA),
             Color.fromRGB(0xCC, 0x88, 0xEE));
     private final List<Color> ballSecondaryColors = Arrays.asList(
-            Color.fromRGB(0xCC, 0x77, 0x22),
-            Color.fromRGB(0x55, 0xAA, 0xCC),
-            Color.fromRGB(0xAA, 0x44, 0x44),
-            Color.fromRGB(0x55, 0xAA, 0x88),
+            Color.fromRGB(0xDD, 0x99, 0x22),
+            Color.fromRGB(0x44, 0x99, 0xDD),
+            Color.fromRGB(0xBB, 0x22, 0x22),
+            Color.fromRGB(0x55, 0xBB, 0x88),
             Color.fromRGB(0xAA, 0x66, 0xCC));
 
     private final class Planet {
@@ -294,6 +294,8 @@ public class Field6Delegate extends BaseFieldDelegate {
         }
     }
 
+    Vector2 gravityImpulse = new Vector2();
+
     @Override public void tick(Field field, long nanos) {
         if (planets == null) {
             initializePlanets(field);
@@ -343,8 +345,8 @@ public class Field6Delegate extends BaseFieldDelegate {
                 if (sunDistSq <= gravityRangeSquared) {
                     double sunAngle = Math.atan2(sdy, sdx);
                     double sunForce = sunGravityForce / (gravityDepthSquared + sunDistSq);
-                    double fx = sunForce * Math.cos(sunAngle);
-                    double fy = sunForce * Math.sin(sunAngle);
+                    gravityImpulse.x = (float) (dt * sunForce * Math.cos(sunAngle));
+                    gravityImpulse.y = (float) (dt * sunForce * Math.sin(sunAngle));
                     for (Planet planet : planets) {
                         Vector2 planetPos = planet.element.getRolloverCenterAtIndex(0);
                         double mass = Math.pow(planet.radius, 3);
@@ -354,10 +356,10 @@ public class Field6Delegate extends BaseFieldDelegate {
                         double planetAngle = Math.atan2(pdy, pdx);
                         double planetForce =
                                 planetGravityForce * mass / (gravityDepthSquared + planetDistSq);
-                        fx += planetForce * Math.cos(planetAngle);
-                        fy += planetForce * Math.sin(planetAngle);
+                        gravityImpulse.x += (float) (dt * planetForce * Math.cos(planetAngle));
+                        gravityImpulse.y += (float) (dt * planetForce * Math.sin(planetAngle));
                     }
-                    ball.applyLinearImpulse(new Vector2((float)(dt * fx), (float)(dt * fy)));
+                    ball.applyLinearImpulse(gravityImpulse);
                 }
             }
         }

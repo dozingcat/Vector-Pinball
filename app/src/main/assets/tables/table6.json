@@ -198,7 +198,7 @@
             "radius": "0.5",
             "rollovers": [
                 {
-                    "color": [255, 85, 0, 102],
+                    "color": [255, 153, 0, 102],
                     "position": ["9.4", "15"],
                     "radius": "2"
                 }, 
@@ -208,7 +208,7 @@
                     "radius": "3.2"
                 }, 
                 {
-                    "color": [153, 0, 0, 102],
+                    "color": [170, 0, 0, 102],
                     "position": ["9.4", "15"],
                     "radius": "4.4"
                 }, 
@@ -258,7 +258,7 @@
             "class": "BumperElement",
             "color": [0, 153, 238],
             "kick": "1.0",
-            "position": [13.98, 23.740000000000002],
+            "position": [14.08, 23.740000000000002],
             "radius": "0.35",
             "score": 500
         }, 
@@ -266,7 +266,7 @@
             "class": "BumperElement",
             "color": [0, 153, 255],
             "kick": "1.0",
-            "position": [15.939999999999998, 23.700000000000006],
+            "position": [16.04, 23.700000000000006],
             "radius": "0.35",
             "score": 500
         }, 
@@ -274,14 +274,14 @@
             "class": "BumperElement",
             "color": [0, 153, 255],
             "kick": "1.0",
-            "position": [14.840000000000002, 22.06],
+            "position": [14.94, 22.06],
             "radius": "0.35",
             "score": 500
         }, 
         {
             "center": ["15.2", "23.8"],
             "class": "WallArcElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "inactiveLayerColor": [136, 136, 136, 102],
             "layer": 3,
             "maxangle": "180",
@@ -293,7 +293,7 @@
         {
             "center": ["14.9", "24.6"],
             "class": "WallArcElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "inactiveLayerColor": [136, 136, 136, 102],
             "layer": 3,
             "maxangle": "180",
@@ -308,7 +308,7 @@
         }, 
         {
             "class": "WallPathElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "inactiveLayerColor": [136, 136, 136, 68],
             "layer": 3,
             "positions": [
@@ -319,7 +319,7 @@
         }, 
         {
             "class": "WallPathElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "inactiveLayerColor": [136, 136, 136, 68],
             "layer": 3,
             "positions": [
@@ -331,7 +331,7 @@
         {
             "center": ["15.2", "23.8"],
             "class": "WallArcElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "layer": 0,
             "maxangle": "180",
             "minangle": "152",
@@ -342,7 +342,7 @@
         {
             "center": ["14.9", "24.6"],
             "class": "WallArcElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "maxangle": "180",
             "minangle": "138",
             "segments": 30,
@@ -410,7 +410,6 @@
             "center": ["14.9", "24.9"],
             "class": "WallArcElement",
             "color": [170, 34, 204],
-            "inactiveLayerColor": [0, 0, 0, 0],
             "layer": 2,
             "maxangle": "360",
             "minangle": "315",
@@ -529,7 +528,6 @@
             "center": ["5.1", "24.9"],
             "class": "WallArcElement",
             "color": [170, 34, 204],
-            "inactiveLayerColor": [0, 0, 0, 0],
             "layer": 2,
             "maxangle": "225",
             "minangle": "180",
@@ -711,7 +709,7 @@
         }, 
         {
             "class": "DropTargetGroupElement",
-            "color": [255, 85, 0],
+            "color": [255, 153, 0],
             "gapBetweenTargets": "0.3",
             "gapFromWall": "-0.2",
             "id": "Planet1Targets",
@@ -731,7 +729,7 @@
         }, 
         {
             "class": "BumperElement",
-            "color": [255, 85, 0],
+            "color": [255, 153, 0],
             "kick": "1.2",
             "position": [4.159999999999999, 24.34],
             "radius": "0.45",
@@ -739,7 +737,7 @@
         }, 
         {
             "class": "RolloverGroupElement",
-            "color": [255, 85, 0],
+            "color": [255, 153, 0],
             "id": "Planet1",
             "ignoreBall": false,
             "radius": "0.27",
@@ -763,7 +761,7 @@
         }, 
         {
             "class": "RolloverGroupElement",
-            "color": [153, 0, 0],
+            "color": [170, 0, 0],
             "id": "Planet3",
             "ignoreBall": false,
             "radius": "0.31",
