@@ -21,7 +21,6 @@
 
 		<EditTextPreference android:key="lineWidth" android:enabled="true"
 			android:title="@string/line_width_pref_title"
-			android:summary="@string/line_width_pref_summary"
 			android:dialogMessage="@string/line_width_pref_dialog_message"
 			android:inputType="number" />
 
