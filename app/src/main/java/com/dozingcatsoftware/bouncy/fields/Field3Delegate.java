@@ -19,7 +19,7 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field3Delegate extends BaseFieldDelegate {
 
-    static Color[] TEMPERATURE_COLORS = {
+    static int[] TEMPERATURE_COLORS = {
             // Blue to cyan in steps of 16.
             Color.fromRGB(0, 0, 255),
             Color.fromRGB(0, 16, 255),
@@ -79,7 +79,7 @@ public class Field3Delegate extends BaseFieldDelegate {
             Color.fromRGB(255, 0, 0),
     };
 
-    static Color colorForTemperatureRatio(double ratio) {
+    static int colorForTemperatureRatio(double ratio) {
         int len = TEMPERATURE_COLORS.length;
         if (ratio <= 0) return TEMPERATURE_COLORS[0];
         if (ratio >= 1) return TEMPERATURE_COLORS[len - 1];
@@ -222,7 +222,7 @@ public class Field3Delegate extends BaseFieldDelegate {
             else {
                 double fractionElapsed =
                         ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
-                Color color = colorForTemperatureRatio(1 - fractionElapsed);
+                int color = colorForTemperatureRatio(1 - fractionElapsed);
                 for (FieldElement bumper : bumperElements) {
                     bumper.setNewColor(color);
                 }
@@ -360,7 +360,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
-    Color colorForMultiballFlasher(int index) {
+    int colorForMultiballFlasher(int index) {
         return colorForTemperatureRatio(Math.abs(multiballFlashValues[index] - 1));
     }
 

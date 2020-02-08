@@ -3,38 +3,26 @@ package com.dozingcatsoftware.bouncy;
 import java.util.List;
 
 /**
- * An immutable RGB color.
+ * Functions for working with colors, represented as 32-bit ints with byte order ARGB.
  */
-// TODO: cache instances.
 public class Color {
-    public final int red, green, blue, alpha;
-    private Color inverse;
 
-    private Color(int r, int g, int b, int a, Color inverse) {
-        this.red = r;
-        this.green = g;
-        this.blue = b;
-        this.alpha = a;
-        if (inverse == null) {
-            inverse = new Color(255 - r, 255 - g, 255 - b, a, this);
-        }
-        this.inverse = inverse;
+    private Color() {}
+
+    public static int fromRGB(int r, int g, int b) {
+        return fromRGBA(r, g, b, 255);
     }
 
-    public static Color fromRGB(int r, int g, int b) {
-        return new Color(r, g, b, 255, null);
+    public static int fromRGBA(int r, int g, int b, int a) {
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static Color fromRGB(int r, int g, int b, int a) {
-        return new Color(r, g, b, a, null);
-    }
-
-    public static Color fromList(List<Number> rgb) {
+    public static int fromList(List<Number> rgb) {
         if (rgb.size() == 3) {
             return fromRGB(rgb.get(0).intValue(), rgb.get(1).intValue(), rgb.get(2).intValue());
         }
         else if (rgb.size() == 4) {
-            return fromRGB(
+            return fromRGBA(
                     rgb.get(0).intValue(), rgb.get(1).intValue(),
                     rgb.get(2).intValue(), rgb.get(3).intValue());
         }
@@ -43,33 +31,45 @@ public class Color {
         }
     }
 
-    public Color inverted() {
-        return inverse;
+    public static int getRed(int color) {
+        return (color >> 16 ) & 0xff;
     }
 
-    public Color blendedWith(Color other, double fraction) {
+    public static int getGreen(int color) {
+        return (color >> 8) & 0xff;
+    }
+
+    public static int getBlue(int color) {
+        return color & 0xff;
+    }
+
+    public static int getAlpha(int color) {
+        return (color >> 24) & 0xff;
+    }
+
+    public static int inverse(int color) {
+        return withAlpha(~color, getAlpha(color));
+    }
+
+    public static int withAlpha(int color, int a) {
+        return (color & 0xffffff) | (a << 24);
+    }
+
+    public static int blend(int start, int end, double fraction) {
         if (fraction <= 0) {
-            return this;
+            return start;
         }
         if (fraction >= 1) {
-            return other;
+            return end;
         }
-        return fromRGB(
-                (int) (this.red + (other.red - this.red) * fraction),
-                (int) (this.green + (other.green - this.green) * fraction),
-                (int) (this.blue + (other.blue - this.blue) * fraction),
-                (int) (this.alpha + (other.alpha - this.alpha) * fraction));
+        return fromRGBA(
+                (int) (getRed(start) + (getRed(end) - getRed(start)) * fraction),
+                (int) (getGreen(start) + (getGreen(end) - getGreen(start)) * fraction),
+                (int) (getBlue(start) + (getBlue(end) - getBlue(start)) * fraction),
+                (int) (getAlpha(start) + (getAlpha(end) - getAlpha(start)) * fraction));
     }
 
-    @Override public boolean equals(Object obj) {
-        if (obj instanceof Color) {
-            Color o = (Color) obj;
-            return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;
-        }
-        return false;
-    }
-
-    @Override public int hashCode() {
-        return (red << 24) | (green << 16) | (blue << 8) | alpha;
+    public static int toARGB(int color) {
+        return color;
     }
 }

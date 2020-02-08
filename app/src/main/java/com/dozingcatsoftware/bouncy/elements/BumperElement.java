@@ -25,7 +25,7 @@ public class BumperElement extends FieldElement {
     public static final String RADIUS_PROPERTY = "radius";
     public static final String KICK_PROPERTY = "kick";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
     Body bumperBody;
     List<Body> bumperBodySet;

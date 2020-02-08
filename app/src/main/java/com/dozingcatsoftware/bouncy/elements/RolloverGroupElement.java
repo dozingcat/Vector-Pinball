@@ -40,12 +40,12 @@ public class RolloverGroupElement extends FieldElement {
         Vector2 position;
         float radius;
         float radiusSquared; // Optimization when computing whether ball is in range.
-        Color color;
+        Integer color;
         long score;
         float resetDelay;
     }
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     boolean cycleOnFlipper;
     boolean canToggleOff;
@@ -166,7 +166,7 @@ public class RolloverGroupElement extends FieldElement {
         rollovers.get(index).radius = radius;
     }
 
-    public void setRolloverColorAtIndex(int index, Color color) {
+    public void setRolloverColorAtIndex(int index, Integer color) {
         rollovers.get(index).color = color;
     }
 
@@ -295,14 +295,14 @@ public class RolloverGroupElement extends FieldElement {
         if (!this.isVisible) return;
 
         // default color defined at the group level
-        Color groupColor = currentColor(DEFAULT_COLOR);
+        int groupColor = currentColor(DEFAULT_COLOR);
 
         // for each rollover, draw outlined circle for inactive or filled circle for active
         int rsize = this.rollovers.size();
         for (int i = 0; i < rsize; i++) {
             Rollover r = this.rollovers.get(i);
             // use custom rollover color if available
-            Color color = (r.color != null) ? r.color : groupColor;
+            int color = (r.color != null) ? r.color : groupColor;
 
             if (activeRollovers.contains(r)) {
                 renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
