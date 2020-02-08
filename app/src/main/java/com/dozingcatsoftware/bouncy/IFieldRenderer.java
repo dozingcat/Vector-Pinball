@@ -9,11 +9,11 @@ public interface IFieldRenderer {
 
     void setManager(FieldViewManager manager);
 
-    void drawLine(float x1, float y1, float x2, float y2, Color color);
+    void drawLine(float x1, float y1, float x2, float y2, int color);
 
-    void fillCircle(float cx, float cy, float radius, Color color);
+    void fillCircle(float cx, float cy, float radius, int color);
 
-    void frameCircle(float cx, float cy, float radius, Color color);
+    void frameCircle(float cx, float cy, float radius, int color);
 
     void doDraw();
 

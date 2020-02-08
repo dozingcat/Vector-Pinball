@@ -58,7 +58,7 @@ public class DropTargetGroupElement extends FieldElement {
     public static final String RESET_DELAY_PROPERTY = "reset";
     public static final String NUM_TARGETS_PROPERTY = "numTargets";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     // Store all bodies and positions, use Body's active flag to determine which targets were hit.
     List<Body> allBodies = new ArrayList<Body>();
@@ -155,7 +155,7 @@ public class DropTargetGroupElement extends FieldElement {
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
         // draw line for each target
-        Color color = currentColor(DEFAULT_COLOR);
+        int color = currentColor(DEFAULT_COLOR);
         int bsize = allBodies.size();
         for (int i = 0; i < bsize; i++) {
             Body body = allBodies.get(i);

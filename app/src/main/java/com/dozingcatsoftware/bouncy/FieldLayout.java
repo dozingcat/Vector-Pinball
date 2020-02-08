@@ -109,16 +109,16 @@ public class FieldLayout {
     float gravity;
     int numberOfBalls;
     float ballRadius;
-    Color ballColor;
-    Color secondaryBallColor;
+    int ballColor;
+    int secondaryBallColor;
     float targetTimeRatio;
     List<Float> launchPosition;
     List<Float> launchVelocity;
     List<Float> launchVelocityRandomDelta;
     List<Float> launchDeadZoneRect;
 
-    static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
-    static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
+    static final int DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
+    static final int DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
     static List<?> listForKey(Map<?, ?> map, Object key) {
         if (map.containsKey(key)) return (List<?>) map.get(key);
@@ -167,7 +167,7 @@ public class FieldLayout {
     }
 
 
-    private Color colorFromMap(Map<String, ?> map, String key, Color defaultColor) {
+    private int colorFromMap(Map<String, ?> map, String key, int defaultColor) {
         @SuppressWarnings("unchecked")
         List<Number> value = (List<Number>) map.get(key);
         return (value != null) ? Color.fromList(value) : defaultColor;
@@ -193,11 +193,11 @@ public class FieldLayout {
         return ballRadius;
     }
 
-    public Color getBallColor() {
+    public int getBallColor() {
         return ballColor;
     }
 
-    public Color getSecondaryBallColor() {
+    public int getSecondaryBallColor() {
         return secondaryBallColor;
     }
 

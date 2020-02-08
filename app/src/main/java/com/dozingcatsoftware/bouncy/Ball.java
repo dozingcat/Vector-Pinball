@@ -15,12 +15,12 @@ public class Ball implements IDrawable {
     private WorldLayers worlds;
     private int layer;
     private Body body;
-    private Color primaryColor;
-    private Color secondaryColor;
+    private int primaryColor;
+    private int secondaryColor;
     private String previousSensorId;
 
     private Ball(
-            WorldLayers worlds, int layer, Body body, Color primaryColor, Color secondaryColor) {
+            WorldLayers worlds, int layer, Body body, int primaryColor, int secondaryColor) {
         this.worlds = worlds;
         this.layer = layer;
         this.body = body;
@@ -30,7 +30,7 @@ public class Ball implements IDrawable {
 
     public static Ball create(
             WorldLayers worlds, int layer, float x, float y, float radius,
-            Color primaryColor, Color secondaryColor) {
+            int primaryColor, int secondaryColor) {
         Body body = createBody(worlds.existingWorldForLayer(layer), x, y, radius);
         return new Ball(worlds, layer, body, primaryColor, secondaryColor);
     }
@@ -83,19 +83,19 @@ public class Ball implements IDrawable {
         return shape.getRadius();
     }
 
-    public Color getPrimaryColor() {
+    public int getPrimaryColor() {
         return primaryColor;
     }
 
-    public void setPrimaryColor(Color primaryColor) {
+    public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
     }
 
-    public Color getSecondaryColor() {
+    public int getSecondaryColor() {
         return secondaryColor;
     }
 
-    public void setSecondaryColor(Color secondaryColor) {
+    public void setSecondaryColor(int secondaryColor) {
         this.secondaryColor = secondaryColor;
     }
 

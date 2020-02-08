@@ -40,25 +40,25 @@ public class Field5Delegate extends BaseFieldDelegate {
         return map;
     }
 
-    private static Map<BallColor, Color> BALL_PRIMARY_COLORS = buildBallColorMap(
+    private static Map<BallColor, Integer> BALL_PRIMARY_COLORS = buildBallColorMap(
             Color.fromRGB(0x66, 0x88, 0xEE),
             Color.fromRGB(0xEE, 0x88, 0x88),
             Color.fromRGB(0xCC, 0xCC, 0x77),
             Color.fromRGB(0x77, 0xDD, 0x77));
 
-    private static Map<BallColor, Color> BALL_SECONDARY_COLORS = buildBallColorMap(
+    private static Map<BallColor, Integer> BALL_SECONDARY_COLORS = buildBallColorMap(
             Color.fromRGB(0x44, 0x66, 0xCC),
             Color.fromRGB(0xCC, 0x66, 0x66),
             Color.fromRGB(0xAA, 0xAA, 0x55),
             Color.fromRGB(0x55, 0xBB, 0x55));
 
-    private static Map<BallColor, Color> WALL_COLORS = buildBallColorMap(
+    private static Map<BallColor, Integer> WALL_COLORS = buildBallColorMap(
             Color.fromRGB(0x00, 0x66, 0xFF),
             Color.fromRGB(0xCC, 0x00, 0x00),
             Color.fromRGB(0xCC, 0xCC, 0x00),
             Color.fromRGB(0x00, 0xCC, 0x00));
 
-    private static Map<BallColor, Color> DISABLED_ROLLOVER_COLORS = buildBallColorMap(
+    private static Map<BallColor, Integer> DISABLED_ROLLOVER_COLORS = buildBallColorMap(
             Color.fromRGB(0x00, 0x33, 0x66),
             Color.fromRGB(0x66, 0x00, 0x00),
             Color.fromRGB(0x66, 0x66, 0x00),
@@ -99,9 +99,9 @@ public class Field5Delegate extends BaseFieldDelegate {
     }
 
     private BallColor getBallColor(Ball ball) {
-        Color primaryColor = ball.getPrimaryColor();
+        int primaryColor = ball.getPrimaryColor();
         for (BallColor ballColor : BALL_COLOR_VALUES) {
-            if (primaryColor.equals(BALL_PRIMARY_COLORS.get(ballColor))) {
+            if (primaryColor == BALL_PRIMARY_COLORS.get(ballColor)) {
                 return ballColor;
             }
         }

@@ -40,20 +40,20 @@ public class Field6Delegate extends BaseFieldDelegate {
     private MultiballStatus multiballStatus = MultiballStatus.INACTIVE;
     private int multiballJackpotMultiplier = 1;
 
-    private static final Color BLACK = Color.fromRGB(0, 0, 0);
-    private final List<Color> planetColors = Arrays.asList(
+    private static final int BLACK = Color.fromRGB(0, 0, 0);
+    private final List<Integer> planetColors = Arrays.asList(
             Color.fromRGB(0xFF, 0x99, 0x00),
             Color.fromRGB(0x00, 0x99, 0xFF),
             Color.fromRGB(0xAA, 0x00, 0x00),
             Color.fromRGB(0x00, 0xAA, 0x66),
             Color.fromRGB(0xAA, 0x22, 0xCC));
-    private final List<Color> ballColors = Arrays.asList(
+    private final List<Integer> ballColors = Arrays.asList(
             Color.fromRGB(0xFF, 0xBB, 0x44),
             Color.fromRGB(0x66, 0xBB, 0xFF),
             Color.fromRGB(0xDD, 0x44, 0x44),
             Color.fromRGB(0x77, 0xDD, 0xAA),
             Color.fromRGB(0xCC, 0x88, 0xEE));
-    private final List<Color> ballSecondaryColors = Arrays.asList(
+    private final List<Integer> ballSecondaryColors = Arrays.asList(
             Color.fromRGB(0xDD, 0x99, 0x22),
             Color.fromRGB(0x44, 0x99, 0xDD),
             Color.fromRGB(0xBB, 0x22, 0x22),
@@ -62,7 +62,7 @@ public class Field6Delegate extends BaseFieldDelegate {
 
     private final class Planet {
         RolloverGroupElement element;
-        Color color;
+        int color;
         double radius;
         double angle;
         double angularVelocity;
@@ -161,10 +161,10 @@ public class Field6Delegate extends BaseFieldDelegate {
     }
 
     private boolean anyBallHasColorForPlanetIndex(Field field, int planetIndex) {
-        Color color = ballColors.get(planetIndex);
+        int color = ballColors.get(planetIndex);
         List<Ball> balls = field.getBalls();
         for (int i = 0; i < balls.size(); i++) {
-            if (balls.get(i).getPrimaryColor().equals(color)) {
+            if (balls.get(i).getPrimaryColor() == color) {
                 return true;
             }
         }
@@ -186,7 +186,7 @@ public class Field6Delegate extends BaseFieldDelegate {
             // In-progress planets cycle between 30% and 100% of their full color.
             double phase = (p.status == PlanetStatus.IN_PROGRESS) ?
                     (1 + Math.sin(inProgressPlanetPhase)) * 0.35 : 0;
-            p.element.setRolloverColorAtIndex(0, p.color.blendedWith(BLACK, phase));
+            p.element.setRolloverColorAtIndex(0, Color.blend(p.color, BLACK, phase));
         }
     }
 

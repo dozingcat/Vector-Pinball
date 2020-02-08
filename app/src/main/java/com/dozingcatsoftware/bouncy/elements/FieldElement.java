@@ -31,9 +31,9 @@ public abstract class FieldElement implements IDrawable {
     World box2dWorld;
     String elementID;
     int layer = 0;
-    Color initialColor;
-    Color newColor;
-    Color inactiveLayerColor;
+    Integer initialColor;
+    Integer newColor;
+    Integer inactiveLayerColor;
     // Between 0 and 1, increases if a ball is at this element's layer, decreases if not.
     double layerColorFraction = 0;
 
@@ -41,7 +41,7 @@ public abstract class FieldElement implements IDrawable {
     long score = 0;
 
     // Default wall color shared by WallElement, WallArcElement, WallPathElement.
-    static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
+    static final int DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
 
     /**
      * Creates and returns a FieldElement object from the given map of parameters. The class to
@@ -239,7 +239,7 @@ public abstract class FieldElement implements IDrawable {
         return score;
     }
 
-    public void setNewColor(Color value) {
+    public void setNewColor(Integer value) {
         this.newColor = value;
     }
 
@@ -247,13 +247,13 @@ public abstract class FieldElement implements IDrawable {
      * Gets the current color by using the defined color if set and the default color if not, and
      * inverting if the element is flashing. Subclasses can override.
      */
-    protected Color currentColor(Color defaultColor) {
-        Color baseColor = (this.newColor != null) ?
+    protected int currentColor(int defaultColor) {
+        int baseColor = (this.newColor != null) ?
                 this.newColor :
                 (this.initialColor != null) ? this.initialColor : defaultColor;
         if (this.inactiveLayerColor != null && this.layerColorFraction < 1) {
-            return this.inactiveLayerColor.blendedWith(baseColor, this.layerColorFraction);
+            return Color.blend(this.inactiveLayerColor, baseColor, this.layerColorFraction);
         }
-        return (flashCounter > 0) ? baseColor.inverted() : baseColor;
+        return (flashCounter > 0) ? Color.inverse(baseColor) : baseColor;
     }
 }
