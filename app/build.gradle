@@ -19,6 +19,6 @@ android {
 
 // jars and native libraries retrieved from https://oss.sonatype.org/content/repositories/releases/com/badlogicgames/gdx/
 dependencies {
-    implementation files('libs/gdx-box2d-1.9.9.jar')
-    implementation files('libs/gdx-1.9.9.jar')
+    implementation files('libs/gdx-box2d-1.9.10.jar')
+    implementation files('libs/gdx-1.9.10.jar')
 }
