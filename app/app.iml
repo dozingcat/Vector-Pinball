@@ -89,7 +89,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: __local_aars__:/home/brian/programs/Vector-Pinball/app/libs/gdx-box2d-1.9.9.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:/home/brian/programs/Vector-Pinball/app/libs/gdx-1.9.9.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/home/brian/programs/Vector-Pinball/app/libs/gdx-box2d-1.9.10.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/home/brian/programs/Vector-Pinball/app/libs/gdx-1.9.10.jar:unspecified@jar" level="project" />
   </component>
 </module>
