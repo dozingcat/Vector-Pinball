@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -31,6 +32,10 @@ public class AboutActivity extends Activity {
 
         TextView tv = (TextView) findViewById(R.id.aboutTextView);
         tv.setText(displayText);
+        // Padding based on screen
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int padding = Math.min(metrics.widthPixels, metrics.heightPixels) / 25;
+        tv.setPadding(padding, padding, padding, padding);
     }
 
     public static Intent startForLevel(Context context, int level) {
