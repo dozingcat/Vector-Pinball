@@ -1,0 +1,3 @@
+- New table with ramps, orbiting planets, and sun with gravity.
+- Improved graphics quality.
+

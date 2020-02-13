@@ -1,0 +1,2 @@
+- Option for unlimited balls when starting a new game. (This will disable high scores).
+

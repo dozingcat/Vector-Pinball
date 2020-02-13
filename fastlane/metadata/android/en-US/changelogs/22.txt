@@ -1,0 +1,2 @@
+- Runs in 64-bit mode if available.
+
