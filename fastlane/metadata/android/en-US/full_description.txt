@@ -1,0 +1,3 @@
+Pinball game with simple vector graphics and six table layouts, using a physics library for accurate simulation. 
+
+See the GitHub project page at https://github.com/dozingcat/Vector-Pinball if you'd like to help with coding or designing tables.
