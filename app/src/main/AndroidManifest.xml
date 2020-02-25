@@ -10,9 +10,13 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.VPTheme" >
+        <!--
+            "uiMode" in android:configChanges prevents the app from restarting when battery saver
+            mode is turned on or off. See https://github.com/flutter/flutter/issues/25626
+        -->
         <activity
             android:name=".BouncyActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:configChanges="keyboard|keyboardHidden|orientation|uiMode"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
