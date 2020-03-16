@@ -127,6 +127,16 @@ public class Field5Delegate extends BaseFieldDelegate {
         return null;
     }
 
+    private boolean allRolloversActiveForColor(BallColor ballColor) {
+        List<RolloverGroupElement> rollovers = centerRolloversByColor.get(ballColor);
+        for (int i = 0; i < rollovers.size(); i++) {
+            if (!rollovers.get(i).allRolloversActive()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void updateCenterRollovers(Field field) {
         for (BallColor ballColor : BALL_COLOR_VALUES) {
             boolean hasColor = hasBallWithColor(field, ballColor) || IGNORE_BALL_COLOR;
@@ -181,7 +191,7 @@ public class Field5Delegate extends BaseFieldDelegate {
 
     private void checkForRamp(Field field, Ball ball, String sensorId, BallColor ballColor) {
         if (sensorId.equals(previousSensorIds.get(ball))) {
-            if (!hasBallWithColor(field, ballColor)) {
+            if (!hasBallWithColor(field, ballColor) && !allRolloversActiveForColor(ballColor)) {
                 setBallColor(ball, ballColor);
                 updateCenterRollovers(field);
             }
