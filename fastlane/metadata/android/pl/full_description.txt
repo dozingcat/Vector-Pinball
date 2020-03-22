@@ -1,0 +1,3 @@
+Gra w pinball z prostą wektorową grafiką i sześcioma stołami, używająca biblioteki dla realistycznej symulacji fizyki.
+
+Odwiedź stronę projektu na GitHubie <a href="https://github.com/dozingcat/Vector-Pinball">https://github.com/dozingcat/Vector-Pinball</a>, jeżeli chciał(a)byś pomóc programować lub projektować nowe stoły.
