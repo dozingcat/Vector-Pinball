@@ -85,7 +85,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         // "Starting" state until the last ball is launched so we don't exit multiball until then.
         multiballStatus = MultiballStatus.STARTING;
         multiballJackpotMultiplier = 1;
-        field.showGameMessage("Multiball!", 4000);
+        field.showGameMessage(field.resolveString("multiball_started_message"), 4000);
         field.scheduleAction(1000, new Runnable() {
             @Override public void run() {
                 field.launchBall();
@@ -128,9 +128,11 @@ public class Field6Delegate extends BaseFieldDelegate {
                     startMultiball(field);
                 }
                 else {
-                    String prefix = (multiballJackpotMultiplier > 1) ?
-                            (multiballJackpotMultiplier + "x ") : "";
-                    String msg = prefix + "Jackpot!";
+                    String msg = multiballJackpotMultiplier > 1 ?
+                            field.resolveString(
+                                    "jackpot_received_with_multiplier_message",
+                                    multiballJackpotMultiplier) :
+                            field.resolveString("jackpot_received_message");
                     field.showGameMessage(msg, 2000);
                     field.addScore(multiballJackpotScore * multiballJackpotMultiplier);
                     multiballJackpotMultiplier += 1;
@@ -140,7 +142,8 @@ public class Field6Delegate extends BaseFieldDelegate {
                 }
             }
             else {
-                field.showGameMessage("Planet " + (planetIndex + 1) + " Activated!", 1500);
+                String msg = field.resolveString("planet_activated_message", planetIndex + 1);
+                field.showGameMessage(msg, 1500);
             }
         }
     }
@@ -149,7 +152,8 @@ public class Field6Delegate extends BaseFieldDelegate {
             Field field, Ball ball, String prevSensorId, long points, Integer planetIndex) {
         if (prevSensorId.equals(ball.getPreviousSensorId())) {
             if (rampBonusMultiplier > 1) {
-                field.showGameMessage(rampBonusMultiplier + "x Ramp", 1000);
+                String msg = field.resolveString("ramp_bonus_message", rampBonusMultiplier);
+                field.showGameMessage(msg, 1000);
             }
             rampBonusNanosRemaining = rampBonusDurationNanos;
             field.addScore(points * rampBonusMultiplier);
@@ -253,11 +257,11 @@ public class Field6Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             ((WallElement) field.getFieldElementById("BallSaver-left")).setRetracted(false);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
             ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("Planet1Targets".equals(id)) {
             field.addScore(planet1TargetsScore);
@@ -270,8 +274,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         String id = group.getElementId();
         if ("FlipperRollovers".equals(id)) {
             group.setAllRolloversActivated(false);
-            field.incrementScoreMultiplier();
-            field.showGameMessage(((int) field.getScoreMultiplier()) + "x Multiplier", 1500);
+            field.incrementAndDisplayScoreMultiplier(1500);
         }
         else if ("Planet2Rollovers".equals(id)) {
             group.setAllRolloversActivated(false);

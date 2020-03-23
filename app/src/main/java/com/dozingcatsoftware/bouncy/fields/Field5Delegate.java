@@ -18,7 +18,18 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field5Delegate extends BaseFieldDelegate {
 
-    private enum BallColor {BLUE, RED, YELLOW, GREEN}
+    private enum BallColor {
+        BLUE("color_blue"),
+        RED("color_red"),
+        YELLOW("color_yellow"),
+        GREEN("color_green");
+
+        public final String colorNameKey;
+
+        BallColor(String key) {
+            this.colorNameKey = key;
+        }
+    }
 
     private enum MultiballStatus {NOT_READY, READY, STARTING, ACTIVE}
 
@@ -175,15 +186,18 @@ public class Field5Delegate extends BaseFieldDelegate {
         if (allLinesVisible) {
             if (multiballStatus == MultiballStatus.ACTIVE) {
                 multiballJackpotCount += 1;
-                String prefix = (multiballJackpotCount > 1) ? multiballJackpotCount + "x " : "";
-                field.showGameMessage(prefix + "Jackpot!", 3000);
+                String msg = multiballJackpotCount > 1 ?
+                        field.resolveString(
+                                "jackpot_received_with_multiplier_message", multiballJackpotCount) :
+                        field.resolveString("jackpot_received_message");
+                field.showGameMessage(msg, 3000);
                 field.addScore(JACKPOT_BASE_SCORE * multiballJackpotCount);
                 // This will make a recursive call to updateCenterLines,
                 // but only one because all the lines will be hidden
                 resetCenter(field);
             }
             else if (multiballStatus == MultiballStatus.NOT_READY) {
-                field.showGameMessage("Shoot the pyramid!", 3000);
+                field.showGameMessage(field.resolveString("shoot_pyramid_message"), 3000);
                 multiballStatus = MultiballStatus.READY;
             }
         }
@@ -216,9 +230,11 @@ public class Field5Delegate extends BaseFieldDelegate {
         updateCenterLines(field);
     }
 
-    private void incrementRampBonus(Field field, BallColor ballColor, String name) {
+    private void incrementRampBonus(Field field, BallColor ballColor) {
         rampBonuses.put(ballColor, rampBonuses.get(ballColor) + 10);
-        field.showGameMessage(name + " ramp +" + rampBonuses.get(ballColor) + "%", 1500);
+        String msg = field.resolveString("color_ramp_bonus_message",
+                field.resolveString(ballColor.colorNameKey), rampBonuses.get(ballColor));
+        field.showGameMessage(msg, 1500);
     }
 
     private void restoreLeftBallSaver(Field field) {
@@ -270,7 +286,7 @@ public class Field5Delegate extends BaseFieldDelegate {
 
     private void doExtraBall(Field field) {
         field.addExtraBall();
-        field.showGameMessage("Extra Ball!", 3000);
+        field.showGameMessage(field.resolveString("extra_ball_received_message"), 3000);
     }
 
     private void resetExtraBallIfNeeded() {
@@ -381,23 +397,23 @@ public class Field5Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
             restoreRightBallSaver(field);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("DropTargets_BlueRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.BLUE, "Blue");
+            incrementRampBonus(field, BallColor.BLUE);
         }
         else if ("DropTargets_RedRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.RED, "Red");
+            incrementRampBonus(field, BallColor.RED);
         }
         else if ("DropTargets_YellowRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.YELLOW, "Yellow");
+            incrementRampBonus(field, BallColor.YELLOW);
         }
         else if ("DropTargets_GreenRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.GREEN, "Green");
+            incrementRampBonus(field, BallColor.GREEN);
         }
     }
 
@@ -405,8 +421,7 @@ public class Field5Delegate extends BaseFieldDelegate {
             Field field, RolloverGroupElement rollovers, Ball ball) {
         String id = rollovers.getElementId();
         if ("FlipperRollovers".equals(id)) {
-            field.incrementScoreMultiplier();
-            field.showGameMessage(((int) field.getScoreMultiplier()) + "x Multiplier", 1500);
+            field.incrementAndDisplayScoreMultiplier(1500);
             rollovers.setAllRolloversActivated(false);
         }
         else if (rollovers == triangleCenterRollover) {

@@ -171,9 +171,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         else {
             // Rollover groups increment field multiplier when all rollovers are activated.
             rolloverGroup.setAllRolloversActivated(false);
-            field.getGameState().incrementScoreMultiplier();
-            field.showGameMessage(((int) field.getGameState().getScoreMultiplier()) + "x " +
-                    "Multiplier", 1500);
+            field.incrementAndDisplayScoreMultiplier(1500);
         }
     }
 
@@ -183,11 +181,11 @@ public class Field3Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
             restoreRightBallSaver(field);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("LowerMultiballTargets".equals(id)) {
             // Increase bumper bonus duration.
@@ -329,7 +327,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     void startMultiball(final Field field) {
-        field.showGameMessage("Multiball!", 2000);
+        field.showGameMessage(field.resolveString("multiball_started_message"), 2000);
         multiballStatus = MultiballStatus.PENDING;
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);

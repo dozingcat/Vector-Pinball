@@ -44,7 +44,12 @@ public class BouncyActivity extends Activity {
         @Override public void run() {tick();}
     };
 
-    Field field = new Field();
+    Field field = new Field(new IStringResolver() {
+        @Override public String resolveString(String key, Object... params) {
+            int stringId = getResources().getIdentifier(key, "string", getPackageName());
+            return getString(stringId, params);
+        }
+    });
     int level = 1;
     List<Long> highScores;
     static int MAX_NUM_HIGH_SCORES = 5;

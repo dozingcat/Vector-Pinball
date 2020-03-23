@@ -201,19 +201,21 @@ public class ScoreView extends View {
     String displayedGameOverMessage(long lastScore, boolean unlimitedBalls) {
         switch (gameOverMessageIndex) {
             case TOUCH_TO_START_MESSAGE:
-                return "Touch to start";
+                return getContext().getString(R.string.touch_to_start_message);
             case LAST_SCORE_MESSAGE:
-                return "Last Score: " + formatScore(lastScore, unlimitedBalls);
+                return getContext().getString(
+                        R.string.last_score_message, formatScore(lastScore, unlimitedBalls));
             case HIGH_SCORE_MESSAGE:
                 // highScoreIndex could be too high if we just switched from a different table.
                 int index = Math.min(highScoreIndex, this.highScores.size() - 1);
                 // High scores are never recorded when using unlimited balls.
                 String formattedScore = formatScore(this.highScores.get(index), false);
                 if (index == 0) {
-                    return "High Score: " + formattedScore;
+                    return getContext().getString(R.string.top_high_score_message, formattedScore);
                 }
                 else {
-                    return "#" + (1 + index) + " Score: " + formattedScore;
+                    return getContext().getString(
+                            R.string.other_high_score_message, index + 1, formattedScore);
                 }
             default:
                 throw new IllegalStateException(
