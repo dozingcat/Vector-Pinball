@@ -45,7 +45,7 @@
     <string name="multiball_started_message">Multiball!</string>
     <string name="multiplier_message">%1$dx Multiplier</string>
     <string name="shoot_red_bumper_message">Shoot Red Bumper</string>
-    <string name="bumper_multiplier_message">Bumper Multiplier %1$d%"</string>
+    <string name="bumper_multiplier_message">Bumper Multiplier %1$d%%"</string>
     <string name="jackpot_received_message">Jackpot!</string>
     <string name="jackpot_received_with_multipler_message">%1$dx Jackpot!</string>
     <string name="multiball_ready_message">Multiball Ready</string>
@@ -53,7 +53,10 @@
     <string name="ball_locked_message">Ball %1$d Locked</string>
     <string name="shoot_pyramid_message">Shoot the Pyramid!</string>
     <string name="extra_ball_received_message">Extra Ball!</string>
-    <string name="color_ramp_bonus_message">%1%s ramp +%2%d%</string>
+    <string name="blue_ramp_bonus_message">Blue ramp +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Red ramp +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Yellow ramp +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Green ramp +%1$d%%</string>
     <string name="color_blue">Blue</string>
     <string name="color_red">Red</string>
     <string name="color_yellow">Yellow</string>

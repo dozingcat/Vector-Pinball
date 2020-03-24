@@ -18,18 +18,7 @@ import com.dozingcatsoftware.bouncy.elements.WallElement;
 
 public class Field5Delegate extends BaseFieldDelegate {
 
-    private enum BallColor {
-        BLUE("color_blue"),
-        RED("color_red"),
-        YELLOW("color_yellow"),
-        GREEN("color_green");
-
-        public final String colorNameKey;
-
-        BallColor(String key) {
-            this.colorNameKey = key;
-        }
-    }
+    private enum BallColor {BLUE, RED, YELLOW, GREEN}
 
     private enum MultiballStatus {NOT_READY, READY, STARTING, ACTIVE}
 
@@ -230,10 +219,9 @@ public class Field5Delegate extends BaseFieldDelegate {
         updateCenterLines(field);
     }
 
-    private void incrementRampBonus(Field field, BallColor ballColor) {
+    private void incrementRampBonus(Field field, BallColor ballColor, String messageKey) {
         rampBonuses.put(ballColor, rampBonuses.get(ballColor) + 10);
-        String msg = field.resolveString("color_ramp_bonus_message",
-                field.resolveString(ballColor.colorNameKey), rampBonuses.get(ballColor));
+        String msg = field.resolveString(messageKey, rampBonuses.get(ballColor));
         field.showGameMessage(msg, 1500);
     }
 
@@ -404,16 +392,16 @@ public class Field5Delegate extends BaseFieldDelegate {
             field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("DropTargets_BlueRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.BLUE);
+            incrementRampBonus(field, BallColor.BLUE, "blue_ramp_bonus_message");
         }
         else if ("DropTargets_RedRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.RED);
+            incrementRampBonus(field, BallColor.RED, "red_ramp_bonus_message");
         }
         else if ("DropTargets_YellowRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.YELLOW);
+            incrementRampBonus(field, BallColor.YELLOW, "yellow_ramp_bonus_message");
         }
         else if ("DropTargets_GreenRamp".equals(id)) {
-            incrementRampBonus(field, BallColor.GREEN);
+            incrementRampBonus(field, BallColor.GREEN, "green_ramp_bonus_message");
         }
     }
 
