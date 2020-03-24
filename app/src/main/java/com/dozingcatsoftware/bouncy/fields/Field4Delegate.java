@@ -76,11 +76,12 @@ public class Field4Delegate extends BaseFieldDelegate {
 
     void increaseExtraBumperMultiplier(Field field, int percent) {
         bumperMultiplierIncrease += percent;
-        field.showGameMessage("Bumper Multiplier " + bumperMultiplierIncrease + "%", 1500);
+        String msg = field.resolveString("bumper_multiplier_message", bumperMultiplierIncrease);
+        field.showGameMessage(msg, 1500);
     }
 
     void startMultiball(final Field field) {
-        field.showGameMessage("Multiball!", 3000);
+        field.showGameMessage(field.resolveString("multiball_started_message"), 3000);
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
         lockedBallRollovers.get(2).setIgnoreBall(true);
@@ -117,7 +118,7 @@ public class Field4Delegate extends BaseFieldDelegate {
 
     void doJackpot(Field field) {
         field.addScore(jackpot * 1000);
-        field.showGameMessage("Jackpot!", 3000);
+        field.showGameMessage(field.resolveString("jackpot_received_message"), 3000);
         // Increase multiplier by jackpot percentage. This can actually
         // cause an overflow if the player scores a whole lot of jackpots.
         double multiplier = field.getScoreMultiplier();
@@ -204,11 +205,11 @@ public class Field4Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
             restoreRightBallSaver(field);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("DropTargetTop".equals(id)) {
             increaseExtraBumperMultiplier(field, 1);
@@ -235,7 +236,9 @@ public class Field4Delegate extends BaseFieldDelegate {
                         lockedBallRollover.setIgnoreBall(false);
                         lockedBallRollover.setVisible(true);
                         lockedBallRollover.setRolloverActiveAtIndex(0, false);
-                        String msg = (ballsLocked == 2) ? "Multiball Ready" : "Ball Lock Ready";
+                        String msg = (ballsLocked == 2) ?
+                                field.resolveString("multiball_ready_message") :
+                                field.resolveString("ball_lock_ready_message");
                         field.showGameMessage(msg, 3000);
                     }
                 }
@@ -248,13 +251,13 @@ public class Field4Delegate extends BaseFieldDelegate {
         if (rollovers == lockedBallRollovers.get(0)) {
             field.removeBallWithoutBallLoss(field.getBalls().get(0));
             lockedBallKickers.get(1).setRetracted(false);
-            field.showGameMessage("Ball 1 Locked", 3000);
+            field.showGameMessage(field.resolveString("ball_locked_message", 1), 3000);
             ballsLocked = 1;
         }
         else if (rollovers == lockedBallRollovers.get(1)) {
             field.removeBallWithoutBallLoss(field.getBalls().get(0));
             lockedBallKickers.get(2).setRetracted(false);
-            field.showGameMessage("Ball 2 Locked", 3000);
+            field.showGameMessage(field.resolveString("ball_locked_message", 2), 3000);
             ballsLocked = 2;
         }
         else if (rollovers == lockedBallRollovers.get(2)) {
