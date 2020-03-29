@@ -24,7 +24,7 @@ public class Field2Delegate extends BaseFieldDelegate {
         double currentAngle;
         double angleIncrement;
 
-        public RotatingGroup(
+        RotatingGroup(
                 String[] ids, double cx, double cy, double radius, double startAngle,
                 double speed) {
             this.elementIDs = ids;
@@ -40,7 +40,7 @@ public class Field2Delegate extends BaseFieldDelegate {
          * Creates a RotatingGroup by computing the distance and angle to center from the first
          * element ID in the ids array.
          */
-        public static RotatingGroup create(
+        static RotatingGroup create(
                 Field field, String[] ids, double cx, double cy, double speed) {
             FieldElement element = field.getFieldElementById(ids[0]);
             Body body = element.getBodies().get(0);
@@ -50,7 +50,7 @@ public class Field2Delegate extends BaseFieldDelegate {
             return new RotatingGroup(ids, cx, cy, radius, angle, speed);
         }
 
-        public void applyRotation(Field field, double dt) {
+        void applyRotation(Field field, double dt) {
             currentAngle += dt * rotationSpeed;
             if (currentAngle > TAU) currentAngle -= TAU;
             if (currentAngle < 0) currentAngle += TAU;
@@ -64,8 +64,6 @@ public class Field2Delegate extends BaseFieldDelegate {
                 body.setTransform((float) x, (float) y, body.getAngle());
             }
         }
-
-
     }
 
     RotatingGroup[] rotatingGroups;
@@ -76,7 +74,7 @@ public class Field2Delegate extends BaseFieldDelegate {
         return RotatingGroup.create(field, ids, centerPosition.x, centerPosition.y, speed);
     }
 
-    void setupRotatingGroups(Field field) {
+    private void setupRotatingGroups(Field field) {
         // Read rotation params from variables defined in the field.
         float b1Speed = ((Number) field.getValueWithKey("RotatingBumper1Speed")).floatValue();
         float b2Speed = ((Number) field.getValueWithKey("RotatingBumper2Speed")).floatValue();
@@ -111,8 +109,8 @@ public class Field2Delegate extends BaseFieldDelegate {
         ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
     }
 
-    void startMultiball(final Field field) {
-        field.showGameMessage("Multiball!", 2000);
+    private void startMultiball(final Field field) {
+        field.showGameMessage(field.resolveString("multiball_started_message"), 2000);
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
@@ -137,9 +135,7 @@ public class Field2Delegate extends BaseFieldDelegate {
             Field field, RolloverGroupElement rolloverGroup, Ball ball) {
         // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
-        field.getGameState().incrementScoreMultiplier();
-        field.showGameMessage(((int) field.getGameState().getScoreMultiplier()) + "x Multiplier",
-                1500);
+        field.incrementAndDisplayScoreMultiplier(1500);
     }
 
     @Override
@@ -174,12 +170,12 @@ public class Field2Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeft".equals(id)) {
             restoreLeftBallSaver(field);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
             startRolloverIndex = 0;
         }
         else if ("DropTargetRight".equals(id)) {
             restoreRightBallSaver(field);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
             startRolloverIndex = 2;
         }
         else if ("DropTargetTopLeft".equals(id)) {
@@ -196,7 +192,8 @@ public class Field2Delegate extends BaseFieldDelegate {
                     multiballRollovers.setRolloverActiveAtIndex(startRolloverIndex, true);
 
                     if (multiballRollovers.allRolloversActive()) {
-                        field.showGameMessage("Shoot Red Bumper", 1500);
+                        field.showGameMessage(field.resolveString(
+                                "shoot_red_bumper_message"), 1500);
                     }
                     break;
                 }

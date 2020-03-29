@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
-import java.util.Set;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.bouncy.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 import com.dozingcatsoftware.bouncy.elements.FlipperElement;
@@ -64,6 +61,11 @@ public class Field implements ContactListener {
 
     AudioPlayer audioPlayer = AudioPlayer.NoOpPlayer.getInstance();
     Clock clock = Clock.SystemClock.getInstance();
+    IStringResolver stringResolver;
+
+    public Field(IStringResolver sr) {
+        this.stringResolver = sr;
+    }
 
     // Interface to allow custom behavior for various game events.
     public interface Delegate {
@@ -81,7 +83,7 @@ public class Field implements ContactListener {
 
         void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
 
-        void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball);
+        void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers, Ball ball);
 
         void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
@@ -198,7 +200,7 @@ public class Field implements ContactListener {
     }
 
     /** Calls the tick() method of every FieldElement in the layout. */
-    void processElementTicks() {
+    private void processElementTicks() {
         int size = fieldElementsToTick.length;
         for (int i = 0; i < size; i++) {
             fieldElementsToTick[i].tick(this);
@@ -208,7 +210,7 @@ public class Field implements ContactListener {
     /**
      * Runs actions that were scheduled with scheduleAction and whose execution time has arrived.
      */
-    void processScheduledActions() {
+    private void processScheduledActions() {
         while (true) {
             ScheduledAction nextAction = scheduledActions.peek();
             if (nextAction != null && gameTime >= nextAction.actionTime) {
@@ -272,13 +274,18 @@ public class Field implements ContactListener {
      * Called when a ball has ended. Ends the game if that was the last ball, otherwise updates
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
      */
-    public void doBallLost() {
+    private void doBallLost() {
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
         // display message for next ball or game over
         String msg = null;
-        if (hasExtraBall) msg = "Shoot Again";
-        else if (this.gameState.isGameInProgress()) msg = "Ball " + this.gameState.getBallNumber();
+        if (hasExtraBall) {
+            msg = this.stringResolver.resolveString("shoot_again_message");
+        }
+        else if (this.gameState.isGameInProgress()) {
+            msg = this.stringResolver.resolveString(
+                    "ball_number_message", this.gameState.getBallNumber());
+        }
 
         if (msg != null) {
             // game is still going, show message after delay
@@ -382,7 +389,7 @@ public class Field implements ContactListener {
      * flippers were not previously engaged, calls the flipperActivated methods of all field
      * elements and the field's delegate.
      */
-    public void setFlippersEngaged(List<FlipperElement> flippers, boolean engaged) {
+    private void setFlippersEngaged(List<FlipperElement> flippers, boolean engaged) {
         activatedFlippers.clear();
         boolean allFlippersPreviouslyActive = true;
         int fsize = flippers.size();
@@ -429,7 +436,7 @@ public class Field implements ContactListener {
         }
         this.balls.clear();
         this.getGameState().setGameInProgress(false);
-        this.showGameMessage("Game Over", 2500);
+        this.showGameMessage(this.stringResolver.resolveString("game_over_message"), 2500);
         getDelegate().gameEnded(this);
     }
 
@@ -449,7 +456,7 @@ public class Field implements ContactListener {
     ArrayList<Ball> contactedBalls = new ArrayList<Ball>();
     ArrayList<Fixture> contactedFixtures = new ArrayList<Fixture>();
 
-    void clearBallContacts() {
+    private void clearBallContacts() {
         contactedBalls.clear();
         contactedFixtures.clear();
     }
@@ -457,7 +464,7 @@ public class Field implements ContactListener {
     /**
      * Called after Box2D world step method, to notify FieldElements that the ball collided with.
      */
-    void processBallContacts() {
+    private void processBallContacts() {
         for (int i = 0; i < contactedBalls.size(); i++) {
             Ball ball = contactedBalls.get(i);
             Fixture f = contactedFixtures.get(i);
@@ -522,31 +529,37 @@ public class Field implements ContactListener {
      * Displays a message in the score view for the specified duration in milliseconds.
      * Duration is in real world time, not simulated game time.
      */
-    public void showGameMessage(String text, long duration, boolean playSound) {
+    public void showGameMessage(String text, long durationMillis, boolean playSound) {
         if (playSound) audioPlayer.playMessage();
         gameMessage = new GameMessage();
         gameMessage.text = text;
-        gameMessage.duration = duration;
-        gameMessage.creationTime = clock.currentTimeMillis();
+        gameMessage.durationMillis = durationMillis;
+        gameMessage.creationTimeMillis = clock.currentTimeMillis();
     }
 
-    public void showGameMessage(String text, long duration) {
-        showGameMessage(text, duration, true);
+    public void showGameMessage(String text, long durationMillis) {
+        showGameMessage(text, durationMillis, true);
     }
 
     /** Updates time remaining on current game message, and removes it if expired. */
-    void processGameMessages() {
+    private void processGameMessages() {
         if (gameMessage != null) {
-            if (clock.currentTimeMillis() - gameMessage.creationTime > gameMessage.duration) {
+            long messageEndTime = gameMessage.creationTimeMillis + gameMessage.durationMillis;
+            if (clock.currentTimeMillis() > messageEndTime) {
                 gameMessage = null;
             }
         }
     }
 
+    // Used by field delegates to retrieve localized strings.
+    public String resolveString(String key, Object... params) {
+        return this.stringResolver.resolveString(key, params);
+    }
+
     /**
      * Checks whether the ball appears to be stuck, and nudges it if so.
      */
-    void checkForStuckBall(long nanos) {
+    private void checkForStuckBall(long nanos) {
         // Only do this for single balls. This means it's theoretically possible for multiple
         // balls to be simultaneously stuck during multiball; that would be impressive.
         if (this.getBalls().size() != 1) {
@@ -578,7 +591,7 @@ public class Field implements ContactListener {
         // Increment time counter and bump if the ball hasn't moved in a while.
         nanosSinceBallMoved += nanos;
         if (nanosSinceBallMoved > STUCK_BALL_NANOS) {
-            showGameMessage("Bump!", 1000);
+            showGameMessage(this.stringResolver.resolveString("bump_message"), 1000);
             // Could make the bump impulse table-specific if needed.
             Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
             ball.applyLinearImpulse(impulse);
@@ -610,16 +623,19 @@ public class Field implements ContactListener {
         return gameState.getScore();
     }
 
-    public void incrementScoreMultiplier() {
-        gameState.incrementScoreMultiplier();
-    }
-
     public double getScoreMultiplier() {
         return gameState.getScoreMultiplier();
     }
 
     public void setScoreMultiplier(double multiplier) {
         gameState.setScoreMultiplier(multiplier);
+    }
+
+    public void incrementAndDisplayScoreMultiplier(long durationMillis) {
+        gameState.incrementScoreMultiplier();
+        String msg = this.stringResolver.resolveString(
+                "multiplier_message", (int) this.gameState.getScoreMultiplier());
+        this.showGameMessage(msg, durationMillis);
     }
 
     // Accessors.

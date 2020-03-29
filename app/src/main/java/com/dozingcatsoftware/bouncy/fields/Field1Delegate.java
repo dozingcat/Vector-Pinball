@@ -14,9 +14,7 @@ public class Field1Delegate extends BaseFieldDelegate {
             Field field, RolloverGroupElement rolloverGroup, Ball ball) {
         // Rollover groups increment field multiplier when all rollovers are activated.
         rolloverGroup.setAllRolloversActivated(false);
-        field.getGameState().incrementScoreMultiplier();
-        field.showGameMessage(
-                ((int) field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+        field.incrementAndDisplayScoreMultiplier(1500);
 
         // Multiball for ramp shot if extra ball rollovers all lit.
         if ("RampRollovers".equals(rolloverGroup.getElementId())) {
@@ -38,7 +36,7 @@ public class Field1Delegate extends BaseFieldDelegate {
     }
 
     private void startMultiball(final Field field) {
-        field.showGameMessage("Multiball!", 2000);
+        field.showGameMessage(field.resolveString("multiball_started_message"), 2000);
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
@@ -58,11 +56,11 @@ public class Field1Delegate extends BaseFieldDelegate {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
             restoreLeftBallSaver(field);
-            field.showGameMessage("Left Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
             restoreRightBallSaver(field);
-            field.showGameMessage("Right Save Enabled", 1500);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         // For all groups, increment extra ball rollover.
         RolloverGroupElement extraBallRollovers =
@@ -70,7 +68,7 @@ public class Field1Delegate extends BaseFieldDelegate {
         if (extraBallRollovers != null && !extraBallRollovers.allRolloversActive()) {
             extraBallRollovers.activateFirstUnactivatedRollover();
             if (extraBallRollovers.allRolloversActive()) {
-                field.showGameMessage("Shoot Ramp for Multiball", 1500);
+                field.showGameMessage(field.resolveString("shoot_ramp_multiball_message"), 1500);
             }
         }
     }
