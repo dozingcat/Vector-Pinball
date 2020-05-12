@@ -30,7 +30,7 @@ public class BouncyActivity extends Activity {
 
     CanvasFieldView canvasFieldView;
     GLFieldView glFieldView;
-    ScoreView scoreView;
+    static ScoreView scoreView;
 
     View buttonPanel;
     Button switchTableButton;
