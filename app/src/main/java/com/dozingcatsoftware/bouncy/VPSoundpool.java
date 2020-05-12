@@ -9,7 +9,10 @@ import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
+import android.view.View;
 
 public class VPSoundpool {
 
@@ -125,6 +128,9 @@ public class VPSoundpool {
             Integer soundID = mSoundPoolMap.get(soundKey);
             if (soundID!=null) {
                 mSoundPool.play(soundID, volume, volume, 1, 0, pitch);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                    BouncyActivity.scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                }
             }
         }
     }
