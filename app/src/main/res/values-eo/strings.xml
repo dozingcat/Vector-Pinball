@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vektora Flipero</string>
-    
+
     <string name="independent_flippers_pref_title">Sendependaj puŝiloj</string>
-    <string name="independent_flippers_pref_summary_on">Frapeto aktivigas puŝilon ĉe sama flanko de ekrano</string>
+    <string name="independent_flippers_pref_summary_on">Frapeto aktivigas puŝilon ĉe la sama flanko de la ekrano</string>
     <string name="independent_flippers_pref_summary_off">Ĉiu frapeto aktivigas ambaŭ puŝilojn</string>
+
+    <string name="line_width_pref_title">Larĝo de linioj</string>
+    <string name="line_width_pref_dialog_message">Enigu larĝon por linioj en rastrumeroj, enigu 0 por havigu implicitan valoron surbaze de distingivo de la ekrano.</string>
 
     <string name="sound_pref_title">Sonefektoj</string>
     <string name="music_pref_title">Fona muziko</string>
@@ -12,10 +15,53 @@
     <string name="zoom_pref_title">Pligrandigi ludkampon</string>
     <string name="use_opengl_pref_title">OpenGL-bildigado</string>
 
-    <string name="change_table_button_label">Ŝanĝi ludkampon</string>
-	<string name="help_button_label">Helpo</string>
-	<string name="preferences_button_label">Agordoj</string>
-	<string name="end_game_button_label">Fini ludon</string>
-	<string name="unlimited_balls_label">Senlimanombraj globoj</string>
+    <string name="about_text">Vektora Flipero 1.7.1\n© 2010-2020 Brian NENNINGER\nKomentoj kaj erar-raportoj: bnenning@gmail.com\n\nTuŝu la ekranon por komenci novan ludon, katapulti novan globon (se ne sur la tablo) kaj movi la puŝilojn. Tuŝu la kampon de poentoj por paŭzigi ludon.\n\n[TABLE_RULES]\n\nTuŝu la butonon “agordoj” aŭ menu‑butonon por malfermi elekteblojn:\n • sono: (mal)aktivigas sonefektojn;\n • fona muziko: mal(aktivigas) fonan muzikon;\n • sendependaj puŝiloj: kiam malaktiva, ĉiu tuŝo aktivigas ambaŭ pusilojn; kiam akvita, vi devas tuŝi maldekstran flankon de la ekrano por aktivigi la maldekstran puŝilon, kaj dekstran por dekstran puŝilon;\n • pligrandigi ludkampon: kiam aktiva, la vido estos pligrandigita kaj fokusita sur la globo;\n • OpenGL‑bildigado: uzas OpenGL por bildigi grafikon, povas pliigi rendimenton en iuj aparatoj, sed malpliigi ĝin en aliaj;\n • montri kadrojn sekunde (FPS): montras kadrojn bildigitajn dum sekundo ĉe la maldekstra supra angulo.\n\nLa ludo Vektora Flipero estas malfermkoda, la kodo troviĝas ĉe https://github.com/dozingcat/Vector-Pinball\n\nDankojn al Mario de www.badlogicgames.com por plibonigoj al kodo kaj libgdx.\n\nSono, muziko kaj sonkodo danke al pdx\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">Reguloj de la tablo:\n • Aktivigu ĉiujn bluverdajn lampetojn en la supra aŭ malsupra irejo por pliigi poent‑obligilon. Ĉiuj akiritaj poentoj estos obligataj je tiu nombro. Trafu la maldekstran ramplon por ankaŭ aktivigi poent‑obligilon.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon.\n • Trafu iun grupon da celaĵoj por aktivigi la sekvan lampeton en la centro de tablo. Kiam la granda centra lampeto aktiviĝos, trafu la maldekstran ramplon por lanĉi plurglobon.</string>
+    <string name="table2_rules">Reguloj de la tablo:\n • Aktivigu ĉiujn bluverdajn lampetojn en la malsupraj irejoj por pliigi poent‑obligilon. Ĉiuj akiritaj poentoj estos obligataj je tiu nombro.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon.\n • Cirkloj en la mezo de tablo registras kiomfoje vi trafis ĉiujn maldekstrajn, suprajn kaj dekstrajn celaĵojn. Kiam ili ĉiuj estos frapitaj almenaŭ trifoje, trafu la ruĝan puŝturon ĉe supra dekstro por lanĉi plurglobon.</string>
+    <string name="table3_rules">Reguloj de la tablo:\n • Aktivigu ĉiujn bluverdajn lampetojn en la malsupraj irejoj por pliigi poent‑obligilon. Ĉiuj akiritaj poentoj estos obligataj je tiu nombro.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon.\n • Trafu iun ajn ramplon por igi la puŝturojn ruĝaj kaj post kelkaj sekundoj ili iĝos reen bluaj. Trafu ili dum tiu ĉi tempo por akiri ekstrajn poentojn.\n • Trafu la puŝturojn kaj bluverdajn celaĵojn por ruĝigu la cirklojn en la mezo. Kiam ĉiuj cirkloj estos ruĝaj, trafu iun ramplon por lanĉi plurglobon.</string>
+    <string name="table4_rules">Reguloj de la tablo:\n • Ĉiu puŝturo pliigas la poent‑obligilon je 0,01. Trafu la suprajn celaĵojn aŭ aktivigu ĉiujn lampetojn (en la malsupraj irejoj) por pliigi tiun ĉi valoron.\n • Trafu ĉiujn ses puŝturojn por aktivigi lampetojn en la centro. Kiam ĉiuj lampetoj en la vico estos aktivaj, trafu la dekstran truon por bloki la globon por plurglobo.\n • Plurglobo ekos kiam vi blokos tri globojn. Dum plurglobado, la lampetoj en la centro aktiviĝos, kiam la globo tuŝos ilin. Aktivigu ĉiujn lampetojn por gajni premion.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon.</string>
+    <string name="table5_rules">Reguloj de la tablo:\n • La centra cirklo enhavas dek du punktojn ĉirkaŭe: tri oble kvar koloroj. Trafu la supran ramplon por kolorigi la globon kaj ebligi al ĝi aktivigi punktojn kun kongrua koloro.\n • Kiam ĉiuj dek du punktoj ĉirkaŭ la cirklo aktiviĝos, trafu verticojn de la rotacianta triangulo por forigi ilin. Trafu la celon en la (nun neekzistanta) triangulo por aktivigi plurglobon.\n • Dum plurglobado reaktivigu dek du punktojn de la cirklo por gajni premion, kiu pliiĝas je ĉiu foje.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon.</string>
+    <string name="table6_rules">Reguloj de la tablo:\n • En la centro de la tablo kvin planedoj ĉirkaŭas la sunon. Kiam globo tuŝas iun planedon, ĝia koloro ŝanĝiĝas kaj la planedo komencas trembrili.\n • Trafu la kongruan celon por “aktivigi” la planedon kaj igi ĝian konturon plena. Trafu oranĝkolorajn celaĵojn ĉe supra maldekstro por aktivigi enan planedon. Por aktivigi duan planedon, aktivigu tri bluajn lampetojn ĉe supra dekstro. Por aktivigi aliajn planedojn, trafu ramplon kun la sama koloro.\n • Aktivigu kvin planedojn, por lanĉi plurglobon. Dum plurglobado reaktivigu kvin planedojn por gajni premion.\n • Je starto de ludo, du saviloj – en maldekstra kaj dekstra eksteraj irejoj – estas aktivaj, kiuj malaktiviĝas post uzi. Trafu ĉiujn celaĵojn ĉe (mal)dekstra flanko por restarigi savilon\n • La suno kaj planedoj havas graviton kaj altiras la alproksimiĝantan globon.</string>
+
+    <string name="change_table_button_label">Ŝanĝi tablon</string>
+    <string name="help_button_label">Helpo</string>
+    <string name="preferences_button_label">Agordoj</string>
+    <string name="end_game_button_label">Fini ludon</string>
+    <string name="unlimited_balls_label">Senlimnombraj globoj</string>
+
+    <string name="ball_number_message">Globo: %1$d-a</string>
+    <string name="shoot_again_message">Katapultu ree</string>
+    <string name="game_over_message">Ludo finita</string>
+    <string name="bump_message">Frapu!</string>
+    <string name="touch_to_start_message">Tuŝu por komenci</string>
+    <string name="last_score_message">Antaŭa poentaro: %1$s</string>
+    <string name="top_high_score_message">Rekordo: %1$s</string>
+    <string name="other_high_score_message">%1$d-a rekordo: %2$s</string>
+
+    <string name="left_save_enabled_message">Maldekstra savilo aktiva</string>
+    <string name="right_save_enabled_message">Dekstra savilo aktiva</string>
+    <string name="shoot_ramp_multiball_message">Trafu ramplon por ekigi plurglobon</string>
+    <string name="multiball_started_message">Plurglobo!</string>
+    <string name="multiplier_message">Poentobligilo: %1$d×</string>
+    <string name="shoot_red_bumper_message">Trafu ruĝan puŝturon</string>
+    <string name="bumper_multiplier_message">Poentpliobligilo: %1$d%%"</string>
+    <string name="jackpot_received_message">Premio!</string>
+    <string name="jackpot_received_with_multipler_message">Premio %1$d×!</string>
+    <string name="multiball_ready_message">Plurglobo preparita</string>
+    <string name="ball_lock_ready_message">Eblas bloki globon</string>
+    <string name="ball_locked_message">Globo %1$d blokita</string>
+    <string name="shoot_pyramid_message">Trafu la piramidon!</string>
+    <string name="extra_ball_received_message">Ekstra globo!</string>
+    <string name="blue_ramp_bonus_message">Blua ramplo +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Ruĝa ramplo +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Flava ramplo +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Verda ramplo +%1$d%%</string>
+    <string name="color_blue">Blua</string>
+    <string name="color_red">Ruĝa</string>
+    <string name="color_yellow">Flava</string>
+    <string name="color_green">Verda</string>
+    <string name="planet_activated_message">Planedo %1$d aktiva!</string>
+    <string name="ramp_bonus_message">%1$d× ramplo</string
 
 </resources>
