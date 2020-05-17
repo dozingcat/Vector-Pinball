@@ -104,8 +104,8 @@ public class WallElement extends FieldElement {
     }
 
     @Override public boolean shouldCallTick() {
-        // tick() only needs to be called if this wall provides a kick which makes it flash.
-        return (this.kick > 0.01f);
+        // tick() needs to be called if this wall provides a kick which makes it flash.
+        return (super.shouldCallTick() || this.kick > 0.01f);
     }
 
     Vector2 impulseForBall(Ball ball) {
