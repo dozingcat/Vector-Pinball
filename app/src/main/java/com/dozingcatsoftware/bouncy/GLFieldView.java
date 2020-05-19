@@ -91,18 +91,28 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
         vertexListManager.render(gl);
     }
 
+    private static void addColorToVertexList(GLVertexList vl, int color) {
+        vl.addColor(
+                Color.getRed(color) / 255f, Color.getGreen(color) / 255f,
+                Color.getBlue(color) / 255f, Color.getAlpha(color) / 255f);
+    }
+
     // Implementation of IFieldRenderer drawing methods that FieldElement classes can call.
     // Assumes cacheScaleAndOffsets has been called.
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
         lineVertexList.addVertex(manager.world2pixelX(x1), manager.world2pixelY(y1));
         lineVertexList.addVertex(manager.world2pixelX(x2), manager.world2pixelY(y2));
+        addColorToVertexList(lineVertexList, color);
+        addColorToVertexList(lineVertexList, color);
+    }
 
-        float rf = Color.getRed(color) / 255f;
-        float gf = Color.getGreen(color) / 255f;
-        float bf = Color.getBlue(color) / 255f;
-        float af = Color.getAlpha(color) / 255f;
-        lineVertexList.addColor(rf, gf, bf, af);
-        lineVertexList.addColor(rf, gf, bf, af);
+    @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
+        GLVertexList pathList = vertexListManager.addVertexListForMode(GL10.GL_LINE_STRIP);
+        addColorToVertexList(pathList, color);
+        for (int i = 0; i < xEndpoints.length; i++) {
+            pathList.addVertex(
+                    manager.world2pixelX(xEndpoints[i]), manager.world2pixelY(yEndpoints[i]));
+        }
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
@@ -115,8 +125,7 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
 
     void drawCircle(float cx, float cy, float radius, int color, int mode) {
         GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
-        circleVertexList.addColor(Color.getRed(color) / 255f, Color.getGreen(color) / 255f, Color.getBlue(color) / 255f,
-                Color.getAlpha(color) / 255f);
+        addColorToVertexList(circleVertexList, color);
 
         float radiusInPixels = manager.world2pixelX(radius) - manager.world2pixelX(0);
         float[] sinValues = (radiusInPixels > 60) ? HQ_SIN_VALUES : SIN_VALUES;
@@ -126,6 +135,18 @@ public class GLFieldView extends GLSurfaceView implements IFieldRenderer, GLSurf
             float y = cy + radius * cosValues[i];
             circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
         }
+    }
+
+    // OpenGL can only draw arcs by drawing individual line segments. We could determine the line
+    // segment endpoints in drawArc, but currently the only caller is WallArcElement which already
+    // has the endpoints, so it's better for it to call drawLinePath.
+    @Override public boolean canDrawArc() {
+        return false;
+    }
+
+    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius,
+                                  float startAngle, float sweepAngle, int color) {
+
     }
 
     final Object renderLock = new Object();

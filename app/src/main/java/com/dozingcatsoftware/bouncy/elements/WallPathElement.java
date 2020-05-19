@@ -25,31 +25,31 @@ public class WallPathElement extends FieldElement {
     public static final String POSITIONS_PROPERTY = "positions";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-    List<Body> wallBodies = new ArrayList<Body>();
-    float[][] lineSegments;
+    private List<Body> wallBodies = new ArrayList<Body>();
+    private float[] xEndpoints;
+    private float[] yEndpoints;
 
     @Override public void finishCreateElement(
             Map<String, ?> params, FieldElementCollection collection) {
         @SuppressWarnings("unchecked")
         List<List<?>> positions = (List<List<?>>) params.get(POSITIONS_PROPERTY);
         // N positions produce N-1 line segments.
-        lineSegments = new float[positions.size() - 1][];
-        for (int i = 0; i < lineSegments.length; i++) {
-            List<?> startpos = positions.get(i);
-            List<?> endpos = positions.get(i + 1);
-
-            float[] segment = {asFloat(startpos.get(0)), asFloat(startpos.get(1)),
-                    asFloat(endpos.get(0)), asFloat(endpos.get(1))};
-            lineSegments[i] = segment;
+        this.xEndpoints = new float[positions.size()];
+        this.yEndpoints = new float[positions.size()];
+        for (int i = 0; i < positions.size(); i++) {
+            List<?> pos = positions.get(i);
+            xEndpoints[i] = asFloat(pos.get(0));
+            yEndpoints[i] = asFloat(pos.get(1));
         }
     }
 
     @Override public void createBodies(World world) {
-        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
-
-        for (float[] segment : this.lineSegments) {
+        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) {
+            return;
+        }
+        for (int i = 1; i < xEndpoints.length; i++) {
             Body wall = Box2DFactory.createThinWall(
-                    world, segment[0], segment[1], segment[2], segment[3], 0f);
+                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], 0f);
             this.wallBodies.add(wall);
         }
     }
@@ -59,10 +59,7 @@ public class WallPathElement extends FieldElement {
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
-        for (float[] segment : this.lineSegments) {
-            renderer.drawLine(
-                    segment[0], segment[1], segment[2], segment[3],
-                    currentColor(DEFAULT_WALL_COLOR));
-        }
+        int color = currentColor(DEFAULT_WALL_COLOR);
+        renderer.drawLinePath(this.xEndpoints, this.yEndpoints, color);
     }
 }

@@ -144,9 +144,9 @@ public class Field2Delegate extends BaseFieldDelegate {
         // otherwise retract left barrier.
         String elementID = element.getElementId();
         if ("CenterBumper1".equals(elementID)) {
-            WallElement barrier = (WallElement) field.getFieldElementById("LeftTubeBarrier");
+            WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
             RolloverGroupElement multiballRollovers =
-                    (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
+                    field.getFieldElementById("ExtraBallRollovers");
 
             if (multiballRollovers.allRolloversActive()) {
                 barrier.setRetracted(false);
@@ -208,7 +208,7 @@ public class Field2Delegate extends BaseFieldDelegate {
     // support for enabling launch barrier after ball passes by it and hits sensor, and disabling
     // for new ball or new game
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
@@ -228,8 +228,7 @@ public class Field2Delegate extends BaseFieldDelegate {
                 field.scheduleAction(1000, new Runnable() {
                     @Override
                     public void run() {
-                        WallElement barrier = (WallElement) field.getFieldElementById(
-                                "LeftTubeBarrier");
+                        WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
                         barrier.setRetracted(false);
                     }
                 });

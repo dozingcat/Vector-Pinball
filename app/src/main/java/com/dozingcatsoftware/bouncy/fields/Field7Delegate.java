@@ -167,11 +167,6 @@ public class Field7Delegate extends BaseFieldDelegate {
             this.lockedConstellations.add(this.currentConstellation);
         }
 
-        boolean currentConstellationLocked() {
-            return currentConstellation != null &&
-                    this.lockedConstellations.contains(currentConstellation);
-        }
-
         boolean allConstellationsLocked() {
             return this.lockedConstellations.containsAll(CONSTELLATIONS);
         }
@@ -308,6 +303,9 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     long rampScore;
 
+    WallElement ballSaverLeft;
+    WallElement ballSaverRight;
+
     @Override public boolean isFieldActive(Field field) {
         return true;
     }
@@ -340,8 +338,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         if ("FlipperRollovers".equals(id) || "TopRollovers".equals(id)) {
             // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
             rolloverGroup.setAllRolloversActivated(false);
-            field.getGameState().incrementScoreMultiplier();
-            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+            field.incrementAndDisplayScoreMultiplier(1500);
         }
         else if (lockRollovers.contains(rolloverGroup)) {
             this.numBallsLocked++;
@@ -350,7 +347,8 @@ public class Field7Delegate extends BaseFieldDelegate {
             }
             else {
                 field.removeBallWithoutBallLoss(ball);
-                field.showGameMessage("Ball " + this.numBallsLocked + " locked", 3000);
+                String msg = field.resolveString("ball_locked_message", this.numBallsLocked);
+                field.showGameMessage(msg, 3000);
             }
             starState.lockCurrentConstellation();
             starState.enterWanderingMode();
@@ -361,16 +359,16 @@ public class Field7Delegate extends BaseFieldDelegate {
             Field field, DropTargetGroupElement targetGroup, Ball ball) {
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
-            field.showGameMessage("Left Save Enabled", 1500);
+            ballSaverLeft.setRetracted(false);
+            field.showGameMessage(field.resolveString("left_save_enabled_message"), 1500);
         }
         else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
-            field.showGameMessage("Right Save Enabled", 1500);
+            ballSaverRight.setRetracted(false);
+            field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("MiniFieldTopTargets".equals(id) || "MiniFieldLeftTargets".equals(id)) {
             rampScore += RAMP_SCORE_INCREMENT;
-            field.showGameMessage("Ramp bonus increased", 1500);
+            field.showGameMessage(field.resolveString("ramp_bonus_increased_message"), 1500);
         }
     }
 
@@ -425,6 +423,8 @@ public class Field7Delegate extends BaseFieldDelegate {
         leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
         rightLoopGuide = field.getFieldElementById("RightLoopGuide");
         lockAndJackpotGuide = field.getFieldElementById("LockAndJackpotGuide");
+        ballSaverLeft = field.getFieldElementById("BallSaver-left");
+        ballSaverRight = field.getFieldElementById("BallSaver-right");
     }
 
     void handleLoop(Field field) {
@@ -458,14 +458,16 @@ public class Field7Delegate extends BaseFieldDelegate {
             field.addScore(numNewStars * STAR_SCORE);
             if (starState.allStarsInCurrentConstellationActive()) {
                 if (multiballStatus == MultiballStatus.INACTIVE) {
-                    String msg = numBallsLocked == 2 ? "Multiball ready" : "Ball lock ready";
-                    field.showGameMessage(msg, 2000);
+                    String key = numBallsLocked == 2 ?
+                            "multiball_ready_message" : "ball_lock_ready_message";
+                    field.showGameMessage(field.resolveString(key), 2000);
                 }
                 else {
                     starState.lockCurrentConstellation();
                     String msg = starState.allConstellationsLocked() ?
-                            "Shoot ramp for jackpot" :
-                            starState.currentConstellation.name + " complete";
+                            field.resolveString("shoot_ramp_jackpot_message") :
+                            field.resolveString("constellation_complete_message",
+                                    starState.currentConstellation.name);
                     field.showGameMessage(msg, 2000);
                     starState.enterWanderingMode();
                 }
@@ -541,8 +543,10 @@ public class Field7Delegate extends BaseFieldDelegate {
         final float origGravity = bb.getGravityScale();
         bb.setGravityScale(0);
 
-        field.showGameMessage("Multiball!", 3000);
+        field.showGameMessage(field.resolveString("multiball_started_message"), 3000);
         this.multiballStatus = MultiballStatus.STARTING;
+        ballSaverLeft.setRetracted(false);
+        ballSaverRight.setRetracted(false);
 
         // Release the current ball, then create additional balls over the corresponding rollovers.
         field.scheduleAction(1000, new Runnable() {
@@ -565,7 +569,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     void doJackpot(Field field) {
-        field.showGameMessage("Jackpot!", 3000);
+        field.showGameMessage(field.resolveString("jackpot_received_message"), 3000);
         field.addScore(JACKPOT_SCORE);
         starState.resetAndWander();
     }

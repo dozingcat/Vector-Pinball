@@ -63,5 +63,8 @@
     <string name="color_green">Green</string>
     <string name="planet_activated_message">Planet %1$d Activated!</string>
     <string name="ramp_bonus_message">%1$dx Ramp</string>
+    <string name="ramp_bonus_increased_message">Ramp bonus increased</string>
+    <string name="shoot_ramp_jackpot_message">Shoot ramp for jackpot</string>
+    <string name="constellation_complete_message">%1$s complete</string>
 
 </resources>
