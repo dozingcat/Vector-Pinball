@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.bouncy.Color;
 import com.dozingcatsoftware.bouncy.Field;
 import com.dozingcatsoftware.bouncy.IFieldRenderer;
 
@@ -41,49 +40,53 @@ public class WallArcElement extends FieldElement {
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-    public List<Body> wallBodies = new ArrayList<Body>();
-    float[][] lineSegments;
+    private List<Body> wallBodies = new ArrayList<Body>();
+    private float centerX;
+    private float centerY;
+    private float radiusX;
+    private float radiusY;
+    private float startAngle;
+    private float endAngle;
+    private float[] xEndpoints;
+    private float[] yEndpoints;
 
     @Override public void finishCreateElement(
             Map<String, ?> params, FieldElementCollection collection) {
         List<?> centerPos = (List<?>) params.get(CENTER_PROPERTY);
-        float cx = asFloat(centerPos.get(0));
-        float cy = asFloat(centerPos.get(1));
+        centerX = asFloat(centerPos.get(0));
+        centerY = asFloat(centerPos.get(1));
 
         // Can specify "radius" for circle, or "xradius" and "yradius" for ellipse.
-        float xradius, yradius;
         if (params.containsKey(RADIUS_PROPERTY)) {
-            xradius = yradius = asFloat(params.get(RADIUS_PROPERTY));
+            this.radiusX = this.radiusY = asFloat(params.get(RADIUS_PROPERTY));
         }
         else {
-            xradius = asFloat(params.get(X_RADIUS_PROPERTY));
-            yradius = asFloat(params.get(Y_RADIUS_PROPERTY));
+            this.radiusX = asFloat(params.get(X_RADIUS_PROPERTY));
+            this.radiusY = asFloat(params.get(Y_RADIUS_PROPERTY));
         }
 
         Number segments = (Number) params.get(NUM_SEGMENTS_PROPERTY);
         int numsegments = (segments != null) ? segments.intValue() : 5;
-        float minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
-        float maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
-        float diff = maxangle - minangle;
+        this.startAngle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+        this.endAngle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+        float diff = endAngle - startAngle;
         // Create `numsegments` line segments to approximate circular arc.
-        lineSegments = new float[numsegments][];
-        for (int i = 0; i < numsegments; i++) {
-            float angle1 = minangle + i * diff / numsegments;
-            float angle2 = minangle + (i + 1) * diff / numsegments;
-            float x1 = cx + xradius * (float) Math.cos(angle1);
-            float y1 = cy + yradius * (float) Math.sin(angle1);
-            float x2 = cx + xradius * (float) Math.cos(angle2);
-            float y2 = cy + yradius * (float) Math.sin(angle2);
-            lineSegments[i] = (new float[] {x1, y1, x2, y2});
+        this.xEndpoints = new float[numsegments + 1];
+        this.yEndpoints = new float[numsegments + 1];
+        for (int i = 0; i <= numsegments; i++) {
+            float angle = startAngle + i * diff / numsegments;
+            this.xEndpoints[i] = centerX + radiusX * (float) Math.cos(angle);
+            this.yEndpoints[i] = centerY + radiusY * (float) Math.sin(angle);
         }
     }
 
     @Override public void createBodies(World world) {
-        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
-
-        for (float[] segment : this.lineSegments) {
+        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) {
+            return;
+        }
+        for (int i = 1; i < xEndpoints.length; i++) {
             Body wall = Box2DFactory.createThinWall(
-                    world, segment[0], segment[1], segment[2], segment[3], 0f);
+                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], 0f);
             this.wallBodies.add(wall);
         }
     }
@@ -94,8 +97,13 @@ public class WallArcElement extends FieldElement {
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
         int color = currentColor(DEFAULT_WALL_COLOR);
-        for (float[] segment : this.lineSegments) {
-            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
+        // If possible, drawing an arc is faster and looks better compared to drawing the
+        // individual line segments.
+        if (renderer.canDrawArc()) {
+            renderer.drawArc(centerX, centerY, radiusX, radiusY, startAngle, endAngle, color);
+        }
+        else {
+            renderer.drawLinePath(xEndpoints, yEndpoints, color);
         }
     }
 }

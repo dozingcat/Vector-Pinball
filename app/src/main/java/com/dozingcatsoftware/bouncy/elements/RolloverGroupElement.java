@@ -99,6 +99,9 @@ public class RolloverGroupElement extends FieldElement {
     /** Sets `hitRollovers` to the rollovers which have `ball` within their specified radius. */
     private void getRolloversHitByBall(Ball ball, List<Rollover> hitRollovers) {
         hitRollovers.clear();
+        if (ball.getLayer() != this.getLayer()) {
+            return;
+        }
         int rsize = this.rollovers.size();
         for(int i = 0; i < rsize; i++) {
             Rollover rollover = this.rollovers.get(i);
@@ -179,6 +182,7 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> allHitRollovers = new ArrayList<Rollover>();
 
     @Override public void tick(Field field) {
+        super.tick(field);
         if (this.ignoreBall) return;
 
         boolean allActivePrevious = this.allRolloversActive();

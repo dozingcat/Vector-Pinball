@@ -3,6 +3,7 @@ package com.dozingcatsoftware.bouncy;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -24,6 +25,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
     FieldViewManager manager;
 
     Paint paint = new Paint();
+    RectF rect = new RectF();
 
     {
         paint.setAntiAlias(true);
@@ -60,7 +62,6 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
         if (c == null) return;
         c.drawARGB(255, 0, 0, 0);
         paint.setStrokeWidth(manager.getLineWidth());
-        // call draw() on each FieldElement, draw balls separately
         this.canvas = c;
         try {
             manager.getField().draw(this);
@@ -80,6 +81,19 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
                 this.paint);
     }
 
+    @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
+        this.paint.setColor(Color.toARGB(color));
+        float x1 = manager.world2pixelX(xEndpoints[0]);
+        float y1 = manager.world2pixelY(yEndpoints[0]);
+        for (int i = 1; i < xEndpoints.length; i++) {
+            float x2 = manager.world2pixelX(xEndpoints[i]);
+            float y2 = manager.world2pixelY(yEndpoints[i]);
+            this.canvas.drawLine(x1, y1, x2, y2, this.paint);
+            x1 = x2;
+            y1 = y2;
+        }
+    }
+
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
         drawCircle(cx, cy, radius, color, Paint.Style.FILL);
     }
@@ -93,5 +107,25 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
         this.paint.setStyle(style);
         float rad = radius * manager.getCachedScale();
         this.canvas.drawCircle(manager.world2pixelX(cx), manager.world2pixelY(cy), rad, paint);
+    }
+
+    @Override public boolean canDrawArc() {
+        return true;
+    }
+
+    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius,
+            float startAngle, float endAngle, int color) {
+        // Android drawArc draws in degrees clockwise with 0 at the top. Arguments to this function
+        // are in radians, counterclockwise with 0 to the right.
+        this.paint.setColor(Color.toARGB(color));
+        this.paint.setStyle(Paint.Style.STROKE);
+        float wcx = manager.world2pixelX(cx);
+        float wcy = manager.world2pixelY(cy);
+        float wxrad = xRadius * manager.getCachedScale();
+        float wyrad = yRadius * manager.getCachedScale();
+        this.rect.set(wcx - wxrad, wcy - wyrad, wcx + wxrad, wcy + wyrad);
+        float startDegrees = (float) (360 - Math.toDegrees(endAngle));
+        float sweepDegrees = (float) Math.toDegrees(endAngle - startAngle);
+        this.canvas.drawArc(this.rect, startDegrees, sweepDegrees, false, paint);
     }
 }

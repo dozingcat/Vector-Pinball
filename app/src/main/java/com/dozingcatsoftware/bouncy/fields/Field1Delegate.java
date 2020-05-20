@@ -19,7 +19,7 @@ public class Field1Delegate extends BaseFieldDelegate {
         // Multiball for ramp shot if extra ball rollovers all lit.
         if ("RampRollovers".equals(rolloverGroup.getElementId())) {
             RolloverGroupElement extraBallRollovers =
-                    (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
+                    field.getFieldElementById("ExtraBallRollovers");
             if (extraBallRollovers.allRolloversActive()) {
                 extraBallRollovers.setAllRolloversActivated(false);
                 startMultiball(field);
@@ -64,7 +64,7 @@ public class Field1Delegate extends BaseFieldDelegate {
         }
         // For all groups, increment extra ball rollover.
         RolloverGroupElement extraBallRollovers =
-                (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
+                field.getFieldElementById("ExtraBallRollovers");
         if (extraBallRollovers != null && !extraBallRollovers.allRolloversActive()) {
             extraBallRollovers.activateFirstUnactivatedRollover();
             if (extraBallRollovers.allRolloversActive()) {
@@ -76,7 +76,7 @@ public class Field1Delegate extends BaseFieldDelegate {
     // Support for enabling launch barrier after ball passes by it and hits sensor,
     // and disabling for new ball or new game.
     private void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
