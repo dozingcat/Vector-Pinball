@@ -30,6 +30,7 @@ public class BouncyActivity extends Activity {
 
     CanvasFieldView canvasFieldView;
     GLFieldView glFieldView;
+    GL10Renderer gl10Renderer;
     ScoreView scoreView;
 
     View buttonPanel;
@@ -85,15 +86,16 @@ public class BouncyActivity extends Activity {
         field.resetForLevel(this, level);
         field.setAudioPlayer(new VPSoundpool.Player());
 
-        canvasFieldView = (CanvasFieldView) findViewById(R.id.canvasFieldView);
-        glFieldView = (GLFieldView) findViewById(R.id.glFieldView);
+        canvasFieldView = findViewById(R.id.canvasFieldView);
+        glFieldView = findViewById(R.id.glFieldView);
+        gl10Renderer = new GL10Renderer(glFieldView);
 
         fieldViewManager.setField(field);
         fieldViewManager.setStartGameAction(new Runnable() {
             @Override public void run() {doStartGame(null);}
         });
 
-        scoreView = (ScoreView) findViewById(R.id.scoreView);
+        scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
 
         fieldDriver.setFieldViewManager(fieldViewManager);
@@ -103,9 +105,9 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
-        switchTableButton = (Button) findViewById(R.id.switchTableButton);
-        endGameButton = (Button) findViewById(R.id.endGameButton);
-        unlimitedBallsToggle = (CheckBox) findViewById(R.id.unlimitedBallsToggle);
+        switchTableButton = findViewById(R.id.switchTableButton);
+        endGameButton = findViewById(R.id.endGameButton);
+        unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -259,7 +261,7 @@ public class BouncyActivity extends Activity {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldView(glFieldView);
+                fieldViewManager.setFieldRenderer(gl10Renderer);
                 fieldDriver.resetFrameRate();
             }
         }
@@ -267,7 +269,7 @@ public class BouncyActivity extends Activity {
             if (canvasFieldView.getVisibility() != View.VISIBLE) {
                 glFieldView.setVisibility(View.GONE);
                 canvasFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldView(canvasFieldView);
+                fieldViewManager.setFieldRenderer(canvasFieldView);
                 fieldDriver.resetFrameRate();
             }
         }

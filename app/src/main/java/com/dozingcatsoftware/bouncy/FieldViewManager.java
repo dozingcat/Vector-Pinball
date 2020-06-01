@@ -22,7 +22,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     boolean canDraw;
     Runnable startGameAction;
 
-    public void setFieldView(IFieldRenderer view) {
+    public void setFieldRenderer(IFieldRenderer view) {
         if (this.view != view) {
             this.view = view;
             view.setManager(this);

@@ -38,12 +38,7 @@ public class FieldDriver {
     /** Starts the game thread running. Does not actually start a new game. */
     public void start() {
         running = true;
-        gameThread = new Thread() {
-            @Override
-            public void run() {
-                threadMain();
-            }
-        };
+        gameThread = new Thread(this::threadMain);
         gameThread.start();
     }
 
