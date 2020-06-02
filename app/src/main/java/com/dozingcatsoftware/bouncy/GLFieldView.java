@@ -8,10 +8,10 @@ import android.view.MotionEvent;
 
 public class GLFieldView extends GLSurfaceView {
 
+    // This view class just handles input events. OpenGL calls to draw field elements are done in
+    // GL10Renderer and GL20Renderer.
     public GLFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // setRenderer(this);
-        // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setFocusable(true);
     }
 
@@ -36,6 +36,4 @@ public class GLFieldView extends GLSurfaceView {
     @Override public boolean onKeyUp(int keyCode, KeyEvent event) {
         return manager.handleKeyUp(keyCode, event);
     }
-
-
 }

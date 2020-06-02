@@ -8,36 +8,22 @@ import com.badlogic.gdx.math.MathUtils;
 
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 /**
  * This class handles the common functionality for Canvas and OpenGL-based views, including mapping
  * world coordinates to pixels and handling touch events.
  */
 
-public class FieldViewManager implements SurfaceHolder.Callback {
+public class FieldViewManager {
 
-    IFieldRenderer view;
-    boolean canDraw;
+    IFieldRenderer fieldRenderer;
     Runnable startGameAction;
 
-    public void setFieldRenderer(IFieldRenderer view) {
-        if (this.view != view) {
-            this.view = view;
-            view.setManager(this);
-            if (view instanceof SurfaceView) {
-                canDraw = false;
-                ((SurfaceView) view).getHolder().addCallback(this);
-            }
-            else {
-                canDraw = true;
-            }
+    public void setFieldRenderer(IFieldRenderer renderer) {
+        if (this.fieldRenderer != renderer) {
+            this.fieldRenderer = renderer;
+            renderer.setManager(this);
         }
-    }
-
-    public boolean canDraw() {
-        return canDraw;
     }
 
     Field field;
@@ -75,7 +61,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 
     public int getLineWidth() {
         int cw = customLineWidth;
-        int minDim = Math.min(view.getWidth(), view.getHeight());
+        int minDim = Math.min(fieldRenderer.getWidth(), fieldRenderer.getHeight());
         // Line width of more than 1/60 of the screen size is too thick.
         int lineWidth = (cw > 0) ? Math.min(cw, minDim / 60) : minDim / 216;
         return Math.max(lineWidth, 1);
@@ -86,8 +72,8 @@ public class FieldViewManager implements SurfaceHolder.Callback {
     }
 
     float getScale(float zoom) {
-        float xs = view.getWidth() / field.getWidth();
-        float ys = view.getHeight() / field.getHeight();
+        float xs = fieldRenderer.getWidth() / field.getWidth();
+        float ys = fieldRenderer.getHeight() / field.getHeight();
         return Math.min(xs, ys) * zoom;
     }
 
@@ -105,16 +91,16 @@ public class FieldViewManager implements SurfaceHolder.Callback {
      * calls and math operations.
      */
     private void cacheScaleAndOffsets() {
-        cachedHeight = view.getHeight();
+        cachedHeight = fieldRenderer.getHeight();
         // Don't zoom if game is over or multiball is active.
         List<Ball> balls = field.getBalls();
         if (maxZoom <= 1.0f || !field.getGameState().isGameInProgress() || balls.size() > 1) {
             cachedScale = getScale(1.0f);
             // Center the entire table horizontally and put at at the top vertically.
             // Negative offsets so the 0 coordinate will be on the screen.
-            float spaceLeftX = view.getWidth() - (field.getWidth() * cachedScale);
+            float spaceLeftX = fieldRenderer.getWidth() - (field.getWidth() * cachedScale);
             cachedXOffset = (spaceLeftX > 0) ? -spaceLeftX / (2 * cachedScale) : 0;
-            float spaceLeftY = view.getHeight() - (field.getHeight() * cachedScale);
+            float spaceLeftY = fieldRenderer.getHeight() - (field.getHeight() * cachedScale);
             cachedYOffset = (spaceLeftY > 0) ? -spaceLeftY / cachedScale : 0;
         }
         else {
@@ -133,12 +119,12 @@ public class FieldViewManager implements SurfaceHolder.Callback {
             }
             // `spanX` and `spanY` are how many world units are visible when zoomed. We don't want
             // the zoomed view to extend to less than 0, or greater than the field size.
-            float spanX = view.getWidth() / cachedScale;
+            float spanX = fieldRenderer.getWidth() / cachedScale;
             float rawXOffset = centerX - spanX / 2;
             float maxXOffset = field.getWidth() - spanX;
             cachedXOffset = MathUtils.clamp(rawXOffset, 0, maxXOffset);
 
-            float spanY = view.getHeight() / cachedScale;
+            float spanY = fieldRenderer.getHeight() / cachedScale;
             float rawYOffset = centerY - spanY / 2;
             float maxYOffset = field.getHeight() - spanY;
             cachedYOffset = MathUtils.clamp(rawYOffset, 0, maxYOffset);
@@ -222,7 +208,7 @@ public class FieldViewManager implements SurfaceHolder.Callback {
                                     (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >>
                                             MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
                         }
-                        float halfwidth = view.getWidth() / 2;
+                        float halfwidth = fieldRenderer.getWidth() / 2;
                         for (int i = 0; i < npointers; i++) {
                             if (i != liftedPointerIndex) {
                                 float touchx = (Float) getXMethod.invoke(event, i);
@@ -307,19 +293,6 @@ public class FieldViewManager implements SurfaceHolder.Callback {
 
     public void draw() {
         cacheScaleAndOffsets();
-        view.doDraw();
+        fieldRenderer.doDraw();
     }
-
-    // SurfaceHolder.Callback methods
-    @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // Not used.
-    }
-
-    @Override public void surfaceCreated(SurfaceHolder holder) {
-        canDraw = true;
-    }
-
-    @Override public void surfaceDestroyed(SurfaceHolder holder) {
-        canDraw = false;
-    }
-}
+ }

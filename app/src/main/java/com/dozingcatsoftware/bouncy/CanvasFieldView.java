@@ -9,12 +9,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
-import com.dozingcatsoftware.bouncy.elements.FieldElement;
-
-/**
- * Draws the game field. Field elements are defined in world coordinates, which this view
- * transforms to screen/pixel coordinates.
- */
 public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
     public CanvasFieldView(Context context, AttributeSet attrs) {

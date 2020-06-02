@@ -116,15 +116,7 @@ public class GL10Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     // OpenGL can only draw arcs by drawing individual line segments. We could determine the line
     // segment endpoints in drawArc, but currently the only caller is WallArcElement which already
-    // has the endpoints, so it's better for it to call drawLinePath.
-    @Override public boolean canDrawArc() {
-        return false;
-    }
-
-    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius,
-                                  float startAngle, float sweepAngle, int color) {
-
-    }
+    // has the endpoints, so it's better to not implement it and have clients call drawLinePath.
 
     final Object renderLock = new Object();
     boolean renderDone;

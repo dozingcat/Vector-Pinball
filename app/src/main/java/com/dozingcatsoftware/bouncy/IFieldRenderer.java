@@ -17,10 +17,12 @@ public interface IFieldRenderer {
 
     void frameCircle(float cx, float cy, float radius, int color);
 
-    boolean canDrawArc();
+    default boolean canDrawArc() {
+        return false;
+    }
 
-    void drawArc(float cx, float cy, float xRadius, float yRadius,
-                 float startAngle, float sweepAngle, int color);
+    default void drawArc(float cx, float cy, float xRadius, float yRadius,
+                 float startAngle, float sweepAngle, int color) {}
 
     void doDraw();
 

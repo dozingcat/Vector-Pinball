@@ -1,11 +1,14 @@
 package com.dozingcatsoftware.bouncy;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.dozingcatsoftware.bouncy.util.IOUtils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -31,6 +34,7 @@ public class BouncyActivity extends Activity {
     CanvasFieldView canvasFieldView;
     GLFieldView glFieldView;
     GL10Renderer gl10Renderer;
+    GL20Renderer gl20Renderer;
     ScoreView scoreView;
 
     View buttonPanel;
@@ -69,6 +73,8 @@ public class BouncyActivity extends Activity {
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
 
+
+
     private static final String TAG = "BouncyActivity";
 
     /** Called when the activity is first created. */
@@ -88,7 +94,16 @@ public class BouncyActivity extends Activity {
 
         canvasFieldView = findViewById(R.id.canvasFieldView);
         glFieldView = findViewById(R.id.glFieldView);
-        gl10Renderer = new GL10Renderer(glFieldView);
+        // gl10Renderer = new GL10Renderer(glFieldView);
+        gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
+            try {
+                InputStream input = getAssets().open(shaderPath);
+                return IOUtils.utf8FromStream(input);
+            }
+            catch(IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         fieldViewManager.setField(field);
         fieldViewManager.setStartGameAction(new Runnable() {
@@ -98,8 +113,8 @@ public class BouncyActivity extends Activity {
         scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
 
-        fieldDriver.setFieldViewManager(fieldViewManager);
         fieldDriver.setField(field);
+        fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
@@ -122,13 +137,7 @@ public class BouncyActivity extends Activity {
 
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
-        (new AsyncTask<Void, Void, Void>() {
-            @Override protected Void doInBackground(Void... params) {
-                VPSoundpool.loadSounds();
-                return null;
-            }
-        }).execute();
-
+        (new Thread(() -> VPSoundpool.loadSounds())).start();
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
@@ -160,7 +169,7 @@ public class BouncyActivity extends Activity {
             // for OpenGL views. For now the game will resume immediately when using OpenGL.
             if (field.getGameState().isGameInProgress() &&
                     glFieldView.getVisibility() == View.GONE) {
-                fieldDriver.drawField();
+                fieldViewManager.draw();
                 showPausedButtons();
             }
             else {
@@ -261,7 +270,7 @@ public class BouncyActivity extends Activity {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldRenderer(gl10Renderer);
+                fieldViewManager.setFieldRenderer(gl20Renderer);
                 fieldDriver.resetFrameRate();
             }
         }

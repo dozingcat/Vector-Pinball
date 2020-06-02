@@ -1,6 +1,8 @@
 #version 100
 precision mediump float;
 void main() {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    /*
     vec2 fragmentPosition = 2.0*gl_PointCoord - 1.0;
     float distance = length(fragmentPosition);
     // float distanceSqrd = distance * distance;
@@ -26,4 +28,5 @@ void main() {
     // 0.1/distanceSqrd,
     // 0.0, 1.0
     );
+    */
 }

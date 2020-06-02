@@ -87,7 +87,9 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.android.support:multidex-instrumentation:1.0.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: ./app/libs/gdx-box2d-1.9.10.jar" level="project" />
     <orderEntry type="library" name="Gradle: ./app/libs/gdx-1.9.10.jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:multidex:1.0.2@aar" level="project" />
   </component>
 </module>
