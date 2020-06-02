@@ -3,6 +3,7 @@ package com.dozingcatsoftware.bouncy;
 import android.annotation.TargetApi;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.os.Build;
 
 import java.nio.ByteBuffer;
@@ -53,6 +54,36 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         fillCircleProgramId = createProgram("shaders/circle.vert", "shaders/circle.frag");
     }
 
+    private final float[] vPMatrix = new float[16];
+    private final float[] projectionMatrix = new float[16];
+    private final float[] viewMatrix = new float[16];
+
+
+
+    private void startDraw() {
+
+    }
+
+    private void endDraw() {
+
+    }
+
+    float world2glX(float x) {
+        float scale = Math.max(getWidth(), getHeight());
+        float wx = fvManager.world2pixelX(x);
+        float offset = 1 - getWidth() / scale;
+        float glx = ((2 * wx) / scale - 1) + offset;
+        return glx;
+    }
+
+    float world2glY(float y) {
+        float scale = Math.max(getWidth(), getHeight());
+        float wy = fvManager.world2pixelY(y);
+        float offset = 1 - getHeight() / scale;
+        float gly = -(((2 * wy) / scale - 1) + offset);
+        return gly;
+    }
+
     private void drawTest() {
         if (fillCircleProgramId == null) {
             initShaders();
@@ -60,15 +91,41 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+
         FloatBuffer vertexBuffer;
 
         // number of coordinates per vertex in this array
         final int COORDS_PER_VERTEX = 3;
+
+        /*
         float triangleCoords[] = {   // in counterclockwise order:
-                0.0f,  0.622008459f, 0.0f, // top
-                -0.5f, -0.311004243f, 0.0f, // bottom left
-                0.5f, -0.311004243f, 0.0f  // bottom right
+                0.f,  .5f, 0.0f, // top
+                0.f, 0.f, 0.0f, // bottom left
+                0.5f, 0.f, 0.0f,  // bottom right
+                0f, .5f, 0f,
+                .5f, 0f, 0f,
+                .95f, .5f, 0f,
         };
+        */
+        float triangleCoords[] = {
+                world2glX(1), world2glY(1), 0f,
+                world2glX(19), world2glY(29), 0f,
+                world2glX(19), world2glY(1), 0f,
+                world2glX(5), world2glY(20), 0f,
+                world2glX(5), world2glY(22), 0f,
+                world2glX(7), world2glY(22), 0f,
+                // -1f, -1f, 0,
+                // 1f, -1f, 0,
+                // 1f, 1f, 0,
+        };
+
+        int numVertices = triangleCoords.length / COORDS_PER_VERTEX;
 
         // Set color with red, green, blue and alpha (opacity) values
         float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
@@ -107,8 +164,15 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         // Set color for drawing the triangle
         // GLES20.glUniform4fv(colorHandle, 1, color, 0);
 
+        // get handle to shape's transformation matrix
+        int vPMatrixHandle = GLES20.glGetUniformLocation(fillCircleProgramId, "uMVPMatrix");
+
+        // Pass the projection and view transformation to the shader
+        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, vPMatrix, 0);
+
+
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numVertices);
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(positionHandle);
@@ -143,27 +207,61 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     }
 
-    @Override public void doDraw() {
+    final Object renderLock = new Object();
+    boolean renderDone;
 
+    @Override public void doDraw() {
+        synchronized (renderLock) {
+            renderDone = false;
+        }
+
+        this.glView.requestRender();
+
+        synchronized (renderLock) {
+            while (!renderDone) {
+                try {
+                    renderLock.wait();
+                }
+                catch (InterruptedException ex) {
+                }
+            }
+        }
     }
 
     @Override public int getWidth() {
-        return 0;
+        return glView.getWidth();
     }
 
     @Override public int getHeight() {
-        return 0;
+        return glView.getHeight();
     }
 
     @Override public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         initShaders();
     }
 
-    @Override public void onSurfaceChanged(GL10 gl10, int i, int i1) {
+    @Override public void onSurfaceChanged(GL10 gl10, int width, int height) {
+        GLES20.glViewport(0, 0, width, height);
+        float ratio = (float) width / height;
+
+        // this projection matrix is applied to object coordinates
+        // in the onDrawFrame() method
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
 
     }
 
     @Override public void onDrawFrame(GL10 gl10) {
         drawTest();
+        Field field = fvManager.getField();
+        if (field == null) return;
+        synchronized (field) {
+            // startGLElements(gl);
+            field.draw(this);
+            // endGLElements(gl);
+        }
+        synchronized (renderLock) {
+            renderDone = true;
+            renderLock.notify();
+        }
     }
 }

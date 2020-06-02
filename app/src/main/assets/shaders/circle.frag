@@ -1,7 +1,10 @@
 #version 100
 precision mediump float;
 void main() {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    // gl_FragCoord is in pixel space, y is up.
+    float green = (gl_FragCoord.x > 300.0) ? 1.0 : 0.0;
+    float blue = (gl_FragCoord.y > 450.0) ? 1.0 : 0.0;
+    gl_FragColor = vec4(1.0, green, blue, 1.0);
     /*
     vec2 fragmentPosition = 2.0*gl_PointCoord - 1.0;
     float distance = length(fragmentPosition);
