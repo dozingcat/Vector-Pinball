@@ -1,35 +1,24 @@
 #version 100
 precision mediump float;
+
+uniform float centerX;
+uniform float centerY;
+uniform float radiusSquared;
+uniform vec4 color;
+uniform bool filled;
+uniform float lineWidth;
+
 void main() {
     // gl_FragCoord is in pixel space, y is up.
-    float green = (gl_FragCoord.x > 300.0) ? 1.0 : 0.0;
-    float blue = (gl_FragCoord.y > 450.0) ? 1.0 : 0.0;
-    gl_FragColor = vec4(1.0, green, blue, 1.0);
-    /*
-    vec2 fragmentPosition = 2.0*gl_PointCoord - 1.0;
-    float distance = length(fragmentPosition);
-    // float distanceSqrd = distance * distance;
-    float inner = 0.4;
-    float outer = 0.6;
-    float shadow = 0.2;
-    float red = 0.0;
-    if (distance > inner && distance < outer) {
-        red = 0.7;
+    gl_FragColor = color;
+    float diffX = gl_FragCoord.x - centerX;
+    float diffY = gl_FragCoord.y - centerY;
+    float distSq = diffX * diffX + diffY * diffY;
+    if (distSq > radiusSquared) {
+       gl_FragColor.a = 0.0;
     }
-    else if (distance < inner && distance > inner - shadow) {
-        red = 0.7 * (1.0 - (inner - distance) / shadow);
+    // TODO: use lineWidth
+    if (!filled && distSq < 0.8 * radiusSquared) {
+        gl_FragColor.a = 0.0;
     }
-    else if (distance > outer && distance < outer + shadow) {
-        red = 0.7 * (1.0 - (distance - outer) / shadow);
-    }
-    gl_FragColor = vec4(
-    red,
-    0.0,
-    0.7,
-    1.0
-    // 0.2/distanceSqrd,
-    // 0.1/distanceSqrd,
-    // 0.0, 1.0
-    );
-    */
 }
