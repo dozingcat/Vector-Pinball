@@ -1,17 +1,17 @@
 #version 100
-precision mediump float;
+precision highp float;
 
 uniform vec2 center;
-uniform float radius;
+uniform float radiusSquared;
+uniform float innerRadiusSquared;
 uniform vec4 color;
-uniform bool filled;
-uniform float lineWidth;
 
 void main() {
     // gl_FragCoord is in pixel space, y is up.
     gl_FragColor = color;
-    float dist = distance(gl_FragCoord.xy, center);
-    if (dist > radius || (!filled && dist < radius - lineWidth)) {
+    vec2 diff = center - gl_FragCoord.xy;
+    float distSquared = dot(diff, diff);
+    if (distSquared > radiusSquared || distSquared < innerRadiusSquared) {
        gl_FragColor.a = 0.0;
     }
 }

@@ -1,4 +1,5 @@
 #version 100
+precision highp float;
 
 uniform vec2 start;
 uniform vec2 end;
