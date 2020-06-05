@@ -1,10 +1,10 @@
 #version 100
 precision highp float;
 
-uniform vec2 center;
-uniform float radiusSquared;
-uniform float innerRadiusSquared;
-uniform vec4 color;
+varying vec2 center;
+varying float radiusSquared;
+varying float innerRadiusSquared;
+varying vec4 color;
 
 void main() {
     // gl_FragCoord is in pixel space, y is up.

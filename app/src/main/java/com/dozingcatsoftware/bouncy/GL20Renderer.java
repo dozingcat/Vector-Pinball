@@ -75,18 +75,18 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     private void initShaders() {
-        circleProgramId = createProgram("shaders/base_vertex.vert", "shaders/circle.frag");
+        circleProgramId = createProgram("shaders/circle.vert", "shaders/circle.frag");
         circleMvpMatrixHandle = GLES20.glGetUniformLocation(circleProgramId, "uMVPMatrix");
         circlePositionHandle = GLES20.glGetAttribLocation(circleProgramId, "position");
-        circleColorHandle = GLES20.glGetUniformLocation(circleProgramId, "color");
-        circleCenterHandle = GLES20.glGetUniformLocation(circleProgramId, "center");
-        circleRadiusSquaredHandle = GLES20.glGetUniformLocation(circleProgramId, "radiusSquared");
-        circleInnerRadiusSquaredHandle = GLES20.glGetUniformLocation(circleProgramId, "innerRadiusSquared");
+        circleColorHandle = GLES20.glGetAttribLocation(circleProgramId, "inColor");
+        circleCenterHandle = GLES20.glGetAttribLocation(circleProgramId, "inCenter");
+        circleRadiusSquaredHandle = GLES20.glGetAttribLocation(circleProgramId, "inRadiusSquared");
+        circleInnerRadiusSquaredHandle = GLES20.glGetAttribLocation(circleProgramId, "inInnerRadiusSquared");
 
-        lineProgramId = createProgram("shaders/base_vertex.vert", "shaders/line.frag");
+        lineProgramId = createProgram("shaders/line.vert", "shaders/line.frag");
         lineMvpMatrixHandle = GLES20.glGetUniformLocation(lineProgramId, "uMVPMatrix");
         linePositionHandle = GLES20.glGetAttribLocation(lineProgramId, "position");
-        lineColorHandle = GLES20.glGetUniformLocation(lineProgramId, "color");
+        lineColorHandle = GLES20.glGetAttribLocation(lineProgramId, "inColor");
 
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
@@ -166,80 +166,105 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         return this.getHeight() - fvManager.world2pixelY(y);
     }
 
+    private static FloatBuffer makeFloatBuffer(int floatCap) {
+        ByteBuffer bb = ByteBuffer.allocateDirect(floatCap * 4);
+        bb.order(ByteOrder.nativeOrder());
+        return bb.asFloatBuffer();
+    }
+
     private void drawCircles() {
-        final int numVertices = 6;
-        final int coordsPerVertex = 3;
-        final int bytesPerVertex = coordsPerVertex * 4;
         final float lineWidth = fvManager.getLineWidth();
 
-
-        ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (number of coordinate values * 4 bytes per float)
-                quadCoords.length / 3 * 4);
-        // use the device hardware's native byte order
-        bb.order(ByteOrder.nativeOrder());
-        // create a floating point buffer from the ByteBuffer
-        FloatBuffer colorBuffer = bb.asFloatBuffer();
-
-
-        GLES20.glUseProgram(circleProgramId);
+        // Each circle has 6 vertices (two triangles to make a quad), requiring 18 floats for
+        // position, 24 for color, 12 for center, 6 for outer and inner radius.
+        // TODO: store colors more efficiently, all vertices have the same color.
+        FloatBuffer coordBuffer = makeFloatBuffer(circles.size() * 18);
+        FloatBuffer colorBuffer = makeFloatBuffer(circles.size() * 24);
+        FloatBuffer centerBuffer = makeFloatBuffer(circles.size() * 12);
+        FloatBuffer radiusSquaredBuffer = makeFloatBuffer(circles.size() * 6);
+        FloatBuffer innerRadiusSquaredBuffer = makeFloatBuffer(circles.size() * 6);
 
         for (Circle c : circles) {
             float glx = world2glX(c.cx);
             float gly = world2glY(c.cy);
             float glrad = world2glX(c.radius) - world2glX(0);
+            coordBuffer.put(glx - glrad);
+            coordBuffer.put(gly - glrad);
+            coordBuffer.put(0f);
+            coordBuffer.put(glx + glrad);
+            coordBuffer.put(gly - glrad);
+            coordBuffer.put(0f);
+            coordBuffer.put(glx - glrad);
+            coordBuffer.put(gly + glrad);
+            coordBuffer.put(0f);
+            coordBuffer.put(glx - glrad);
+            coordBuffer.put(gly + glrad);
+            coordBuffer.put(0f);
+            coordBuffer.put(glx + glrad);
+            coordBuffer.put(gly - glrad);
+            coordBuffer.put(0f);
+            coordBuffer.put(glx + glrad);
+            coordBuffer.put(gly + glrad);
+            coordBuffer.put(0f);
 
-            quadCoords[0] = glx - glrad;
-            quadCoords[1] = gly - glrad;
-            quadCoords[3] = glx + glrad;
-            quadCoords[4] = gly - glrad;
-            quadCoords[6] = glx - glrad;
-            quadCoords[7] = gly + glrad;
-            quadCoords[9] = glx - glrad;
-            quadCoords[10] = gly + glrad;
-            quadCoords[12] = glx + glrad;
-            quadCoords[13] = gly - glrad;
-            quadCoords[15] = glx + glrad;
-            quadCoords[16] = gly + glrad;
+            for (int i = 0; i < 6; i++) {
+                colorBuffer.put(c.color);
+                centerBuffer.put(worldToGLPixelX(c.cx));
+                centerBuffer.put(worldToGLPixelY(c.cy));
 
-            quadVertexBuffer.put(quadCoords);
-            quadVertexBuffer.position(0);
-
-            float radiusInPixels = worldToGLPixelX(c.radius) - worldToGLPixelX(0);
-
-            // Enable a handle to the triangle vertices
-            GLES20.glEnableVertexAttribArray(circlePositionHandle);
-
-            // Prepare the triangle coordinate data
-            GLES20.glVertexAttribPointer(circlePositionHandle, coordsPerVertex,
-                    GLES20.GL_FLOAT, false,
-                    bytesPerVertex, quadVertexBuffer);
-
-            // get handle to fragment shader's vColor member
-            // colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-            // Set position/radius/color.
-            circleCenter[0] = worldToGLPixelX(c.cx);
-            circleCenter[1] = worldToGLPixelY(c.cy);
-            float innerRadiusSquared = c.filled ?
-                    0f : (radiusInPixels - lineWidth) * (radiusInPixels - lineWidth);
-            GLES20.glUniform2fv(circleCenterHandle, 1, circleCenter, 0);
-            GLES20.glUniform1f(circleRadiusSquaredHandle, radiusInPixels * radiusInPixels);
-            GLES20.glUniform1f(circleInnerRadiusSquaredHandle, innerRadiusSquared);
-            GLES20.glUniform4fv(circleColorHandle, 1, c.color, 0);
-
-            // get handle to shape's transformation matrix
-            // int vPMatrixHandle = GLES20.glGetUniformLocation(circleProgramId, "uMVPMatrix");
-
-            // Pass the projection and view transformation to the shader
-            GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
-
-            // Draw the triangle
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numVertices);
-
-            // Disable vertex array
-            GLES20.glDisableVertexAttribArray(circlePositionHandle);
+                float radiusInPixels = worldToGLPixelX(c.radius) - worldToGLPixelX(0);
+                radiusSquaredBuffer.put(radiusInPixels * radiusInPixels);
+                float innerRadiusSquared = c.filled ?
+                        0f : (radiusInPixels - lineWidth) * (radiusInPixels - lineWidth);
+                innerRadiusSquaredBuffer.put(innerRadiusSquared);
+            }
         }
+        coordBuffer.position(0);
+        colorBuffer.position(0);
+        centerBuffer.position(0);
+        radiusSquaredBuffer.position(0);
+        innerRadiusSquaredBuffer.position(0);
+
+        GLES20.glUseProgram(circleProgramId);
+
+        GLES20.glEnableVertexAttribArray(circlePositionHandle);
+        GLES20.glEnableVertexAttribArray(circleColorHandle);
+        GLES20.glEnableVertexAttribArray(circleCenterHandle);
+        GLES20.glEnableVertexAttribArray(circleRadiusSquaredHandle);
+        GLES20.glEnableVertexAttribArray(circleInnerRadiusSquaredHandle);
+
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(circlePositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                12, coordBuffer);
+
+        GLES20.glVertexAttribPointer(circleColorHandle, 4,
+                GLES20.GL_FLOAT, false,
+                16, colorBuffer);
+
+        GLES20.glVertexAttribPointer(circleCenterHandle, 2,
+                GLES20.GL_FLOAT, false,
+                8, centerBuffer);
+
+        GLES20.glVertexAttribPointer(circleRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                4, radiusSquaredBuffer);
+
+        GLES20.glVertexAttribPointer(circleInnerRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                4, innerRadiusSquaredBuffer);
+
+        GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
+
+        // Draw the circles.
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, circles.size() * 6);
+
+        // Disable vertex arrays.
+        GLES20.glDisableVertexAttribArray(circlePositionHandle);
+        GLES20.glDisableVertexAttribArray(circleColorHandle);
+        GLES20.glDisableVertexAttribArray(circleCenterHandle);
+        GLES20.glDisableVertexAttribArray(circleRadiusSquaredHandle);
+        GLES20.glDisableVertexAttribArray(circleInnerRadiusSquaredHandle);
     }
 
     private void drawLines() {
@@ -247,7 +272,11 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         final int coordsPerVertex = 3;
         final int bytesPerVertex = coordsPerVertex * 4;
 
-        GLES20.glUseProgram(lineProgramId);
+        // Each line has 6 vertices (two triangles to make a quad), requiring 18 floats for
+        // position and 24 for color.
+        // TODO: store colors more efficiently, all vertices have the same color.
+        FloatBuffer coordBuffer = makeFloatBuffer(lines.size() * 18);
+        FloatBuffer colorBuffer = makeFloatBuffer(lines.size() * 24);
 
         for (Line line : lines) {
             float glx1 = world2glX(line.x1);
@@ -263,7 +292,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
             float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
             float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
 
-
             quadCoords[0] = glx1 - perpDx;
             quadCoords[1] = gly1 - perpDy;
             quadCoords[3] = glx2 - perpDx;
@@ -276,26 +304,36 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
             quadCoords[13] = gly1 + perpDy;
             quadCoords[15] = glx2 + perpDx;
             quadCoords[16] = gly2 + perpDy;
+            coordBuffer.put(quadCoords);
 
-            quadVertexBuffer.put(quadCoords);
-            quadVertexBuffer.position(0);
-
-            // Enable a handle to the triangle vertices
-            GLES20.glEnableVertexAttribArray(linePositionHandle);
-
-            // Prepare the triangle coordinate data
-            GLES20.glVertexAttribPointer(linePositionHandle, coordsPerVertex,
-                    GLES20.GL_FLOAT, false,
-                    bytesPerVertex, quadVertexBuffer);
-
-            // Set color, and eventually line endpoints and width.
-            GLES20.glUniform4fv(lineColorHandle, 1, line.color, 0);
-
-            // Pass the projection and view transformation to the shader
-            GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numVertices);
-            GLES20.glDisableVertexAttribArray(linePositionHandle);
+            for (int i = 0; i < 6; i++) {
+                colorBuffer.put(line.color);
+            }
         }
+
+        coordBuffer.position(0);
+        colorBuffer.position(0);
+
+        GLES20.glUseProgram(lineProgramId);
+
+        GLES20.glEnableVertexAttribArray(linePositionHandle);
+        GLES20.glEnableVertexAttribArray(lineColorHandle);
+
+        GLES20.glVertexAttribPointer(linePositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                12, coordBuffer);
+
+        GLES20.glVertexAttribPointer(lineColorHandle, 4,
+                GLES20.GL_FLOAT, false,
+                16, colorBuffer);
+
+        // Pass the projection and view transformation to the shader
+        GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
+        
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, lines.size() * 6);
+
+        GLES20.glDisableVertexAttribArray(linePositionHandle);
+        GLES20.glDisableVertexAttribArray(lineColorHandle);
     }
 
     private void drawTest() {
@@ -311,8 +349,8 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        drawCircles();
         drawLines();
+        drawCircles();
     }
 
     @Override public void setManager(FieldViewManager manager) {
