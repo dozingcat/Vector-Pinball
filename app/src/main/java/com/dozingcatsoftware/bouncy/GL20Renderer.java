@@ -54,6 +54,30 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         this.shaderLookupFn = shaderLookupFn;
     }
 
+    private static ByteBuffer makeByteBuffer(int cap) {
+        ByteBuffer bb = ByteBuffer.allocateDirect(cap);
+        bb.order(ByteOrder.nativeOrder());
+        return bb;
+    }
+
+    private static FloatBuffer makeFloatBuffer(int floatCap) {
+        // glVertexAttribPointer requires a direct-allocated buffer.
+        ByteBuffer bb = ByteBuffer.allocateDirect(floatCap * 4);
+        bb.order(ByteOrder.nativeOrder());
+        return bb.asFloatBuffer();
+    }
+
+    private static ByteBuffer ensureRemaining(ByteBuffer buffer, int requiredRemaining) {
+        if (buffer.remaining() >= requiredRemaining) {
+            return buffer;
+        }
+        int newSize = Math.max(buffer.capacity() + requiredRemaining * 2, buffer.capacity() * 2);
+        ByteBuffer newBuffer = makeByteBuffer(newSize);
+        buffer.position(0);
+        newBuffer.put(buffer);
+        return newBuffer;
+    }
+
     private int loadShader(int type, String shaderPath) {
         String src = this.shaderLookupFn.apply(shaderPath);
         int shaderId = GLES20.glCreateShader(type);
@@ -103,8 +127,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     private List<Circle> circles = new ArrayList<>();
 
-    private FloatBuffer lineVertices = makeFloatBuffer(1000);
-    private FloatBuffer lineColors = makeFloatBuffer(1000);
+    private ByteBuffer lineVertices = makeByteBuffer(2000);
     private int numLineVertices = 0;
 
     int cachedWidth;
@@ -118,9 +141,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         cachedLineWidth = fvManager.getLineWidth();
 
         circles.clear();
-        // lines.clear();
         lineVertices.position(0);
-        lineColors.position(0);
         numLineVertices = 0;
     }
 
@@ -157,24 +178,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     private float worldToGLPixelY(float y) {
         // FieldViewManager assumes positive Y is down, but here it's up.
         return cachedHeight - fvManager.world2pixelY(y);
-    }
-
-    private static FloatBuffer makeFloatBuffer(int floatCap) {
-        // glVertexAttribPointer requires a direct-allocated buffer.
-        ByteBuffer bb = ByteBuffer.allocateDirect(floatCap * 4);
-        bb.order(ByteOrder.nativeOrder());
-        return bb.asFloatBuffer();
-    }
-
-    private static FloatBuffer ensureRemaining(FloatBuffer buffer, int requiredRemaining) {
-        if (buffer.remaining() >= requiredRemaining) {
-            return buffer;
-        }
-        int newSize = Math.max(buffer.capacity() + requiredRemaining * 2, buffer.capacity() * 2);
-        FloatBuffer newBuffer = makeFloatBuffer(newSize);
-        buffer.position(0);
-        newBuffer.put(buffer);
-        return newBuffer;
     }
 
     private void drawCircles() {
@@ -272,20 +275,19 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     private void drawLines() {
         lineVertices.position(0);
-        lineColors.position(0);
 
         GLES20.glUseProgram(lineProgramId);
 
         GLES20.glEnableVertexAttribArray(linePositionHandle);
-        GLES20.glEnableVertexAttribArray(lineColorHandle);
-
         GLES20.glVertexAttribPointer(linePositionHandle, 4,
                 GLES20.GL_FLOAT, false,
-                16, lineVertices);
+                32, lineVertices);
 
+        lineVertices.position(16);
+        GLES20.glEnableVertexAttribArray(lineColorHandle);
         GLES20.glVertexAttribPointer(lineColorHandle, 4,
                 GLES20.GL_FLOAT, false,
-                16, lineColors);
+                32, lineVertices);
 
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
@@ -319,8 +321,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        lineVertices = ensureRemaining(lineVertices, 48);
-        lineColors = ensureRemaining(lineColors, 24);
+        lineVertices = ensureRemaining(lineVertices, 48 * 4);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
@@ -335,41 +336,60 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
         float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
 
-        lineVertices.put(glx1 - perpDx);
-        lineVertices.put(gly1 - perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-        lineVertices.put(glx2 - perpDx);
-        lineVertices.put(gly2 - perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-        lineVertices.put(glx1 + perpDx);
-        lineVertices.put(gly1 + perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-        lineVertices.put(glx2 - perpDx);
-        lineVertices.put(gly2 - perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-        lineVertices.put(glx1 + perpDx);
-        lineVertices.put(gly1 + perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-        lineVertices.put(glx2 + perpDx);
-        lineVertices.put(gly2 + perpDy);
-        lineVertices.put(0f);
-        lineVertices.put(1f);
-
         float red = Color.getRed(color) / 255f;
         float green = Color.getGreen(color) / 255f;
         float blue = Color.getBlue(color) / 255f;
         float alpha = Color.getAlpha(color) / 255f;
-        for (int i = 0; i < 6; i++) {
-            lineColors.put(red);
-            lineColors.put(green);
-            lineColors.put(blue);
-            lineColors.put(alpha);
-        }
+        int rgba = Color.toARGB(color);
+
+        lineVertices.putFloat(glx1 - perpDx);
+        lineVertices.putFloat(gly1 - perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
+        lineVertices.putFloat(glx2 - perpDx);
+        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
+        lineVertices.putFloat(glx1 + perpDx);
+        lineVertices.putFloat(gly1 + perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
+        lineVertices.putFloat(glx2 - perpDx);
+        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
+        lineVertices.putFloat(glx1 + perpDx);
+        lineVertices.putFloat(gly1 + perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
+        lineVertices.putFloat(glx2 + perpDx);
+        lineVertices.putFloat(gly2 + perpDy);
+        lineVertices.putFloat(0f);
+        lineVertices.putFloat(1f);
+        lineVertices.putFloat(red);
+        lineVertices.putFloat(green);
+        lineVertices.putFloat(blue);
+        lineVertices.putFloat(alpha);
 
         numLineVertices += 6;
     }
