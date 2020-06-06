@@ -1,17 +1,20 @@
 package com.dozingcatsoftware.bouncy;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.dozingcatsoftware.bouncy.util.IOUtils;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -29,8 +32,12 @@ public class BouncyActivity extends Activity {
     }
 
     CanvasFieldView canvasFieldView;
-    GLFieldView glFieldView;
     ScoreView scoreView;
+
+    GLFieldView glFieldView;
+    GL10Renderer gl10Renderer;
+    GL20Renderer gl20Renderer;
+    boolean useOpenGL20;
 
     View buttonPanel;
     Button switchTableButton;
@@ -71,8 +78,7 @@ public class BouncyActivity extends Activity {
     private static final String TAG = "BouncyActivity";
 
     /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String arch = System.getProperty("os.arch");
         Log.i(TAG, "App started, os.arch=" + arch);
@@ -82,30 +88,48 @@ public class BouncyActivity extends Activity {
 
         FieldLayout.setContext(this);
         this.level = getInitialLevel();
-        field.resetForLevel(this, level);
+        field.resetForLevel(level);
         field.setAudioPlayer(new VPSoundpool.Player());
 
-        canvasFieldView = (CanvasFieldView) findViewById(R.id.canvasFieldView);
-        glFieldView = (GLFieldView) findViewById(R.id.glFieldView);
+        canvasFieldView = findViewById(R.id.canvasFieldView);
+        glFieldView = findViewById(R.id.glFieldView);
+
+        // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
+        // Older devices tend to perform better with 1.0.
+        useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+        if (useOpenGL20) {
+            gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
+                try {
+                    InputStream input = getAssets().open(shaderPath);
+                    return IOUtils.utf8FromStream(input);
+                }
+                catch(IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        }
+        else {
+            gl10Renderer = new GL10Renderer(glFieldView);
+        }
 
         fieldViewManager.setField(field);
         fieldViewManager.setStartGameAction(new Runnable() {
             @Override public void run() {doStartGame(null);}
         });
 
-        scoreView = (ScoreView) findViewById(R.id.scoreView);
+        scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
 
-        fieldDriver.setFieldViewManager(fieldViewManager);
         fieldDriver.setField(field);
+        fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
-        switchTableButton = (Button) findViewById(R.id.switchTableButton);
-        endGameButton = (Button) findViewById(R.id.endGameButton);
-        unlimitedBallsToggle = (CheckBox) findViewById(R.id.unlimitedBallsToggle);
+        switchTableButton = findViewById(R.id.switchTableButton);
+        endGameButton = findViewById(R.id.endGameButton);
+        unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -120,13 +144,7 @@ public class BouncyActivity extends Activity {
 
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
-        (new AsyncTask<Void, Void, Void>() {
-            @Override protected Void doInBackground(Void... params) {
-                VPSoundpool.loadSounds();
-                return null;
-            }
-        }).execute();
-
+        (new Thread(() -> VPSoundpool.loadSounds())).start();
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
@@ -158,7 +176,7 @@ public class BouncyActivity extends Activity {
             // for OpenGL views. For now the game will resume immediately when using OpenGL.
             if (field.getGameState().isGameInProgress() &&
                     glFieldView.getVisibility() == View.GONE) {
-                fieldDriver.drawField();
+                fieldViewManager.draw();
                 showPausedButtons();
             }
             else {
@@ -259,7 +277,7 @@ public class BouncyActivity extends Activity {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldView(glFieldView);
+                fieldViewManager.setFieldRenderer(useOpenGL20 ? gl20Renderer : gl10Renderer);
                 fieldDriver.resetFrameRate();
             }
         }
@@ -267,7 +285,7 @@ public class BouncyActivity extends Activity {
             if (canvasFieldView.getVisibility() != View.VISIBLE) {
                 glFieldView.setVisibility(View.GONE);
                 canvasFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldView(canvasFieldView);
+                fieldViewManager.setFieldRenderer(canvasFieldView);
                 fieldDriver.resetFrameRate();
             }
         }
@@ -410,7 +428,7 @@ public class BouncyActivity extends Activity {
         }
         if (!field.getGameState().isGameInProgress()) {
             buttonPanel.setVisibility(View.GONE);
-            field.resetForLevel(this, level);
+            field.resetForLevel(level);
 
             if (unlimitedBallsToggle.isChecked()) {
                 field.startGameWithUnlimitedBalls();
@@ -455,7 +473,7 @@ public class BouncyActivity extends Activity {
     public void doSwitchTable(View view) {
         level = (level == FieldLayout.numberOfLevels()) ? 1 : level + 1;
         synchronized (field) {
-            field.resetForLevel(this, level);
+            field.resetForLevel(level);
         }
         this.setInitialLevel(level);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();

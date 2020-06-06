@@ -15,6 +15,7 @@ public class FieldDriver {
 
     boolean running;
     Thread gameThread;
+    Runnable drawFn;
 
     FrameRateManager frameRateManager = new FrameRateManager(
             new double[] {60, 50, 45, 40, 30},
@@ -27,8 +28,8 @@ public class FieldDriver {
     private static long MILLION = 1000000;
     private static long BILLION = MILLION * 1000;
 
-    public void setFieldViewManager(FieldViewManager value) {
-        this.fieldViewManager = value;
+    public void setDrawFunction(Runnable drawFn) {
+        this.drawFn = drawFn;
     }
 
     public void setField(Field value) {
@@ -38,12 +39,7 @@ public class FieldDriver {
     /** Starts the game thread running. Does not actually start a new game. */
     public void start() {
         running = true;
-        gameThread = new Thread() {
-            @Override
-            public void run() {
-                threadMain();
-            }
-        };
+        gameThread = new Thread(this::threadMain);
         gameThread.start();
     }
 
@@ -67,7 +63,7 @@ public class FieldDriver {
         while (running) {
             frameRateManager.frameStarted();
             boolean fieldActive = true;
-            if (field != null && fieldViewManager.canDraw()) {
+            if (field != null) {
                 try {
                     synchronized (field) {
                         long nanosPerFrame =
@@ -81,7 +77,7 @@ public class FieldDriver {
                         }
                         field.tick(fieldTickNanos, 4);
                     }
-                    drawField();
+                    drawFn.run();
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
@@ -107,11 +103,6 @@ public class FieldDriver {
                 setAverageFPS(frameRateManager.currentFramesPerSecond());
             }
         }
-    }
-
-    /** Calls FieldViewManager.doDraw to render the game field to the display. */
-    void drawField() {
-        fieldViewManager.draw();
     }
 
     /**

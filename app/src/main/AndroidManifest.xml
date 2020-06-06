@@ -5,6 +5,8 @@
     android:versionCode="26"
     android:versionName="1.8.0" >
 
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -14,6 +16,7 @@
             "uiMode" in android:configChanges prevents the app from restarting when battery saver
             mode is turned on or off. See https://github.com/flutter/flutter/issues/25626
         -->
+
         <activity
             android:name=".BouncyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|uiMode"

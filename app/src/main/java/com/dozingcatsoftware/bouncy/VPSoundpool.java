@@ -53,7 +53,7 @@ public class VPSoundpool {
     // On some devices running Lollipop (seen on Nexus 5 and emulator), SoundPool slows down
     // significantly after loading ~6 sounds, taking several seconds for each additional call to
     // load(). To avoid blocking the main thread (and delaying the app launch), this method is
-    // called in an AsyncTask from the main activity.
+    // called in an async thread from the main activity.
     // See https://code.google.com/p/android-developer-preview/issues/detail?id=1812
     public static void loadSounds() {
         Log.v(LOG_TAG, "loadSounds start");

@@ -4,10 +4,8 @@ import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloat;
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asFloatList;
 import static com.dozingcatsoftware.bouncy.util.MathUtils.asInt;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +19,7 @@ import android.util.Log;
 import com.dozingcatsoftware.bouncy.elements.FieldElement;
 import com.dozingcatsoftware.bouncy.elements.FieldElementCollection;
 import com.dozingcatsoftware.bouncy.elements.FlipperElement;
+import com.dozingcatsoftware.bouncy.util.IOUtils;
 import com.dozingcatsoftware.bouncy.util.JSONUtils;
 
 public class FieldLayout {
@@ -43,8 +42,7 @@ public class FieldLayout {
     static final String ELEMENTS_PROPERTY = "elements";
 
     static int _numLevels = -1;
-    static Map<Integer, Map<String, Object>> _layoutMap =
-            new HashMap<Integer, Map<String, Object>>();
+    static Map<Integer, Map<String, Object>> _layoutMap = new HashMap<>();
     static Context _context;
     Random RAND = new Random();
 
@@ -75,15 +73,8 @@ public class FieldLayout {
         try {
             String assetPath = "tables/table" + level + ".json";
             InputStream fin = _context.getAssets().open(assetPath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
-
-            StringBuilder buffer = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                buffer.append(line);
-            }
-            fin.close();
-            Map<String, Object> layoutMap = JSONUtils.mapFromJSONString(buffer.toString());
+            String s = IOUtils.utf8FromStream(fin);
+            Map<String, Object> layoutMap = JSONUtils.mapFromJSONString(s);
             return layoutMap;
         }
         catch (Exception ex) {
@@ -215,8 +206,8 @@ public class FieldLayout {
 
     // Can apply random velocity increment if specified by "launchVelocityRandomDelta" key.
     public List<Float> getLaunchVelocity() {
-        float vx = launchVelocity.get(0).floatValue();
-        float vy = launchVelocity.get(1).floatValue();
+        float vx = launchVelocity.get(0);
+        float vy = launchVelocity.get(1);
 
         if (launchVelocityRandomDelta.size() >= 2) {
             if (launchVelocityRandomDelta.get(0) > 0) {
