@@ -30,10 +30,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
 
-    private final float[] quadCoords = new float[18];
-    private FloatBuffer quadVertexBuffer;
-    private final float[] circleCenter = new float[2];
-
     private Integer circleProgramId = null;
     private int circleMvpMatrixHandle;
     private int circlePositionHandle;
@@ -87,15 +83,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         lineMvpMatrixHandle = GLES20.glGetUniformLocation(lineProgramId, "uMVPMatrix");
         linePositionHandle = GLES20.glGetAttribLocation(lineProgramId, "position");
         lineColorHandle = GLES20.glGetAttribLocation(lineProgramId, "inColor");
-
-        ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (number of coordinate values * 4 bytes per float)
-                quadCoords.length * 4);
-        // use the device hardware's native byte order
-        bb.order(ByteOrder.nativeOrder());
-
-        // create a floating point buffer from the ByteBuffer
-        quadVertexBuffer = bb.asFloatBuffer();
     }
 
 
@@ -107,14 +94,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         boolean filled;
     }
 
-    private static class Line {
-        float x1;
-        float y1;
-        float x2;
-        float y2;
-        float[] color = new float[4];
-    }
-
     static void setRgba(float[] rgba, int color) {
         rgba[0] = Color.getRed(color) / 255f;
         rgba[1] = Color.getGreen(color) / 255f;
@@ -124,7 +103,6 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     private List<Circle> circles = new ArrayList<>();
 
-    // private List<Line> lines = new ArrayList<>();
     private FloatBuffer lineVertices = makeFloatBuffer(1000);
     private FloatBuffer lineColors = makeFloatBuffer(1000);
     private int numLineVertices = 0;
@@ -341,7 +319,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        lineVertices = ensureRemaining(lineVertices, 24);
+        lineVertices = ensureRemaining(lineVertices, 48);
         lineColors = ensureRemaining(lineColors, 24);
 
         float glx1 = world2glX(x1);
