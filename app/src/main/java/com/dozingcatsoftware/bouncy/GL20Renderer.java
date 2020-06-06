@@ -123,12 +123,27 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     private List<Circle> circles = new ArrayList<>();
-    private List<Line> lines = new ArrayList<>();
+
+    // private List<Line> lines = new ArrayList<>();
+    private FloatBuffer lineVertices = makeFloatBuffer(1000);
+    private FloatBuffer lineColors = makeFloatBuffer(1000);
+    private int numLineVertices = 0;
+
+    int cachedWidth;
+    int cachedHeight;
+    int cachedLineWidth;
 
 
     private void startDraw() {
+        cachedWidth = getWidth();
+        cachedHeight = getHeight();
+        cachedLineWidth = fvManager.getLineWidth();
+
         circles.clear();
-        lines.clear();
+        // lines.clear();
+        lineVertices.position(0);
+        lineColors.position(0);
+        numLineVertices = 0;
     }
 
     private void endDraw() {
@@ -142,17 +157,17 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     // has 3/4 the visible range of the Y axis, and the visible range of X coordinates will be
     // -0.75 to +0.75.
     float world2glX(float x) {
-        float scale = Math.max(getWidth(), getHeight());
+        float scale = Math.max(cachedWidth, cachedHeight);
         float wx = fvManager.world2pixelX(x);
-        float offset = 1 - getWidth() / scale;
+        float offset = 1 - cachedWidth / scale;
         float glx = ((2 * wx) / scale - 1) + offset;
         return glx;
     }
 
     float world2glY(float y) {
-        float scale = Math.max(getWidth(), getHeight());
+        float scale = Math.max(cachedWidth, cachedHeight);
         float wy = fvManager.world2pixelY(y);
-        float offset = 1 - getHeight() / scale;
+        float offset = 1 - cachedHeight / scale;
         float gly = -(((2 * wy) / scale - 1) + offset);
         return gly;
     }
@@ -163,18 +178,28 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     private float worldToGLPixelY(float y) {
         // FieldViewManager assumes positive Y is down, but here it's up.
-        return this.getHeight() - fvManager.world2pixelY(y);
+        return cachedHeight - fvManager.world2pixelY(y);
     }
 
     private static FloatBuffer makeFloatBuffer(int floatCap) {
+        // glVertexAttribPointer requires a direct-allocated buffer.
         ByteBuffer bb = ByteBuffer.allocateDirect(floatCap * 4);
         bb.order(ByteOrder.nativeOrder());
         return bb.asFloatBuffer();
     }
 
-    private void drawCircles() {
-        final float lineWidth = fvManager.getLineWidth();
+    private static FloatBuffer ensureRemaining(FloatBuffer buffer, int requiredRemaining) {
+        if (buffer.remaining() >= requiredRemaining) {
+            return buffer;
+        }
+        int newSize = Math.max(buffer.capacity() + requiredRemaining * 2, buffer.capacity() * 2);
+        FloatBuffer newBuffer = makeFloatBuffer(newSize);
+        buffer.position(0);
+        newBuffer.put(buffer);
+        return newBuffer;
+    }
 
+    private void drawCircles() {
         // Each circle has 6 vertices (two triangles to make a quad), requiring 18 floats for
         // position, 24 for color, 12 for center, 6 for outer and inner radius.
         // TODO: store colors more efficiently, all vertices have the same color.
@@ -214,8 +239,8 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
                 float radiusInPixels = worldToGLPixelX(c.radius) - worldToGLPixelX(0);
                 radiusSquaredBuffer.put(radiusInPixels * radiusInPixels);
-                float innerRadiusSquared = c.filled ?
-                        0f : (radiusInPixels - lineWidth) * (radiusInPixels - lineWidth);
+                float innerRadiusSquared = c.filled ? 0f :
+                        (radiusInPixels - cachedLineWidth) * (radiusInPixels - cachedLineWidth);
                 innerRadiusSquaredBuffer.put(innerRadiusSquared);
             }
         }
@@ -268,69 +293,26 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     private void drawLines() {
-        final int numVertices = 6;
-        final int coordsPerVertex = 3;
-        final int bytesPerVertex = coordsPerVertex * 4;
-
-        // Each line has 6 vertices (two triangles to make a quad), requiring 18 floats for
-        // position and 24 for color.
-        // TODO: store colors more efficiently, all vertices have the same color.
-        FloatBuffer coordBuffer = makeFloatBuffer(lines.size() * 18);
-        FloatBuffer colorBuffer = makeFloatBuffer(lines.size() * 24);
-
-        for (Line line : lines) {
-            float glx1 = world2glX(line.x1);
-            float gly1 = world2glY(line.y1);
-            float glx2 = world2glX(line.x2);
-            float gly2 = world2glY(line.y2);
-            // Extend at right angles from the endpoints and draw a rectangle.
-            // TODO: antialiasing.
-            double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
-            // You'd expect there to be a 0.5 factor here so that the total width is getLineWidth(),
-            // but that seems to make the lines too narrow.
-            double perpDist = 1.0 * fvManager.getLineWidth() / getHeight();
-            float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
-            float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
-
-            quadCoords[0] = glx1 - perpDx;
-            quadCoords[1] = gly1 - perpDy;
-            quadCoords[3] = glx2 - perpDx;
-            quadCoords[4] = gly2 - perpDy;
-            quadCoords[6] = glx1 + perpDx;
-            quadCoords[7] = gly1 + perpDy;
-            quadCoords[9] = glx2 - perpDx;
-            quadCoords[10] = gly2 - perpDy;
-            quadCoords[12] = glx1 + perpDx;
-            quadCoords[13] = gly1 + perpDy;
-            quadCoords[15] = glx2 + perpDx;
-            quadCoords[16] = gly2 + perpDy;
-            coordBuffer.put(quadCoords);
-
-            for (int i = 0; i < 6; i++) {
-                colorBuffer.put(line.color);
-            }
-        }
-
-        coordBuffer.position(0);
-        colorBuffer.position(0);
+        lineVertices.position(0);
+        lineColors.position(0);
 
         GLES20.glUseProgram(lineProgramId);
 
         GLES20.glEnableVertexAttribArray(linePositionHandle);
         GLES20.glEnableVertexAttribArray(lineColorHandle);
 
-        GLES20.glVertexAttribPointer(linePositionHandle, 3,
+        GLES20.glVertexAttribPointer(linePositionHandle, 4,
                 GLES20.GL_FLOAT, false,
-                12, coordBuffer);
+                16, lineVertices);
 
         GLES20.glVertexAttribPointer(lineColorHandle, 4,
                 GLES20.GL_FLOAT, false,
-                16, colorBuffer);
+                16, lineColors);
 
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
-        
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, lines.size() * 6);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numLineVertices);
 
         GLES20.glDisableVertexAttribArray(linePositionHandle);
         GLES20.glDisableVertexAttribArray(lineColorHandle);
@@ -359,13 +341,59 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        Line line = new Line();
-        line.x1 = x1;
-        line.y1 = y1;
-        line.x2 = x2;
-        line.y2 = y2;
-        setRgba(line.color, color);
-        this.lines.add(line);
+        lineVertices = ensureRemaining(lineVertices, 24);
+        lineColors = ensureRemaining(lineColors, 24);
+
+        float glx1 = world2glX(x1);
+        float gly1 = world2glY(y1);
+        float glx2 = world2glX(x2);
+        float gly2 = world2glY(y2);
+        // Extend at right angles from the endpoints and draw a rectangle.
+        // TODO: antialiasing.
+        double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
+        // You'd expect there to be a 0.5 factor here so that the total width is getLineWidth(),
+        // but that seems to make the lines too narrow.
+        double perpDist = 1.0 * cachedLineWidth / cachedHeight;
+        float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
+        float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
+
+        lineVertices.put(glx1 - perpDx);
+        lineVertices.put(gly1 - perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+        lineVertices.put(glx2 - perpDx);
+        lineVertices.put(gly2 - perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+        lineVertices.put(glx1 + perpDx);
+        lineVertices.put(gly1 + perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+        lineVertices.put(glx2 - perpDx);
+        lineVertices.put(gly2 - perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+        lineVertices.put(glx1 + perpDx);
+        lineVertices.put(gly1 + perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+        lineVertices.put(glx2 + perpDx);
+        lineVertices.put(gly2 + perpDy);
+        lineVertices.put(0f);
+        lineVertices.put(1f);
+
+        float red = Color.getRed(color) / 255f;
+        float green = Color.getGreen(color) / 255f;
+        float blue = Color.getBlue(color) / 255f;
+        float alpha = Color.getAlpha(color) / 255f;
+        for (int i = 0; i < 6; i++) {
+            lineColors.put(red);
+            lineColors.put(green);
+            lineColors.put(blue);
+            lineColors.put(alpha);
+        }
+
+        numLineVertices += 6;
     }
 
     @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
