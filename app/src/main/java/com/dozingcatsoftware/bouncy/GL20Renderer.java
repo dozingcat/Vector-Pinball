@@ -78,6 +78,19 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         return newBuffer;
     }
 
+    private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
+
+    private static int packColor(int color) {
+        // For little endian this is ABGR, for big endian RGBA.
+        int red = Color.getRed(color);
+        int green = Color.getGreen(color);
+        int blue = Color.getBlue(color);
+        int alpha = Color.getAlpha(color);
+        return LITTLE_ENDIAN ?
+            (alpha << 24) | (blue << 16) | (green << 8) | red :
+            (red << 24) | (green << 16) | (blue << 8) | alpha;
+    }
+
     private int loadShader(int type, String shaderPath) {
         String src = this.shaderLookupFn.apply(shaderPath);
         int shaderId = GLES20.glCreateShader(type);
@@ -127,8 +140,11 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
 
     private List<Circle> circles = new ArrayList<>();
 
+    // Layout is 3 floats for vertex position, then 4 unsigned bytes for color.
     private ByteBuffer lineVertices = makeByteBuffer(2000);
     private int numLineVertices = 0;
+
+    private boolean isLittleEndian = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
     int cachedWidth;
     int cachedHeight;
@@ -279,15 +295,15 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         GLES20.glUseProgram(lineProgramId);
 
         GLES20.glEnableVertexAttribArray(linePositionHandle);
-        GLES20.glVertexAttribPointer(linePositionHandle, 4,
+        GLES20.glVertexAttribPointer(linePositionHandle, 3,
                 GLES20.GL_FLOAT, false,
-                32, lineVertices);
+                16, lineVertices);
 
-        lineVertices.position(16);
+        lineVertices.position(12);
         GLES20.glEnableVertexAttribArray(lineColorHandle);
         GLES20.glVertexAttribPointer(lineColorHandle, 4,
-                GLES20.GL_FLOAT, false,
-                32, lineVertices);
+                GLES20.GL_UNSIGNED_BYTE, true,
+                16, lineVertices);
 
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
@@ -321,7 +337,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        lineVertices = ensureRemaining(lineVertices, 48 * 4);
+        lineVertices = ensureRemaining(lineVertices, 24 * 4);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
@@ -336,60 +352,33 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
         float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
 
-        float red = Color.getRed(color) / 255f;
-        float green = Color.getGreen(color) / 255f;
-        float blue = Color.getBlue(color) / 255f;
-        float alpha = Color.getAlpha(color) / 255f;
-        int rgba = Color.toARGB(color);
+        // We want to write a single int rather than 4 bytes to reduce the number of put() calls.
+        int packedColor = packColor(color);
 
         lineVertices.putFloat(glx1 - perpDx);
         lineVertices.putFloat(gly1 - perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
         lineVertices.putFloat(glx2 - perpDx);
         lineVertices.putFloat(gly2 - perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
         lineVertices.putFloat(glx1 + perpDx);
         lineVertices.putFloat(gly1 + perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
         lineVertices.putFloat(glx2 - perpDx);
         lineVertices.putFloat(gly2 - perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
         lineVertices.putFloat(glx1 + perpDx);
         lineVertices.putFloat(gly1 + perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
         lineVertices.putFloat(glx2 + perpDx);
         lineVertices.putFloat(gly2 + perpDy);
         lineVertices.putFloat(0f);
-        lineVertices.putFloat(1f);
-        lineVertices.putFloat(red);
-        lineVertices.putFloat(green);
-        lineVertices.putFloat(blue);
-        lineVertices.putFloat(alpha);
+        lineVertices.putInt(packedColor);
 
         numLineVertices += 6;
     }
