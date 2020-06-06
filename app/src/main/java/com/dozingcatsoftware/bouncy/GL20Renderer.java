@@ -9,9 +9,6 @@ import android.os.Build;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -55,16 +52,10 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     private static ByteBuffer makeByteBuffer(int cap) {
+        // glVertexAttribPointer requires a direct-allocated buffer.
         ByteBuffer bb = ByteBuffer.allocateDirect(cap);
         bb.order(ByteOrder.nativeOrder());
         return bb;
-    }
-
-    private static FloatBuffer makeFloatBuffer(int floatCap) {
-        // glVertexAttribPointer requires a direct-allocated buffer.
-        ByteBuffer bb = ByteBuffer.allocateDirect(floatCap * 4);
-        bb.order(ByteOrder.nativeOrder());
-        return bb.asFloatBuffer();
     }
 
     private static ByteBuffer ensureRemaining(ByteBuffer buffer, int requiredRemaining) {
@@ -122,48 +113,23 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         lineColorHandle = GLES20.glGetAttribLocation(lineProgramId, "inColor");
     }
 
-
-    private static class Circle {
-        float cx;
-        float cy;
-        float radius;
-        float[] color = new float[4];
-        boolean filled;
-    }
-
-    static void setRgba(float[] rgba, int color) {
-        rgba[0] = Color.getRed(color) / 255f;
-        rgba[1] = Color.getGreen(color) / 255f;
-        rgba[2] = Color.getBlue(color) / 255f;
-        rgba[3] = Color.getAlpha(color) / 255f;
-    }
-
-    private List<Circle> circles = new ArrayList<>();
-
-    // Layout is 3 floats for vertex position, then 4 unsigned bytes for color.
+    // Line layout is 3 floats for vertex position, then 4 unsigned bytes for color.
+    private static final int LINE_VERTEX_STRIDE_BYTES = 16;
+    private static final int VERTICES_PER_LINE = 6;
     private ByteBuffer lineVertices = makeByteBuffer(2000);
     private int numLineVertices = 0;
 
-    private boolean isLittleEndian = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
+    // Circle layout is 3 floats for vertex position, 4 unsigned bytes for color,
+    // 2 floats for center, float for radius, float for inner radius.
+    // The floats for center and radii are in pixel coordinates.
+    private static final int CIRCLE_VERTEX_STRIDE_BYTES = 32;
+    private static final int VERTICES_PER_CIRCLE = 6;
+    private ByteBuffer circleVertices = makeByteBuffer(2000);
+    private int numCircleVertices = 0;
 
     int cachedWidth;
     int cachedHeight;
     int cachedLineWidth;
-
-
-    private void startDraw() {
-        cachedWidth = getWidth();
-        cachedHeight = getHeight();
-        cachedLineWidth = fvManager.getLineWidth();
-
-        circles.clear();
-        lineVertices.position(0);
-        numLineVertices = 0;
-    }
-
-    private void endDraw() {
-        drawTest();
-    }
 
     // The OpenGL coordinate system has a visible region from -1 to +1. The projection matrix
     // applies a scaling factor so that +1 and -1 are at the edges of the largest dimension
@@ -196,125 +162,19 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         return cachedHeight - fvManager.world2pixelY(y);
     }
 
-    private void drawCircles() {
-        // Each circle has 6 vertices (two triangles to make a quad), requiring 18 floats for
-        // position, 24 for color, 12 for center, 6 for outer and inner radius.
-        // TODO: store colors more efficiently, all vertices have the same color.
-        FloatBuffer coordBuffer = makeFloatBuffer(circles.size() * 18);
-        FloatBuffer colorBuffer = makeFloatBuffer(circles.size() * 24);
-        FloatBuffer centerBuffer = makeFloatBuffer(circles.size() * 12);
-        FloatBuffer radiusSquaredBuffer = makeFloatBuffer(circles.size() * 6);
-        FloatBuffer innerRadiusSquaredBuffer = makeFloatBuffer(circles.size() * 6);
+    private void startDraw() {
+        cachedWidth = getWidth();
+        cachedHeight = getHeight();
+        cachedLineWidth = fvManager.getLineWidth();
 
-        for (Circle c : circles) {
-            float glx = world2glX(c.cx);
-            float gly = world2glY(c.cy);
-            float glrad = world2glX(c.radius) - world2glX(0);
-            coordBuffer.put(glx - glrad);
-            coordBuffer.put(gly - glrad);
-            coordBuffer.put(0f);
-            coordBuffer.put(glx + glrad);
-            coordBuffer.put(gly - glrad);
-            coordBuffer.put(0f);
-            coordBuffer.put(glx - glrad);
-            coordBuffer.put(gly + glrad);
-            coordBuffer.put(0f);
-            coordBuffer.put(glx - glrad);
-            coordBuffer.put(gly + glrad);
-            coordBuffer.put(0f);
-            coordBuffer.put(glx + glrad);
-            coordBuffer.put(gly - glrad);
-            coordBuffer.put(0f);
-            coordBuffer.put(glx + glrad);
-            coordBuffer.put(gly + glrad);
-            coordBuffer.put(0f);
-
-            for (int i = 0; i < 6; i++) {
-                colorBuffer.put(c.color);
-                centerBuffer.put(worldToGLPixelX(c.cx));
-                centerBuffer.put(worldToGLPixelY(c.cy));
-
-                float radiusInPixels = worldToGLPixelX(c.radius) - worldToGLPixelX(0);
-                radiusSquaredBuffer.put(radiusInPixels * radiusInPixels);
-                float innerRadiusSquared = c.filled ? 0f :
-                        (radiusInPixels - cachedLineWidth) * (radiusInPixels - cachedLineWidth);
-                innerRadiusSquaredBuffer.put(innerRadiusSquared);
-            }
-        }
-        coordBuffer.position(0);
-        colorBuffer.position(0);
-        centerBuffer.position(0);
-        radiusSquaredBuffer.position(0);
-        innerRadiusSquaredBuffer.position(0);
-
-        GLES20.glUseProgram(circleProgramId);
-
-        GLES20.glEnableVertexAttribArray(circlePositionHandle);
-        GLES20.glEnableVertexAttribArray(circleColorHandle);
-        GLES20.glEnableVertexAttribArray(circleCenterHandle);
-        GLES20.glEnableVertexAttribArray(circleRadiusSquaredHandle);
-        GLES20.glEnableVertexAttribArray(circleInnerRadiusSquaredHandle);
-
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(circlePositionHandle, 3,
-                GLES20.GL_FLOAT, false,
-                12, coordBuffer);
-
-        GLES20.glVertexAttribPointer(circleColorHandle, 4,
-                GLES20.GL_FLOAT, false,
-                16, colorBuffer);
-
-        GLES20.glVertexAttribPointer(circleCenterHandle, 2,
-                GLES20.GL_FLOAT, false,
-                8, centerBuffer);
-
-        GLES20.glVertexAttribPointer(circleRadiusSquaredHandle, 1,
-                GLES20.GL_FLOAT, false,
-                4, radiusSquaredBuffer);
-
-        GLES20.glVertexAttribPointer(circleInnerRadiusSquaredHandle, 1,
-                GLES20.GL_FLOAT, false,
-                4, innerRadiusSquaredBuffer);
-
-        GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
-
-        // Draw the circles.
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, circles.size() * 6);
-
-        // Disable vertex arrays.
-        GLES20.glDisableVertexAttribArray(circlePositionHandle);
-        GLES20.glDisableVertexAttribArray(circleColorHandle);
-        GLES20.glDisableVertexAttribArray(circleCenterHandle);
-        GLES20.glDisableVertexAttribArray(circleRadiusSquaredHandle);
-        GLES20.glDisableVertexAttribArray(circleInnerRadiusSquaredHandle);
-    }
-
-    private void drawLines() {
         lineVertices.position(0);
+        numLineVertices = 0;
 
-        GLES20.glUseProgram(lineProgramId);
-
-        GLES20.glEnableVertexAttribArray(linePositionHandle);
-        GLES20.glVertexAttribPointer(linePositionHandle, 3,
-                GLES20.GL_FLOAT, false,
-                16, lineVertices);
-
-        lineVertices.position(12);
-        GLES20.glEnableVertexAttribArray(lineColorHandle);
-        GLES20.glVertexAttribPointer(lineColorHandle, 4,
-                GLES20.GL_UNSIGNED_BYTE, true,
-                16, lineVertices);
-
-        // Pass the projection and view transformation to the shader
-        GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
-
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numLineVertices);
-
-        GLES20.glDisableVertexAttribArray(linePositionHandle);
-        GLES20.glDisableVertexAttribArray(lineColorHandle);
+        circleVertices.position(0);
+        numCircleVertices = 0;
     }
 
-    private void drawTest() {
+    private void endDraw() {
         if (circleProgramId == null) {
             initShaders();
         }
@@ -331,20 +191,89 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         drawCircles();
     }
 
+    private void drawCircles() {
+        GLES20.glUseProgram(circleProgramId);
+
+        GLES20.glEnableVertexAttribArray(circlePositionHandle);
+        circleVertices.position(0);
+        GLES20.glVertexAttribPointer(circlePositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
+
+        GLES20.glEnableVertexAttribArray(circleColorHandle);
+        circleVertices.position(12);
+        GLES20.glVertexAttribPointer(circleColorHandle, 4,
+                GLES20.GL_UNSIGNED_BYTE, true,
+                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
+
+        GLES20.glEnableVertexAttribArray(circleCenterHandle);
+        circleVertices.position(16);
+        GLES20.glVertexAttribPointer(circleCenterHandle, 2,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
+
+        GLES20.glEnableVertexAttribArray(circleRadiusSquaredHandle);
+        circleVertices.position(24);
+        GLES20.glVertexAttribPointer(circleRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
+
+        GLES20.glEnableVertexAttribArray(circleInnerRadiusSquaredHandle);
+        circleVertices.position(28);
+        GLES20.glVertexAttribPointer(circleInnerRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
+
+        GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numCircleVertices);
+
+        // Disable vertex arrays.
+        GLES20.glDisableVertexAttribArray(circlePositionHandle);
+        GLES20.glDisableVertexAttribArray(circleColorHandle);
+        GLES20.glDisableVertexAttribArray(circleCenterHandle);
+        GLES20.glDisableVertexAttribArray(circleRadiusSquaredHandle);
+        GLES20.glDisableVertexAttribArray(circleInnerRadiusSquaredHandle);
+    }
+
+    private void drawLines() {
+
+        GLES20.glUseProgram(lineProgramId);
+
+        GLES20.glEnableVertexAttribArray(linePositionHandle);
+        lineVertices.position(0);
+        GLES20.glVertexAttribPointer(linePositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                LINE_VERTEX_STRIDE_BYTES, lineVertices);
+
+        GLES20.glEnableVertexAttribArray(lineColorHandle);
+        lineVertices.position(12);
+        GLES20.glVertexAttribPointer(lineColorHandle, 4,
+                GLES20.GL_UNSIGNED_BYTE, true,
+                LINE_VERTEX_STRIDE_BYTES, lineVertices);
+
+        GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numLineVertices);
+
+        GLES20.glDisableVertexAttribArray(linePositionHandle);
+        GLES20.glDisableVertexAttribArray(lineColorHandle);
+    }
+
     @Override public void setManager(FieldViewManager manager) {
         this.fvManager = manager;
         this.glView.setManager(manager);
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        lineVertices = ensureRemaining(lineVertices, 24 * 4);
+        lineVertices = ensureRemaining(lineVertices, LINE_VERTEX_STRIDE_BYTES * VERTICES_PER_LINE);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
         float glx2 = world2glX(x2);
         float gly2 = world2glY(y2);
         // Extend at right angles from the endpoints and draw a rectangle.
-        // TODO: antialiasing.
+        // TODO: antialiasing?
         double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
         // You'd expect there to be a 0.5 factor here so that the total width is getLineWidth(),
         // but that seems to make the lines too narrow.
@@ -359,28 +288,33 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         lineVertices.putFloat(gly1 - perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
+
         lineVertices.putFloat(glx2 - perpDx);
         lineVertices.putFloat(gly2 - perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
+
         lineVertices.putFloat(glx1 + perpDx);
         lineVertices.putFloat(gly1 + perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
+
         lineVertices.putFloat(glx2 - perpDx);
         lineVertices.putFloat(gly2 - perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
+
         lineVertices.putFloat(glx1 + perpDx);
         lineVertices.putFloat(gly1 + perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
+
         lineVertices.putFloat(glx2 + perpDx);
         lineVertices.putFloat(gly2 + perpDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        numLineVertices += 6;
+        numLineVertices += VERTICES_PER_LINE;
     }
 
     @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
@@ -391,13 +325,79 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
     }
 
     void recordCircle(float cx, float cy, float radius, int color, boolean filled) {
-        Circle c = new Circle();
-        c.cx = cx;
-        c.cy = cy;
-        c.radius = radius;
-        c.filled = filled;
-        setRgba(c.color, color);
-        this.circles.add(c);
+        circleVertices = ensureRemaining(
+                circleVertices, CIRCLE_VERTEX_STRIDE_BYTES * VERTICES_PER_CIRCLE);
+        float glx = world2glX(cx);
+        float gly = world2glY(cy);
+        float glrad = world2glX(radius) - world2glX(0);
+        int packedColor = packColor(color);
+
+        float centerPixelX = worldToGLPixelX(cx);
+        float centerPixelY = worldToGLPixelY(cy);
+
+        float radiusInPixels = worldToGLPixelX(radius) - worldToGLPixelX(0);
+        float radiusSq = radiusInPixels * radiusInPixels;
+        float innerRadiusSq = filled ?
+                0f : (radiusInPixels - cachedLineWidth) * (radiusInPixels - cachedLineWidth);
+
+        // Draw a square covering the circle. For large circle outlines, we could define vertices
+        // for inner and outer polygons to reduce the number of fragment shader calls. Seems to not
+        // be necessary yet.
+        circleVertices.putFloat(glx - glrad);
+        circleVertices.putFloat(gly - glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        circleVertices.putFloat(glx + glrad);
+        circleVertices.putFloat(gly - glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        circleVertices.putFloat(glx - glrad);
+        circleVertices.putFloat(gly + glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        circleVertices.putFloat(glx - glrad);
+        circleVertices.putFloat(gly + glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        circleVertices.putFloat(glx + glrad);
+        circleVertices.putFloat(gly - glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        circleVertices.putFloat(glx + glrad);
+        circleVertices.putFloat(gly + glrad);
+        circleVertices.putFloat(0f);
+        circleVertices.putInt(packedColor);
+        circleVertices.putFloat(centerPixelX);
+        circleVertices.putFloat(centerPixelY);
+        circleVertices.putFloat(radiusSq);
+        circleVertices.putFloat(innerRadiusSq);
+
+        numCircleVertices += 6;
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
