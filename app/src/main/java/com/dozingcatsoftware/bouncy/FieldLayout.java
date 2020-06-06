@@ -206,8 +206,8 @@ public class FieldLayout {
 
     // Can apply random velocity increment if specified by "launchVelocityRandomDelta" key.
     public List<Float> getLaunchVelocity() {
-        float vx = launchVelocity.get(0).floatValue();
-        float vy = launchVelocity.get(1).floatValue();
+        float vx = launchVelocity.get(0);
+        float vy = launchVelocity.get(1);
 
         if (launchVelocityRandomDelta.size() >= 2) {
             if (launchVelocityRandomDelta.get(0) > 0) {

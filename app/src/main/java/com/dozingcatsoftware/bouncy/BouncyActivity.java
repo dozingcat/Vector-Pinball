@@ -14,7 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -32,10 +32,12 @@ public class BouncyActivity extends Activity {
     }
 
     CanvasFieldView canvasFieldView;
+    ScoreView scoreView;
+
     GLFieldView glFieldView;
     GL10Renderer gl10Renderer;
     GL20Renderer gl20Renderer;
-    ScoreView scoreView;
+    boolean useOpenGL20;
 
     View buttonPanel;
     Button switchTableButton;
@@ -73,13 +75,10 @@ public class BouncyActivity extends Activity {
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
 
-
-
     private static final String TAG = "BouncyActivity";
 
     /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String arch = System.getProperty("os.arch");
         Log.i(TAG, "App started, os.arch=" + arch);
@@ -89,21 +88,29 @@ public class BouncyActivity extends Activity {
 
         FieldLayout.setContext(this);
         this.level = getInitialLevel();
-        field.resetForLevel(this, level);
+        field.resetForLevel(level);
         field.setAudioPlayer(new VPSoundpool.Player());
 
         canvasFieldView = findViewById(R.id.canvasFieldView);
         glFieldView = findViewById(R.id.glFieldView);
-        // gl10Renderer = new GL10Renderer(glFieldView);
-        gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
-            try {
-                InputStream input = getAssets().open(shaderPath);
-                return IOUtils.utf8FromStream(input);
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+
+        // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
+        // Older devices tend to perform better with 1.0.
+        useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+        if (useOpenGL20) {
+            gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
+                try {
+                    InputStream input = getAssets().open(shaderPath);
+                    return IOUtils.utf8FromStream(input);
+                }
+                catch(IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        }
+        else {
+            gl10Renderer = new GL10Renderer(glFieldView);
+        }
 
         fieldViewManager.setField(field);
         fieldViewManager.setStartGameAction(new Runnable() {
@@ -270,7 +277,7 @@ public class BouncyActivity extends Activity {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
-                fieldViewManager.setFieldRenderer(gl20Renderer);
+                fieldViewManager.setFieldRenderer(useOpenGL20 ? gl20Renderer : gl10Renderer);
                 fieldDriver.resetFrameRate();
             }
         }
@@ -421,7 +428,7 @@ public class BouncyActivity extends Activity {
         }
         if (!field.getGameState().isGameInProgress()) {
             buttonPanel.setVisibility(View.GONE);
-            field.resetForLevel(this, level);
+            field.resetForLevel(level);
 
             if (unlimitedBallsToggle.isChecked()) {
                 field.startGameWithUnlimitedBalls();
@@ -466,7 +473,7 @@ public class BouncyActivity extends Activity {
     public void doSwitchTable(View view) {
         level = (level == FieldLayout.numberOfLevels()) ? 1 : level + 1;
         synchronized (field) {
-            field.resetForLevel(this, level);
+            field.resetForLevel(level);
         }
         this.setInitialLevel(level);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();

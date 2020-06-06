@@ -22,8 +22,6 @@ import com.dozingcatsoftware.bouncy.elements.FlipperElement;
 import com.dozingcatsoftware.bouncy.elements.RolloverGroupElement;
 import com.dozingcatsoftware.bouncy.elements.SensorElement;
 
-import android.content.Context;
-
 public class Field implements ContactListener {
 
     FieldLayout layout;
@@ -35,7 +33,6 @@ public class Field implements ContactListener {
     // Allow access to model objects from Box2d bodies.
     Map<Body, FieldElement> bodyToFieldElement;
     Map<String, FieldElement> fieldElementsByID;
-    Map<String, List<FieldElement>> elementsByGroupID = new HashMap<String, List<FieldElement>>();
     // Store FieldElements in arrays for optimized iteration.
     FieldElement[] fieldElementsArray;
     FieldElement[] fieldElementsToTick;
@@ -93,12 +90,12 @@ public class Field implements ContactListener {
 
     // Helper class to represent actions scheduled in the future.
     static class ScheduledAction implements Comparable<ScheduledAction> {
-        Long actionTime;
+        Long actionTimeNanos;
         Runnable action;
 
         @Override public int compareTo(ScheduledAction another) {
             // Sort by action time so these objects can be inserted into a PriorityQueue.
-            return actionTime.compareTo(another.actionTime);
+            return actionTimeNanos.compareTo(another.actionTimeNanos);
         }
     }
 
@@ -106,7 +103,7 @@ public class Field implements ContactListener {
      * Creates Box2D world, reads layout definitions for the given level, and initializes the game
      * to the starting state.
      */
-    public void resetForLevel(Context context, int level) {
+    public void resetForLevel(int level) {
         this.worlds = new WorldLayers(this);
         this.layout = FieldLayout.layoutForLevel(level, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
@@ -204,8 +201,8 @@ public class Field implements ContactListener {
     /** Calls the tick() method of every FieldElement in the layout. */
     private void processElementTicks() {
         int size = fieldElementsToTick.length;
-        for (int i = 0; i < size; i++) {
-            fieldElementsToTick[i].tick(this);
+        for (FieldElement elem : fieldElementsToTick) {
+            elem.tick(this);
         }
     }
 
@@ -215,7 +212,7 @@ public class Field implements ContactListener {
     private void processScheduledActions() {
         while (true) {
             ScheduledAction nextAction = scheduledActions.peek();
-            if (nextAction != null && gameTime >= nextAction.actionTime) {
+            if (nextAction != null && gameTime >= nextAction.actionTimeNanos) {
                 scheduledActions.poll();
                 nextAction.action.run();
             }
@@ -248,10 +245,10 @@ public class Field implements ContactListener {
      * Schedules an action to be run after the given interval in milliseconds has elapsed.
      * Interval is in game time, not real time.
      */
-    public void scheduleAction(long interval, Runnable action) {
+    public void scheduleAction(long intervalMillis, Runnable action) {
         ScheduledAction sa = new ScheduledAction();
         // interval is in milliseconds, gameTime is in nanoseconds
-        sa.actionTime = gameTime + (interval * 1000000);
+        sa.actionTimeNanos = gameTime + (intervalMillis * 1000000);
         sa.action = action;
         scheduledActions.add(sa);
     }
@@ -363,39 +360,37 @@ public class Field implements ContactListener {
 
     // Reusable array for sorting elements and balls into the order in which they should be draw.
     // Earlier items are drawn first, so "upper" items should compare "greater" than lower.
-    private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<IDrawable>();
-    private Comparator<IDrawable> drawOrdering = new Comparator<IDrawable>() {
-        @Override public int compare(IDrawable e1, IDrawable e2) {
-            int diff = e1.getLayer() - e2.getLayer();
-            if (diff != 0) {
-                return diff;
-            }
-            // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
-            boolean e1Element = e1 instanceof FieldElement;
-            boolean e2Element = e2 instanceof FieldElement;
-            if (e1Element && e2Element) {
-                return 0;
-            }
-            boolean e1Ball = e1 instanceof Ball;
-            boolean e2Ball = e2 instanceof Ball;
-            if (e1Ball && e2Ball) {
-                return 0;
-            }
-            boolean e1Shape = !e1Ball && !e1Element;
-            boolean e2Shape = !e2Ball && !e2Element;
-            if (e1Shape && e2Shape) {
-                return 0;
-            }
-            if (e1Ball) {
-                return 1;
-            }
-            else if (e1Element) {
-                return (e2Ball) ? -1 : 1;
-            }
-            else {
-                // e1 is Shape, e2 isn't.
-                return -1;
-            }
+    private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<>();
+    private Comparator<IDrawable> drawOrdering = (e1, e2) -> {
+        int diff = e1.getLayer() - e2.getLayer();
+        if (diff != 0) {
+            return diff;
+        }
+        // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
+        boolean e1Element = e1 instanceof FieldElement;
+        boolean e2Element = e2 instanceof FieldElement;
+        if (e1Element && e2Element) {
+            return 0;
+        }
+        boolean e1Ball = e1 instanceof Ball;
+        boolean e2Ball = e2 instanceof Ball;
+        if (e1Ball && e2Ball) {
+            return 0;
+        }
+        boolean e1Shape = !e1Ball && !e1Element;
+        boolean e2Shape = !e2Ball && !e2Element;
+        if (e1Shape && e2Shape) {
+            return 0;
+        }
+        if (e1Ball) {
+            return 1;
+        }
+        else if (e1Element) {
+            return (e2Ball) ? -1 : 1;
+        }
+        else {
+            // e1 is Shape, e2 isn't.
+            return -1;
         }
     };
 
@@ -493,8 +488,8 @@ public class Field implements ContactListener {
 
     // Contact support. Keep parallel lists of balls and the fixtures they contact.
     // A ball can have multiple contacts in the same tick, e.g. against two walls.
-    ArrayList<Ball> contactedBalls = new ArrayList<Ball>();
-    ArrayList<Fixture> contactedFixtures = new ArrayList<Fixture>();
+    ArrayList<Ball> contactedBalls = new ArrayList<>();
+    ArrayList<Fixture> contactedFixtures = new ArrayList<>();
 
     private void clearBallContacts() {
         contactedBalls.clear();
