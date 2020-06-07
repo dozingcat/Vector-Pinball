@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -113,7 +116,7 @@ public class FieldViewManager {
                 centerY = b.getPosition().y;
             }
             else {
-                List<Float> position = field.layout.getLaunchPosition();
+                List<Float> position = field.getLaunchPosition();
                 centerX = position.get(0);
                 centerY = position.get(1);
             }

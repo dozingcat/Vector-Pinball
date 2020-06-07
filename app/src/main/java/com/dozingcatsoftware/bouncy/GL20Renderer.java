@@ -7,6 +7,10 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Build;
 
+import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.function.Function;

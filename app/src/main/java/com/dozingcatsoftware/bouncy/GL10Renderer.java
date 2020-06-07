@@ -5,6 +5,9 @@ import android.opengl.GLU;
 
 import com.dozingcatsoftware.bouncy.util.GLVertexList;
 import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
+import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

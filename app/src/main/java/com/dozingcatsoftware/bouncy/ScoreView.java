@@ -12,6 +12,10 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.GameMessage;
+import com.dozingcatsoftware.vectorpinball.model.GameState;
+
 /**
  * This class displays the score and game messages above the game view. When there is no game in
  * progress, it cycles between a "Touch to Start" message, last score, and high scores.

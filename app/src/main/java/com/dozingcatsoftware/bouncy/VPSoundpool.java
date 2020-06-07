@@ -11,6 +11,8 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.util.Log;
 
+import com.dozingcatsoftware.vectorpinball.model.AudioPlayer;
+
 public class VPSoundpool {
 
     private static SoundPool mSoundPool;
