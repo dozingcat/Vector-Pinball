@@ -9,6 +9,9 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+
 public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
     public CanvasFieldView(Context context, AttributeSet attrs) {

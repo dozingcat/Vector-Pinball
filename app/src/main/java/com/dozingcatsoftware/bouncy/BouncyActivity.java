@@ -8,7 +8,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
-import com.dozingcatsoftware.bouncy.util.IOUtils;
+import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
+import com.dozingcatsoftware.vectorpinball.util.IOUtils;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
+import com.dozingcatsoftware.vectorpinball.model.GameState;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -47,17 +51,14 @@ public class BouncyActivity extends Activity {
 
     Handler handler = new Handler();
 
-    Runnable callTick = new Runnable() {
-        @Override public void run() {tick();}
+    IStringResolver stringLookupFn = (key, params) -> {
+        int stringId = getResources().getIdentifier(key, "string", getPackageName());
+        return getString(stringId, params);
     };
+    Field field = new Field(System::currentTimeMillis, stringLookupFn, new VPSoundpool.Player());
 
-    Field field = new Field(new IStringResolver() {
-        @Override public String resolveString(String key, Object... params) {
-            int stringId = getResources().getIdentifier(key, "string", getPackageName());
-            return getString(stringId, params);
-        }
-    });
-    int level = 1;
+    int numberOfLevels;
+    int currentLevel = 1;
     List<Long> highScores;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
@@ -86,10 +87,9 @@ public class BouncyActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
-        FieldLayout.setContext(this);
-        this.level = getInitialLevel();
-        field.resetForLevel(level);
-        field.setAudioPlayer(new VPSoundpool.Player());
+        this.numberOfLevels = FieldLayoutReader.getNumberOfLevels(this);
+        this.currentLevel = getInitialLevel();
+        resetFieldForCurrentLevel();
 
         canvasFieldView = findViewById(R.id.canvasFieldView);
         glFieldView = findViewById(R.id.glFieldView);
@@ -212,7 +212,7 @@ public class BouncyActivity extends Activity {
         if (!field.getGameState().isPaused()) return;
         field.getGameState().setPaused(false);
 
-        handler.postDelayed(callTick, 75);
+        handler.postDelayed(this::tick, 75);
         if (orientationListener != null) orientationListener.start();
 
         fieldDriver.start();
@@ -251,7 +251,7 @@ public class BouncyActivity extends Activity {
     }
 
     void gotoAbout() {
-        AboutActivity.startForLevel(this, this.level);
+        AboutActivity.startForLevel(this, this.currentLevel);
     }
 
     // Update settings from preferences, called at launch and when preferences activity finishes.
@@ -302,7 +302,7 @@ public class BouncyActivity extends Activity {
         scoreView.invalidate();
         scoreView.setFPS(fieldDriver.getAverageFPS());
         updateHighScoreAndButtonPanel();
-        handler.postDelayed(callTick, 100);
+        handler.postDelayed(this::tick, 100);
     }
 
     /**
@@ -363,7 +363,7 @@ public class BouncyActivity extends Activity {
         }
         else {
             // Check pre-1.5 single high score.
-            long oldPrefsScore = prefs.getLong(OLD_HIGHSCORE_PREFS_KEY + "." + level, 0);
+            long oldPrefsScore = prefs.getLong(OLD_HIGHSCORE_PREFS_KEY + "." + currentLevel, 0);
             return Collections.singletonList(oldPrefsScore);
         }
     }
@@ -381,7 +381,7 @@ public class BouncyActivity extends Activity {
     }
 
     List<Long> highScoresFromPreferencesForCurrentLevel() {
-        return highScoresFromPreferences(level);
+        return highScoresFromPreferences(currentLevel);
     }
 
     /** Updates the high score in the ScoreView display, and persists it to SharedPreferences. */
@@ -399,13 +399,13 @@ public class BouncyActivity extends Activity {
     }
 
     void updateHighScoreForCurrentLevel(long score) {
-        updateHighScore(level, score);
+        updateHighScore(currentLevel, score);
     }
 
     int getInitialLevel() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         int startLevel = prefs.getInt(INITIAL_LEVEL_PREFS_KEY, 1);
-        if (startLevel < 1 || startLevel > FieldLayout.numberOfLevels()) startLevel = 1;
+        if (startLevel < 1 || startLevel > numberOfLevels) startLevel = 1;
         return startLevel;
     }
 
@@ -428,7 +428,7 @@ public class BouncyActivity extends Activity {
         }
         if (!field.getGameState().isGameInProgress()) {
             buttonPanel.setVisibility(View.GONE);
-            field.resetForLevel(level);
+            resetFieldForCurrentLevel();
 
             if (unlimitedBallsToggle.isChecked()) {
                 field.startGameWithUnlimitedBalls();
@@ -471,12 +471,16 @@ public class BouncyActivity extends Activity {
     }
 
     public void doSwitchTable(View view) {
-        level = (level == FieldLayout.numberOfLevels()) ? 1 : level + 1;
+        currentLevel = (currentLevel == numberOfLevels) ? 1 : currentLevel + 1;
         synchronized (field) {
-            field.resetForLevel(level);
+            resetFieldForCurrentLevel();
         }
-        this.setInitialLevel(level);
+        this.setInitialLevel(currentLevel);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
+    }
+
+    void resetFieldForCurrentLevel() {
+        field.resetForLayoutMap(FieldLayoutReader.layoutMapForLevel(this, currentLevel));
     }
 }
