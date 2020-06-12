@@ -31,7 +31,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * After creation, a wall can be moved with setStartAndDirection or setStartAndAngle.
  * The length of the wall cannot be changed; just its position and orientation.
  */
-
 public class WallElement extends FieldElement {
 
     public static final String POSITION_PROPERTY = "position";

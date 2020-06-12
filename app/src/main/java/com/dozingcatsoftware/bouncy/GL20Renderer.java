@@ -19,7 +19,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 @TargetApi(Build.VERSION_CODES.FROYO)
-public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
+public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurfaceView.Renderer {
     static final double TAU = 2 * Math.PI;
 
     private final GLFieldView glView;
@@ -264,7 +264,7 @@ public class GL20Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         GLES20.glDisableVertexAttribArray(lineColorHandle);
     }
 
-    @Override public void setManager(FieldViewManager manager) {
+    public void setManager(FieldViewManager manager) {
         this.fvManager = manager;
         this.glView.setManager(manager);
     }

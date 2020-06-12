@@ -1,7 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadiansF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  *
  * For circular walls, the "radius" attribute can be used instead of xradius and yradius.
  */
-
 public class WallArcElement extends FieldElement {
 
     public static final String CENTER_PROPERTY = "center";
@@ -67,8 +66,8 @@ public class WallArcElement extends FieldElement {
 
         Number segments = (Number) params.get(NUM_SEGMENTS_PROPERTY);
         int numsegments = (segments != null) ? segments.intValue() : 5;
-        this.startAngle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
-        this.endAngle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+        this.startAngle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+        this.endAngle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         float diff = endAngle - startAngle;
         // Create `numsegments` line segments to approximate circular arc.
         this.xEndpoints = new float[numsegments + 1];

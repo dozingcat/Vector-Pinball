@@ -29,6 +29,7 @@ public class FieldLayout {
     static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
     static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
     static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+    static final String SCRIPT_PROPERTY = "script";
 
     static final String VARIABLES_PROPERTY = "variables";
     static final String ELEMENTS_PROPERTY = "elements";
@@ -92,7 +93,7 @@ public class FieldLayout {
         for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
             if (!(obj instanceof Map)) continue;
             @SuppressWarnings("unchecked")
-            Map<String, ?> params = (Map<String, ?>) obj;
+            Map<String, Object> params = (Map<String, Object>) obj;
             elements.addElement(FieldElement.createFromParameters(params, elements, worlds));
         }
 
@@ -185,6 +186,10 @@ public class FieldLayout {
 
     public String getDelegateClassName() {
         return (String) allParameters.get(DELEGATE_PROPERTY);
+    }
+
+    public String getScriptText() {
+        return (String) allParameters.get(SCRIPT_PROPERTY);
     }
 
     public Object getValueWithKey(String key) {

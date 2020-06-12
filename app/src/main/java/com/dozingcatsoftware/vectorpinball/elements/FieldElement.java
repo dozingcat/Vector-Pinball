@@ -17,7 +17,6 @@ import com.dozingcatsoftware.vectorpinball.model.WorldLayers;
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
-
 public abstract class FieldElement implements IDrawable {
 
     public static final String CLASS_PROPERTY = "class";
@@ -69,12 +68,9 @@ public abstract class FieldElement implements IDrawable {
 
         FieldElement self;
         try {
-            self = elementClass.newInstance();
+            self = elementClass.getConstructor().newInstance();
         }
-        catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        catch (InstantiationException e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
         // TODO: Have `initialize` take WorldLayers instead of a single World.

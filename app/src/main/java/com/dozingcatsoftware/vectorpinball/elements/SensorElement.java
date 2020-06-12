@@ -20,7 +20,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * During every tick() invocation, a sensor determines if any of the field's balls are within its
  * area, and if so calls the field delegate's ballInSensorRange method.
  */
-
 public class SensorElement extends FieldElement {
 
     public static final String RECT_PROPERTY = "rect";

@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.World;
 /**
  * Methods to create Box2D shapes.
  */
-
 public class Box2DFactory {
 
     /** Creates a circle object with the given position and radius. Resitution defaults to 0.6. */
@@ -89,5 +88,4 @@ public class Box2DFactory {
         return createWall(
                 world, cx - mag / 2, cy - 0.05f, cx + mag / 2, cy + 0.05f, angle, restitution);
     }
-
 }

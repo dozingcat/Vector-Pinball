@@ -12,7 +12,7 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GL10Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
+public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurfaceView.Renderer {
     private final GLFieldView glView;
     private GLVertexListManager vertexListManager = new GLVertexListManager();
     private GLVertexList lineVertexList;
@@ -25,7 +25,7 @@ public class GL10Renderer implements IFieldRenderer, GLSurfaceView.Renderer {
         view.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
-    @Override public void setManager(FieldViewManager value) {
+    public void setManager(FieldViewManager value) {
         this.manager = value;
         this.glView.setManager(value);
     }

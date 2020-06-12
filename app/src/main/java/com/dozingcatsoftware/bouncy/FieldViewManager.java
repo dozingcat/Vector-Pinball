@@ -23,10 +23,7 @@ public class FieldViewManager {
     Runnable startGameAction;
 
     public void setFieldRenderer(IFieldRenderer renderer) {
-        if (this.fieldRenderer != renderer) {
-            this.fieldRenderer = renderer;
-            renderer.setManager(this);
-        }
+        this.fieldRenderer = renderer;
     }
 
     Field field;

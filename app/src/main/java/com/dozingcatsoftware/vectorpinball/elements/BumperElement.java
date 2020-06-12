@@ -18,7 +18,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits.
  * The impulse magnitude is controlled by the "kick" parameter in the configuration map.
  */
-
 public class BumperElement extends FieldElement {
 
     public static final String POSITION_PROPERTY = "position";
@@ -56,7 +55,6 @@ public class BumperElement extends FieldElement {
         // Needs to call tick() to decrement flash counter, but can use superclass implementation.
         return true;
     }
-
 
     Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
