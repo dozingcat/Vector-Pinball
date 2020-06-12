@@ -1,7 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadiansF;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,6 @@ import com.dozingcatsoftware.vectorpinball.util.MathUtils;
  *     "downspeed": 3 // rate at which the flipper rotates down when not activated (in radians/sec?)
  * }
  */
-
 public class FlipperElement extends FieldElement {
 
     public static final String POSITION_PROPERTY = "position";
@@ -64,8 +63,8 @@ public class FlipperElement extends FieldElement {
         this.cx = asFloat(pos.get(0));
         this.cy = asFloat(pos.get(1));
         this.flipperLength = asFloat(params.get(LENGTH_PROPERTY));
-        this.minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
-        this.maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+        this.minangle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+        this.maxangle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         this.upspeed = asFloat(params.get(UP_SPEED_PROPERTY));
         this.downspeed = asFloat(params.get(DOWN_SPEED_PROPERTY));
     }

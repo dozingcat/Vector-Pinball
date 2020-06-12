@@ -19,7 +19,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * 		"positions": [[5,5], [5,10], [8,10], [5, 15]]
  * }
  */
-
 public class WallPathElement extends FieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";

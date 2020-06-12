@@ -12,7 +12,7 @@ import android.view.SurfaceView;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
-public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
+public class CanvasFieldView extends SurfaceView implements IFieldRenderer.FloatOnlyRenderer {
 
     public CanvasFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,7 +30,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer {
 
     Canvas canvas;
 
-    @Override public void setManager(FieldViewManager value) {
+    public void setManager(FieldViewManager value) {
         this.manager = value;
     }
 

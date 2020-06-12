@@ -63,20 +63,8 @@ public class MathUtils {
         return asInt(obj, 0);
     }
 
-    public static float toRadians(float degrees) {
-        return (float) (TAU / 360) * degrees;
-    }
-
-    public static float toDegrees(float radians) {
-        return (float) (radians * 360 / TAU);
-    }
-
-    public static double toRadians(double degrees) {
-        return (TAU / 360) * degrees;
-    }
-
-    public static double toDegrees(double radians) {
-        return (radians * 360 / TAU);
+    public static float toRadiansF(float degrees) {
+        return (float) Math.toRadians(degrees);
     }
 
     public static float clamp(float x, float min, float max) {

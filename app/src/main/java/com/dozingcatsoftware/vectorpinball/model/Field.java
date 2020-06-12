@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 
 import com.badlogic.gdx.math.Vector2;
@@ -107,7 +108,8 @@ public class Field implements ContactListener {
      * Creates Box2D world, reads layout definitions for the given level, and initializes the game
      * to the starting state.
      */
-    public void resetForLayoutMap(Map<String, Object> layoutMap) {
+    public void resetForLayoutMap(
+            Map<String, Object> layoutMap, Function<Field, Delegate> delegateFn) {
         this.worlds = new WorldLayers(this);
         this.layout = new FieldLayout(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
@@ -136,14 +138,21 @@ public class Field implements ContactListener {
         fieldElementsToTick = tickElements.toArray(new FieldElement[0]);
         fieldElementsArray = layout.getFieldElements().toArray(new FieldElement[0]);
 
-        delegate = null;
-        String delegateClass = layout.getDelegateClassName();
+        delegate = delegateFn.apply(this);
+    }
+
+    public void resetForLayoutMap(Map<String, Object> layoutMap) {
+        resetForLayoutMap(layoutMap, Field::createDelegateFromLayoutClass);
+    }
+
+    public static Delegate createDelegateFromLayoutClass(Field field) {
+        String delegateClass = field.layout.getDelegateClassName();
         if (delegateClass != null) {
             if (delegateClass.indexOf('.') == -1) {
                 delegateClass = "com.dozingcatsoftware.vectorpinball.fields." + delegateClass;
             }
             try {
-                delegate = (Delegate) Class.forName(delegateClass).newInstance();
+                return (Delegate) Class.forName(delegateClass).getConstructor().newInstance();
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -151,7 +160,7 @@ public class Field implements ContactListener {
         }
         else {
             // Use no-op delegate if no class specified, so that field.getDelegate() is non-null.
-            delegate = new BaseFieldDelegate();
+            return new BaseFieldDelegate();
         }
     }
 
@@ -298,26 +307,19 @@ public class Field implements ContactListener {
         // Display message for next ball or game over.
         String msg = null;
         if (hasExtraBall) {
-            msg = this.stringResolver.resolveString("shoot_again_message");
+            msg = this.resolveString("shoot_again_message");
         }
         else if (this.gameState.isGameInProgress()) {
-            msg = this.stringResolver.resolveString(
-                    "ball_number_message", this.gameState.getBallNumber());
+            msg = this.resolveString("ball_number_message", this.gameState.getBallNumber());
         }
-
         if (msg != null) {
             // Game is still going, show message after delay.
             final String msg2 = msg;
-            this.scheduleAction(1500, new Runnable() {
-                @Override public void run() {
-                    showGameMessage(msg2, 1500, false); // no sound effect
-                }
-            });
+            this.scheduleAction(1500, () -> showGameMessage(msg2, 1500, false));
         }
         else {
             endGame();
         }
-
         getDelegate().ballLost(this);
     }
 
@@ -475,7 +477,7 @@ public class Field implements ContactListener {
         }
         this.balls.clear();
         this.getGameState().setGameInProgress(false);
-        this.showGameMessage(this.stringResolver.resolveString("game_over_message"), 2500);
+        this.showGameMessage(this.resolveString("game_over_message"), 2500);
         getDelegate().gameEnded(this);
     }
 
@@ -672,8 +674,7 @@ public class Field implements ContactListener {
 
     public void incrementAndDisplayScoreMultiplier(long durationMillis) {
         gameState.incrementScoreMultiplier();
-        String msg = this.stringResolver.resolveString(
-                "multiplier_message", (int) this.gameState.getScoreMultiplier());
+        String msg = resolveString("multiplier_message", (int) this.gameState.getScoreMultiplier());
         this.showGameMessage(msg, durationMillis);
     }
 
@@ -722,15 +723,15 @@ public class Field implements ContactListener {
         return delegate;
     }
 
+    public String getScriptText() {
+        return layout.getScriptText();
+    }
+
     public Object getValueWithKey(String key) {
         return layout.getValueWithKey(key);
     }
 
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
-    }
-
-    public void setAudioPlayer(AudioPlayer player) {
-        audioPlayer = player;
     }
 }

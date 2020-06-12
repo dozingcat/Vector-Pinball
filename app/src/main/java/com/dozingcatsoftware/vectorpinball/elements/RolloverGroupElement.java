@@ -22,7 +22,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * the collection level control whether the rollovers should cycle when flippers are activated,
  * and whether rollovers can toggle from on to off.
  */
-
 public class RolloverGroupElement extends FieldElement {
 
     public static final String TOGGLE_OFF_PROPERTY = "toggleOff";

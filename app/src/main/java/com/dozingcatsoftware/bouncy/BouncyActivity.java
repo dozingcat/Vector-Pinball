@@ -92,8 +92,9 @@ public class BouncyActivity extends Activity {
         resetFieldForCurrentLevel();
 
         canvasFieldView = findViewById(R.id.canvasFieldView);
-        glFieldView = findViewById(R.id.glFieldView);
+        canvasFieldView.setManager(fieldViewManager);
 
+        glFieldView = findViewById(R.id.glFieldView);
         // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
         // Older devices tend to perform better with 1.0.
         useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
@@ -107,9 +108,11 @@ public class BouncyActivity extends Activity {
                     throw new RuntimeException(ex);
                 }
             });
+            gl20Renderer.setManager(fieldViewManager);
         }
         else {
             gl10Renderer = new GL10Renderer(glFieldView);
+            gl10Renderer.setManager(fieldViewManager);
         }
 
         fieldViewManager.setField(field);
