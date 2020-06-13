@@ -514,14 +514,13 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
         lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
 
-        int packedColor = packColor(color);
-
         float glcx = world2glX(cx);
         float glcy = world2glY(cy);
         float glrad = world2glX(radius) - world2glX(0);
-        float corePerpDistGl = (float) (coreWidthPixels / cachedHeight);
+        float corePerpDistGl = coreWidthPixels / cachedHeight;
         float innerRadius = glrad - corePerpDistGl;
         float outerRadius = glrad + corePerpDistGl;
+        int packedColor = packColor(color);
         for (int i = 0; i < polySides; i++) {
             lineVertices.putFloat(glcx + innerRadius * sinCosValues.cosAtIndex(i));
             lineVertices.putFloat(glcy + innerRadius * sinCosValues.sinAtIndex(i));
@@ -553,6 +552,59 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             }
         }
 
+        if (useAA) {
+            float aaPerpDistGl = aaWidthPixels / cachedHeight;
+            float aaInnerRadius = glrad - aaPerpDistGl;
+            float aaOuterRadius = glrad + aaPerpDistGl;
+            int alphaZeroColor = packColor(Color.withAlpha(color, 0));
+            for (int i = 0; i < polySides; i++) {
+                lineVertices.putFloat(glcx + aaInnerRadius * sinCosValues.cosAtIndex(i));
+                lineVertices.putFloat(glcy + aaInnerRadius * sinCosValues.sinAtIndex(i));
+                lineVertices.putFloat(0);
+                lineVertices.putInt(alphaZeroColor);
+
+                lineVertices.putFloat(glcx + aaOuterRadius * sinCosValues.cosAtIndex(i));
+                lineVertices.putFloat(glcy + aaOuterRadius * sinCosValues.sinAtIndex(i));
+                lineVertices.putFloat(0);
+                lineVertices.putInt(alphaZeroColor);
+
+                int baseCoreIndex = this.numLineVertices + 2 * i;
+                int baseAaIndex = baseCoreIndex + 2 * polySides;
+                if (i < polySides - 1) {
+                    lineVertexIndices.putInt(baseAaIndex + 0);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(baseAaIndex + 2);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(baseAaIndex + 2);
+                    lineVertexIndices.putInt(baseCoreIndex + 2);
+
+                    lineVertexIndices.putInt(baseAaIndex + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(baseAaIndex + 3);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(baseAaIndex + 3);
+                    lineVertexIndices.putInt(baseCoreIndex + 3);
+                }
+                else {
+                    // Wrap around to start.
+                    lineVertexIndices.putInt(baseAaIndex + 0);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides);
+                    lineVertexIndices.putInt(this.numLineVertices);
+
+                    lineVertexIndices.putInt(baseAaIndex + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 1);
+                }
+            }
+
+        }
+
         this.numLineVertices += numVerticesToAdd;
         this.numLineVertexIndices += numIndicesToAdd;
     }
@@ -560,7 +612,13 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
         float radiusInPixels = fvManager.world2pixelX(radius) - fvManager.world2pixelX(0);
         int minPolySides = (int) Math.ceil(radiusInPixels);
-        addPolygonOutline(cx, cy, radius, minPolySides, cachedLineWidth, 0, color);
+        if (cachedLineWidth >= 5) {
+            addPolygonOutline(cx, cy, radius, minPolySides,
+                    cachedLineWidth - 2, cachedLineWidth + 2, color);
+        }
+        else {
+            addPolygonOutline(cx, cy, radius, minPolySides, cachedLineWidth, 0, color);
+        }
     }
 
     final Object renderLock = new Object();
