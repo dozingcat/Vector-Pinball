@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Build;
 
+import com.dozingcatsoftware.bouncy.util.TrigLookupTable;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -48,6 +49,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private int lineMvpMatrixHandle;
     private int linePositionHandle;
     private int lineColorHandle;
+
+    TrigLookupTable trigTable = new TrigLookupTable(16, 32, 64);
 
     public GL20Renderer(GLFieldView view, Function<String, String> shaderLookupFn) {
         this.glView = view;
@@ -299,12 +302,13 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         this.glView.setManager(manager);
     }
 
-    private void addLine(float x1, float y1, float x2, float y2,
-                            double coreWidthPixels, double aaWidthPixels,
-                            int color) {
+    private void addLine(
+            float x1, float y1, float x2, float y2,
+            float coreWidthPixels, float aaWidthPixels, int color) {
         boolean useAA = (aaWidthPixels > coreWidthPixels);
         int numVerticesToAdd = useAA ? 8 : 4;
         int numIndicesToAdd = useAA ? 18 : 6;
+        int baseIndex = this.numLineVertices;
         lineVertices = ensureRemaining(
                 lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
         lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
@@ -348,12 +352,12 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        lineVertexIndices.putInt(numLineVertices + 0);
-        lineVertexIndices.putInt(numLineVertices + 1);
-        lineVertexIndices.putInt(numLineVertices + 2);
-        lineVertexIndices.putInt(numLineVertices + 1);
-        lineVertexIndices.putInt(numLineVertices + 2);
-        lineVertexIndices.putInt(numLineVertices + 3);
+        lineVertexIndices.putInt(baseIndex + 0);
+        lineVertexIndices.putInt(baseIndex + 1);
+        lineVertexIndices.putInt(baseIndex + 2);
+        lineVertexIndices.putInt(baseIndex + 1);
+        lineVertexIndices.putInt(baseIndex + 2);
+        lineVertexIndices.putInt(baseIndex + 3);
 
         if (useAA) {
             int alphaZeroColor = packColor(Color.withAlpha(color, 0));
@@ -381,23 +385,23 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             lineVertices.putFloat(0f);
             lineVertices.putInt(alphaZeroColor);
 
-            lineVertexIndices.putInt(numLineVertices + 0);
-            lineVertexIndices.putInt(numLineVertices + 1);
-            lineVertexIndices.putInt(numLineVertices + 4);
-            lineVertexIndices.putInt(numLineVertices + 1);
-            lineVertexIndices.putInt(numLineVertices + 4);
-            lineVertexIndices.putInt(numLineVertices + 5);
+            lineVertexIndices.putInt(baseIndex + 0);
+            lineVertexIndices.putInt(baseIndex + 1);
+            lineVertexIndices.putInt(baseIndex + 4);
+            lineVertexIndices.putInt(baseIndex + 1);
+            lineVertexIndices.putInt(baseIndex + 4);
+            lineVertexIndices.putInt(baseIndex + 5);
 
-            lineVertexIndices.putInt(numLineVertices + 2);
-            lineVertexIndices.putInt(numLineVertices + 3);
-            lineVertexIndices.putInt(numLineVertices + 6);
-            lineVertexIndices.putInt(numLineVertices + 3);
-            lineVertexIndices.putInt(numLineVertices + 6);
-            lineVertexIndices.putInt(numLineVertices + 7);
+            lineVertexIndices.putInt(baseIndex + 2);
+            lineVertexIndices.putInt(baseIndex + 3);
+            lineVertexIndices.putInt(baseIndex + 6);
+            lineVertexIndices.putInt(baseIndex + 3);
+            lineVertexIndices.putInt(baseIndex + 6);
+            lineVertexIndices.putInt(baseIndex + 7);
         }
 
-        numLineVertices += numVerticesToAdd;
-        numLineVertexIndices += numIndicesToAdd;
+        this.numLineVertices += numVerticesToAdd;
+        this.numLineVertexIndices += numIndicesToAdd;
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
@@ -473,23 +477,90 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putFloat(innerRadiusSq);
 
         circleVertexIndices = ensureRemaining(circleVertexIndices, 24);
-        circleVertexIndices.putInt(numCircleVertices);
-        circleVertexIndices.putInt(numCircleVertices + 1);
-        circleVertexIndices.putInt(numCircleVertices + 2);
-        circleVertexIndices.putInt(numCircleVertices + 1);
-        circleVertexIndices.putInt(numCircleVertices + 2);
-        circleVertexIndices.putInt(numCircleVertices + 3);
+        int baseIndex = this.numCircleVertices;
+        circleVertexIndices.putInt(baseIndex);
+        circleVertexIndices.putInt(baseIndex + 1);
+        circleVertexIndices.putInt(baseIndex + 2);
+        circleVertexIndices.putInt(baseIndex + 1);
+        circleVertexIndices.putInt(baseIndex + 2);
+        circleVertexIndices.putInt(baseIndex + 3);
 
-        numCircleVertices += 4;
-        numCircleVertexIndices += 6;
+        this.numCircleVertices += 4;
+        this.numCircleVertexIndices += 6;
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
+        // HERE: use antialiasing.
         recordCircle(cx, cy, radius, color, true);
     }
 
+    private void addPolygonOutline(
+            float cx, float cy, float radius, int minPolySides,
+            float coreWidthPixels, float aaWidthPixels, int color) {
+        TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
+        int polySides = sinCosValues.size();
+        boolean useAA = (aaWidthPixels > coreWidthPixels);
+        // With or without antialiasing, the inner and outer polygons have vertex indices of:
+        // 1--3--...--2n-1
+        // 0--2--...--2n-2
+        // With antialiasing, there are additional polygons above and below to fade out:
+        // 2n+1 -- 2n+3 -- ... -- 4n-1
+        //    1 --  3   -- ... -- 2n-1
+        //    0 --  2   -- ... -- 2n-2
+        //   2n -- 2n+2 -- ... -- 4n-2
+        int numVerticesToAdd = polySides * (useAA ? 4 : 2);
+        int numIndicesToAdd = polySides * (useAA ? 18 : 6);
+        lineVertices = ensureRemaining(
+                lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
+        lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
+
+        int packedColor = packColor(color);
+
+        float glcx = world2glX(cx);
+        float glcy = world2glY(cy);
+        float glrad = world2glX(radius) - world2glX(0);
+        float corePerpDistGl = (float) (coreWidthPixels / cachedHeight);
+        float innerRadius = glrad - corePerpDistGl;
+        float outerRadius = glrad + corePerpDistGl;
+        for (int i = 0; i < polySides; i++) {
+            lineVertices.putFloat(glcx + innerRadius * sinCosValues.cosAtIndex(i));
+            lineVertices.putFloat(glcy + innerRadius * sinCosValues.sinAtIndex(i));
+            lineVertices.putFloat(0);
+            lineVertices.putInt(packedColor);
+
+            lineVertices.putFloat(glcx + outerRadius * sinCosValues.cosAtIndex(i));
+            lineVertices.putFloat(glcy + outerRadius * sinCosValues.sinAtIndex(i));
+            lineVertices.putFloat(0);
+            lineVertices.putInt(packedColor);
+
+            int baseIndex = this.numLineVertices + 2 * i;
+            if (i < polySides - 1) {
+                lineVertexIndices.putInt(baseIndex + 0);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(baseIndex + 2);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(baseIndex + 2);
+                lineVertexIndices.putInt(baseIndex + 3);
+            }
+            else {
+                // Wrap around to start.
+                lineVertexIndices.putInt(baseIndex + 0);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(this.numLineVertices);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(this.numLineVertices);
+                lineVertexIndices.putInt(this.numLineVertices + 1);
+            }
+        }
+
+        this.numLineVertices += numVerticesToAdd;
+        this.numLineVertexIndices += numIndicesToAdd;
+    }
+
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
-        recordCircle(cx, cy, radius, color, false);
+        float radiusInPixels = fvManager.world2pixelX(radius) - fvManager.world2pixelX(0);
+        int minPolySides = (int) Math.ceil(radiusInPixels);
+        addPolygonOutline(cx, cy, radius, minPolySides, cachedLineWidth, 0, color);
     }
 
     final Object renderLock = new Object();

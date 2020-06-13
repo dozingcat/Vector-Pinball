@@ -5,6 +5,7 @@ import android.opengl.GLU;
 
 import com.dozingcatsoftware.bouncy.util.GLVertexList;
 import com.dozingcatsoftware.bouncy.util.GLVertexListManager;
+import com.dozingcatsoftware.bouncy.util.TrigLookupTable;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -32,15 +33,7 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     // Lookup tables for sin/cos, used to draw circles by approximating with polygons.
     // Larger circles are drawn with more points.
-    static float[] SIN_VALUES = new float[20];
-    static float[] COS_VALUES = new float[20];
-    static float[] HQ_SIN_VALUES = new float[60];
-    static float[] HQ_COS_VALUES = new float[60];
-
-    static {
-        buildSinCosTables(SIN_VALUES, COS_VALUES);
-        buildSinCosTables(HQ_SIN_VALUES, HQ_COS_VALUES);
-    }
+    static TrigLookupTable trigTable = new TrigLookupTable(20, 60);
 
     static void buildSinCosTables(float[] sinValues, float[] cosValues) {
         if (sinValues.length != cosValues.length) {
@@ -108,11 +101,13 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         addColorToVertexList(circleVertexList, color);
 
         float radiusInPixels = manager.world2pixelX(radius) - manager.world2pixelX(0);
-        float[] sinValues = (radiusInPixels > 60) ? HQ_SIN_VALUES : SIN_VALUES;
-        float[] cosValues = (radiusInPixels > 60) ? HQ_COS_VALUES : COS_VALUES;
-        for (int i = 0; i < sinValues.length; i++) {
-            float x = cx + radius * sinValues[i];
-            float y = cy + radius * cosValues[i];
+        // Approximate circle with polygon.
+        int minPolySides = (radiusInPixels > 60) ? 60 : 20;
+        TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
+        int actualPolySides = sinCosValues.size();
+        for (int i = 0; i < actualPolySides; i++) {
+            float x = cx + radius * sinCosValues.cosAtIndex(i);
+            float y = cy + radius * sinCosValues.sinAtIndex(i);
             circleVertexList.addVertex(manager.world2pixelX(x), manager.world2pixelY(y));
         }
     }
