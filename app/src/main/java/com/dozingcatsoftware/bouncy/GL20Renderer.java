@@ -299,74 +299,114 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         this.glView.setManager(manager);
     }
 
-    private void recordLine(float x1, float y1, float x2, float y2,
-                            double startPerpDistPixels, double endPerpDistPixels,
-                            int startColor, int endColor) {
-        lineVertices = ensureRemaining(lineVertices, LINE_VERTEX_STRIDE_BYTES * 4);
+    private void addLine(float x1, float y1, float x2, float y2,
+                            double coreWidthPixels, double aaWidthPixels,
+                            int color) {
+        boolean useAA = (aaWidthPixels > coreWidthPixels);
+        int numVerticesToAdd = useAA ? 8 : 4;
+        int numIndicesToAdd = useAA ? 18 : 6;
+        lineVertices = ensureRemaining(
+                lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
+        lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
         float glx2 = world2glX(x2);
         float gly2 = world2glY(y2);
+        int packedColor = packColor(color);
         // Extend at right angles from the endpoints and draw a rectangle.
-        double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
-        double startPerpDistGl = startPerpDistPixels / cachedHeight;
-        double endPerpDistGl = endPerpDistPixels / cachedHeight;
-        double cosPerpAngle = Math.cos(angle + TAU / 4);
-        double sinPerpAngle = Math.sin(angle + TAU / 4);
-        float startDx = (float) (startPerpDistGl * cosPerpAngle);
-        float startDy = (float) (startPerpDistGl * sinPerpAngle);
-        float endDx = (float) (endPerpDistGl * cosPerpAngle);
-        float endDy = (float) (endPerpDistGl * sinPerpAngle);
+        double perpAngle = Math.atan2(gly2 - gly1, glx2 - glx1) + TAU / 4;
+        float cosPerp = (float) Math.cos(perpAngle);
+        float sinPerp = (float) Math.sin(perpAngle);
+        float corePerpDistGl = (float) (coreWidthPixels / cachedHeight);
+        float coreDx = corePerpDistGl * cosPerp;
+        float coreDy = corePerpDistGl * sinPerp;
 
-        int packedStartColor = packColor(startColor);
-        int packedEndColor = packColor(endColor);
-
-        lineVertices.putFloat(glx1 + startDx);
-        lineVertices.putFloat(gly1 + startDy);
+        // Relative vertex indices. 0-3 form the "core" quad, 4-7 add the quads
+        // that fade out if antialiasing is enabled.
+        // 6--7
+        // 2--3
+        // 0--1
+        // 4--5
+        lineVertices.putFloat(glx1 - coreDx);
+        lineVertices.putFloat(gly1 - coreDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedStartColor);
+        lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx1 + endDx);
-        lineVertices.putFloat(gly1 + endDy);
+        lineVertices.putFloat(glx2 - coreDx);
+        lineVertices.putFloat(gly2 - coreDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedEndColor);
+        lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx2 + startDx);
-        lineVertices.putFloat(gly2 + startDy);
+        lineVertices.putFloat(glx1 + coreDx);
+        lineVertices.putFloat(gly1 + coreDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedStartColor);
+        lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx2 + endDx);
-        lineVertices.putFloat(gly2 + endDy);
+        lineVertices.putFloat(glx2 + coreDx);
+        lineVertices.putFloat(gly2 + coreDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedEndColor);
+        lineVertices.putInt(packedColor);
 
-        lineVertexIndices = ensureRemaining(lineVertexIndices, 24);
-        lineVertexIndices.putInt(numLineVertices);
+        lineVertexIndices.putInt(numLineVertices + 0);
         lineVertexIndices.putInt(numLineVertices + 1);
         lineVertexIndices.putInt(numLineVertices + 2);
         lineVertexIndices.putInt(numLineVertices + 1);
         lineVertexIndices.putInt(numLineVertices + 2);
         lineVertexIndices.putInt(numLineVertices + 3);
 
-        numLineVertices += 4;
-        numLineVertexIndices += 6;
+        if (useAA) {
+            int alphaZeroColor = packColor(Color.withAlpha(color, 0));
+            float aaPerpDistGl = (float) (aaWidthPixels / cachedHeight);
+            float aaDx = aaPerpDistGl * cosPerp;
+            float aaDy = aaPerpDistGl * sinPerp;
+
+            lineVertices.putFloat(glx1 - aaDx);
+            lineVertices.putFloat(gly1 - aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx2 - aaDx);
+            lineVertices.putFloat(gly2 - aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx1 + aaDx);
+            lineVertices.putFloat(gly1 + aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx2 + aaDx);
+            lineVertices.putFloat(gly2 + aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertexIndices.putInt(numLineVertices + 0);
+            lineVertexIndices.putInt(numLineVertices + 1);
+            lineVertexIndices.putInt(numLineVertices + 4);
+            lineVertexIndices.putInt(numLineVertices + 1);
+            lineVertexIndices.putInt(numLineVertices + 4);
+            lineVertexIndices.putInt(numLineVertices + 5);
+
+            lineVertexIndices.putInt(numLineVertices + 2);
+            lineVertexIndices.putInt(numLineVertices + 3);
+            lineVertexIndices.putInt(numLineVertices + 6);
+            lineVertexIndices.putInt(numLineVertices + 3);
+            lineVertexIndices.putInt(numLineVertices + 6);
+            lineVertexIndices.putInt(numLineVertices + 7);
+        }
+
+        numLineVertices += numVerticesToAdd;
+        numLineVertexIndices += numIndicesToAdd;
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
+        // Use antialiasing if lines are thick enough.
         if (cachedLineWidth >= 5) {
-            // Anti-aliasing by drawing lines "above" and "below" with a gradient that goes from
-            // `color` to transparent.
-            int alphaZeroColor = Color.withAlpha(color, 0);
-            recordLine(x1, y1, x2, y2, -(cachedLineWidth - 1), cachedLineWidth - 1, color, color);
-            recordLine(x1, y1, x2, y2,
-                    cachedLineWidth - 1, cachedLineWidth + 1, color, alphaZeroColor);
-            recordLine(x1, y1, x2, y2,
-                    -(cachedLineWidth - 1), -(cachedLineWidth + 1), color, alphaZeroColor);
+            addLine(x1, y1, x2, y2, cachedLineWidth - 2, cachedLineWidth + 2, color);
         }
         else {
-            recordLine(x1, y1, x2, y2, -cachedLineWidth, cachedLineWidth, color, color);
+            addLine(x1, y1, x2, y2, cachedLineWidth, 0, color);
         }
     }
 
