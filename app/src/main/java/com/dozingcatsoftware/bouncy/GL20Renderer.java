@@ -18,7 +18,7 @@ import java.util.function.Function;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-@TargetApi(Build.VERSION_CODES.FROYO)
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurfaceView.Renderer {
     static final double TAU = 2 * Math.PI;
 
@@ -26,6 +26,11 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private final Function<String, String> shaderLookupFn;
 
     private FieldViewManager fvManager;
+
+    private int lineVertexBufferId;
+    private int lineIndexBufferId;
+    private int circleVertexBufferId;
+    private int circleIndexBufferId;
 
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -115,6 +120,13 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         lineMvpMatrixHandle = GLES20.glGetUniformLocation(lineProgramId, "uMVPMatrix");
         linePositionHandle = GLES20.glGetAttribLocation(lineProgramId, "position");
         lineColorHandle = GLES20.glGetAttribLocation(lineProgramId, "inColor");
+
+        int[] bufferIds = new int[4];
+        GLES20.glGenBuffers(4, bufferIds, 0);
+        lineVertexBufferId = bufferIds[0];
+        lineIndexBufferId = bufferIds[1];
+        circleVertexBufferId = bufferIds[2];
+        circleVertexBufferId = bufferIds[3];
     }
 
     // Line layout is 3 floats for vertex position, then 4 unsigned bytes for color.
@@ -242,6 +254,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     private void drawLines() {
 
+        /*
         GLES20.glUseProgram(lineProgramId);
 
         GLES20.glEnableVertexAttribArray(linePositionHandle);
@@ -262,6 +275,29 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         GLES20.glDisableVertexAttribArray(linePositionHandle);
         GLES20.glDisableVertexAttribArray(lineColorHandle);
+        */
+
+        GLES20.glUseProgram(lineProgramId);
+        GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, lineVertexBufferId);
+        lineVertices.position(0);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+                lineVertices.capacity(), lineVertices, GLES20.GL_STATIC_DRAW);
+
+        GLES20.glEnableVertexAttribArray(linePositionHandle);
+        GLES20.glVertexAttribPointer(
+                linePositionHandle, 3, GLES20.GL_FLOAT, false, LINE_VERTEX_STRIDE_BYTES, 0);
+
+        GLES20.glEnableVertexAttribArray(lineColorHandle);
+        GLES20.glVertexAttribPointer(
+                lineColorHandle, 4, GLES20.GL_UNSIGNED_BYTE, true, LINE_VERTEX_STRIDE_BYTES, 12);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numLineVertices);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glDisableVertexAttribArray(linePositionHandle);
+        GLES20.glDisableVertexAttribArray(lineColorHandle);
     }
 
     public void setManager(FieldViewManager manager) {
@@ -269,7 +305,9 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         this.glView.setManager(manager);
     }
 
-    @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
+    private void recordLine(float x1, float y1, float x2, float y2,
+                            double startPerpDistPixels, double endPerpDistPixels,
+                            int startColor, int endColor) {
         lineVertices = ensureRemaining(lineVertices, LINE_VERTEX_STRIDE_BYTES * VERTICES_PER_LINE);
 
         float glx1 = world2glX(x1);
@@ -277,48 +315,66 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         float glx2 = world2glX(x2);
         float gly2 = world2glY(y2);
         // Extend at right angles from the endpoints and draw a rectangle.
-        // TODO: antialiasing?
         double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
-        // You'd expect there to be a 0.5 factor here so that the total width is getLineWidth(),
-        // but that seems to make the lines too narrow.
-        double perpDist = 1.0 * cachedLineWidth / cachedHeight;
-        float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
-        float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
+        double startPerpDistGl = startPerpDistPixels / cachedHeight;
+        double endPerpDistGl = endPerpDistPixels / cachedHeight;
+        double cosPerpAngle = Math.cos(angle + TAU / 4);
+        double sinPerpAngle = Math.sin(angle + TAU / 4);
+        float startDx = (float) (startPerpDistGl * cosPerpAngle);
+        float startDy = (float) (startPerpDistGl * sinPerpAngle);
+        float endDx = (float) (endPerpDistGl * cosPerpAngle);
+        float endDy = (float) (endPerpDistGl * sinPerpAngle);
 
-        // We want to write a single int rather than 4 bytes to reduce the number of put() calls.
-        int packedColor = packColor(color);
+        int packedStartColor = packColor(startColor);
+        int packedEndColor = packColor(endColor);
 
-        lineVertices.putFloat(glx1 - perpDx);
-        lineVertices.putFloat(gly1 - perpDy);
+        lineVertices.putFloat(glx1 + startDx);
+        lineVertices.putFloat(gly1 + startDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedStartColor);
 
-        lineVertices.putFloat(glx2 - perpDx);
-        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(glx2 + startDx);
+        lineVertices.putFloat(gly2 + startDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedStartColor);
 
-        lineVertices.putFloat(glx1 + perpDx);
-        lineVertices.putFloat(gly1 + perpDy);
+        lineVertices.putFloat(glx1 + endDx);
+        lineVertices.putFloat(gly1 + endDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedEndColor);
 
-        lineVertices.putFloat(glx2 - perpDx);
-        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(glx2 + startDx);
+        lineVertices.putFloat(gly2 + startDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedStartColor);
 
-        lineVertices.putFloat(glx1 + perpDx);
-        lineVertices.putFloat(gly1 + perpDy);
+        lineVertices.putFloat(glx1 + endDx);
+        lineVertices.putFloat(gly1 + endDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedEndColor);
 
-        lineVertices.putFloat(glx2 + perpDx);
-        lineVertices.putFloat(gly2 + perpDy);
+        lineVertices.putFloat(glx2 + endDx);
+        lineVertices.putFloat(gly2 + endDy);
         lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertices.putInt(packedEndColor);
 
         numLineVertices += VERTICES_PER_LINE;
+    }
+
+    @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
+        if (cachedLineWidth >= 50) {
+            // Anti-aliasing by drawing lines "above" and "below" with a gradient that goes from
+            // `color` to transparent.
+            int alphaZeroColor = Color.withAlpha(color, 0);
+            recordLine(x1, y1, x2, y2, -(cachedLineWidth - 1), cachedLineWidth - 1, color, color);
+            recordLine(x1, y1, x2, y2,
+                    cachedLineWidth - 1, cachedLineWidth + 1, color, alphaZeroColor);
+            recordLine(x1, y1, x2, y2,
+                    -(cachedLineWidth - 1), -(cachedLineWidth + 1), color, alphaZeroColor);
+        }
+        else {
+            recordLine(x1, y1, x2, y2, -cachedLineWidth, cachedLineWidth, color, color);
+        }
     }
 
     @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
@@ -410,14 +466,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
         recordCircle(cx, cy, radius, color, false);
-    }
-
-    @Override public boolean canDrawArc() {
-        return false;
-    }
-
-    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius, float startAngle, float sweepAngle, int color) {
-
     }
 
     final Object renderLock = new Object();
