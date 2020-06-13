@@ -116,9 +116,7 @@ public class BouncyActivity extends Activity {
         }
 
         fieldViewManager.setField(field);
-        fieldViewManager.setStartGameAction(new Runnable() {
-            @Override public void run() {doStartGame(null);}
-        });
+        fieldViewManager.setStartGameAction(() -> doStartGame(null));
 
         scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
@@ -147,7 +145,7 @@ public class BouncyActivity extends Activity {
 
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
-        (new Thread(() -> VPSoundpool.loadSounds())).start();
+        (new Thread(VPSoundpool::loadSounds)).start();
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
