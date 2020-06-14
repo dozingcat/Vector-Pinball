@@ -61,14 +61,18 @@ public class ScoreView extends View {
 
         fpsPaint.setARGB(255, 255, 255, 0);
         fpsPaint.setTextSize(9 * metrics.density);
+        fpsPaint.setAntiAlias(true);
 
         multiplierPaint.setARGB(255, 32, 224, 32);
         multiplierPaint.setTextSize(12 * metrics.density);
+        multiplierPaint.setAntiAlias(true);
 
         usedBallPaint.setARGB(255, 128, 128, 128);
         usedBallPaint.setStyle(Paint.Style.STROKE);
+        usedBallPaint.setAntiAlias(true);
         remainingBallPaint.setARGB(255, 224, 224, 224);
         remainingBallPaint.setStyle(Paint.Style.FILL);
+        remainingBallPaint.setAntiAlias(true);
     }
 
     @Override public void onDraw(Canvas c) {

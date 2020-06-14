@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Build;
 
+import com.dozingcatsoftware.bouncy.util.TrigLookupTable;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-@TargetApi(Build.VERSION_CODES.FROYO)
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurfaceView.Renderer {
     static final double TAU = 2 * Math.PI;
 
@@ -26,6 +27,11 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private final Function<String, String> shaderLookupFn;
 
     private FieldViewManager fvManager;
+
+    private int lineVertexBufferId;
+    private int lineIndexBufferId;
+    private int circleVertexBufferId;
+    private int circleIndexBufferId;
 
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -44,9 +50,11 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private int linePositionHandle;
     private int lineColorHandle;
 
+    TrigLookupTable trigTable = new TrigLookupTable(16, 32, 64);
+
     public GL20Renderer(GLFieldView view, Function<String, String> shaderLookupFn) {
         this.glView = view;
-        view.getHolder().setFormat(PixelFormat.RGB_565);
+        view.getHolder().setFormat(PixelFormat.RGBA_8888);
         view.getHolder().setFormat(PixelFormat.TRANSPARENT);
         view.setEGLConfigChooser(8,8,8,8,16,0);
         view.setEGLContextClientVersion(2);
@@ -115,21 +123,30 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         lineMvpMatrixHandle = GLES20.glGetUniformLocation(lineProgramId, "uMVPMatrix");
         linePositionHandle = GLES20.glGetAttribLocation(lineProgramId, "position");
         lineColorHandle = GLES20.glGetAttribLocation(lineProgramId, "inColor");
+
+        int[] bufferIds = new int[4];
+        GLES20.glGenBuffers(4, bufferIds, 0);
+        lineVertexBufferId = bufferIds[0];
+        lineIndexBufferId = bufferIds[1];
+        circleVertexBufferId = bufferIds[2];
+        circleIndexBufferId = bufferIds[3];
     }
 
     // Line layout is 3 floats for vertex position, then 4 unsigned bytes for color.
     private static final int LINE_VERTEX_STRIDE_BYTES = 16;
-    private static final int VERTICES_PER_LINE = 6;
-    private ByteBuffer lineVertices = makeByteBuffer(2000);
+    private ByteBuffer lineVertices = makeByteBuffer(2048);
+    private ByteBuffer lineVertexIndices = makeByteBuffer(512);
     private int numLineVertices = 0;
+    private int numLineVertexIndices = 0;
 
     // Circle layout is 3 floats for vertex position, 4 unsigned bytes for color,
     // 2 floats for center, float for radius, float for inner radius.
     // The floats for center and radii are in pixel coordinates.
     private static final int CIRCLE_VERTEX_STRIDE_BYTES = 32;
-    private static final int VERTICES_PER_CIRCLE = 6;
-    private ByteBuffer circleVertices = makeByteBuffer(2000);
+    private ByteBuffer circleVertices = makeByteBuffer(2048);
+    private ByteBuffer circleVertexIndices = makeByteBuffer(512);
     private int numCircleVertices = 0;
+    private int numCircleVertexIndices = 0;
 
     int cachedWidth;
     int cachedHeight;
@@ -171,11 +188,15 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         cachedHeight = getHeight();
         cachedLineWidth = fvManager.getLineWidth();
 
-        lineVertices.position(0);
+        lineVertices.clear();
         numLineVertices = 0;
+        lineVertexIndices.clear();
+        numLineVertexIndices = 0;
 
-        circleVertices.position(0);
+        circleVertices.clear();
         numCircleVertices = 0;
+        circleVertexIndices.clear();
+        numCircleVertexIndices = 0;
     }
 
     private void endDraw() {
@@ -197,42 +218,48 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     private void drawCircles() {
         GLES20.glUseProgram(circleProgramId);
-
-        GLES20.glEnableVertexAttribArray(circlePositionHandle);
-        circleVertices.position(0);
-        GLES20.glVertexAttribPointer(circlePositionHandle, 3,
-                GLES20.GL_FLOAT, false,
-                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
-
-        GLES20.glEnableVertexAttribArray(circleColorHandle);
-        circleVertices.position(12);
-        GLES20.glVertexAttribPointer(circleColorHandle, 4,
-                GLES20.GL_UNSIGNED_BYTE, true,
-                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
-
-        GLES20.glEnableVertexAttribArray(circleCenterHandle);
-        circleVertices.position(16);
-        GLES20.glVertexAttribPointer(circleCenterHandle, 2,
-                GLES20.GL_FLOAT, false,
-                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
-
-        GLES20.glEnableVertexAttribArray(circleRadiusSquaredHandle);
-        circleVertices.position(24);
-        GLES20.glVertexAttribPointer(circleRadiusSquaredHandle, 1,
-                GLES20.GL_FLOAT, false,
-                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
-
-        GLES20.glEnableVertexAttribArray(circleInnerRadiusSquaredHandle);
-        circleVertices.position(28);
-        GLES20.glVertexAttribPointer(circleInnerRadiusSquaredHandle, 1,
-                GLES20.GL_FLOAT, false,
-                CIRCLE_VERTEX_STRIDE_BYTES, circleVertices);
-
         GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numCircleVertices);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, circleVertexBufferId);
+        circleVertices.flip();
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+                circleVertices.limit(), circleVertices, GLES20.GL_STATIC_DRAW);
 
-        // Disable vertex arrays.
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, circleIndexBufferId);
+        circleVertexIndices.flip();
+        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                circleVertexIndices.limit(), circleVertexIndices, GLES20.GL_STATIC_DRAW);
+
+        GLES20.glEnableVertexAttribArray(circlePositionHandle);
+        GLES20.glVertexAttribPointer(circlePositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, 0);
+
+        GLES20.glEnableVertexAttribArray(circleColorHandle);
+        GLES20.glVertexAttribPointer(circleColorHandle, 4,
+                GLES20.GL_UNSIGNED_BYTE, true,
+                CIRCLE_VERTEX_STRIDE_BYTES, 12);
+
+        GLES20.glEnableVertexAttribArray(circleCenterHandle);
+        GLES20.glVertexAttribPointer(circleCenterHandle, 2,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, 16);
+
+        GLES20.glEnableVertexAttribArray(circleRadiusSquaredHandle);
+        GLES20.glVertexAttribPointer(circleRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, 24);
+
+        GLES20.glEnableVertexAttribArray(circleInnerRadiusSquaredHandle);
+        GLES20.glVertexAttribPointer(circleInnerRadiusSquaredHandle, 1,
+                GLES20.GL_FLOAT, false,
+                CIRCLE_VERTEX_STRIDE_BYTES, 28);
+
+        GLES20.glDrawElements(
+                GLES20.GL_TRIANGLES, numCircleVertexIndices, GLES20.GL_UNSIGNED_INT, 0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glDisableVertexAttribArray(circlePositionHandle);
         GLES20.glDisableVertexAttribArray(circleColorHandle);
         GLES20.glDisableVertexAttribArray(circleCenterHandle);
@@ -241,25 +268,31 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
 
     private void drawLines() {
-
         GLES20.glUseProgram(lineProgramId);
-
-        GLES20.glEnableVertexAttribArray(linePositionHandle);
-        lineVertices.position(0);
-        GLES20.glVertexAttribPointer(linePositionHandle, 3,
-                GLES20.GL_FLOAT, false,
-                LINE_VERTEX_STRIDE_BYTES, lineVertices);
-
-        GLES20.glEnableVertexAttribArray(lineColorHandle);
-        lineVertices.position(12);
-        GLES20.glVertexAttribPointer(lineColorHandle, 4,
-                GLES20.GL_UNSIGNED_BYTE, true,
-                LINE_VERTEX_STRIDE_BYTES, lineVertices);
-
         GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numLineVertices);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, lineVertexBufferId);
+        lineVertices.flip();
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+                lineVertices.limit(), lineVertices, GLES20.GL_STATIC_DRAW);
 
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, lineIndexBufferId);
+        lineVertexIndices.flip();
+        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                lineVertexIndices.limit(), lineVertexIndices, GLES20.GL_STATIC_DRAW);
+
+        GLES20.glEnableVertexAttribArray(linePositionHandle);
+        GLES20.glVertexAttribPointer(
+                linePositionHandle, 3, GLES20.GL_FLOAT, false, LINE_VERTEX_STRIDE_BYTES, 0);
+
+        GLES20.glEnableVertexAttribArray(lineColorHandle);
+        GLES20.glVertexAttribPointer(
+                lineColorHandle, 4, GLES20.GL_UNSIGNED_BYTE, true, LINE_VERTEX_STRIDE_BYTES, 12);
+
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numLineVertexIndices, GLES20.GL_UNSIGNED_INT, 0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glDisableVertexAttribArray(linePositionHandle);
         GLES20.glDisableVertexAttribArray(lineColorHandle);
     }
@@ -269,92 +302,154 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         this.glView.setManager(manager);
     }
 
-    @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        lineVertices = ensureRemaining(lineVertices, LINE_VERTEX_STRIDE_BYTES * VERTICES_PER_LINE);
+    private void addLine(
+            float x1, float y1, float x2, float y2,
+            float coreWidthPixels, float aaWidthPixels, int color) {
+        boolean useAA = (aaWidthPixels > coreWidthPixels);
+        int numVerticesToAdd = useAA ? 8 : 4;
+        int numIndicesToAdd = useAA ? 18 : 6;
+        int baseIndex = this.numLineVertices;
+        lineVertices = ensureRemaining(
+                lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
+        lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
         float glx2 = world2glX(x2);
         float gly2 = world2glY(y2);
-        // Extend at right angles from the endpoints and draw a rectangle.
-        // TODO: antialiasing?
-        double angle = Math.atan2(gly2 - gly1, glx2 - glx1);
-        // You'd expect there to be a 0.5 factor here so that the total width is getLineWidth(),
-        // but that seems to make the lines too narrow.
-        double perpDist = 1.0 * cachedLineWidth / cachedHeight;
-        float perpDx = (float) (perpDist * Math.cos(angle + TAU / 4));
-        float perpDy = (float) (perpDist * Math.sin(angle + TAU / 4));
-
-        // We want to write a single int rather than 4 bytes to reduce the number of put() calls.
         int packedColor = packColor(color);
+        // Extend at right angles from the endpoints and draw a rectangle.
+        double perpAngle = Math.atan2(gly2 - gly1, glx2 - glx1) + TAU / 4;
+        float cosPerp = (float) Math.cos(perpAngle);
+        float sinPerp = (float) Math.sin(perpAngle);
+        float corePerpDistGl = (float) (coreWidthPixels / cachedHeight);
+        float coreDx = corePerpDistGl * cosPerp;
+        float coreDy = corePerpDistGl * sinPerp;
 
-        lineVertices.putFloat(glx1 - perpDx);
-        lineVertices.putFloat(gly1 - perpDy);
+        // Relative vertex indices. 0-3 form the "core" quad, 4-7 add the quads
+        // that fade out if antialiasing is enabled.
+        // 6--7
+        // 2--3
+        // 0--1
+        // 4--5
+        lineVertices.putFloat(glx1 - coreDx);
+        lineVertices.putFloat(gly1 - coreDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx2 - perpDx);
-        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(glx2 - coreDx);
+        lineVertices.putFloat(gly2 - coreDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx1 + perpDx);
-        lineVertices.putFloat(gly1 + perpDy);
+        lineVertices.putFloat(glx1 + coreDx);
+        lineVertices.putFloat(gly1 + coreDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx2 - perpDx);
-        lineVertices.putFloat(gly2 - perpDy);
+        lineVertices.putFloat(glx2 + coreDx);
+        lineVertices.putFloat(gly2 + coreDy);
         lineVertices.putFloat(0f);
         lineVertices.putInt(packedColor);
 
-        lineVertices.putFloat(glx1 + perpDx);
-        lineVertices.putFloat(gly1 + perpDy);
-        lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        lineVertexIndices.putInt(baseIndex + 0);
+        lineVertexIndices.putInt(baseIndex + 1);
+        lineVertexIndices.putInt(baseIndex + 2);
+        lineVertexIndices.putInt(baseIndex + 1);
+        lineVertexIndices.putInt(baseIndex + 2);
+        lineVertexIndices.putInt(baseIndex + 3);
 
-        lineVertices.putFloat(glx2 + perpDx);
-        lineVertices.putFloat(gly2 + perpDy);
-        lineVertices.putFloat(0f);
-        lineVertices.putInt(packedColor);
+        if (useAA) {
+            int alphaZeroColor = packColor(Color.withAlpha(color, 0));
+            float aaPerpDistGl = (float) (aaWidthPixels / cachedHeight);
+            float aaDx = aaPerpDistGl * cosPerp;
+            float aaDy = aaPerpDistGl * sinPerp;
 
-        numLineVertices += VERTICES_PER_LINE;
+            lineVertices.putFloat(glx1 - aaDx);
+            lineVertices.putFloat(gly1 - aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx2 - aaDx);
+            lineVertices.putFloat(gly2 - aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx1 + aaDx);
+            lineVertices.putFloat(gly1 + aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertices.putFloat(glx2 + aaDx);
+            lineVertices.putFloat(gly2 + aaDy);
+            lineVertices.putFloat(0f);
+            lineVertices.putInt(alphaZeroColor);
+
+            lineVertexIndices.putInt(baseIndex + 0);
+            lineVertexIndices.putInt(baseIndex + 1);
+            lineVertexIndices.putInt(baseIndex + 4);
+            lineVertexIndices.putInt(baseIndex + 1);
+            lineVertexIndices.putInt(baseIndex + 4);
+            lineVertexIndices.putInt(baseIndex + 5);
+
+            lineVertexIndices.putInt(baseIndex + 2);
+            lineVertexIndices.putInt(baseIndex + 3);
+            lineVertexIndices.putInt(baseIndex + 6);
+            lineVertexIndices.putInt(baseIndex + 3);
+            lineVertexIndices.putInt(baseIndex + 6);
+            lineVertexIndices.putInt(baseIndex + 7);
+        }
+
+        this.numLineVertices += numVerticesToAdd;
+        this.numLineVertexIndices += numIndicesToAdd;
+    }
+
+    @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
+        // Use antialiasing if lines are thick enough.
+        if (cachedLineWidth >= 5) {
+            addLine(x1, y1, x2, y2, cachedLineWidth - 2, cachedLineWidth + 2, color);
+        }
+        else {
+            addLine(x1, y1, x2, y2, cachedLineWidth, 0, color);
+        }
     }
 
     @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
-        // TODO: Actual arcs.
+        // We can't reliably share vertex positions because we extend perpendicularly from the
+        // line segments, and successive segments may have different angles.
         for (int i = 1; i < xEndpoints.length; i++) {
             drawLine(xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], color);
         }
     }
 
-    void recordCircle(float cx, float cy, float radius, int color, boolean filled) {
+    private void addFilledCircle(float cx, float cy, float coreRadius, float aaRadius, int color) {
         circleVertices = ensureRemaining(
-                circleVertices, CIRCLE_VERTEX_STRIDE_BYTES * VERTICES_PER_CIRCLE);
+                circleVertices, CIRCLE_VERTEX_STRIDE_BYTES * 4);
         float glx = world2glX(cx);
         float gly = world2glY(cy);
-        float glrad = world2glX(radius) - world2glX(0);
+        float glrad = world2glX(aaRadius) - world2glX(0);
         int packedColor = packColor(color);
 
         float centerPixelX = worldToGLPixelX(cx);
         float centerPixelY = worldToGLPixelY(cy);
 
-        float radiusInPixels = worldToGLPixelX(radius) - worldToGLPixelX(0);
-        float radiusSq = radiusInPixels * radiusInPixels;
-        float innerRadiusSq = filled ?
-                0f : (radiusInPixels - cachedLineWidth) * (radiusInPixels - cachedLineWidth);
+        float coreRadiusInPixels = worldToGLPixelX(coreRadius) - worldToGLPixelX(0);
+        float coreRadiusSq = coreRadiusInPixels * coreRadiusInPixels;
+        float aaRadiusInPixels = worldToGLPixelX(aaRadius) - worldToGLPixelX(0);
+        float aaRadiusSq = aaRadiusInPixels * aaRadiusInPixels;
 
         // Draw a square covering the circle. For large circle outlines, we could define vertices
         // for inner and outer polygons to reduce the number of fragment shader calls. Seems to not
-        // be necessary yet.
+        // be necessary yet. We pass aaRadiusSq as the "outer" radius. Pixels are transparent
+        // outside of it, and between aaRadiusSq and coreRadiusSq there's an alpha gradient.
         circleVertices.putFloat(glx - glrad);
         circleVertices.putFloat(gly - glrad);
         circleVertices.putFloat(0f);
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx + glrad);
         circleVertices.putFloat(gly - glrad);
@@ -362,8 +457,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx - glrad);
         circleVertices.putFloat(gly + glrad);
@@ -371,26 +466,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
-
-        circleVertices.putFloat(glx - glrad);
-        circleVertices.putFloat(gly + glrad);
-        circleVertices.putFloat(0f);
-        circleVertices.putInt(packedColor);
-        circleVertices.putFloat(centerPixelX);
-        circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
-
-        circleVertices.putFloat(glx + glrad);
-        circleVertices.putFloat(gly - glrad);
-        circleVertices.putFloat(0f);
-        circleVertices.putInt(packedColor);
-        circleVertices.putFloat(centerPixelX);
-        circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx + glrad);
         circleVertices.putFloat(gly + glrad);
@@ -398,26 +475,161 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
-        numCircleVertices += 6;
+        circleVertexIndices = ensureRemaining(circleVertexIndices, 6 * 4);
+        int baseIndex = this.numCircleVertices;
+        circleVertexIndices.putInt(baseIndex);
+        circleVertexIndices.putInt(baseIndex + 1);
+        circleVertexIndices.putInt(baseIndex + 2);
+        circleVertexIndices.putInt(baseIndex + 1);
+        circleVertexIndices.putInt(baseIndex + 2);
+        circleVertexIndices.putInt(baseIndex + 3);
+
+        this.numCircleVertices += 4;
+        this.numCircleVertexIndices += 6;
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
-        recordCircle(cx, cy, radius, color, true);
+        float radiusInPixels = worldToGLPixelX(radius) - worldToGLPixelX(0);
+        if (radiusInPixels >= 10) {
+            // A bit icky because we need to pass world coordinates rather than GL or pixels.
+            // Move the "core" radius one pixel in and the AA radius one pixel out.
+            float pixelsPerWorldUnit = fvManager.world2pixelX(1) - fvManager.world2pixelX(0);
+            float worldDelta = 1 / pixelsPerWorldUnit;
+            addFilledCircle(cx, cy, radius - worldDelta, radius + worldDelta, color);
+        }
+        else {
+            addFilledCircle(cx, cy, radius, radius, color);
+        }
+    }
+
+    private void addPolygonOutline(
+            float cx, float cy, float radius, int minPolySides,
+            float coreWidthPixels, float aaWidthPixels, int color) {
+        TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
+        int polySides = sinCosValues.size();
+        boolean useAA = (aaWidthPixels > coreWidthPixels);
+        // With or without antialiasing, the inner and outer polygons have vertex indices of:
+        // 1--3--...--2n-1
+        // 0--2--...--2n-2
+        // With antialiasing, there are additional polygons above and below to fade out:
+        // 2n+1 -- 2n+3 -- ... -- 4n-1
+        //    1 --  3   -- ... -- 2n-1
+        //    0 --  2   -- ... -- 2n-2
+        //   2n -- 2n+2 -- ... -- 4n-2
+        int numVerticesToAdd = polySides * (useAA ? 4 : 2);
+        int numIndicesToAdd = polySides * (useAA ? 18 : 6);
+        lineVertices = ensureRemaining(
+                lineVertices, LINE_VERTEX_STRIDE_BYTES * numVerticesToAdd);
+        lineVertexIndices = ensureRemaining(lineVertexIndices, numIndicesToAdd * 4);
+
+        float glcx = world2glX(cx);
+        float glcy = world2glY(cy);
+        float glrad = world2glX(radius) - world2glX(0);
+        float corePerpDistGl = coreWidthPixels / cachedHeight;
+        float innerRadius = glrad - corePerpDistGl;
+        float outerRadius = glrad + corePerpDistGl;
+        int packedColor = packColor(color);
+        for (int i = 0; i < polySides; i++) {
+            lineVertices.putFloat(glcx + innerRadius * sinCosValues.cosAtIndex(i));
+            lineVertices.putFloat(glcy + innerRadius * sinCosValues.sinAtIndex(i));
+            lineVertices.putFloat(0);
+            lineVertices.putInt(packedColor);
+
+            lineVertices.putFloat(glcx + outerRadius * sinCosValues.cosAtIndex(i));
+            lineVertices.putFloat(glcy + outerRadius * sinCosValues.sinAtIndex(i));
+            lineVertices.putFloat(0);
+            lineVertices.putInt(packedColor);
+
+            int baseIndex = this.numLineVertices + 2 * i;
+            if (i < polySides - 1) {
+                lineVertexIndices.putInt(baseIndex + 0);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(baseIndex + 2);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(baseIndex + 2);
+                lineVertexIndices.putInt(baseIndex + 3);
+            }
+            else {
+                // Wrap around to start.
+                lineVertexIndices.putInt(baseIndex + 0);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(this.numLineVertices);
+                lineVertexIndices.putInt(baseIndex + 1);
+                lineVertexIndices.putInt(this.numLineVertices);
+                lineVertexIndices.putInt(this.numLineVertices + 1);
+            }
+        }
+
+        if (useAA) {
+            float aaPerpDistGl = aaWidthPixels / cachedHeight;
+            float aaInnerRadius = glrad - aaPerpDistGl;
+            float aaOuterRadius = glrad + aaPerpDistGl;
+            int alphaZeroColor = packColor(Color.withAlpha(color, 0));
+            for (int i = 0; i < polySides; i++) {
+                lineVertices.putFloat(glcx + aaInnerRadius * sinCosValues.cosAtIndex(i));
+                lineVertices.putFloat(glcy + aaInnerRadius * sinCosValues.sinAtIndex(i));
+                lineVertices.putFloat(0);
+                lineVertices.putInt(alphaZeroColor);
+
+                lineVertices.putFloat(glcx + aaOuterRadius * sinCosValues.cosAtIndex(i));
+                lineVertices.putFloat(glcy + aaOuterRadius * sinCosValues.sinAtIndex(i));
+                lineVertices.putFloat(0);
+                lineVertices.putInt(alphaZeroColor);
+
+                int baseCoreIndex = this.numLineVertices + 2 * i;
+                int baseAaIndex = baseCoreIndex + 2 * polySides;
+                if (i < polySides - 1) {
+                    lineVertexIndices.putInt(baseAaIndex + 0);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(baseAaIndex + 2);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(baseAaIndex + 2);
+                    lineVertexIndices.putInt(baseCoreIndex + 2);
+
+                    lineVertexIndices.putInt(baseAaIndex + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(baseAaIndex + 3);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(baseAaIndex + 3);
+                    lineVertexIndices.putInt(baseCoreIndex + 3);
+                }
+                else {
+                    // Wrap around to start.
+                    lineVertexIndices.putInt(baseAaIndex + 0);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides);
+                    lineVertexIndices.putInt(baseCoreIndex + 0);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides);
+                    lineVertexIndices.putInt(this.numLineVertices);
+
+                    lineVertexIndices.putInt(baseAaIndex + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides + 1);
+                    lineVertexIndices.putInt(baseCoreIndex + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 2 * polySides + 1);
+                    lineVertexIndices.putInt(this.numLineVertices + 1);
+                }
+            }
+
+        }
+
+        this.numLineVertices += numVerticesToAdd;
+        this.numLineVertexIndices += numIndicesToAdd;
     }
 
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
-        recordCircle(cx, cy, radius, color, false);
-    }
-
-    @Override public boolean canDrawArc() {
-        return false;
-    }
-
-    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius, float startAngle, float sweepAngle, int color) {
-
+        float radiusInPixels = fvManager.world2pixelX(radius) - fvManager.world2pixelX(0);
+        int minPolySides = (int) Math.ceil(radiusInPixels);
+        if (cachedLineWidth >= 5) {
+            addPolygonOutline(cx, cy, radius, minPolySides,
+                    cachedLineWidth - 2, cachedLineWidth + 2, color);
+        }
+        else {
+            addPolygonOutline(cx, cy, radius, minPolySides, cachedLineWidth, 0, color);
+        }
     }
 
     final Object renderLock = new Object();
