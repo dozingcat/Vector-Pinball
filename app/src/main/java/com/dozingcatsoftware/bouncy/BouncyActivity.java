@@ -158,6 +158,8 @@ public class BouncyActivity extends Activity {
         }
         catch (Exception ignored) {
         }
+        // Reset frame rate since app or system settings that affect performance could have changed.
+        fieldDriver.resetFrameRate();
     }
 
     @Override public void onPause() {
@@ -270,7 +272,6 @@ public class BouncyActivity extends Activity {
         catch (NumberFormatException ignored) {}
         if (lineWidth != fieldViewManager.getCustomLineWidth()) {
             fieldViewManager.setCustomLineWidth(lineWidth);
-            fieldDriver.resetFrameRate();
         }
 
         boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
@@ -279,7 +280,6 @@ public class BouncyActivity extends Activity {
                 canvasFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldRenderer(useOpenGL20 ? gl20Renderer : gl10Renderer);
-                fieldDriver.resetFrameRate();
             }
         }
         else {
@@ -287,7 +287,6 @@ public class BouncyActivity extends Activity {
                 glFieldView.setVisibility(View.GONE);
                 canvasFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldRenderer(canvasFieldView);
-                fieldDriver.resetFrameRate();
             }
         }
 
@@ -479,6 +478,8 @@ public class BouncyActivity extends Activity {
         this.setInitialLevel(currentLevel);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
+        // Performance can be different on different tables.
+        fieldDriver.resetFrameRate();
     }
 
     void resetFieldForCurrentLevel() {
