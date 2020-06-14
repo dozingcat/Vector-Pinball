@@ -89,9 +89,9 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
         addColorToVertexList(circleVertexList, color);
 
-        float radiusInPixels = manager.world2pixelX(radius) - manager.world2pixelX(0);
+        int radPixels = (int) Math.ceil(manager.world2pixelX(radius) - manager.world2pixelX(0));
         // Approximate circle with polygon. Use 8 or 20 sides for <60 pixel radius.
-        int minPolySides = (radiusInPixels < 60) ? (int) Math.min(radiusInPixels, 20) : 60;
+        int minPolySides = (radPixels < 60) ? (int) Math.min(radPixels, 20) : radPixels;
         TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
         int actualPolySides = sinCosValues.size();
         for (int i = 0; i < actualPolySides; i++) {
