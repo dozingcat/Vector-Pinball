@@ -50,7 +50,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private int linePositionHandle;
     private int lineColorHandle;
 
-    TrigLookupTable trigTable = new TrigLookupTable(16, 32, 64);
+    TrigLookupTable trigTable = new TrigLookupTable(16, 32, 64, 128);
 
     public GL20Renderer(GLFieldView view, Function<String, String> shaderLookupFn) {
         this.glView = view;
@@ -621,8 +621,10 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
 
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
-        float radiusInPixels = fvManager.world2pixelX(radius) - fvManager.world2pixelX(0);
-        int minPolySides = (int) Math.ceil(radiusInPixels);
+        int radPixels = (int) Math.ceil(fvManager.world2pixelX(radius) - fvManager.world2pixelX(0));
+        // Draw a polygon, with antialiasing if the line width is sufficient. A 64-sided polygon
+        // is good enough for all but the largest circles.
+        int minPolySides = radPixels < 256 ? Math.min(64, radPixels) : radPixels;
         if (cachedLineWidth >= 5) {
             addPolygonOutline(cx, cy, radius, minPolySides,
                     cachedLineWidth - 2, cachedLineWidth + 2, color);

@@ -33,18 +33,7 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     // Lookup tables for sin/cos, used to draw circles by approximating with polygons.
     // Larger circles are drawn with more points.
-    static TrigLookupTable trigTable = new TrigLookupTable(20, 60);
-
-    static void buildSinCosTables(float[] sinValues, float[] cosValues) {
-        if (sinValues.length != cosValues.length) {
-            throw new IllegalArgumentException("Array lengths don't match");
-        }
-        for (int i = 0; i < sinValues.length; i++) {
-            double angle = 2 * Math.PI * i / sinValues.length;
-            sinValues[i] = (float) Math.sin(angle);
-            cosValues[i] = (float) Math.cos(angle);
-        }
-    }
+    static final TrigLookupTable trigTable = new TrigLookupTable(8, 20, 60);
 
     void startGLElements(GL10 gl) {
         vertexListManager.begin();
@@ -100,9 +89,9 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         GLVertexList circleVertexList = vertexListManager.addVertexListForMode(mode);
         addColorToVertexList(circleVertexList, color);
 
-        float radiusInPixels = manager.world2pixelX(radius) - manager.world2pixelX(0);
-        // Approximate circle with polygon.
-        int minPolySides = (radiusInPixels > 60) ? 60 : 20;
+        int radPixels = (int) Math.ceil(manager.world2pixelX(radius) - manager.world2pixelX(0));
+        // Approximate circle with polygon. Use 8 or 20 sides for <60 pixel radius.
+        int minPolySides = (radPixels < 60) ? (int) Math.min(radPixels, 20) : radPixels;
         TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
         int actualPolySides = sinCosValues.size();
         for (int i = 0; i < actualPolySides; i++) {
