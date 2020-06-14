@@ -12,6 +12,9 @@ import java.util.function.LongSupplier;
  * possible. The client can call nanosToWaitUntilNextFrame() to determine the optimum number of
  * nanoseconds to wait before starting the next frame, and sleepUntilNextFrame() to sleep the
  * current thread for that interval.
+ *
+ * frameStarted(), nanosToWaitUntilNextFrame(), and sleepUntilNextFrame() should not be called from
+ * separate threads.
  */
 
 public class FrameRateManager {
@@ -40,8 +43,8 @@ public class FrameRateManager {
     double currentFPS = -1;
     int goodFrames = 0;
     int slowFrames = 0;
-
     long totalFrames = 0;
+    boolean resetRequested = false;
 
     final static long BILLION = 1000000000L; // nanoseconds per second.
     final static long MILLION = 1000000L; // nanoseconds per millisecond.
@@ -87,13 +90,13 @@ public class FrameRateManager {
         currentFPS = -1;
     }
 
-    void setCurrentRateIndex(int index) {
+    private void setCurrentRateIndex(int index) {
         currentRateIndex = index;
         currentNanosPerFrame = (long) (BILLION / targetFrameRates[currentRateIndex]);
     }
 
     /** Internal method to reduce the target frame rate to the next lower value. */
-    void reduceFPS() {
+    private void reduceFPS() {
         setCurrentRateIndex(currentRateIndex + 1);
         goodFrames = 0;
         slowFrames = 0;
@@ -101,17 +104,24 @@ public class FrameRateManager {
     }
 
     /**
-     * Restores the target frame rate to the maximum value, and clears the history of frame starting
-     * times. Should be called when the app changes state such that frame rendering times may be
-     * different from the past (e.g. a new game level is started), and the previous target frame
-     * rate may no longer be ideal.
+     * When `frameStarted` is next called, restores the target frame rate to the maximum value, and
+     * clears the history of frame starting times. (Does not do this immediately to avoid
+     * synchronization issues in `nanosToWaitUntilNextFrame`). Should be called when the app
+     * changes state such that frame rendering times may have changed (e.g. a new game level is
+     * started), and the previous target frame rate may no longer be ideal.
      */
     public void resetFrameRate() {
-        clearTimestamps();
-        setCurrentRateIndex(0);
-        frameRateLocked = false;
+        resetRequested = true;
     }
 
+    private void resetIfRequested() {
+        if (resetRequested) {
+            clearTimestamps();
+            setCurrentRateIndex(0);
+            frameRateLocked = false;
+            resetRequested = false;
+        }
+    }
 
     /**
      * Records the frame start time in nanoseconds. Updates current frame rate, and adjusts target
@@ -119,6 +129,7 @@ public class FrameRateManager {
      * beginning of the frame generation.
      */
     public void frameStarted() {
+        resetIfRequested();
         long time = nanoTimeFn.getAsLong();
         ++totalFrames;
         previousFrameTimestamps.add(time);
@@ -177,10 +188,13 @@ public class FrameRateManager {
 
     /**
      * Returns the best number of nanoseconds to wait before starting the next frame, based on
-     * previously recorded frame start times. The argument is the system time in nanoseconds.
+     * previously recorded frame start times. Assumes that `frameStarted` has been called.
      */
     public long nanosToWaitUntilNextFrame() {
         long time = nanoTimeFn.getAsLong();
+        if (previousFrameTimestamps.isEmpty()) {
+            return MILLION;
+        }
         long lastStartTime = previousFrameTimestamps.getLast();
         long singleFrameGoalTime = lastStartTime + currentNanosPerFrame;
         long waitTime = singleFrameGoalTime - time;
@@ -189,8 +203,8 @@ public class FrameRateManager {
             long multiFrameGoalTime =
                     previousFrameTimestamps.getFirst() + frameHistorySize * currentNanosPerFrame;
             long behind = singleFrameGoalTime - multiFrameGoalTime;
-            // behind>0 means we're behind schedule and should decrease wait time
-            // behind<0 means we're ahead of schedule, but don't adjust
+            // behind>0 means we're behind schedule and should decrease wait time.
+            // behind<0 means we're ahead of schedule, but don't adjust.
             if (behind > 0) waitTime -= behind;
         }
 
