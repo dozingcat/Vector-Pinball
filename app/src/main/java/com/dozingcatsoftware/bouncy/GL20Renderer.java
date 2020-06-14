@@ -54,7 +54,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     public GL20Renderer(GLFieldView view, Function<String, String> shaderLookupFn) {
         this.glView = view;
-        view.getHolder().setFormat(PixelFormat.RGB_565);
+        view.getHolder().setFormat(PixelFormat.RGBA_8888);
         view.getHolder().setFormat(PixelFormat.TRANSPARENT);
         view.setEGLConfigChooser(8,8,8,8,16,0);
         view.setEGLContextClientVersion(2);
@@ -415,39 +415,41 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
 
     @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
-        // TODO: Actual arcs.
+        // We can't reliably share vertex positions because we extend perpendicularly from the
+        // line segments, and successive segments may have different angles.
         for (int i = 1; i < xEndpoints.length; i++) {
             drawLine(xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], color);
         }
     }
 
-    void recordCircle(float cx, float cy, float radius, int color, boolean filled) {
+    private void addFilledCircle(float cx, float cy, float coreRadius, float aaRadius, int color) {
         circleVertices = ensureRemaining(
                 circleVertices, CIRCLE_VERTEX_STRIDE_BYTES * 4);
         float glx = world2glX(cx);
         float gly = world2glY(cy);
-        float glrad = world2glX(radius) - world2glX(0);
+        float glrad = world2glX(aaRadius) - world2glX(0);
         int packedColor = packColor(color);
 
         float centerPixelX = worldToGLPixelX(cx);
         float centerPixelY = worldToGLPixelY(cy);
 
-        float radiusInPixels = worldToGLPixelX(radius) - worldToGLPixelX(0);
-        float radiusSq = radiusInPixels * radiusInPixels;
-        float innerRadiusSq = filled ?
-                0f : (radiusInPixels - cachedLineWidth) * (radiusInPixels - cachedLineWidth);
+        float coreRadiusInPixels = worldToGLPixelX(coreRadius) - worldToGLPixelX(0);
+        float coreRadiusSq = coreRadiusInPixels * coreRadiusInPixels;
+        float aaRadiusInPixels = worldToGLPixelX(aaRadius) - worldToGLPixelX(0);
+        float aaRadiusSq = aaRadiusInPixels * aaRadiusInPixels;
 
         // Draw a square covering the circle. For large circle outlines, we could define vertices
         // for inner and outer polygons to reduce the number of fragment shader calls. Seems to not
-        // be necessary yet.
+        // be necessary yet. We pass aaRadiusSq as the "outer" radius. Pixels are transparent
+        // outside of it, and between aaRadiusSq and coreRadiusSq there's an alpha gradient.
         circleVertices.putFloat(glx - glrad);
         circleVertices.putFloat(gly - glrad);
         circleVertices.putFloat(0f);
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx + glrad);
         circleVertices.putFloat(gly - glrad);
@@ -455,8 +457,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx - glrad);
         circleVertices.putFloat(gly + glrad);
@@ -464,8 +466,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
         circleVertices.putFloat(glx + glrad);
         circleVertices.putFloat(gly + glrad);
@@ -473,10 +475,10 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertices.putInt(packedColor);
         circleVertices.putFloat(centerPixelX);
         circleVertices.putFloat(centerPixelY);
-        circleVertices.putFloat(radiusSq);
-        circleVertices.putFloat(innerRadiusSq);
+        circleVertices.putFloat(aaRadiusSq);
+        circleVertices.putFloat(coreRadiusSq);
 
-        circleVertexIndices = ensureRemaining(circleVertexIndices, 24);
+        circleVertexIndices = ensureRemaining(circleVertexIndices, 6 * 4);
         int baseIndex = this.numCircleVertices;
         circleVertexIndices.putInt(baseIndex);
         circleVertexIndices.putInt(baseIndex + 1);
@@ -490,8 +492,17 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
-        // HERE: use antialiasing.
-        recordCircle(cx, cy, radius, color, true);
+        float radiusInPixels = worldToGLPixelX(radius) - worldToGLPixelX(0);
+        if (radiusInPixels >= 10) {
+            // A bit icky because we need to pass world coordinates rather than GL or pixels.
+            // Move the "core" radius one pixel in and the AA radius one pixel out.
+            float pixelsPerWorldUnit = fvManager.world2pixelX(1) - fvManager.world2pixelX(0);
+            float worldDelta = 1 / pixelsPerWorldUnit;
+            addFilledCircle(cx, cy, radius - worldDelta, radius + worldDelta, color);
+        }
+        else {
+            addFilledCircle(cx, cy, radius, radius, color);
+        }
     }
 
     private void addPolygonOutline(
