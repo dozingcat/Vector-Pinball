@@ -57,10 +57,16 @@ public class Field implements ContactListener {
     // Duration after which the ball is considered stuck if it hasn't moved significantly,
     // if it's a single ball and no flippers are active. Normally the time ratio is around 2,
     // so this will be about 5 real-world seconds.
-    static final long STUCK_BALL_NANOS = 10000000000L;
+    static final long STUCK_BALL_NANOS = 10_000_000_000L;
+
+    // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
+    // zoomed in fully.
+    static final long ZOOM_DURATION_NANOS = 1_000_000_000L;
+    long zoomNanos = 0;
+    Vector2 zoomCenter = null;
 
     LongSupplier milliTimeFn;
-    AudioPlayer audioPlayer = AudioPlayer.NoOpPlayer.getInstance();
+    AudioPlayer audioPlayer;
     IStringResolver stringResolver;
 
     // Pass System::currentTimeMillis as `milliTimeFn` to use the standard system clock.
@@ -91,6 +97,11 @@ public class Field implements ContactListener {
         void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
         boolean isFieldActive(Field field);
+    }
+
+    // Used by field delegates to retrieve localized strings.
+    public String resolveString(String key, Object... params) {
+        return this.stringResolver.resolveString(key, params);
     }
 
     // Helper class to represent actions scheduled in the future.
@@ -206,6 +217,7 @@ public class Field implements ContactListener {
         processElementTicks();
         processScheduledActions();
         processGameMessages();
+        processZoom(nanos);
         checkForStuckBall(nanos);
 
         getDelegate().tick(this, nanos);
@@ -329,12 +341,13 @@ public class Field implements ContactListener {
      * not at all.
      */
     public boolean hasActiveElements() {
-        // HACK: to allow flippers to drop properly at beginning of game, we need accurate
-        // simulation.
+        // HACK: to allow flippers to drop properly at start of game, we need accurate simulation.
         if (this.gameTime < 500) return true;
         // Allow delegate to return true even if there are no balls.
         if (getDelegate().isFieldActive(this)) return true;
-        return this.getBalls().size() > 0;
+        // We need smooth animation if there are any balls, or if we're zooming out after all balls
+        // were lost.
+        return this.getBalls().size() > 0 || zoomNanos > 0;
     }
 
 
@@ -592,9 +605,25 @@ public class Field implements ContactListener {
         }
     }
 
-    // Used by field delegates to retrieve localized strings.
-    public String resolveString(String key, Object... params) {
-        return this.stringResolver.resolveString(key, params);
+    private boolean canBeZoomedIn() {
+        return this.balls.size() == 1;
+    }
+
+    public float zoomRatio() {
+        return (float) (1.0 * zoomNanos / ZOOM_DURATION_NANOS);
+    }
+
+    public Vector2 zoomCenterPoint() {
+        return (zoomCenter != null) ?
+                zoomCenter : new Vector2(getLaunchPosition().get(0), getLaunchPosition().get(1));
+    }
+
+    private void processZoom(long nanos) {
+        zoomNanos = canBeZoomedIn() ?
+                Math.min(ZOOM_DURATION_NANOS, zoomNanos + nanos) :
+                Math.max(0, zoomNanos - nanos);
+        // When the last ball goes away, zoom out from its last position.
+        zoomCenter = (this.balls.size() >= 1) ? this.balls.get(0).getPosition() : zoomCenter;
     }
 
     /**
