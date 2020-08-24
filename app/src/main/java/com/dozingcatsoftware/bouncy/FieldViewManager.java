@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -92,40 +93,34 @@ public class FieldViewManager {
      */
     private void cacheScaleAndOffsets() {
         cachedHeight = fieldRenderer.getHeight();
-        // Don't zoom if game is over or multiball is active.
-        List<Ball> balls = field.getBalls();
-        if (maxZoom <= 1.0f || !field.getGameState().isGameInProgress() || balls.size() > 1) {
-            cachedScale = getScale(1.0f);
-            // Center the entire table horizontally and put at at the top vertically.
-            // Negative offsets so the 0 coordinate will be on the screen.
-            float spaceLeftX = fieldRenderer.getWidth() - (field.getWidth() * cachedScale);
-            cachedXOffset = (spaceLeftX > 0) ? -spaceLeftX / (2 * cachedScale) : 0;
-            float spaceLeftY = fieldRenderer.getHeight() - (field.getHeight() * cachedScale);
-            cachedYOffset = (spaceLeftY > 0) ? -spaceLeftY / cachedScale : 0;
+        float zr = field.zoomRatio();
+        // Apply a cubic Bezier function to smoothly accelerate and decelerate.
+        float easedRatio = zr * zr * (3.0f - 2.0f * zr);
+        // The actual zoom factor ranges from 1 when zoomRatio() is 0 to `maxZoom` when it's 1.
+        float zoomFactor = 1 + (maxZoom - 1) * easedRatio;
+        cachedScale = getScale(zoomFactor);
+        // Center the zoomed view on the ball if available, or the launch position if not.
+        Vector2 center = field.zoomCenterPoint();
+        // `spanX` and `spanY` are how many world units are visible when zoomed. We don't want
+        // the zoomed view to extend to less than 0, or greater than the field size. If the
+        // span is greater than the table's width/height, then apply a negative offset so that
+        // the table is centered.
+        float spanX = fieldRenderer.getWidth() / cachedScale;
+        if (spanX >= field.getWidth()) {
+            cachedXOffset = -(spanX - field.getWidth()) / 2;
         }
         else {
-            cachedScale = getScale(maxZoom);
-            // Center the zoomed view on the ball if available, or the launch position if not.
-            float centerX, centerY;
-            if (balls.size() == 1) {
-                Ball b = balls.get(0);
-                centerX = b.getPosition().x;
-                centerY = b.getPosition().y;
-            }
-            else {
-                List<Float> position = field.getLaunchPosition();
-                centerX = position.get(0);
-                centerY = position.get(1);
-            }
-            // `spanX` and `spanY` are how many world units are visible when zoomed. We don't want
-            // the zoomed view to extend to less than 0, or greater than the field size.
-            float spanX = fieldRenderer.getWidth() / cachedScale;
-            float rawXOffset = centerX - spanX / 2;
+            float rawXOffset = center.x - spanX / 2;
             float maxXOffset = field.getWidth() - spanX;
             cachedXOffset = MathUtils.clamp(rawXOffset, 0, maxXOffset);
+        }
 
-            float spanY = fieldRenderer.getHeight() / cachedScale;
-            float rawYOffset = centerY - spanY / 2;
+        float spanY = fieldRenderer.getHeight() / cachedScale;
+        if (spanY >= field.getHeight()) {
+            cachedYOffset = -(spanY - field.getHeight()) / 2;
+        }
+        else {
+            float rawYOffset = center.y - spanY / 2;
             float maxYOffset = field.getHeight() - spanY;
             cachedYOffset = MathUtils.clamp(rawYOffset, 0, maxYOffset);
         }
