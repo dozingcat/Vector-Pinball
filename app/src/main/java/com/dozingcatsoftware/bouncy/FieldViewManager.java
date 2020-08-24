@@ -93,8 +93,11 @@ public class FieldViewManager {
      */
     private void cacheScaleAndOffsets() {
         cachedHeight = fieldRenderer.getHeight();
+        float zr = field.zoomRatio();
+        // Apply a cubic Bezier function to smoothly accelerate and decelerate.
+        float easedRatio = zr * zr * (3.0f - 2.0f * zr);
         // The actual zoom factor ranges from 1 when zoomRatio() is 0 to `maxZoom` when it's 1.
-        float zoomFactor = 1 + (maxZoom - 1) * field.zoomRatio();
+        float zoomFactor = 1 + (maxZoom - 1) * easedRatio;
         cachedScale = getScale(zoomFactor);
         // Center the zoomed view on the ball if available, or the launch position if not.
         Vector2 center = field.zoomCenterPoint();
