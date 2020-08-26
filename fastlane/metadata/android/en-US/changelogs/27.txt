@@ -1,0 +1,2 @@
+- OpenGL ES 2.0 renderer with higher graphics quality, used on Android 6.0 or later. OpenGL is now enabled by default.
+- Performance and graphics improvements.
