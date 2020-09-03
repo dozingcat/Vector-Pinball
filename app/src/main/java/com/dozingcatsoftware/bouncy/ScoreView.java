@@ -136,10 +136,9 @@ public class ScoreView extends View {
             remainingBallPaint.setStrokeWidth(ballPaintWidth);
             float ballRadius = width / 75f;
             float ballOuterMargin = 2 * ballRadius;
-            float ballBetweenSpace = ballRadius;
             float ballCenterY = height - (ballOuterMargin + ballRadius);
             float ballRightmostCenterX = width - ballOuterMargin - ballRadius;
-            float distanceBetweenBallCenters = 2 * ballRadius + ballBetweenSpace;
+            float distanceBetweenBallCenters = 2 * ballRadius + ballRadius;
             if (unlimitedBalls) {
                 // Attempt to show an "infinite" series of balls getting progressively smaller.
                 float vanishingBallRadius = ballRadius;

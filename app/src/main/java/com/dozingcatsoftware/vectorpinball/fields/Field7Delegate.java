@@ -101,8 +101,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         private void updateWanderingProjection(long nanos) {
             wanderNanos = (wanderNanos + nanos) % wanderPeriodNanos;
             // Going from tau to 0 makes the animation go left to right, which looks better.
-            double ra = TAU * (1 - (1.0 * wanderNanos / wanderPeriodNanos));
-            currentTarget.rightAscension = ra;
+            currentTarget.rightAscension = TAU * (1 - (1.0 * wanderNanos / wanderPeriodNanos));
             currentTarget.declination = 0;
             currentTarget.angularRadius = 0.4;
         }
