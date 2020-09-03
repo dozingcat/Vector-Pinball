@@ -124,7 +124,7 @@ public class ScoreView extends View {
         // textRect ends up being too high
         c.drawText(
                 displayString,
-                width / 2 - textRect.width() / 2, height / 2 + textRect.height() / 2,
+                width / 2.0f - textRect.width() / 2.0f, height / 2.0f + textRect.height() / 2.0f,
                 textPaint);
         if (showFPS && fps > 0) {
             c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
