@@ -34,8 +34,7 @@ public class FieldLayoutReader {
             String assetPath = "tables/table" + level + ".json";
             InputStream fin = context.getAssets().open(assetPath);
             String s = IOUtils.utf8FromStream(fin);
-            Map<String, Object> layoutMap = JSONUtils.mapFromJSONString(s);
-            return layoutMap;
+            return JSONUtils.mapFromJSONString(s);
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);

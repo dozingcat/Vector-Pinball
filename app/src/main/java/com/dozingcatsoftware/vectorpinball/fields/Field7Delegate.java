@@ -53,11 +53,11 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     static class Star2DProjection {
-        ArrayList<Double> x = new ArrayList<Double>();
-        ArrayList<Double> y = new ArrayList<Double>();
-        ArrayList<Double> magnitude = new ArrayList<Double>();
-        ArrayList<Integer> indices = new ArrayList<Integer>();
-        HashMap<Integer, Integer> starIndexToProjIndex = new HashMap<Integer, Integer>();
+        ArrayList<Double> x = new ArrayList<>();
+        ArrayList<Double> y = new ArrayList<>();
+        ArrayList<Double> magnitude = new ArrayList<>();
+        ArrayList<Integer> indices = new ArrayList<>();
+        HashMap<Integer, Integer> starIndexToProjIndex = new HashMap<>();
 
         int size() {
             return this.x.size();
@@ -83,8 +83,8 @@ public class Field7Delegate extends BaseFieldDelegate {
     static class StarState {
         final static double CONSTELLATION_RADIUS_MULTIPLIER = 1.2;
 
-        Set<Integer> activatedStars = new HashSet<Integer>();
-        List<Constellation> lockedConstellations = new ArrayList<Constellation>();
+        Set<Integer> activatedStars = new HashSet<>();
+        List<Constellation> lockedConstellations = new ArrayList<>();
         Constellation currentConstellation = null;
         ProjectionTarget currentTarget = new ProjectionTarget();
         Star2DProjection projection = new Star2DProjection();
@@ -101,8 +101,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         private void updateWanderingProjection(long nanos) {
             wanderNanos = (wanderNanos + nanos) % wanderPeriodNanos;
             // Going from tau to 0 makes the animation go left to right, which looks better.
-            double ra = TAU * (1 - (1.0 * wanderNanos / wanderPeriodNanos));
-            currentTarget.rightAscension = ra;
+            currentTarget.rightAscension = TAU * (1 - (1.0 * wanderNanos / wanderPeriodNanos));
             currentTarget.declination = 0;
             currentTarget.angularRadius = 0.4;
         }
@@ -217,7 +216,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
 
         boolean switchToRandomUnlockedConstellation() {
-            List<Constellation> candidates = new ArrayList<Constellation>();
+            List<Constellation> candidates = new ArrayList<>();
             for (Constellation c : CONSTELLATIONS) {
                 if (c != currentConstellation && !lockedConstellations.contains(c)) {
                     candidates.add(c);
@@ -285,7 +284,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     static final long BASE_RAMP_SCORE = 5000;
     static final long RAMP_SCORE_INCREMENT = 1000;
 
-    enum MultiballStatus {INACTIVE, STARTING, ACTIVE};
+    enum MultiballStatus {INACTIVE, STARTING, ACTIVE}
     MultiballStatus multiballStatus;
     int numBallsLocked;
 
@@ -416,9 +415,9 @@ public class Field7Delegate extends BaseFieldDelegate {
         starViewCenter = boundary.getRolloverCenterAtIndex(0);
         starViewRadius = boundary.getRolloverRadiusAtIndex(0);
         lockRollovers = Arrays.asList(
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover1"),
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover2"),
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover3")
+                field.getFieldElementById("BallLockRollover1"),
+                field.getFieldElementById("BallLockRollover2"),
+                field.getFieldElementById("BallLockRollover3")
         );
         leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
         rightLoopGuide = field.getFieldElementById("RightLoopGuide");
@@ -549,22 +548,14 @@ public class Field7Delegate extends BaseFieldDelegate {
         ballSaverRight.setRetracted(false);
 
         // Release the current ball, then create additional balls over the corresponding rollovers.
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                bb.setGravityScale(origGravity);
-                launchBallForMulitball(field, ball);
-            }
+        field.scheduleAction(1000, () -> {
+            bb.setGravityScale(origGravity);
+            launchBallForMulitball(field, ball);
         });
-        field.scheduleAction(3500, new Runnable() {
-            @Override public void run() {
-                launchBallForMulitball(field, null);
-            }
-        });
-        field.scheduleAction(6000, new Runnable() {
-            @Override public void run() {
-                launchBallForMulitball(field, null);
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(3500, () -> launchBallForMulitball(field, null));
+        field.scheduleAction(6000, () -> {
+            launchBallForMulitball(field, null);
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 
@@ -602,7 +593,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         double centerY = this.starViewCenter.y;
         double distScale = this.starViewRadius / starState.currentTarget.angularRadius;
         double baseRadius = this.starViewRadius * 0.015;
-        List<Shape> shapes = new ArrayList<Shape>();
+        List<Shape> shapes = new ArrayList<>();
         for (int i = 0; i < proj.size(); i++) {
             double cx = centerX + proj.x.get(i) * distScale;
             double cy = centerY + proj.y.get(i) * distScale;

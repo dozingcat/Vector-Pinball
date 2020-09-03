@@ -30,7 +30,7 @@ public class AboutActivity extends Activity {
         if (tableRulesText == null) tableRulesText = "";
         String displayText = baseText.replace("[TABLE_RULES]", tableRulesText);
 
-        TextView tv = (TextView) findViewById(R.id.aboutTextView);
+        TextView tv = findViewById(R.id.aboutTextView);
         tv.setText(displayText);
         // Padding based on screen
         DisplayMetrics metrics = getResources().getDisplayMetrics();

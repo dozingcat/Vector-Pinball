@@ -32,7 +32,7 @@ public class Field5Delegate extends BaseFieldDelegate {
 
     private static <T> Map<BallColor, T> buildBallColorMap(
             T blueVal, T redVal, T yellowVal, T greenVal) {
-        Map<BallColor, T> map = new HashMap<BallColor, T>();
+        Map<BallColor, T> map = new HashMap<>();
         map.put(BallColor.BLUE, blueVal);
         map.put(BallColor.RED, redVal);
         map.put(BallColor.YELLOW, yellowVal);
@@ -243,12 +243,10 @@ public class Field5Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        final Runnable doLaunch = new Runnable() {
-            @Override public void run() {
-                Ball ball = field.launchBall();
-                setBallColor(ball, unusedBallColor(field));
-                updateCenterRollovers(field);
-            }
+        final Runnable doLaunch = () -> {
+            Ball ball = field.launchBall();
+            setBallColor(ball, unusedBallColor(field));
+            updateCenterRollovers(field);
         };
 
         // "Starting" state until the last ball is launched so we don't exit multiball until then.
@@ -257,11 +255,9 @@ public class Field5Delegate extends BaseFieldDelegate {
         field.scheduleAction(1000, doLaunch);
         field.scheduleAction(4000, doLaunch);
         field.scheduleAction(7000, doLaunch);
-        field.scheduleAction(10000, new Runnable() {
-            @Override public void run() {
-                doLaunch.run();
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(10000, () -> {
+            doLaunch.run();
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 
@@ -287,62 +283,62 @@ public class Field5Delegate extends BaseFieldDelegate {
     }
 
     @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        launchBarrier = field.getFieldElementById("LaunchBarrier");
 
         triangleRotationAngle = TAU / 4;
         triangleWalls = Arrays.asList(
-                (WallElement) field.getFieldElementById("TriangleWall1"),
-                (WallElement) field.getFieldElementById("TriangleWall2"),
-                (WallElement) field.getFieldElementById("TriangleWall3"));
-        triangleCenterRollover = (RolloverGroupElement) field.getFieldElementById("TriangleCenter");
+                field.getFieldElementById("TriangleWall1"),
+                field.getFieldElementById("TriangleWall2"),
+                field.getFieldElementById("TriangleWall3"));
+        triangleCenterRollover = field.getFieldElementById("TriangleCenter");
 
-        previousSensorIds = new HashMap<Ball, String>();
+        previousSensorIds = new HashMap<>();
 
         centerRolloversByColor = buildBallColorMap(
                 Arrays.asList(
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_1"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_2"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Blue_3")),
+                        field.getFieldElementById("CenterRollover_Blue_1"),
+                        field.getFieldElementById("CenterRollover_Blue_2"),
+                        field.getFieldElementById("CenterRollover_Blue_3")),
                 Arrays.asList(
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_1"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_2"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Red_3")),
+                        field.getFieldElementById("CenterRollover_Red_1"),
+                        field.getFieldElementById("CenterRollover_Red_2"),
+                        field.getFieldElementById("CenterRollover_Red_3")),
                 Arrays.asList(
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_1"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_2"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Yellow_3"
+                        field.getFieldElementById("CenterRollover_Yellow_1"),
+                        field.getFieldElementById("CenterRollover_Yellow_2"),
+                        field.getFieldElementById("CenterRollover_Yellow_3"
                         )),
                 Arrays.asList(
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_1"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_2"),
-                        (RolloverGroupElement) field.getFieldElementById("CenterRollover_Green_3")));
+                        field.getFieldElementById("CenterRollover_Green_1"),
+                        field.getFieldElementById("CenterRollover_Green_2"),
+                        field.getFieldElementById("CenterRollover_Green_3")));
 
         centerLinesByColor = buildBallColorMap(
                 Arrays.asList(
-                        (WallElement) field.getFieldElementById("CenterLine_Blue_1_2"),
-                        (WallElement) field.getFieldElementById("CenterLine_Blue_2_3"),
-                        (WallElement) field.getFieldElementById("CenterLine_Blue_3_1")),
+                        field.getFieldElementById("CenterLine_Blue_1_2"),
+                        field.getFieldElementById("CenterLine_Blue_2_3"),
+                        field.getFieldElementById("CenterLine_Blue_3_1")),
                 Arrays.asList(
-                        (WallElement) field.getFieldElementById("CenterLine_Red_1_2"),
-                        (WallElement) field.getFieldElementById("CenterLine_Red_2_3"),
-                        (WallElement) field.getFieldElementById("CenterLine_Red_3_1")),
+                        field.getFieldElementById("CenterLine_Red_1_2"),
+                        field.getFieldElementById("CenterLine_Red_2_3"),
+                        field.getFieldElementById("CenterLine_Red_3_1")),
                 Arrays.asList(
-                        (WallElement) field.getFieldElementById("CenterLine_Yellow_1_2"),
-                        (WallElement) field.getFieldElementById("CenterLine_Yellow_2_3"),
-                        (WallElement) field.getFieldElementById("CenterLine_Yellow_3_1")),
+                        field.getFieldElementById("CenterLine_Yellow_1_2"),
+                        field.getFieldElementById("CenterLine_Yellow_2_3"),
+                        field.getFieldElementById("CenterLine_Yellow_3_1")),
                 Arrays.asList(
-                        (WallElement) field.getFieldElementById("CenterLine_Green_1_2"),
-                        (WallElement) field.getFieldElementById("CenterLine_Green_2_3"),
-                        (WallElement) field.getFieldElementById("CenterLine_Green_3_1")));
+                        field.getFieldElementById("CenterLine_Green_1_2"),
+                        field.getFieldElementById("CenterLine_Green_2_3"),
+                        field.getFieldElementById("CenterLine_Green_3_1")));
 
         rampBonuses = buildBallColorMap(0, 0, 0, 0);
 
-        extraBallRollover = (RolloverGroupElement) field.getFieldElementById("ExtraBallRollover");
+        extraBallRollover = field.getFieldElementById("ExtraBallRollover");
         extraBallBarriers = Arrays.asList(
-                (WallElement) field.getFieldElementById("ExtraBallBarrier_Blue"),
-                (WallElement) field.getFieldElementById("ExtraBallBarrier_Red"),
-                (WallElement) field.getFieldElementById("ExtraBallBarrier_Yellow"),
-                (WallElement) field.getFieldElementById("ExtraBallBarrier_Green"));
+                field.getFieldElementById("ExtraBallBarrier_Blue"),
+                field.getFieldElementById("ExtraBallBarrier_Red"),
+                field.getFieldElementById("ExtraBallBarrier_Yellow"),
+                field.getFieldElementById("ExtraBallBarrier_Green"));
 
         updateCenterRollovers(field);
         updateCenterLines(field);

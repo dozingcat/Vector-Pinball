@@ -26,7 +26,7 @@ public class MathUtils {
 
     public static List<Float> asFloatList(List<?> values) {
         if (values == null) return null;
-        List<Float> converted = new ArrayList<Float>();
+        List<Float> converted = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
             converted.add(asFloat(values.get(i)));
         }

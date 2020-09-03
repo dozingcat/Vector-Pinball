@@ -39,7 +39,7 @@ public class WallArcElement extends FieldElement {
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-    private List<Body> wallBodies = new ArrayList<Body>();
+    private List<Body> wallBodies = new ArrayList<>();
     private float centerX;
     private float centerY;
     private float radiusX;

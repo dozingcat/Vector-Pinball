@@ -51,9 +51,9 @@ public class RolloverGroupElement extends FieldElement {
     boolean ignoreBall;
     float defaultRadius;
     float defaultResetDelay;
-    List<Rollover> rollovers = new ArrayList<Rollover>();
-    List<Rollover> activeRollovers = new ArrayList<Rollover>();
-    List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
+    List<Rollover> rollovers = new ArrayList<>();
+    List<Rollover> activeRollovers = new ArrayList<>();
+    List<Rollover> rolloversHitOnPreviousTick = new ArrayList<>();
     boolean isVisible = true;
 
     @SuppressWarnings("unchecked")
@@ -177,8 +177,8 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     // Reuse these to avoid allocating memory in tick().
-    List<Rollover> rolloversHitByBall = new ArrayList<Rollover>();
-    List<Rollover> allHitRollovers = new ArrayList<Rollover>();
+    List<Rollover> rolloversHitByBall = new ArrayList<>();
+    List<Rollover> allHitRollovers = new ArrayList<>();
 
     @Override public void tick(Field field) {
         super.tick(field);
@@ -210,11 +210,7 @@ public class RolloverGroupElement extends FieldElement {
                     field.getAudioPlayer().playRollover();
                     // Set timer to clear rollover if reset parameter is present and >0.
                     if (r.resetDelay > 0) {
-                        field.scheduleAction((long)(r.resetDelay*1000), new Runnable() {
-                            @Override public void run() {
-                                activeRollovers.remove(r);
-                            }
-                        });
+                        field.scheduleAction((long)(r.resetDelay*1000), () -> activeRollovers.remove(r));
                     }
                     // Notify delegate if all rollovers are now active and they weren't previously.
                     if (!allActivePrevious && allRolloversActive()) {
@@ -230,9 +226,7 @@ public class RolloverGroupElement extends FieldElement {
         }
 
         rolloversHitOnPreviousTick.clear();
-        for(int i = 0; i < allHitRollovers.size(); i++) {
-            rolloversHitOnPreviousTick.add(allHitRollovers.get(i));
-        }
+        rolloversHitOnPreviousTick.addAll(allHitRollovers);
     }
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
@@ -246,7 +240,7 @@ public class RolloverGroupElement extends FieldElement {
         }
     }
 
-    List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
+    List<Rollover> newActiveRollovers = new ArrayList<>();
 
     /**
      * Cycles the states of all rollover elements by "rotating" left or right. For example, if this
@@ -265,9 +259,7 @@ public class RolloverGroupElement extends FieldElement {
         }
 
         this.activeRollovers.clear();
-        for (int i = 0; i < newActiveRollovers.size(); i++) {
-            this.activeRollovers.add(newActiveRollovers.get(i));
-        }
+        this.activeRollovers.addAll(newActiveRollovers);
     }
 
     /** Sets all rollovers to be active or inactive according to the boolean argument. */

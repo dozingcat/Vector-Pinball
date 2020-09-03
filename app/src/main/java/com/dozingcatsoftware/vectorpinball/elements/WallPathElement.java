@@ -24,7 +24,7 @@ public class WallPathElement extends FieldElement {
     public static final String POSITIONS_PROPERTY = "positions";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-    private List<Body> wallBodies = new ArrayList<Body>();
+    private List<Body> wallBodies = new ArrayList<>();
     private float[] xEndpoints;
     private float[] yEndpoints;
 

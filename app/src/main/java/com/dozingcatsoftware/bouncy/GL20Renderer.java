@@ -322,7 +322,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         double perpAngle = Math.atan2(gly2 - gly1, glx2 - glx1) + TAU / 4;
         float cosPerp = (float) Math.cos(perpAngle);
         float sinPerp = (float) Math.sin(perpAngle);
-        float corePerpDistGl = (float) (coreWidthPixels / cachedHeight);
+        float corePerpDistGl = coreWidthPixels / cachedHeight;
         float coreDx = corePerpDistGl * cosPerp;
         float coreDy = corePerpDistGl * sinPerp;
 
@@ -361,7 +361,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         if (useAA) {
             int alphaZeroColor = packColor(Color.withAlpha(color, 0));
-            float aaPerpDistGl = (float) (aaWidthPixels / cachedHeight);
+            float aaPerpDistGl = aaWidthPixels / cachedHeight;
             float aaDx = aaPerpDistGl * cosPerp;
             float aaDy = aaPerpDistGl * sinPerp;
 

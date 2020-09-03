@@ -93,25 +93,21 @@ public class Field4Delegate extends BaseFieldDelegate {
         setIgnoreBallForMultiballStatusRollovers(false);
         jackpot = baseJackpot;
 
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                lockedBallKickers.get(1).setRetracted(true);
-                lockedBallKickers.get(2).setRetracted(true);
-                lockedBallRollovers.get(1).setIgnoreBall(true);
-                lockedBallRollovers.get(1).setVisible(false);
-                if (field.getBalls().size() < 3) {
-                    field.launchBall();
-                }
+        field.scheduleAction(1000, () -> {
+            lockedBallKickers.get(1).setRetracted(true);
+            lockedBallKickers.get(2).setRetracted(true);
+            lockedBallRollovers.get(1).setIgnoreBall(true);
+            lockedBallRollovers.get(1).setVisible(false);
+            if (field.getBalls().size() < 3) {
+                field.launchBall();
             }
         });
-        field.scheduleAction(3500, new Runnable() {
-            @Override public void run() {
-                isMultiballStarting = false;
-                lockedBallRollovers.get(0).setIgnoreBall(true);
-                lockedBallRollovers.get(0).setVisible(false);
-                if (field.getBalls().size() < 3) {
-                    field.launchBall();
-                }
+        field.scheduleAction(3500, () -> {
+            isMultiballStarting = false;
+            lockedBallRollovers.get(0).setIgnoreBall(true);
+            lockedBallRollovers.get(0).setVisible(false);
+            if (field.getBalls().size() < 3) {
+                field.launchBall();
             }
         });
     }
@@ -129,20 +125,20 @@ public class Field4Delegate extends BaseFieldDelegate {
     }
 
     @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
-        topBlocker = (WallElement) field.getFieldElementById("TopRampBlocker");
-        rightKicker = (WallElement) field.getFieldElementById("RightRampKicker");
+        launchBarrier = field.getFieldElementById("LaunchBarrier");
+        topBlocker = field.getFieldElementById("TopRampBlocker");
+        rightKicker = field.getFieldElementById("RightRampKicker");
         multiballKickers = Arrays.asList(
-                (WallElement) field.getFieldElementById("MultiballKicker1"),
-                (WallElement) field.getFieldElementById("MultiballKicker2"),
-                (WallElement) field.getFieldElementById("MultiballKicker3")
+                field.getFieldElementById("MultiballKicker1"),
+                field.getFieldElementById("MultiballKicker2"),
+                field.getFieldElementById("MultiballKicker3")
         );
 
         // Locked ball rollovers start hidden and disabled.
         lockedBallRollovers = Arrays.asList(
-                (RolloverGroupElement) field.getFieldElementById("LockedBallRollover1"),
-                (RolloverGroupElement) field.getFieldElementById("LockedBallRollover2"),
-                (RolloverGroupElement) field.getFieldElementById("LockedBallRollover3")
+                field.getFieldElementById("LockedBallRollover1"),
+                field.getFieldElementById("LockedBallRollover2"),
+                field.getFieldElementById("LockedBallRollover3")
         );
         for (RolloverGroupElement rollover : lockedBallRollovers) {
             rollover.setRolloverActiveAtIndex(0, false);
@@ -152,18 +148,18 @@ public class Field4Delegate extends BaseFieldDelegate {
 
         // Kickers in the ball lock zone start disabled except the bottom one.
         lockedBallKickers = Arrays.asList(
-                (WallElement) field.getFieldElementById("LockedBallKicker1"),
-                (WallElement) field.getFieldElementById("LockedBallKicker2"),
-                (WallElement) field.getFieldElementById("LockedBallKicker3")
+                field.getFieldElementById("LockedBallKicker1"),
+                field.getFieldElementById("LockedBallKicker2"),
+                field.getFieldElementById("LockedBallKicker3")
         );
         lockedBallKickers.get(1).setRetracted(true);
         lockedBallKickers.get(2).setRetracted(true);
 
         // Get references to multiball status rollovers and initialize them.
-        multiballStatusRollovers = new HashMap<String, RolloverGroupElement>();
+        multiballStatusRollovers = new HashMap<>();
         for (String suffix : COLOR_SUFFIXES) {
             multiballStatusRollovers.put(suffix,
-                    (RolloverGroupElement) field.getFieldElementById("Rollovers." + suffix));
+                    field.getFieldElementById("Rollovers." + suffix));
         }
         clearMultiballStatus();
 

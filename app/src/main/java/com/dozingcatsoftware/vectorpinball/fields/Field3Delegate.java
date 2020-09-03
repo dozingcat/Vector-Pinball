@@ -125,7 +125,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         baseBumperBonusMultiplier = 5;
         resetBumperBonuses(field);
 
-        List<FieldElement> bumpers = new ArrayList<FieldElement>();
+        List<FieldElement> bumpers = new ArrayList<>();
         for (FieldElement element : field.getFieldElements()) {
             if (element instanceof BumperElement) {
                 bumpers.add(element);
@@ -274,7 +274,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     // Support for enabling launch barrier after ball passes by it and hits sensor,
     // and disabling for new ball or new game.
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
@@ -332,14 +332,11 @@ public class Field3Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        Runnable launchBall = new Runnable() {
-            @Override
-            public void run() {
-                if (field.getBalls().size() < 3) field.launchBall();
-                if (multiballStatus != MultiballStatus.ACTIVE) {
-                    multiballStatus = MultiballStatus.ACTIVE;
-                    initializeMultiballFlashers();
-                }
+        Runnable launchBall = () -> {
+            if (field.getBalls().size() < 3) field.launchBall();
+            if (multiballStatus != MultiballStatus.ACTIVE) {
+                multiballStatus = MultiballStatus.ACTIVE;
+                initializeMultiballFlashers();
             }
         };
         field.scheduleAction(1000, launchBall);

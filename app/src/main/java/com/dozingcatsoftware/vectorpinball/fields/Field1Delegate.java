@@ -40,11 +40,8 @@ public class Field1Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        Runnable launchBall = new Runnable() {
-            @Override
-            public void run() {
-                if (field.getBalls().size() < 3) field.launchBall();
-            }
+        Runnable launchBall = () -> {
+            if (field.getBalls().size() < 3) field.launchBall();
         };
         field.scheduleAction(1000, launchBall);
         field.scheduleAction(3500, launchBall);

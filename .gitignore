@@ -4,4 +4,4 @@ app/release/
 build/
 gen/
 local.properties
-
+*.iml

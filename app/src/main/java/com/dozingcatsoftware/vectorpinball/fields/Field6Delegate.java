@@ -60,7 +60,7 @@ public class Field6Delegate extends BaseFieldDelegate {
             Color.fromRGB(0x55, 0xBB, 0x88),
             Color.fromRGB(0xAA, 0x66, 0xCC));
 
-    private final class Planet {
+    private static final class Planet {
         RolloverGroupElement element;
         int color;
         double radius;
@@ -86,16 +86,10 @@ public class Field6Delegate extends BaseFieldDelegate {
         multiballStatus = MultiballStatus.STARTING;
         multiballJackpotMultiplier = 1;
         field.showGameMessage(field.resolveString("multiball_started_message"), 4000);
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                field.launchBall();
-            }
-        });
-        field.scheduleAction(4000, new Runnable() {
-            @Override public void run() {
-                field.launchBall();
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(1000, field::launchBall);
+        field.scheduleAction(4000, () -> {
+            field.launchBall();
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 
@@ -195,9 +189,9 @@ public class Field6Delegate extends BaseFieldDelegate {
     }
 
     void initializePlanets(Field field) {
-        sun = (RolloverGroupElement) field.getFieldElementById("Sun");
+        sun = field.getFieldElementById("Sun");
         sun.setAllRolloversActivated(true);
-        orbits = (RolloverGroupElement) field.getFieldElementById("Orbits");
+        orbits = field.getFieldElementById("Orbits");
 
         int numPlanets = orbits.numberOfRollovers();
         planets = new Planet[numPlanets];
@@ -205,7 +199,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         for (int i = 0; i < numPlanets; i++) {
             Planet p = new Planet();
             planets[i] = p;
-            p.element = (RolloverGroupElement) field.getFieldElementById("Planet" + (i + 1));
+            p.element = field.getFieldElementById("Planet" + (i + 1));
             p.radius = p.element.getRolloverRadiusAtIndex(0);
             p.color = planetColors.get(i);
             p.angle = rand.nextDouble() * TAU;
@@ -216,7 +210,7 @@ public class Field6Delegate extends BaseFieldDelegate {
     }
 
     @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        launchBarrier = field.getFieldElementById("LaunchBarrier");
         launchBarrier.setRetracted(true);
         initializePlanets(field);
     }

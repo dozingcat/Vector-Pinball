@@ -124,7 +124,7 @@ public class ScoreView extends View {
         // textRect ends up being too high
         c.drawText(
                 displayString,
-                width / 2 - textRect.width() / 2, height / 2 + textRect.height() / 2,
+                width / 2.0f - textRect.width() / 2.0f, height / 2.0f + textRect.height() / 2.0f,
                 textPaint);
         if (showFPS && fps > 0) {
             c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
@@ -136,10 +136,9 @@ public class ScoreView extends View {
             remainingBallPaint.setStrokeWidth(ballPaintWidth);
             float ballRadius = width / 75f;
             float ballOuterMargin = 2 * ballRadius;
-            float ballBetweenSpace = ballRadius;
             float ballCenterY = height - (ballOuterMargin + ballRadius);
             float ballRightmostCenterX = width - ballOuterMargin - ballRadius;
-            float distanceBetweenBallCenters = 2 * ballRadius + ballBetweenSpace;
+            float distanceBetweenBallCenters = 2 * ballRadius + ballRadius;
             if (unlimitedBalls) {
                 // Attempt to show an "infinite" series of balls getting progressively smaller.
                 float vanishingBallRadius = ballRadius;

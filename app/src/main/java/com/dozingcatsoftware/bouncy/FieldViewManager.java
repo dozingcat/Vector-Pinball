@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
@@ -203,7 +202,7 @@ public class FieldViewManager {
                                     (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >>
                                             MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
                         }
-                        float halfwidth = fieldRenderer.getWidth() / 2;
+                        float halfwidth = fieldRenderer.getWidth() / 2.0f;
                         for (int i = 0; i < npointers; i++) {
                             if (i != liftedPointerIndex) {
                                 float touchx = (Float) getXMethod.invoke(event, i);

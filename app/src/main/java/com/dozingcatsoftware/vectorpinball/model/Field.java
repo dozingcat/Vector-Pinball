@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -124,16 +125,16 @@ public class Field implements ContactListener {
         this.worlds = new WorldLayers(this);
         this.layout = new FieldLayout(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
-        balls = new ArrayList<Ball>();
-        shapes = new ArrayList<Shape>();
+        balls = new ArrayList<>();
+        shapes = new ArrayList<>();
 
-        scheduledActions = new PriorityQueue<ScheduledAction>();
+        scheduledActions = new PriorityQueue<>();
         gameTime = 0;
 
         // Map bodies and IDs to FieldElements, and get elements on whom tick() has to be called.
-        bodyToFieldElement = new HashMap<Body, FieldElement>();
-        fieldElementsByID = new HashMap<String, FieldElement>();
-        List<FieldElement> tickElements = new ArrayList<FieldElement>();
+        bodyToFieldElement = new HashMap<>();
+        fieldElementsByID = new HashMap<>();
+        List<FieldElement> tickElements = new ArrayList<>();
 
         for (FieldElement element : layout.getFieldElements()) {
             if (element.getElementId() != null) {
@@ -250,9 +251,7 @@ public class Field implements ContactListener {
     public void setShapes(List<Shape> shapes) {
         this.shapes.clear();
         this.shapes.ensureCapacity(shapes.size());
-        for (int i = 0; i < shapes.size(); i++) {
-            this.shapes.add(shapes.get(i));
-        }
+        this.shapes.addAll(shapes);
     }
 
     public Ball createBall(float x, float y) {
@@ -420,15 +419,9 @@ public class Field implements ContactListener {
     public void draw(IFieldRenderer renderer) {
         // Draw levels low to high, and draw each ball after everything else at its level.
         elementsInDrawOrder.clear();
-        for (FieldElement elem : this.getFieldElementsArray()) {
-            elementsInDrawOrder.add(elem);
-        }
-        for (int i = 0; i < this.balls.size(); i++) {
-            elementsInDrawOrder.add(this.balls.get(i));
-        }
-        for (int i = 0; i < this.shapes.size(); i++) {
-            elementsInDrawOrder.add(this.shapes.get(i));
-        }
+        elementsInDrawOrder.addAll(Arrays.asList(this.getFieldElementsArray()));
+        elementsInDrawOrder.addAll(this.balls);
+        elementsInDrawOrder.addAll(this.shapes);
         Collections.sort(elementsInDrawOrder, drawOrdering);
 
         for (int i = 0; i < elementsInDrawOrder.size(); i++) {
@@ -436,7 +429,7 @@ public class Field implements ContactListener {
         }
     }
 
-    ArrayList<FlipperElement> activatedFlippers = new ArrayList<FlipperElement>();
+    ArrayList<FlipperElement> activatedFlippers = new ArrayList<>();
 
     /**
      * Called to engage or disengage all flippers. If called with an argument of true, and all

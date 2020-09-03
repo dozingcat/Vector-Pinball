@@ -61,7 +61,7 @@ public class DropTargetGroupElement extends FieldElement {
     static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     // Store all bodies and positions, use Body's active flag to determine which targets were hit.
-    List<Body> allBodies = new ArrayList<Body>();
+    List<Body> allBodies = new ArrayList<>();
     float[][] positions;
 
     @Override public void finishCreateElement(
@@ -135,12 +135,7 @@ public class DropTargetGroupElement extends FieldElement {
 
             float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
             if (restoreTime>0) {
-                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
-                    @Override
-                    public void run() {
-                        makeAllTargetsVisible();
-                    }
-                });
+                field.scheduleAction((long)(restoreTime*1000), this::makeAllTargetsVisible);
             }
         }
     }

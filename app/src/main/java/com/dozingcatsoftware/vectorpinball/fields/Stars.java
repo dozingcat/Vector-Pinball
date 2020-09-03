@@ -94,7 +94,7 @@ public class Stars {
         // Flattened pairs of star indices.
         int[] segments;
         // Maps smaller index to endpoints with greater indices.
-        Map<Integer, Set<Integer>> segmentsByIndex = new HashMap<Integer, Set<Integer>>();
+        Map<Integer, Set<Integer>> segmentsByIndex = new HashMap<>();
 
         static Constellation withSegments(StarCatalog catalog, String name, int... segments) {
             assert segments.length % 2 == 0;
@@ -102,13 +102,13 @@ public class Stars {
             self.name = name;
             self.segments = segments;
 
-            Set<Integer> starIndices = new HashSet<Integer>();
+            Set<Integer> starIndices = new HashSet<>();
             for (int i = 0; i < segments.length; i += 2) {
                 int a = segments[i];
                 int b = segments[i + 1];
                 int minIndex = Math.min(a, b);
                 if (!self.segmentsByIndex.containsKey(minIndex)) {
-                    self.segmentsByIndex.put(minIndex, new HashSet<Integer>());
+                    self.segmentsByIndex.put(minIndex, new HashSet<>());
                 }
                 self.segmentsByIndex.get(minIndex).add(Math.max(a, b));
                 starIndices.add(a);
