@@ -96,8 +96,8 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
 
         double seconds = nanos / 1e9;
-        for (int i = 0; i < rotatingGroups.length; i++) {
-            rotatingGroups[i].applyRotation(field, seconds);
+        for (RotatingGroup rotatingGroup : rotatingGroups) {
+            rotatingGroup.applyRotation(field, seconds);
         }
     }
 
