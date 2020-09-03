@@ -332,14 +332,11 @@ public class Field3Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        Runnable launchBall = new Runnable() {
-            @Override
-            public void run() {
-                if (field.getBalls().size() < 3) field.launchBall();
-                if (multiballStatus != MultiballStatus.ACTIVE) {
-                    multiballStatus = MultiballStatus.ACTIVE;
-                    initializeMultiballFlashers();
-                }
+        Runnable launchBall = () -> {
+            if (field.getBalls().size() < 3) field.launchBall();
+            if (multiballStatus != MultiballStatus.ACTIVE) {
+                multiballStatus = MultiballStatus.ACTIVE;
+                initializeMultiballFlashers();
             }
         };
         field.scheduleAction(1000, launchBall);

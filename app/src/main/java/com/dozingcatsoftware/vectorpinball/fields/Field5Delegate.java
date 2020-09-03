@@ -243,12 +243,10 @@ public class Field5Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        final Runnable doLaunch = new Runnable() {
-            @Override public void run() {
-                Ball ball = field.launchBall();
-                setBallColor(ball, unusedBallColor(field));
-                updateCenterRollovers(field);
-            }
+        final Runnable doLaunch = () -> {
+            Ball ball = field.launchBall();
+            setBallColor(ball, unusedBallColor(field));
+            updateCenterRollovers(field);
         };
 
         // "Starting" state until the last ball is launched so we don't exit multiball until then.
@@ -257,11 +255,9 @@ public class Field5Delegate extends BaseFieldDelegate {
         field.scheduleAction(1000, doLaunch);
         field.scheduleAction(4000, doLaunch);
         field.scheduleAction(7000, doLaunch);
-        field.scheduleAction(10000, new Runnable() {
-            @Override public void run() {
-                doLaunch.run();
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(10000, () -> {
+            doLaunch.run();
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 

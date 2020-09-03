@@ -86,16 +86,10 @@ public class Field6Delegate extends BaseFieldDelegate {
         multiballStatus = MultiballStatus.STARTING;
         multiballJackpotMultiplier = 1;
         field.showGameMessage(field.resolveString("multiball_started_message"), 4000);
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                field.launchBall();
-            }
-        });
-        field.scheduleAction(4000, new Runnable() {
-            @Override public void run() {
-                field.launchBall();
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(1000, field::launchBall);
+        field.scheduleAction(4000, () -> {
+            field.launchBall();
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 

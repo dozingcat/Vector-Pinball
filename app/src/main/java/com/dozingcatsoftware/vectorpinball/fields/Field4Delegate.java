@@ -93,25 +93,21 @@ public class Field4Delegate extends BaseFieldDelegate {
         setIgnoreBallForMultiballStatusRollovers(false);
         jackpot = baseJackpot;
 
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                lockedBallKickers.get(1).setRetracted(true);
-                lockedBallKickers.get(2).setRetracted(true);
-                lockedBallRollovers.get(1).setIgnoreBall(true);
-                lockedBallRollovers.get(1).setVisible(false);
-                if (field.getBalls().size() < 3) {
-                    field.launchBall();
-                }
+        field.scheduleAction(1000, () -> {
+            lockedBallKickers.get(1).setRetracted(true);
+            lockedBallKickers.get(2).setRetracted(true);
+            lockedBallRollovers.get(1).setIgnoreBall(true);
+            lockedBallRollovers.get(1).setVisible(false);
+            if (field.getBalls().size() < 3) {
+                field.launchBall();
             }
         });
-        field.scheduleAction(3500, new Runnable() {
-            @Override public void run() {
-                isMultiballStarting = false;
-                lockedBallRollovers.get(0).setIgnoreBall(true);
-                lockedBallRollovers.get(0).setVisible(false);
-                if (field.getBalls().size() < 3) {
-                    field.launchBall();
-                }
+        field.scheduleAction(3500, () -> {
+            isMultiballStarting = false;
+            lockedBallRollovers.get(0).setIgnoreBall(true);
+            lockedBallRollovers.get(0).setVisible(false);
+            if (field.getBalls().size() < 3) {
+                field.launchBall();
             }
         });
     }

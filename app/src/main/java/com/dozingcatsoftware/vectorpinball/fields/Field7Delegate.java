@@ -548,22 +548,14 @@ public class Field7Delegate extends BaseFieldDelegate {
         ballSaverRight.setRetracted(false);
 
         // Release the current ball, then create additional balls over the corresponding rollovers.
-        field.scheduleAction(1000, new Runnable() {
-            @Override public void run() {
-                bb.setGravityScale(origGravity);
-                launchBallForMulitball(field, ball);
-            }
+        field.scheduleAction(1000, () -> {
+            bb.setGravityScale(origGravity);
+            launchBallForMulitball(field, ball);
         });
-        field.scheduleAction(3500, new Runnable() {
-            @Override public void run() {
-                launchBallForMulitball(field, null);
-            }
-        });
-        field.scheduleAction(6000, new Runnable() {
-            @Override public void run() {
-                launchBallForMulitball(field, null);
-                multiballStatus = MultiballStatus.ACTIVE;
-            }
+        field.scheduleAction(3500, () -> launchBallForMulitball(field, null));
+        field.scheduleAction(6000, () -> {
+            launchBallForMulitball(field, null);
+            multiballStatus = MultiballStatus.ACTIVE;
         });
     }
 

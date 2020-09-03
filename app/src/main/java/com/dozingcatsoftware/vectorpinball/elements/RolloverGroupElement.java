@@ -210,11 +210,7 @@ public class RolloverGroupElement extends FieldElement {
                     field.getAudioPlayer().playRollover();
                     // Set timer to clear rollover if reset parameter is present and >0.
                     if (r.resetDelay > 0) {
-                        field.scheduleAction((long)(r.resetDelay*1000), new Runnable() {
-                            @Override public void run() {
-                                activeRollovers.remove(r);
-                            }
-                        });
+                        field.scheduleAction((long)(r.resetDelay*1000), () -> activeRollovers.remove(r));
                     }
                     // Notify delegate if all rollovers are now active and they weren't previously.
                     if (!allActivePrevious && allRolloversActive()) {

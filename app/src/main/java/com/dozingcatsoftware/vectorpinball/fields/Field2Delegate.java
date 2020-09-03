@@ -114,11 +114,8 @@ public class Field2Delegate extends BaseFieldDelegate {
         restoreLeftBallSaver(field);
         restoreRightBallSaver(field);
 
-        Runnable launchBall = new Runnable() {
-            @Override
-            public void run() {
-                if (field.getBalls().size() < 3) field.launchBall();
-            }
+        Runnable launchBall = () -> {
+            if (field.getBalls().size() < 3) field.launchBall();
         };
         field.scheduleAction(1000, launchBall);
         field.scheduleAction(3500, launchBall);
@@ -225,12 +222,9 @@ public class Field2Delegate extends BaseFieldDelegate {
         else if ("LeftTubeSensor".equals(sensorID)) {
             if (ball.getLinearVelocity().y > 0) {
                 // ball going up, retract barrier after delay
-                field.scheduleAction(1000, new Runnable() {
-                    @Override
-                    public void run() {
-                        WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
-                        barrier.setRetracted(false);
-                    }
+                field.scheduleAction(1000, () -> {
+                    WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
+                    barrier.setRetracted(false);
                 });
             }
         }

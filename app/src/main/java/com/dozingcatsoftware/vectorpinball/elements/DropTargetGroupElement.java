@@ -135,12 +135,7 @@ public class DropTargetGroupElement extends FieldElement {
 
             float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
             if (restoreTime>0) {
-                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
-                    @Override
-                    public void run() {
-                        makeAllTargetsVisible();
-                    }
-                });
+                field.scheduleAction((long)(restoreTime*1000), this::makeAllTargetsVisible);
             }
         }
     }
