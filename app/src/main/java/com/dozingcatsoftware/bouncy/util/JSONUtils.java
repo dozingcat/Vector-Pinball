@@ -50,7 +50,6 @@ public class JSONUtils {
      * Returns a List with the same keys and values as jsonObject. Recursively converts nested
      * JSONArray and JSONObject values to List and Map objects.
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, Object> mapFromJSONObject(JSONObject jsonObject) {
         Map<String, Object> result = new HashMap<String, Object>();
         try {

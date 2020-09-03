@@ -60,7 +60,7 @@ public class Field6Delegate extends BaseFieldDelegate {
             Color.fromRGB(0x55, 0xBB, 0x88),
             Color.fromRGB(0xAA, 0x66, 0xCC));
 
-    private final class Planet {
+    private static final class Planet {
         RolloverGroupElement element;
         int color;
         double radius;

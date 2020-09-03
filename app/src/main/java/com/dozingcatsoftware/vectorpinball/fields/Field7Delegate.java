@@ -285,7 +285,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     static final long BASE_RAMP_SCORE = 5000;
     static final long RAMP_SCORE_INCREMENT = 1000;
 
-    enum MultiballStatus {INACTIVE, STARTING, ACTIVE};
+    enum MultiballStatus {INACTIVE, STARTING, ACTIVE}
     MultiballStatus multiballStatus;
     int numBallsLocked;
 
