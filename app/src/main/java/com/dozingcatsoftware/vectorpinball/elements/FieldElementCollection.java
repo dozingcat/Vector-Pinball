@@ -8,14 +8,14 @@ import java.util.Map;
 
 public class FieldElementCollection {
 
-    List<FieldElement> allElements = new ArrayList<FieldElement>();
-    Map<String, FieldElement> elementsById = new HashMap<String, FieldElement>();
+    List<FieldElement> allElements = new ArrayList<>();
+    Map<String, FieldElement> elementsById = new HashMap<>();
 
-    List<FlipperElement> flipperElements = new ArrayList<FlipperElement>();
-    List<FlipperElement> leftFlipperElements = new ArrayList<FlipperElement>();
-    List<FlipperElement> rightFlipperElements = new ArrayList<FlipperElement>();
+    List<FlipperElement> flipperElements = new ArrayList<>();
+    List<FlipperElement> leftFlipperElements = new ArrayList<>();
+    List<FlipperElement> rightFlipperElements = new ArrayList<>();
 
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
 
     public void addElement(FieldElement element) {
         allElements.add(element);

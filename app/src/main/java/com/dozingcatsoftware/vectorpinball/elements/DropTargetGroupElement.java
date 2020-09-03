@@ -61,7 +61,7 @@ public class DropTargetGroupElement extends FieldElement {
     static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     // Store all bodies and positions, use Body's active flag to determine which targets were hit.
-    List<Body> allBodies = new ArrayList<Body>();
+    List<Body> allBodies = new ArrayList<>();
     float[][] positions;
 
     @Override public void finishCreateElement(

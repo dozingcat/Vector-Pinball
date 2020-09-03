@@ -351,7 +351,7 @@ public class BouncyActivity extends Activity {
         if (scoresAsString.length() > 0) {
             try {
                 String[] fields = scoresAsString.split(",");
-                List<Long> scores = new ArrayList<Long>();
+                List<Long> scores = new ArrayList<>();
                 for (String f : fields) {
                     scores.add(Long.valueOf(f));
                 }
@@ -386,7 +386,7 @@ public class BouncyActivity extends Activity {
 
     /** Updates the high score in the ScoreView display, and persists it to SharedPreferences. */
     void updateHighScore(int theLevel, long score) {
-        List<Long> newHighScores = new ArrayList<Long>(this.highScores);
+        List<Long> newHighScores = new ArrayList<>(this.highScores);
         newHighScores.add(score);
         Collections.sort(newHighScores);
         Collections.reverse(newHighScores);

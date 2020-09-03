@@ -160,7 +160,7 @@ public class Field4Delegate extends BaseFieldDelegate {
         lockedBallKickers.get(2).setRetracted(true);
 
         // Get references to multiball status rollovers and initialize them.
-        multiballStatusRollovers = new HashMap<String, RolloverGroupElement>();
+        multiballStatusRollovers = new HashMap<>();
         for (String suffix : COLOR_SUFFIXES) {
             multiballStatusRollovers.put(suffix,
                     (RolloverGroupElement) field.getFieldElementById("Rollovers." + suffix));

@@ -125,7 +125,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         baseBumperBonusMultiplier = 5;
         resetBumperBonuses(field);
 
-        List<FieldElement> bumpers = new ArrayList<FieldElement>();
+        List<FieldElement> bumpers = new ArrayList<>();
         for (FieldElement element : field.getFieldElements()) {
             if (element instanceof BumperElement) {
                 bumpers.add(element);

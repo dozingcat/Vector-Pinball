@@ -32,7 +32,7 @@ public class Field5Delegate extends BaseFieldDelegate {
 
     private static <T> Map<BallColor, T> buildBallColorMap(
             T blueVal, T redVal, T yellowVal, T greenVal) {
-        Map<BallColor, T> map = new HashMap<BallColor, T>();
+        Map<BallColor, T> map = new HashMap<>();
         map.put(BallColor.BLUE, blueVal);
         map.put(BallColor.RED, redVal);
         map.put(BallColor.YELLOW, yellowVal);
@@ -296,7 +296,7 @@ public class Field5Delegate extends BaseFieldDelegate {
                 (WallElement) field.getFieldElementById("TriangleWall3"));
         triangleCenterRollover = (RolloverGroupElement) field.getFieldElementById("TriangleCenter");
 
-        previousSensorIds = new HashMap<Ball, String>();
+        previousSensorIds = new HashMap<>();
 
         centerRolloversByColor = buildBallColorMap(
                 Arrays.asList(

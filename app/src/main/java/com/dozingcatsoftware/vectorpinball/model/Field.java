@@ -124,16 +124,16 @@ public class Field implements ContactListener {
         this.worlds = new WorldLayers(this);
         this.layout = new FieldLayout(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
-        balls = new ArrayList<Ball>();
-        shapes = new ArrayList<Shape>();
+        balls = new ArrayList<>();
+        shapes = new ArrayList<>();
 
-        scheduledActions = new PriorityQueue<ScheduledAction>();
+        scheduledActions = new PriorityQueue<>();
         gameTime = 0;
 
         // Map bodies and IDs to FieldElements, and get elements on whom tick() has to be called.
-        bodyToFieldElement = new HashMap<Body, FieldElement>();
-        fieldElementsByID = new HashMap<String, FieldElement>();
-        List<FieldElement> tickElements = new ArrayList<FieldElement>();
+        bodyToFieldElement = new HashMap<>();
+        fieldElementsByID = new HashMap<>();
+        List<FieldElement> tickElements = new ArrayList<>();
 
         for (FieldElement element : layout.getFieldElements()) {
             if (element.getElementId() != null) {
@@ -436,7 +436,7 @@ public class Field implements ContactListener {
         }
     }
 
-    ArrayList<FlipperElement> activatedFlippers = new ArrayList<FlipperElement>();
+    ArrayList<FlipperElement> activatedFlippers = new ArrayList<>();
 
     /**
      * Called to engage or disengage all flippers. If called with an argument of true, and all

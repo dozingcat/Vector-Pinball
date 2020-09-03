@@ -53,11 +53,11 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     static class Star2DProjection {
-        ArrayList<Double> x = new ArrayList<Double>();
-        ArrayList<Double> y = new ArrayList<Double>();
-        ArrayList<Double> magnitude = new ArrayList<Double>();
-        ArrayList<Integer> indices = new ArrayList<Integer>();
-        HashMap<Integer, Integer> starIndexToProjIndex = new HashMap<Integer, Integer>();
+        ArrayList<Double> x = new ArrayList<>();
+        ArrayList<Double> y = new ArrayList<>();
+        ArrayList<Double> magnitude = new ArrayList<>();
+        ArrayList<Integer> indices = new ArrayList<>();
+        HashMap<Integer, Integer> starIndexToProjIndex = new HashMap<>();
 
         int size() {
             return this.x.size();
@@ -83,8 +83,8 @@ public class Field7Delegate extends BaseFieldDelegate {
     static class StarState {
         final static double CONSTELLATION_RADIUS_MULTIPLIER = 1.2;
 
-        Set<Integer> activatedStars = new HashSet<Integer>();
-        List<Constellation> lockedConstellations = new ArrayList<Constellation>();
+        Set<Integer> activatedStars = new HashSet<>();
+        List<Constellation> lockedConstellations = new ArrayList<>();
         Constellation currentConstellation = null;
         ProjectionTarget currentTarget = new ProjectionTarget();
         Star2DProjection projection = new Star2DProjection();
@@ -216,7 +216,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
 
         boolean switchToRandomUnlockedConstellation() {
-            List<Constellation> candidates = new ArrayList<Constellation>();
+            List<Constellation> candidates = new ArrayList<>();
             for (Constellation c : CONSTELLATIONS) {
                 if (c != currentConstellation && !lockedConstellations.contains(c)) {
                     candidates.add(c);
@@ -601,7 +601,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         double centerY = this.starViewCenter.y;
         double distScale = this.starViewRadius / starState.currentTarget.angularRadius;
         double baseRadius = this.starViewRadius * 0.015;
-        List<Shape> shapes = new ArrayList<Shape>();
+        List<Shape> shapes = new ArrayList<>();
         for (int i = 0; i < proj.size(); i++) {
             double cx = centerX + proj.x.get(i) * distScale;
             double cy = centerY + proj.y.get(i) * distScale;

@@ -51,9 +51,9 @@ public class RolloverGroupElement extends FieldElement {
     boolean ignoreBall;
     float defaultRadius;
     float defaultResetDelay;
-    List<Rollover> rollovers = new ArrayList<Rollover>();
-    List<Rollover> activeRollovers = new ArrayList<Rollover>();
-    List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
+    List<Rollover> rollovers = new ArrayList<>();
+    List<Rollover> activeRollovers = new ArrayList<>();
+    List<Rollover> rolloversHitOnPreviousTick = new ArrayList<>();
     boolean isVisible = true;
 
     @SuppressWarnings("unchecked")
@@ -177,8 +177,8 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     // Reuse these to avoid allocating memory in tick().
-    List<Rollover> rolloversHitByBall = new ArrayList<Rollover>();
-    List<Rollover> allHitRollovers = new ArrayList<Rollover>();
+    List<Rollover> rolloversHitByBall = new ArrayList<>();
+    List<Rollover> allHitRollovers = new ArrayList<>();
 
     @Override public void tick(Field field) {
         super.tick(field);
@@ -246,7 +246,7 @@ public class RolloverGroupElement extends FieldElement {
         }
     }
 
-    List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
+    List<Rollover> newActiveRollovers = new ArrayList<>();
 
     /**
      * Cycles the states of all rollover elements by "rotating" left or right. For example, if this

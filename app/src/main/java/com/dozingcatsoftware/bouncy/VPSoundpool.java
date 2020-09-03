@@ -48,7 +48,7 @@ public class VPSoundpool {
         Log.v(LOG_TAG, "initSounds");
         mContext = theContext;
         mSoundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
-        mSoundPoolMap = new HashMap<Integer, Integer>();
+        mSoundPoolMap = new HashMap<>();
         mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
     }
 

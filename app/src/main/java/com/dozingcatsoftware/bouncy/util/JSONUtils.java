@@ -34,7 +34,7 @@ public class JSONUtils {
      * nested JSONArray and JSONObject values to List and Map objects.
      */
     public static List<Object> listFromJSONArray(JSONArray jsonArray) {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         try {
             for (int i = 0; i < jsonArray.length(); i++) {
                 Object obj = objectFromJSONItem(jsonArray.get(i));
@@ -51,7 +51,7 @@ public class JSONUtils {
      * JSONArray and JSONObject values to List and Map objects.
      */
     public static Map<String, Object> mapFromJSONObject(JSONObject jsonObject) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         try {
             for (Iterator<String> ki = jsonObject.keys(); ki.hasNext(); ) {
                 String key = ki.next();
