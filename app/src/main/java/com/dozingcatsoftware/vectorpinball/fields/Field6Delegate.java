@@ -189,9 +189,9 @@ public class Field6Delegate extends BaseFieldDelegate {
     }
 
     void initializePlanets(Field field) {
-        sun = (RolloverGroupElement) field.getFieldElementById("Sun");
+        sun = field.getFieldElementById("Sun");
         sun.setAllRolloversActivated(true);
-        orbits = (RolloverGroupElement) field.getFieldElementById("Orbits");
+        orbits = field.getFieldElementById("Orbits");
 
         int numPlanets = orbits.numberOfRollovers();
         planets = new Planet[numPlanets];
@@ -199,7 +199,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         for (int i = 0; i < numPlanets; i++) {
             Planet p = new Planet();
             planets[i] = p;
-            p.element = (RolloverGroupElement) field.getFieldElementById("Planet" + (i + 1));
+            p.element = field.getFieldElementById("Planet" + (i + 1));
             p.radius = p.element.getRolloverRadiusAtIndex(0);
             p.color = planetColors.get(i);
             p.angle = rand.nextDouble() * TAU;
@@ -210,7 +210,7 @@ public class Field6Delegate extends BaseFieldDelegate {
     }
 
     @Override public void gameStarted(Field field) {
-        launchBarrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        launchBarrier = field.getFieldElementById("LaunchBarrier");
         launchBarrier.setRetracted(true);
         initializePlanets(field);
     }

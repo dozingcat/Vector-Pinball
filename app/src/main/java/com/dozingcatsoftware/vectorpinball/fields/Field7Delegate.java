@@ -415,9 +415,9 @@ public class Field7Delegate extends BaseFieldDelegate {
         starViewCenter = boundary.getRolloverCenterAtIndex(0);
         starViewRadius = boundary.getRolloverRadiusAtIndex(0);
         lockRollovers = Arrays.asList(
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover1"),
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover2"),
-                (RolloverGroupElement) field.getFieldElementById("BallLockRollover3")
+                field.getFieldElementById("BallLockRollover1"),
+                field.getFieldElementById("BallLockRollover2"),
+                field.getFieldElementById("BallLockRollover3")
         );
         leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
         rightLoopGuide = field.getFieldElementById("RightLoopGuide");

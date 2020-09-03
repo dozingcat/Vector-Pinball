@@ -274,7 +274,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     // Support for enabling launch barrier after ball passes by it and hits sensor,
     // and disabling for new ball or new game.
     void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement) field.getFieldElementById("LaunchBarrier");
+        WallElement barrier = field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 

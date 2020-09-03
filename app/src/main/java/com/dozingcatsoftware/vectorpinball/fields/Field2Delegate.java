@@ -182,7 +182,7 @@ public class Field2Delegate extends BaseFieldDelegate {
         // activate next rollover for appropriate column if possible
         if (startRolloverIndex >= 0) {
             RolloverGroupElement multiballRollovers =
-                    (RolloverGroupElement) field.getFieldElementById("ExtraBallRollovers");
+                    field.getFieldElementById("ExtraBallRollovers");
             int numRollovers = multiballRollovers.numberOfRollovers();
             while (startRolloverIndex < numRollovers) {
                 if (!multiballRollovers.isRolloverActiveAtIndex(startRolloverIndex)) {
