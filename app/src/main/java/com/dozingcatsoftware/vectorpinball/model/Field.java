@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -250,9 +251,7 @@ public class Field implements ContactListener {
     public void setShapes(List<Shape> shapes) {
         this.shapes.clear();
         this.shapes.ensureCapacity(shapes.size());
-        for (int i = 0; i < shapes.size(); i++) {
-            this.shapes.add(shapes.get(i));
-        }
+        this.shapes.addAll(shapes);
     }
 
     public Ball createBall(float x, float y) {
@@ -420,15 +419,9 @@ public class Field implements ContactListener {
     public void draw(IFieldRenderer renderer) {
         // Draw levels low to high, and draw each ball after everything else at its level.
         elementsInDrawOrder.clear();
-        for (FieldElement elem : this.getFieldElementsArray()) {
-            elementsInDrawOrder.add(elem);
-        }
-        for (int i = 0; i < this.balls.size(); i++) {
-            elementsInDrawOrder.add(this.balls.get(i));
-        }
-        for (int i = 0; i < this.shapes.size(); i++) {
-            elementsInDrawOrder.add(this.shapes.get(i));
-        }
+        elementsInDrawOrder.addAll(Arrays.asList(this.getFieldElementsArray()));
+        elementsInDrawOrder.addAll(this.balls);
+        elementsInDrawOrder.addAll(this.shapes);
         Collections.sort(elementsInDrawOrder, drawOrdering);
 
         for (int i = 0; i < elementsInDrawOrder.size(); i++) {

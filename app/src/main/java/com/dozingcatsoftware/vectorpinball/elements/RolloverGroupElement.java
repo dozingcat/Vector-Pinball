@@ -226,9 +226,7 @@ public class RolloverGroupElement extends FieldElement {
         }
 
         rolloversHitOnPreviousTick.clear();
-        for(int i = 0; i < allHitRollovers.size(); i++) {
-            rolloversHitOnPreviousTick.add(allHitRollovers.get(i));
-        }
+        rolloversHitOnPreviousTick.addAll(allHitRollovers);
     }
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
@@ -261,9 +259,7 @@ public class RolloverGroupElement extends FieldElement {
         }
 
         this.activeRollovers.clear();
-        for (int i = 0; i < newActiveRollovers.size(); i++) {
-            this.activeRollovers.add(newActiveRollovers.get(i));
-        }
+        this.activeRollovers.addAll(newActiveRollovers);
     }
 
     /** Sets all rollovers to be active or inactive according to the boolean argument. */
