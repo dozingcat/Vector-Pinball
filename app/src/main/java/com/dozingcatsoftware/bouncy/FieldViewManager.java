@@ -35,6 +35,9 @@ public class FieldViewManager {
     // elements are drawn.
     private float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
 
+    // Delay after losing a ball, before a touch will launch a new ball.
+    static final long END_BALL_DELAY_MS = 1000;
+
     public void setField(Field value) {
         field = value;
     }
@@ -168,6 +171,9 @@ public class FieldViewManager {
     }
 
     void launchBallIfNeeded() {
+        if (field.ballLostWithinMillis(END_BALL_DELAY_MS)) {
+            return;
+        }
         // Remove "dead" balls and launch if none already in play.
         field.removeDeadBalls();
         if (field.getBalls().size() == 0) field.launchBall();
