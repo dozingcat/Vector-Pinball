@@ -60,6 +60,8 @@ public class Field implements ContactListener {
     // so this will be about 5 real-world seconds.
     static final long STUCK_BALL_NANOS = 10_000_000_000L;
 
+    Long lostBallTimeMillis = null;
+
     // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
     // zoomed in fully.
     static final long ZOOM_DURATION_NANOS = 1_000_000_000L;
@@ -287,6 +289,7 @@ public class Field implements ContactListener {
         Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
+        lostBallTimeMillis = null;
         return ball;
     }
 
@@ -313,6 +316,7 @@ public class Field implements ContactListener {
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
      */
     private void doBallLost() {
+        lostBallTimeMillis = milliTimeFn.getAsLong();
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
         // Display message for next ball or game over.
@@ -332,6 +336,14 @@ public class Field implements ContactListener {
             endGame();
         }
         getDelegate().ballLost(this);
+    }
+
+    /**
+     * Returns true if there are no balls in play, and the most recent ball loss happened within
+     * `millis` of the current time.
+     */
+    public boolean ballLostWithinMillis(long millis) {
+        return lostBallTimeMillis != null && milliTimeFn.getAsLong() - lostBallTimeMillis <= millis;
     }
 
     /**
