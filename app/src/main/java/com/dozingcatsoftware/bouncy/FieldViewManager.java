@@ -171,6 +171,8 @@ public class FieldViewManager {
     }
 
     void launchBallIfNeeded() {
+        // Don't launch a new ball immediately after losing the previous ball, since the user may
+        // have been trying to use a flipper.
         if (field.ballLostWithinMillis(END_BALL_DELAY_MS)) {
             return;
         }
