@@ -28,7 +28,7 @@
     <string name="preferences_button_label">Ustawienia</string>
     <string name="end_game_button_label">Zakończ grę</string>
     <string name="unlimited_balls_label">Nieskończone piłki</string>
-    
+
     <string name="ball_number_message">Piłka %1$d</string>
     <string name="shoot_again_message">Wystrzel ponownie</string>
     <string name="game_over_message">Gra skończona</string>

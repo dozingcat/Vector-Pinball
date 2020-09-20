@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Vector Pinball</string>
-    
+
     <string name="independent_flippers_pref_title">Independent Flippers</string>
     <string name="independent_flippers_pref_summary_on">A touch activates the flippers on the same side of the screen</string>
     <string name="independent_flippers_pref_summary_off">Any touch activates all flippers</string>

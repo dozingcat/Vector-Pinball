@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">Ayrık Kollar</string>
+    <string name="independent_flippers_pref_summary_on">Sağa dokunuş sağdaki kolları, sola dokunuş soldaki kolları hareket ettirir</string>
+    <string name="independent_flippers_pref_summary_off">Bir dokunuş tüm kolları hareket ettirir</string>
+
+    <string name="line_width_pref_title">Çizim Kalınlığı</string>
+    <string name="line_width_pref_dialog_message">Çizgilerin kalınlığını bir piksel değeri girerek ayarlayınız veya 0 girerek ekran boyutuna göre ayarlanmış varsayılan kalınlığı ayarlayınız.</string>
+
+    <string name="sound_pref_title">Ses</string>
+    <string name="music_pref_title">Arka Plan Müziği</string>
+    <string name="show_fps_pref_title">FPS Göster</string>
+    <string name="zoom_pref_title">Yakınlaştır</string>
+    <string name="use_opengl_pref_title">OpenGL Kullan</string>
+
+    <string name="about_text">Vector Pinball 1.9.1\n© 2010-2020 Brian Nenninger\nYorum ya da hata bildirmek için: bnenning@gmail.com\n\nYeni bir oyun başlatmak için ekrana dokunun, eğer oyunda zaten bir top yoksa yeni bir top fırlatın ve kolları hareket ettirin. Oyunu durdurmak için puana dokunun.\n\n[TABLE_RULES]\n\nTercihler bölümünden aşağıdaki ayarları değiştirebilirsiniz:\n- Ses: Ses efektini açar kapatır\n- Arka Plan Müziği: Arka plan müziğini açar kapatır\n- Ayrık Kollar: Seçilmemişken tüm kollar aynı anda hareket eder. Seçilmişken sağdaki kollar için sağda, soldaki kollar için solda bir yere dokunmanız gerekir.\n- Yakınlaştır: Seçilmişken görüntü topa yakın haldedir.\n- OpenGL Kullan: Seçilmişken grafikler için OpenGL kullanır. Bu genelde performans ve grafik kalitesi için en iyi seçenektir ama bazı cihazlar için bunun seçilmemesi daha iyi olabilir.\n- FPS Göster: Seçilmişken ekranın sol üst köşesinde saniyede kaç kare görüntülendiğini yazar.\n\nVector Pinball açık kaynak kodlu bir yazılımdır, kodlar https://github.com/dozingcat/Vector-Pinball adresinden görüntülenebilir.\n\nKod iyileştirmeleri ve libgdx için www.badlogicgames.com adresinden Mario\'ya teşekkürler.\n\nses, müzik &amp; ses kodu, pdx tarafından\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">1. Masa Kuralı:\n- Üstteki ya da alt yollardaki açık mavi renkli yuvarlakları vurarak puan katsayınızı arttırın. Kazandığınız puanlar bu katsayı ile çarpılır. Topu soldaki rampadan geçirmek de bu katsayıyı arttırır.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.\n- Herhangi bir hedef grubunun tamamını vurmak merkezdeki ışıkların teker teker yanmasını sağlar. Büyük beyaz ışık yandığında topu soldaki rampadan geçirerek çoklu top modunu etkinleştirin.</string>
+    <string name="table2_rules">2. Masa Kuralı:\n- Alt yollardaki açık mavi renkli yuvarlakları vurarak puan katsayınızı arttırın. Kazandığınız puanlar bu katsayı ile çarpılır.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.\n- Ortadaki ışıklar sağ, sol ve üstteki hedef gruplarını kaç kere vurduğunuza göre yanarlar. Üç renk de tamamen dolduğunda sağ üstteki kırmızı yuvarlağı vurarak çoklu top modunu etkinleştirin.</string>
+    <string name="table3_rules">3. Masa Kuralı:\n- Alt yollardaki açık mavi renkli yuvarlakları vurarak puan katsayınızı arttırın. Kazandığınız puanlar bu katsayı ile çarpılır.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.\n- Topu rampalardan geçirmek zıplatıcıların birkaç saniye boyunca renginin değişmesine neden olur. Bu sırada fazladan puan için onlara vurmaya çalışın.\n- Ortadaki halkaları zıplatıcılara ya da üstteki hedef gruplarına vurarak kırmızıya çevirin. Tüm halkalar kırmızıya dönünce topu bir rampadan geçirerek çoklu top modunu etkinleştirin.</string>
+    <string name="table4_rules">4. Masa Kuralı:\n- Her zıplatıcı ile puan katsayısını 0.01 arttırın. Üstteki hedeflere ya da yoldaki yuvarlaklara vurmak da bu değeri arttırır.\n- Üstteki renkli zıplatıcılara vurarak ortadaki ışıkları yakın. Bir sıradaki tüm ışıklar yandığında topu sağdaki deliğe kilitleyin ve tüm ışıklar yanana kadar aynı adımları tekrarlayın.\n- Sağdaki delikte üç top da kilitlendiğinde çoklu top modu etkinleşir. Çoklu top modunda eğer ışıkların içinden bir top geçerse ışıklar parlayacaktır. Hepsini parlatarak büyük bir puan vurgunu yapın.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.</string>
+    <string name="table5_rules">5. Masa Kuralı:\n- Merkezdeki çemberde her üç tanesi dört renkten birine ait olan on iki nokta bulunmaktadır. Yukarıdaki bir rampadan top geçirirseniz topun rengi değişecektir ve topun aynı renkteki noktaları etkinleştirmesini sağlayacaktır.\n- Çemberin etrafındaki on iki nokta da etkinleşince, dönen üçgene vurmak onun kenarlarının ortadan kalkmasına neden olacaktır. Üçgenin merkezine vurarak çoklu top modunu etkinleştirin.\n- Çoklu top modundayken on iki noktayı tekrar yakarak büyük bir puan vurgunu yapın.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.</string>
+    <string name="table6_rules">6. Masa Kuralı:\n- Masanın ortasında beş gezegen bir güneşin etrafında dönmektedir. Top bir gezegenin üzerinden geçtiğinde o gezegenin rengini alır ve gezegen yanıp sönmeye başlar.\n- Gerekli hedefi vurarak gezegeni &quot;etkinleştirin&quot; ve katı hale getirin. En içteki turuncu gezegen için sol üstteki hedefleri vurun. İkinci mavi gezegen için sağ üstteki yuvarlakları vurun. Geri kalan gezegenler için aynı renkteki rampadan topu geçirin.\n- Tüm gezegenleri etkinleştirerek çoklu top modunu başlatın. Çoklu top modunda puan vurgunu yapmak için gezegenleri tekrardan etkinleştirin.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.\n- Güneş ve gezegenlerin yerçekimi etkisi vardır ve top yaklaştığında onu kendine çekerler.</string>
+    <string name="table7_rules">7. Masa Kuralı:\n- Masanın ortasında bir yıldız haritası vardır. Yeşil rampadan topu geçirerek haritayı o yöndeki takımyıldızına hareket ettirin.\n- Takımyıldıza ait olan yıldızlar yeşil parlayacaktır. Topu üzerlerinden geçirerek onları etkinleştirin. Etkinleştirilmiş yıldızlar yeşile dönecek, etkinleştirilmiş diğer yıldızlar ile birleşerek takımyıldız çizgilerini oluşturacaktır.\n- Takımyıldız çizgileri tamamlandığında sağdaki sarı rampadan topu geçirerek topu kilitleyin. Bu adımları iki takım yıldızı için daha tamamlayın. Üçüncü top da kilitlendiğinde çoklu top modu başlayacaktır.\n- Çoklu top modunda kalan takımyıldızlarını tamamlayın ve sağdaki rampadan topu geçirerek puan vurgunu yapın.\n- Başlangıçta sağ ve sol boşluklarda tek kullanımlık top kurtarıcılar bulunur. Sağ veya soldaki hedef gruplarının tamamını vurarak bunları tekrar getirin.</string>
+
+    <string name="change_table_button_label">Masayı değiştir</string>
+    <string name="help_button_label">Yardım</string>
+    <string name="preferences_button_label">Tercihler</string>
+    <string name="end_game_button_label">Oyunu bitir</string>
+    <string name="unlimited_balls_label">Sınırsız top</string>
+
+    <string name="ball_number_message">Top %1$d</string>
+    <string name="shoot_again_message">Tekrar vurun!</string>
+    <string name="game_over_message">Oyun bitti!</string>
+    <string name="bump_message">Zıplatın!</string>
+    <string name="touch_to_start_message">Başlamak için dokunun</string>
+    <string name="last_score_message">En son puan: %1$s</string>
+    <string name="top_high_score_message">En yüksek puan: %1$s</string>
+    <string name="other_high_score_message">#%1$d paun: %2$s</string>
+
+    <string name="left_save_enabled_message">Sol top kurtarıcı etkin!</string>
+    <string name="right_save_enabled_message">Sağ top kurtarıcı etkin!</string>
+    <string name="shoot_ramp_multiball_message">Çoklu top modu için rampadan geçin!</string>
+    <string name="multiball_started_message">Çoklu top modu!</string>
+    <string name="multiplier_message">%1$dx katsayı</string>
+    <string name="shoot_red_bumper_message">Kırmızı zıplatıcıyı vurun!</string>
+    <string name="bumper_multiplier_message">Zıplatıcı katsayısı %1$d%%"</string>
+    <string name="jackpot_received_message">Vurgun!</string>
+    <string name="jackpot_received_with_multipler_message">%1$dx vurgun!</string>
+    <string name="multiball_ready_message">Çoklu top modu hazır!</string>
+    <string name="ball_lock_ready_message">Top kilidi hazır!</string>
+    <string name="ball_locked_message">Top %1$d kilitlendi!</string>
+    <string name="shoot_pyramid_message">Üçgeni vurun!</string>
+    <string name="extra_ball_received_message">Fazladan top!</string>
+    <string name="blue_ramp_bonus_message">Mavi rampa +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Kırmızı rampa +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Sarı rampa +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Yeşil rampa +%1$d%%</string>
+    <string name="color_blue">Mavi</string>
+    <string name="color_red">Kırmızı</string>
+    <string name="color_yellow">Sarı</string>
+    <string name="color_green">Yeşil</string>
+    <string name="planet_activated_message">Gezegen %1$d etkin!</string>
+    <string name="ramp_bonus_message">%1$dx rampa</string>
+    <string name="ramp_bonus_increased_message">Rampa bonusu etkin!</string>
+    <string name="shoot_ramp_jackpot_message">Vurgun için rampadan geçin!</string>
+    <string name="constellation_complete_message">%1$s tamamlandı!</string>
+
+</resources>
