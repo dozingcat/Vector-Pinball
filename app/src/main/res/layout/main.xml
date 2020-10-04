@@ -1,57 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<com.dozingcatsoftware.bouncy.ScoreView
-	android:id="@+id/scoreView"
 	android:layout_width="fill_parent"
-	android:layout_height="0px"
-	android:layout_weight="1"
-	android:onClick="scoreViewClicked"
-/>
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
 
-<FrameLayout android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="9">
+	<com.dozingcatsoftware.bouncy.ScoreView
+		android:id="@+id/scoreView"
+		android:layout_width="fill_parent"
+		android:layout_height="0px"
+		android:layout_weight="1"
+		android:onClick="scoreViewClicked" />
 
-	<com.dozingcatsoftware.bouncy.CanvasFieldView  
-		android:id="@+id/canvasFieldView"
-   		android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent" 
-    	android:visibility="gone"
-    />
+	<FrameLayout
+		android:layout_width="fill_parent"
+		android:layout_height="0px"
+		android:layout_weight="9">
 
-	<com.dozingcatsoftware.bouncy.GLFieldView  
-		android:id="@+id/glFieldView"
-   		android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent" 
-    	android:visibility="gone"
-    />
+		<com.dozingcatsoftware.bouncy.CanvasFieldView
+			android:id="@+id/canvasFieldView"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:visibility="gone" />
 
-	<LinearLayout android:id="@+id/buttonPanel" android:layout_width="wrap_content" android:layout_height="wrap_content"
-	      android:orientation="vertical"
-	      android:background="#8448" android:padding="10dp" android:layout_gravity="center">
+		<com.dozingcatsoftware.bouncy.GLFieldView
+			android:id="@+id/glFieldView"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:visibility="gone" />
 
-	    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-        <Button android:id="@+id/endGameButton" android:onClick="doEndGame" android:visibility="gone"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/end_game_button_label" />
-            
-        <Button android:id="@+id/switchTableButton" android:onClick="doSwitchTable"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/change_table_button_label" />
+		<TableLayout
+			android:id="@+id/buttonPanel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:background="#8448"
+			android:orientation="vertical"
+			android:padding="10dp">
 
-        <Button android:id="@+id/aboutButton" android:onClick="doAbout"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/help_button_label" />
+			<Button
+				android:id="@+id/endGameButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="5dp"
+				android:onClick="doEndGame"
+				android:paddingTop="10dp"
+				android:text="@string/end_game_button_label"
+				android:visibility="gone" />
 
-        <Button android:id="@+id/preferencesButton" android:onClick="doPreferences"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/preferences_button_label" />
-	    </LinearLayout>
-	    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-	        <CheckBox android:id="@+id/unlimitedBallsToggle" android:text="@string/unlimited_balls_label"
-	            android:layout_width="wrap_content" android:layout_height="wrap_content" />
-	    </LinearLayout>
-		
-	</LinearLayout>    
-    
-</FrameLayout>
+			<Button
+				android:id="@+id/switchTableButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="5sp"
+				android:maxLines="1"
+				android:onClick="doSwitchTable"
+				android:text="@string/change_table_button_label" />
+
+			<Button
+				android:id="@+id/aboutButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="5sp"
+				android:onClick="doAbout"
+				android:text="@string/help_button_label" />
+
+			<Button
+				android:id="@+id/preferencesButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="5sp"
+				android:onClick="doPreferences"
+				android:text="@string/preferences_button_label" />
+
+			<CheckBox
+				android:id="@+id/unlimitedBallsToggle"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/unlimited_balls_label" />
+		</TableLayout>
+
+	</FrameLayout>
 
 </LinearLayout>
