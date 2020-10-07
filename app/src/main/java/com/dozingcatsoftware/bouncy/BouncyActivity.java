@@ -174,11 +174,12 @@ public class BouncyActivity extends Activity {
             pauseGame();
         }
         else {
-            // If game is in progress, we want to return to the paused menu rather than immediately
-            // resuming. We need to draw the current field, which currently doesn't work reliably
-            // for OpenGL views. For now the game will resume immediately when using OpenGL.
-            if (field.getGameState().isGameInProgress() &&
-                    glFieldView.getVisibility() == View.GONE) {
+            // If game is in progress, return to the paused menu rather than immediately resuming.
+            if (field.getGameState().isGameInProgress()) {
+                if (glFieldView != null) {
+                    // This may result in multiple calls to onResume, but that seems to be ok.
+                    glFieldView.onResume();
+                }
                 fieldViewManager.draw();
                 showPausedButtons();
             }
