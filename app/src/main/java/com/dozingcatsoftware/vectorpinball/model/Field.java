@@ -207,7 +207,7 @@ public class Field implements ContactListener {
      * After updating physics, processes element collisions, calls tick() on every FieldElement,
      * and performs scheduled actions.
      */
-    void tick(long nanos, int iters) {
+    public void tick(long nanos, int iters) {
         float dt = (nanos / 1e9f) / iters;
 
         for (int i = 0; i < iters; i++) {

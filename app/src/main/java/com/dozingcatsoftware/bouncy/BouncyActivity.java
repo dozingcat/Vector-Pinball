@@ -485,5 +485,10 @@ public class BouncyActivity extends Activity {
 
     void resetFieldForCurrentLevel() {
         field.resetForLayoutMap(FieldLayoutReader.layoutMapForLevel(this, currentLevel));
+        // Let the field run for a fraction of a second before it's drawn. Flippers are normally
+        // positioned horizontally at first, and this lets them drop before they're visible.
+        synchronized (field) {
+            field.tick((long) (250_000_000 * field.getTargetTimeRatio()), 4);
+        }
     }
 }
