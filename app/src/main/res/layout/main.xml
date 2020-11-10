@@ -33,17 +33,16 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:background="#8448"
+			android:background="#A448"
 			android:orientation="vertical"
-			android:padding="10dp">
+			android:padding="20dp">
 
 			<Button
 				android:id="@+id/endGameButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="5dp"
+				android:layout_marginBottom="10dp"
 				android:onClick="doEndGame"
-				android:paddingTop="10dp"
 				android:text="@string/end_game_button_label"
 				android:visibility="gone" />
 
@@ -51,7 +50,7 @@
 				android:id="@+id/switchTableButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="5sp"
+				android:layout_marginBottom="10sp"
 				android:maxLines="1"
 				android:onClick="doSwitchTable"
 				android:text="@string/change_table_button_label" />
@@ -60,7 +59,7 @@
 				android:id="@+id/aboutButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="5sp"
+				android:layout_marginBottom="10sp"
 				android:onClick="doAbout"
 				android:text="@string/help_button_label" />
 
@@ -68,7 +67,7 @@
 				android:id="@+id/preferencesButton"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="5sp"
+				android:layout_marginBottom="10sp"
 				android:onClick="doPreferences"
 				android:text="@string/preferences_button_label" />
 
