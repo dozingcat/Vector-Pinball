@@ -1,0 +1,4 @@
+- Fixed bug where game would unpause when returning from preferences or another app.
+- Added delay after losing a ball, to avoid accidentally launching the next one.
+- Improved dialog layout.
+- Added Turkish translation.
