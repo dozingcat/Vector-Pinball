@@ -438,10 +438,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         float aaRadiusInPixels = worldToGLPixelX(aaRadius) - worldToGLPixelX(0);
         float aaRadiusSq = aaRadiusInPixels * aaRadiusInPixels;
 
-        // Draw a square covering the circle. For large circle outlines, we could define vertices
-        // for inner and outer polygons to reduce the number of fragment shader calls. Seems to not
-        // be necessary yet. We pass aaRadiusSq as the "outer" radius. Pixels are transparent
-        // outside of it, and between aaRadiusSq and coreRadiusSq there's an alpha gradient.
+        // Draw a square covering the circle. We pass aaRadiusSq as the "outer" radius. Pixels are
+        // transparent outside of it, with an alpha gradient between aaRadiusSq and coreRadiusSq.
         circleVertices.putFloat(glx - glrad);
         circleVertices.putFloat(gly - glrad);
         circleVertices.putFloat(0f);
