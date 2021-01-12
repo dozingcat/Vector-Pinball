@@ -50,10 +50,10 @@ public class FlipperElement extends FieldElement {
     public RevoluteJoint joint;
     RevoluteJointDef jointDef;
 
-    float flipperLength; // negative if flipper rotates around its right end
+    float flipperLength; // Negative if flipper rotates around its right end.
     float upspeed, downspeed;
-    float minangle, maxangle;
-    float cx, cy;
+    float flipperDownAngle, flipperUpAngle;
+    float cx, cy;  // Center of revolution.
 
     @Override
     public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
@@ -63,20 +63,38 @@ public class FlipperElement extends FieldElement {
         this.cx = asFloat(pos.get(0));
         this.cy = asFloat(pos.get(1));
         this.flipperLength = asFloat(params.get(LENGTH_PROPERTY));
-        this.minangle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
-        this.maxangle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         this.upspeed = asFloat(params.get(UP_SPEED_PROPERTY));
         this.downspeed = asFloat(params.get(DOWN_SPEED_PROPERTY));
+
+        // If the flipper rotates around its right end, flipperLength will be negative.
+        // User-provided angles are reversed for negative lengths, so an angle of 0 will
+        // extend the flipper to the left.
+        float minAngle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+        float maxAngle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+        this.flipperDownAngle = isReversed() ? -minAngle : minAngle;
+        this.flipperUpAngle = isReversed() ? -maxAngle : maxAngle;
     }
 
     @Override public void createBodies(World world) {
         this.anchorBody = Box2DFactory.createCircle(world, this.cx, this.cy, 0.05f, true);
-        // Joint angle is 0 when flipper is horizontal.
         // The flipper needs to be slightly extended past anchorBody to rotate correctly.
-        float ext = (this.flipperLength > 0) ? -0.05f : +0.05f;
+        // If reversed, flipperLength is negative so the "segment" goes from the length to +0.05.
+        float ext = isReversed() ? +0.05f : -0.05f;
+        float startX = (float) (this.cx + ext * Math.cos(flipperDownAngle));
+        float endX = (float) (this.cx + this.flipperLength * Math.cos(flipperDownAngle));
+        float startY = (float) (this.cy + ext * Math.sin(flipperDownAngle));
+        float endY = (float) (this.cy + this.flipperLength * Math.sin(flipperDownAngle));
+        float midX = (startX + endX) / 2;
+        float midY = (startY + endY) / 2;
+        float flipperBodyLength = Math.abs(this.flipperLength) + Math.abs(ext);
         // Width larger than 0.12 slows rotation?
         this.flipperBody = Box2DFactory.createWall(
-                world, cx + ext, cy - 0.12f, cx + flipperLength, cy + 0.12f, 0f);
+                world,
+                midX - flipperBodyLength / 2,
+                midY - 0.12f,
+                midX + flipperBodyLength / 2,
+                midY + 0.12f,
+                flipperDownAngle);
         flipperBody.setType(BodyDef.BodyType.DynamicBody);
         flipperBody.setBullet(true);
         flipperBody.getFixtureList().get(0).setDensity(5.0f);
@@ -85,16 +103,23 @@ public class FlipperElement extends FieldElement {
         jointDef.initialize(anchorBody, flipperBody, new Vector2(this.cx, this.cy));
         jointDef.enableLimit = true;
         jointDef.enableMotor = true;
-        // counterclockwise rotations are positive, so flip angles for flippers extending left
-        jointDef.lowerAngle = (this.flipperLength > 0) ? this.minangle : -this.maxangle;
-        jointDef.upperAngle = (this.flipperLength > 0) ? this.maxangle : -this.minangle;
+        // The starting angle is 0 from the joint's perspective, so if the flipper rotates
+        // counterclockwise (a "left" flipper), then 0 is the minimum joint angle, and if it rotates
+        // clockwise then 0 is the maximum joint angle (and the minimum is negative).
+        if (isReversed()) {
+            jointDef.lowerAngle = flipperUpAngle - flipperDownAngle;
+            jointDef.upperAngle = 0;
+        }
+        else {
+            jointDef.lowerAngle = 0;
+            jointDef.upperAngle = flipperUpAngle - flipperDownAngle;
+        }
         jointDef.maxMotorTorque = 1000f;
 
         this.joint = (RevoluteJoint) world.createJoint(jointDef);
 
         flipperBodySet = Collections.singletonList(flipperBody);
-        this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is
-        // first created.
+        this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is first created.
     }
 
     /** Returns true if the flipper rotates around its right end. */
@@ -135,8 +160,8 @@ public class FlipperElement extends FieldElement {
         return true;
     }
 
-    @Override public void tick(Field field) {
-        super.tick(field);
+    @Override public void tick(Field field, long nanos) {
+        super.tick(field, nanos);
 
         // If angle is at maximum, reduce speed so that the ball won't fly off when it hits.
         if (getEffectiveMotorSpeed() > 0.5f) {
@@ -146,8 +171,7 @@ public class FlipperElement extends FieldElement {
             }
         }
     }
-
-
+    
     public boolean isFlipperEngaged() {
         return getEffectiveMotorSpeed() > 0;
     }
@@ -164,15 +188,15 @@ public class FlipperElement extends FieldElement {
     @Override public void draw(Field field, IFieldRenderer renderer) {
         // Draw single line segment from anchor point.
         Vector2 position = anchorBody.getPosition();
-        // HACK: angle can briefly get out of range, always draw between min and max.
-        float angle = MathUtils.clamp(
+        // Angle can briefly get out of range, always draw between min and max.
+        // Also compensate for a 0 joint angle actually being this.lowerAngle.
+        float jointAngle = MathUtils.clamp(
                 joint.getJointAngle(), jointDef.lowerAngle, jointDef.upperAngle);
-        if (angle < jointDef.lowerAngle) angle = jointDef.lowerAngle;
-        if (angle > jointDef.upperAngle) angle = jointDef.upperAngle;
+        float actualAngle = flipperDownAngle + jointAngle;
         float x1 = position.x;
         float y1 = position.y;
-        float x2 = position.x + flipperLength * (float) Math.cos(angle);
-        float y2 = position.y + flipperLength * (float) Math.sin(angle);
+        float x2 = position.x + flipperLength * (float) Math.cos(actualAngle);
+        float y2 = position.y + flipperLength * (float) Math.sin(actualAngle);
 
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
     }

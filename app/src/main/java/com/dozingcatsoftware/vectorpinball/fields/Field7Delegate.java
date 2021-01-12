@@ -373,7 +373,7 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
         String id = sensor.getElementId();
-        String prevId = ball.getPreviousSensorId();
+        String prevId = ball.getMostRecentSensorId();
         // Enable launch barrier.
         if ("LaunchBarrierSensor".equals(id)) {
             setLaunchBarrierEnabled(field, true);

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
 
@@ -19,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.dozingcatsoftware.vectorpinball.elements.BumperElement;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
@@ -42,7 +44,7 @@ public class Field implements ContactListener {
 
     Random RAND = new Random();
 
-    long gameTime;
+    long gameTimeNanos;
     // Actions scheduled to occur at specific times in the future.
     PriorityQueue<ScheduledAction> scheduledActions;
 
@@ -131,7 +133,7 @@ public class Field implements ContactListener {
         shapes = new ArrayList<>();
 
         scheduledActions = new PriorityQueue<>();
-        gameTime = 0;
+        gameTimeNanos = 0;
 
         // Map bodies and IDs to FieldElements, and get elements on whom tick() has to be called.
         bodyToFieldElement = new HashMap<>();
@@ -216,8 +218,8 @@ public class Field implements ContactListener {
             processBallContacts();
         }
 
-        gameTime += nanos;
-        processElementTicks();
+        gameTimeNanos += nanos;
+        processElementTicks(nanos);
         processScheduledActions();
         processGameMessages();
         processZoom(nanos);
@@ -227,10 +229,10 @@ public class Field implements ContactListener {
     }
 
     /** Calls the tick() method of every FieldElement in the layout. */
-    private void processElementTicks() {
+    private void processElementTicks(long nanos) {
         int size = fieldElementsToTick.length;
         for (FieldElement elem : fieldElementsToTick) {
-            elem.tick(this);
+            elem.tick(this, nanos);
         }
     }
 
@@ -240,7 +242,7 @@ public class Field implements ContactListener {
     private void processScheduledActions() {
         while (true) {
             ScheduledAction nextAction = scheduledActions.peek();
-            if (nextAction != null && gameTime >= nextAction.actionTimeNanos) {
+            if (nextAction != null && gameTimeNanos >= nextAction.actionTimeNanos) {
                 scheduledActions.poll();
                 nextAction.action.run();
             }
@@ -273,8 +275,7 @@ public class Field implements ContactListener {
      */
     public void scheduleAction(long intervalMillis, Runnable action) {
         ScheduledAction sa = new ScheduledAction();
-        // interval is in milliseconds, gameTime is in nanoseconds
-        sa.actionTimeNanos = gameTime + (intervalMillis * 1000000);
+        sa.actionTimeNanos = gameTimeNanos + TimeUnit.MILLISECONDS.toNanos(intervalMillis);;
         sa.action = action;
         scheduledActions.add(sa);
     }
@@ -353,7 +354,7 @@ public class Field implements ContactListener {
      */
     public boolean hasActiveElements() {
         // HACK: to allow flippers to drop properly at start of game, we need accurate simulation.
-        if (this.gameTime < 500) return true;
+        if (this.gameTimeNanos < 500) return true;
         // Allow delegate to return true even if there are no balls.
         if (getDelegate().isFieldActive(this)) return true;
         // We need smooth animation if there are any balls, or if we're zooming out after all balls
@@ -391,38 +392,23 @@ public class Field implements ContactListener {
     // Reusable array for sorting elements and balls into the order in which they should be draw.
     // Earlier items are drawn first, so "upper" items should compare "greater" than lower.
     private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<>();
-    private Comparator<IDrawable> drawOrdering = (e1, e2) -> {
-        int diff = e1.getLayer() - e2.getLayer();
-        if (diff != 0) {
-            return diff;
+    // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
+    private Comparator<IDrawable> drawOrdering = Comparator
+            .comparingInt(IDrawable::getLayer)
+            .thenComparingInt(Field::drawOrderRank);
+
+    private static int drawOrderRank(IDrawable obj) {
+        if (obj instanceof BumperElement) {
+            return 4;
         }
-        // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
-        boolean e1Element = e1 instanceof FieldElement;
-        boolean e2Element = e2 instanceof FieldElement;
-        if (e1Element && e2Element) {
-            return 0;
+        if (obj instanceof FieldElement) {
+            return 2;
         }
-        boolean e1Ball = e1 instanceof Ball;
-        boolean e2Ball = e2 instanceof Ball;
-        if (e1Ball && e2Ball) {
-            return 0;
+        if (obj instanceof Ball) {
+            return 3;
         }
-        boolean e1Shape = !e1Ball && !e1Element;
-        boolean e2Shape = !e2Ball && !e2Element;
-        if (e1Shape && e2Shape) {
-            return 0;
-        }
-        if (e1Ball) {
-            return 1;
-        }
-        else if (e1Element) {
-            return (e2Ball) ? -1 : 1;
-        }
-        else {
-            // e1 is Shape, e2 isn't.
-            return -1;
-        }
-    };
+        return 1;
+    }
 
     /**
      * Draws all field elements and balls. Levels are drawn low to high, and each ball is drawn
@@ -747,6 +733,10 @@ public class Field implements ContactListener {
 
     public GameState getGameState() {
         return gameState;
+    }
+
+    public long getGameTimeNanos() {
+        return gameTimeNanos;
     }
 
     public float getTargetTimeRatio() {
