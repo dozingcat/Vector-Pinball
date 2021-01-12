@@ -144,7 +144,7 @@ public class Field6Delegate extends BaseFieldDelegate {
 
     private void checkRamp(
             Field field, Ball ball, String prevSensorId, long points, Integer planetIndex) {
-        if (prevSensorId.equals(ball.getPreviousSensorId())) {
+        if (prevSensorId.equals(ball.getMostRecentSensorId())) {
             if (rampBonusMultiplier > 1) {
                 String msg = field.resolveString("ramp_bonus_message", rampBonusMultiplier);
                 field.showGameMessage(msg, 1000);

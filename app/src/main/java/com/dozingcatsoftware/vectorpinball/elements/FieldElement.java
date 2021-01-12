@@ -36,7 +36,7 @@ public abstract class FieldElement implements IDrawable {
     // Between 0 and 1, increases if a ball is at this element's layer, decreases if not.
     double layerColorFraction = 0;
 
-    int flashCounter = 0; // Inverts colors when >0, decrements in tick().
+    long flashCounter = 0; // Inverts colors when >0, decrements in tick().
     long score = 0;
 
     // Default wall color shared by WallElement, WallArcElement, WallPathElement.
@@ -89,7 +89,7 @@ public abstract class FieldElement implements IDrawable {
     public void initialize(Map<String, ?> params, FieldElementCollection collection, World world) {
         this.parameters = params;
         this.box2dWorld = world;
-        this.elementID = (String)params.get(ID_PROPERTY);
+        this.elementID = params.containsKey(ID_PROPERTY) ? (String)params.get(ID_PROPERTY) : "";
 
         if (params.containsKey(COLOR_PROPERTY)) {
             this.initialColor = Color.fromList((List<Number>) params.get(COLOR_PROPERTY));
@@ -124,13 +124,13 @@ public abstract class FieldElement implements IDrawable {
      * active, subclasses can override to perform additional processing, e.g. RolloverGroupElement
      * checking for balls within radius of rollovers. Subclasses should call super.tick(field).
      */
-    public void tick(Field field) {
+    public void tick(Field field, long nanos) {
         if (this.flashCounter > 0) {
-            this.flashCounter--;
+            this.flashCounter = Math.max(this.flashCounter - nanos, 0);
         }
         if (this.inactiveLayerColor != null) {
-            // Might want to make this configurable, but 10 ticks in the transition works well.
-            double increment = 0.1;
+            // Could make this configurable, but 0.25 game seconds of transition works well.
+            double increment = nanos / 250_000_000.0;
             if (field.hasBallAtLayer(this.getLayer())) {
                 this.layerColorFraction = Math.min(this.layerColorFraction + increment, 1.0);
             }
@@ -149,10 +149,10 @@ public abstract class FieldElement implements IDrawable {
 
     /**
      * Causes the colors returned by red/blue/greenColorComponent methods to be inverted for the
-     * given number of frames. This can be used to flash an element when it is hit by a ball.
+     * given amount of game time. This can be used to flash an element when it is hit by a ball.
      */
-    public void flashForFrames(int frames) {
-        flashCounter = frames;
+    public void flashForNanos(long nanos) {
+        flashCounter = nanos;
     }
 
     /**
@@ -247,8 +247,12 @@ public abstract class FieldElement implements IDrawable {
         int baseColor = (this.newColor != null) ?
                 this.newColor :
                 (this.initialColor != null) ? this.initialColor : defaultColor;
-        if (this.inactiveLayerColor != null && this.layerColorFraction < 1) {
-            return Color.blend(this.inactiveLayerColor, baseColor, this.layerColorFraction);
+        return colorApplyingLayerOrFlash(baseColor, this.inactiveLayerColor);
+    }
+
+    protected int colorApplyingLayerOrFlash(int baseColor, Integer nonCurrentLayerColor) {
+        if (nonCurrentLayerColor != null && this.layerColorFraction < 1) {
+            return Color.blend(nonCurrentLayerColor, baseColor, this.layerColorFraction);
         }
         return (flashCounter > 0) ? Color.inverse(baseColor) : baseColor;
     }

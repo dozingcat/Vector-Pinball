@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.BaseFieldDelegate;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.elements.BumperElement;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
@@ -42,9 +43,8 @@ public class Field2Delegate extends BaseFieldDelegate {
          */
         static RotatingGroup create(
                 Field field, String[] ids, double cx, double cy, double speed) {
-            FieldElement element = field.getFieldElementById(ids[0]);
-            Body body = element.getBodies().get(0);
-            Vector2 position = body.getPosition();
+            BumperElement element = field.getFieldElementById(ids[0]);
+            Vector2 position = element.getCenter();
             double radius = Math.hypot(position.x - cx, position.y - cy);
             double angle = Math.atan2(position.y - cy, position.x - cx);
             return new RotatingGroup(ids, cx, cy, radius, angle, speed);
@@ -57,11 +57,10 @@ public class Field2Delegate extends BaseFieldDelegate {
             for (int i = 0; i < elementIDs.length; i++) {
                 double angle = currentAngle + angleIncrement * i;
 
-                FieldElement element = field.getFieldElementById(elementIDs[i]);
-                Body body = element.getBodies().get(0);
-                double x = centerX + radius * Math.cos(angle);
-                double y = centerY + radius * Math.sin(angle);
-                body.setTransform((float) x, (float) y, body.getAngle());
+                BumperElement element = field.getFieldElementById(elementIDs[i]);
+                double x = this.centerX + radius * Math.cos(angle);
+                double y = this.centerY + radius * Math.sin(angle);
+				element.setCenter((float) x, (float) y);
             }
         }
     }

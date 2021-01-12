@@ -4,9 +4,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import com.dozingcatsoftware.vectorpinball.elements.Box2DFactory;
 
 /**
@@ -19,7 +17,7 @@ public class Ball implements IDrawable {
     private Body body;
     private int primaryColor;
     private int secondaryColor;
-    private String previousSensorId;
+    private String mostRecentSensorId;
 
     private Ball(
             WorldLayers worlds, int layer, Body body, int primaryColor, int secondaryColor) {
@@ -80,12 +78,8 @@ public class Ball implements IDrawable {
     }
 
     public float getRadius() {
-        Array<Fixture> fixtures = body.getFixtureList();
-        if (fixtures.isEmpty()) {
-            // Shouldn't happen, but occasionally does at the start or end of a game.
-            return 0;
-        }
-        CircleShape shape = (CircleShape)fixtures.get(0).getShape();
+        body.getFixtureList();
+        CircleShape shape = (CircleShape)body.getFixtureList().get(0).getShape();
         return shape.getRadius();
     }
 
@@ -105,13 +99,13 @@ public class Ball implements IDrawable {
         this.secondaryColor = secondaryColor;
     }
 
-    public String getPreviousSensorId() {
-        return this.previousSensorId;
-    }
-    public void setPreviousSensorId(String s) {
-        this.previousSensorId = s;
+    public String getMostRecentSensorId() {
+        return this.mostRecentSensorId;
     }
 
+    public void setMostRecentSensorId(String sensorId) {
+        this.mostRecentSensorId = sensorId;
+    }
 
     public void moveToLayer(int newLayer) {
         if (layer == newLayer) {

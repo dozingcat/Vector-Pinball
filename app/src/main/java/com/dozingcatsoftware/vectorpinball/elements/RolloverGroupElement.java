@@ -180,8 +180,8 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> rolloversHitByBall = new ArrayList<>();
     List<Rollover> allHitRollovers = new ArrayList<>();
 
-    @Override public void tick(Field field) {
-        super.tick(field);
+    @Override public void tick(Field field, long nanos) {
+        super.tick(field, nanos);
         if (this.ignoreBall) return;
 
         boolean allActivePrevious = this.allRolloversActive();

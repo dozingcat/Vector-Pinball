@@ -23,28 +23,46 @@ public class BumperElement extends FieldElement {
     public static final String POSITION_PROPERTY = "position";
     public static final String RADIUS_PROPERTY = "radius";
     public static final String KICK_PROPERTY = "kick";
+    public static final String OUTER_RADIUS_PROPERTY = "outerRadius";
+    public static final String OUTER_COLOR_PROPERTY = "outerColor";
+    public static final String INACTIVE_LAYER_OUTER_COLOR_PROPERTY = "inactiveLayerOuterColor";
 
     static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
+    static final int DEFAULT_OUTER_COLOR = Color.fromRGBA(0, 0, 255, 128);
 
     Body bumperBody;
     List<Body> bumperBodySet;
 
-    float radius;
+    float radius, outerRadius;
     float cx, cy;
     float kick;
+    int outerColor;
+    Integer inactiveLayerOuterColor;
 
     @Override
     public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         List<?> pos = (List<?>) params.get(POSITION_PROPERTY);
         this.radius = asFloat(params.get(RADIUS_PROPERTY));
+        this.outerRadius = asFloat(params.get(OUTER_RADIUS_PROPERTY));
         this.cx = asFloat(pos.get(0));
         this.cy = asFloat(pos.get(1));
         this.kick = asFloat(params.get(KICK_PROPERTY));
+        this.outerColor = params.containsKey(OUTER_COLOR_PROPERTY) ?
+                Color.fromList((List<Number>) params.get(OUTER_COLOR_PROPERTY)) :
+                DEFAULT_OUTER_COLOR;
+        if (params.containsKey(INACTIVE_LAYER_OUTER_COLOR_PROPERTY)) {
+            this.inactiveLayerOuterColor =
+                    Color.fromList((List<Number>) params.get(INACTIVE_LAYER_OUTER_COLOR_PROPERTY));
+        }
     }
 
     @Override public void createBodies(World world) {
-        bumperBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
-        bumperBodySet = Collections.singletonList(bumperBody);
+        if (radius > 0) {
+            bumperBody = Box2DFactory.createCircle(world, cx, cy, radius, true);
+            bumperBodySet = Collections.singletonList(bumperBody);
+        } else {
+            bumperBodySet = Collections.emptyList();
+        }
     }
 
     @Override public List<Body> getBodies() {
@@ -72,13 +90,31 @@ public class BumperElement extends FieldElement {
         Vector2 impulse = this.impulseForBall(ball);
         if (impulse != null) {
             ball.applyLinearImpulse(impulse);
-            flashForFrames(3);
+            flashForNanos(75_000_000);
+        }
+    }
+
+    public Vector2 getCenter() {
+        return new Vector2(this.cx, this.cy);
+    }
+
+    public void setCenter(float cx, float cy) {
+        this.cx = cx;
+        this.cy = cy;
+        if (this.bumperBody != null) {
+            this.bumperBody.setTransform(cx, cy, this.bumperBody.getAngle());
         }
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
-        float px = bumperBody.getPosition().x;
-        float py = bumperBody.getPosition().y;
-        renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
+        if (outerRadius > 0) {
+            int currentOuterColor = colorApplyingLayerOrFlash(
+                    this.outerColor, this.inactiveLayerOuterColor);
+            renderer.fillCircle(this.cx, this.cy, outerRadius, currentOuterColor);
+        }
+        if (radius > 0) {
+            int currentInnerColor = currentColor(DEFAULT_COLOR);
+            renderer.fillCircle(this.cx, this.cy, radius, currentInnerColor);
+        }
     }
 }
