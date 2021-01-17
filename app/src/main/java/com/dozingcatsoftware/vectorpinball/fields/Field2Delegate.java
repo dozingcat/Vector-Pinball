@@ -136,24 +136,15 @@ public class Field2Delegate extends BaseFieldDelegate {
 
     @Override
     public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
-        // When center red bumper is hit, start multiball if all center rollovers are lit,
-        // otherwise retract left barrier.
+        // When center red bumper is hit, start multiball if all center rollovers are lit.
         String elementID = element.getElementId();
         if ("CenterBumper1".equals(elementID)) {
-            WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
             RolloverGroupElement multiballRollovers =
                     field.getFieldElementById("ExtraBallRollovers");
 
             if (multiballRollovers.allRolloversActive()) {
-                barrier.setRetracted(false);
                 startMultiball(field);
                 multiballRollovers.setAllRolloversActivated(false);
-            }
-            else {
-                // don't retract during multiball
-                if (field.getBalls().size() == 1) {
-                    barrier.setRetracted(true);
-                }
             }
         }
     }
@@ -217,15 +208,6 @@ public class Field2Delegate extends BaseFieldDelegate {
         }
         else if ("LaunchBarrierRetract".equals(sensorID)) {
             setLaunchBarrierEnabled(field, false);
-        }
-        else if ("LeftTubeSensor".equals(sensorID)) {
-            if (ball.getLinearVelocity().y > 0) {
-                // ball going up, retract barrier after delay
-                field.scheduleAction(1000, () -> {
-                    WallElement barrier = field.getFieldElementById("LeftTubeBarrier");
-                    barrier.setRetracted(false);
-                });
-            }
         }
     }
 

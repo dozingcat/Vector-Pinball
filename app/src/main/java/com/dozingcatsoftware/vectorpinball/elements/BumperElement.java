@@ -37,6 +37,7 @@ public class BumperElement extends FieldElement {
     float cx, cy;
     float kick;
     int outerColor;
+    Integer newOuterColor;
     Integer inactiveLayerOuterColor;
 
     @Override
@@ -106,10 +107,15 @@ public class BumperElement extends FieldElement {
         }
     }
 
+    public void setNewOuterColor(Integer color) {
+        this.newOuterColor = color;
+    }
+
     @Override public void draw(Field field, IFieldRenderer renderer) {
         if (outerRadius > 0) {
+            int baseOuterColor = this.newOuterColor != null ? this.newOuterColor : this.outerColor;
             int currentOuterColor = colorApplyingLayerOrFlash(
-                    this.outerColor, this.inactiveLayerOuterColor);
+                    baseOuterColor, this.inactiveLayerOuterColor);
             renderer.fillCircle(this.cx, this.cy, outerRadius, currentOuterColor);
         }
         if (radius > 0) {

@@ -95,7 +95,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     boolean bumperBonusActive;
     long bumperBonusNanosElapsed;
-    FieldElement[] bumperElements;
+    BumperElement[] bumperElements;
 
     int baseBumperBonusMultiplier;
     int bumperBonusMultiplier;
@@ -131,7 +131,7 @@ public class Field3Delegate extends BaseFieldDelegate {
                 bumpers.add(element);
             }
         }
-        bumperElements = bumpers.toArray(new FieldElement[0]);
+        bumperElements = bumpers.toArray(new BumperElement[0]);
     }
 
     void resetBumperBonuses(Field field) {
@@ -153,6 +153,13 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     private void restoreRightBallSaver(Field field) {
         ((WallElement) field.getFieldElementById("BallSaver-right")).setRetracted(false);
+    }
+
+    private void setColorForBumpers(Integer color) {
+        for (BumperElement bumper : bumperElements) {
+            bumper.setNewColor(color);
+            bumper.setNewOuterColor(color == null ? null : Color.withAlpha(color, 128));
+        }
     }
 
     @Override public void allRolloversInGroupActivated(
@@ -221,9 +228,7 @@ public class Field3Delegate extends BaseFieldDelegate {
                 double fractionElapsed =
                         ((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos;
                 int color = colorForTemperatureRatio(1 - fractionElapsed);
-                for (FieldElement bumper : bumperElements) {
-                    bumper.setNewColor(color);
-                }
+                setColorForBumpers(color);
             }
         }
         if (multiballStatus == MultiballStatus.ACTIVE) {
@@ -245,9 +250,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     void endBumperBonus() {
         bumperBonusActive = false;
-        for (FieldElement bumper : bumperElements) {
-            bumper.setNewColor(null);
-        }
+        setColorForBumpers(null);
     }
 
     @Override

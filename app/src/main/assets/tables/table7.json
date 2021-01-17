@@ -203,6 +203,7 @@
     {
       "class": "BumperElement",
       "kick": "1.0",
+      "outerRadius": "0.6",
       "position": ["9.32", "23"],
       "radius": "0.34",
       "score": 500
@@ -336,6 +337,7 @@
     {
       "class": "BumperElement",
       "kick": "1.0",
+      "outerRadius": "0.6",
       "position": ["11.01", "23.5"],
       "radius": "0.34",
       "score": 500
@@ -343,6 +345,7 @@
     {
       "class": "BumperElement",
       "kick": "1.0",
+      "outerRadius": "0.6",
       "position": ["9.8", "24.65"],
       "radius": "0.34",
       "score": 500
@@ -749,8 +752,11 @@
       "class": "BumperElement",
       "color": [204, 51, 139],
       "inactiveLayerColor": [204, 51, 139, 34],
+      "inactiveLayerOuterColor": [204, 51, 139, 17],
       "kick": "1.0",
       "layer": 1,
+      "outerColor": [204, 51, 139, 128],
+      "outerRadius": "0.6",
       "position": [2.4866666666666672, 27.07666666666667],
       "radius": "0.34",
       "score": 1000
@@ -759,8 +765,11 @@
       "class": "BumperElement",
       "color": [204, 51, 139],
       "inactiveLayerColor": [204, 51, 139, 34],
+      "inactiveLayerOuterColor": [204, 51, 139, 17],
       "kick": "1.0",
       "layer": 1,
+      "outerColor": [204, 51, 139, 128],
+      "outerRadius": "0.6",
       "position": [5.116700000000001, 27.363366666666664],
       "radius": "0.34",
       "score": 1000
@@ -769,8 +778,11 @@
       "class": "BumperElement",
       "color": [204, 51, 139],
       "inactiveLayerColor": [204, 51, 139, 34],
+      "inactiveLayerOuterColor": [204, 51, 139, 17],
       "kick": "1.0",
       "layer": 1,
+      "outerColor": [204, 51, 139, 128],
+      "outerRadius": "0.6",
       "position": [3.9633000000000003, 25.240033333333333],
       "radius": "0.34",
       "score": 1000
@@ -1005,7 +1017,6 @@
   "launchVelocityRandomDelta": ["0", "0.6"],
   "name": "Ad Astra",
   "numballs": 3,
-  "script": "",
   "targetTimeRatio": "2.3",
   "version": 1,
   "width": "20"
