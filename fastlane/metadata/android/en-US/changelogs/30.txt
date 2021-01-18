@@ -1,0 +1,2 @@
+- Improved bumper graphics.
+- Minor table fixes and improvements.
