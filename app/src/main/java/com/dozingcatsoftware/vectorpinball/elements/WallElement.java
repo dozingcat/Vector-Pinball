@@ -142,7 +142,7 @@ public class WallElement extends FieldElement {
             Vector2 impulse = this.impulseForBall(ball);
             if (impulse != null) {
                 ball.applyLinearImpulse(impulse);
-                flashForNanos(75_000_000);
+                flashForNanos(100_000_000);
             }
         }
     }
