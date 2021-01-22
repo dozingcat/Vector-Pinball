@@ -53,30 +53,32 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     static class Star2DProjection {
-        ArrayList<Double> x = new ArrayList<>();
-        ArrayList<Double> y = new ArrayList<>();
-        ArrayList<Double> magnitude = new ArrayList<>();
-        ArrayList<Integer> indices = new ArrayList<>();
-        HashMap<Integer, Integer> starIndexToProjIndex = new HashMap<>();
+        int size = 0;
+        // This is a bit wasteful since only a fraction of the stars will be in the projection for
+        // each frame, but it shouldn't be too bad.
+        int capacity = CATALOG.size();
+        double[] x = new double[capacity];
+        double[] y = new double[capacity];
+        double[] magnitude = new double[capacity];
+        int[] indices = new int[capacity];
+        int[] starIndexToProjIndex = new int[capacity];
 
         int size() {
-            return this.x.size();
+            return size;
         }
 
         void clear() {
-            this.x.clear();
-            this.y.clear();
-            this.magnitude.clear();
-            this.indices.clear();
-            this.starIndexToProjIndex.clear();
+            size = 0;
+            Arrays.fill(this.starIndexToProjIndex, -1);
         }
 
         void add(double xx, double yy, double mag, int index) {
-            this.x.add(xx);
-            this.y.add(yy);
-            this.magnitude.add(mag);
-            this.indices.add(index);
-            this.starIndexToProjIndex.put(index, this.x.size() - 1);
+            this.x[size] = xx;
+            this.y[size] = yy;
+            this.magnitude[size] = mag;
+            this.indices[size] = index;
+            this.starIndexToProjIndex[index] = size;
+            this.size += 1;
         }
     }
 
@@ -173,10 +175,10 @@ public class Field7Delegate extends BaseFieldDelegate {
         void activateStarsInActiveConstellationNearPoint(double x, double y) {
             if (this.currentConstellation != null && (x * x + y * y < 1)) {
                 for (int starIndex : this.currentConstellation.starIndices) {
-                    Integer pi = this.projection.starIndexToProjIndex.get(starIndex);
-                    if (pi != null) {
-                        double px = projection.x.get(pi) / this.currentTarget.angularRadius;
-                        double py = projection.y.get(pi) / this.currentTarget.angularRadius;
+                    int pi = this.projection.starIndexToProjIndex[starIndex];
+                    if (pi >= 0) {
+                        double px = projection.x[pi] / this.currentTarget.angularRadius;
+                        double py = projection.y[pi] / this.currentTarget.angularRadius;
                         double dist2 = (x - px) * (x - px) + (y - py) * (y - py);
                         if (dist2 < 0.1 * 0.1) {
                             this.activatedStars.add(starIndex);
@@ -236,6 +238,10 @@ public class Field7Delegate extends BaseFieldDelegate {
             projection.clear();
             double rad2 = target.angularRadius * target.angularRadius;
             int catSize = catalog.size();
+            double sinRa = Math.sin(target.rightAscension);
+            double cosRa = Math.cos(target.rightAscension);
+            double sinDec = Math.sin(target.declination);
+            double cosDec = Math.cos(target.declination);
             // Rotate each star around the Z axis for right ascension, then the Y axis for
             // declination. The point we're looking at will now be at (1, 0, 0), and when we
             // project to 2D, Y becomes X and Z becomes Y.
@@ -249,10 +255,6 @@ public class Field7Delegate extends BaseFieldDelegate {
                 // [sin(theta), cos(theta), 0]
                 // [0, 0, 1]
                 // We can treat this as a 2d rotation in the XY plane; z remains constant.
-                double sinRa = Math.sin(target.rightAscension);
-                double cosRa = Math.cos(target.rightAscension);
-                double sinDec = Math.sin(target.declination);
-                double cosDec = Math.cos(target.declination);
                 double x1 = x * cosRa - y * sinRa;
                 double y1 = x * sinRa + y * cosRa;
                 double z1 = z;
@@ -595,11 +597,11 @@ public class Field7Delegate extends BaseFieldDelegate {
         double baseRadius = this.starViewRadius * 0.015;
         List<Shape> shapes = new ArrayList<>();
         for (int i = 0; i < proj.size(); i++) {
-            double cx = centerX + proj.x.get(i) * distScale;
-            double cy = centerY + proj.y.get(i) * distScale;
-            double mag = proj.magnitude.get(i);
+            double cx = centerX + proj.x[i] * distScale;
+            double cy = centerY + proj.y[i] * distScale;
+            double mag = proj.magnitude[i];
             int alpha = (mag <= 0) ? 255 : Math.max(0, (int) (255 - 30 * mag));
-            int baseColor = starColorForIndex(proj.indices.get(i));
+            int baseColor = starColorForIndex(proj.indices[i]);
             int color = Color.withAlpha(baseColor, alpha);
             double rmul = (mag <= 0) ? 1.5 : (mag >= 4) ? 0.75 : 1.0;
             shapes.add(Shape.Circle.create(
@@ -615,15 +617,15 @@ public class Field7Delegate extends BaseFieldDelegate {
                     if (endpoints != null) {
                         for (int endIndex : endpoints) {
                             if (starState.activatedStars.contains(endIndex)) {
-                                Integer pi1 = proj.starIndexToProjIndex.get(starIndex);
-                                Integer pi2 = proj.starIndexToProjIndex.get(endIndex);
-                                if (pi1 == null || pi2 == null) {
+                                int pi1 = proj.starIndexToProjIndex[starIndex];
+                                int pi2 = proj.starIndexToProjIndex[endIndex];
+                                if (pi1 < 0 || pi2 < 0) {
                                     continue;
                                 }
-                                double x1 = centerX + proj.x.get(pi1) * distScale;
-                                double y1 = centerY + proj.y.get(pi1) * distScale;
-                                double x2 = centerX + proj.x.get(pi2) * distScale;
-                                double y2 = centerY + proj.y.get(pi2) * distScale;
+                                double x1 = centerX + proj.x[pi1] * distScale;
+                                double y1 = centerY + proj.y[pi1] * distScale;
+                                double x2 = centerX + proj.x[pi2] * distScale;
+                                double y2 = centerY + proj.y[pi2] * distScale;
                                 shapes.add(Shape.Line.create(
                                         x1, y1, x2, y2, 0, CONSTELLATION_LINE_COLOR, null));
                             }
