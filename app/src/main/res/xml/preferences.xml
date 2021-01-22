@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Preferences">
-	
+
 		<CheckBoxPreference android:key="sound" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/sound_pref_title" />
-		
+
 		<CheckBoxPreference android:key="music" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/music_pref_title" />
-		
+
 		<CheckBoxPreference android:key="independentFlippers" android:defaultValue="true" android:enabled="true"
-		    android:title="@string/independent_flippers_pref_title" 
+		    android:title="@string/independent_flippers_pref_title"
 		    android:summaryOff="@string/independent_flippers_pref_summary_off"
 		    android:summaryOn="@string/independent_flippers_pref_summary_on" />
-		
+
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/zoom_pref_title" />
-		
+
 		<CheckBoxPreference android:key="useOpenGL" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/use_opengl_pref_title" />
 
@@ -26,6 +26,10 @@
 
 		<CheckBoxPreference android:key="showFPS" android:enabled="true"
 		    android:title="@string/show_fps_pref_title" />
-		
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="vibrate"
+			android:title="@string/vibrate_pref_title" />
+
 	</PreferenceCategory>
 </PreferenceScreen>
