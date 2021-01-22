@@ -36,7 +36,7 @@ public class FieldViewManager {
     private float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
 
     // Delay after losing a ball, before a touch will launch a new ball.
-    static final long END_BALL_DELAY_MS = 1000;
+    static final long END_BALL_DELAY_MS = 750;
 
     public void setField(Field value) {
         field = value;
@@ -52,8 +52,8 @@ public class FieldViewManager {
 
     // Line width can be specified directly, otherwise it's a fraction of the smaller width or
     // height dimension. A factor of 1/216 works pretty well; on a 1080p display it's 5, which
-    // looks decent and performs reasonably; a Nexus 5x can do 40-50fps with the canvas view.
-    // (OpenGL can get 60fps but has lower visual quality due to not having antialiasing).
+    // looks decent and performs reasonably; a Nexus 5x can stay close to 60fps with both the
+    // canvas and OpenGL renderer.
     public void setCustomLineWidth(int lineWidth) {
         customLineWidth = lineWidth;
     }

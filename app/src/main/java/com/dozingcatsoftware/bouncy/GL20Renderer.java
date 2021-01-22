@@ -89,14 +89,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
     private static int packColor(int color) {
-        // For little endian this is ABGR, for big endian RGBA.
-        int red = Color.getRed(color);
-        int green = Color.getGreen(color);
-        int blue = Color.getBlue(color);
-        int alpha = Color.getAlpha(color);
-        return LITTLE_ENDIAN ?
-            (alpha << 24) | (blue << 16) | (green << 8) | red :
-            (red << 24) | (green << 16) | (blue << 8) | alpha;
+        return LITTLE_ENDIAN ? Color.toAGBR(color) : Color.toRGBA(color);
     }
 
     private int loadShader(int type, String shaderPath) {
@@ -647,6 +640,27 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     final Object renderLock = new Object();
     boolean renderDone;
 
+    @Override public void onDrawFrame(GL10 gl10) {
+        Field field = fvManager.getField();
+        if (field == null) {
+            return;
+        }
+        startDraw();
+        synchronized (field) {
+            field.draw(this);
+        }
+        endDraw();
+        synchronized (renderLock) {
+            renderDone = true;
+            renderLock.notify();
+        }
+    }
+
+    /* requestRender() returns immediately and schedules onDrawFrame for execution on a separate
+     * thread. In this case, we want to block until onDrawFrame returns so that the simulation
+     * thread in FieldDriver stays in sync with the rendering thread. (Without the locks,
+     * FieldDriver registers 60fps even if the actual drawing is much slower).
+     */
     @Override public void doDraw() {
         synchronized (renderLock) {
             renderDone = false;
@@ -686,19 +700,5 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         // This projection matrix is applied to object coordinates in onDrawFrame().
         float ratio = (float) width / height;
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
-    }
-
-    @Override public void onDrawFrame(GL10 gl10) {
-        Field field = fvManager.getField();
-        if (field == null) return;
-        synchronized (field) {
-            startDraw();
-            field.draw(this);
-            endDraw();
-        }
-        synchronized (renderLock) {
-            renderDone = true;
-            renderLock.notify();
-        }
     }
 }
