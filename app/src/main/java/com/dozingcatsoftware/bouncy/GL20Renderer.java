@@ -337,32 +337,32 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         // 2--3
         // 0--1
         // 4--5
-        lineVertices.put(f2i(glx1 - coreDx));
-        lineVertices.put(f2i(gly1 - coreDy));
-        lineVertices.put(f2i(0f));
-        lineVertices.put(packedColor);
+        tmpVertexBuffer[0] = (f2i(glx1 - coreDx));
+        tmpVertexBuffer[1] = (f2i(gly1 - coreDy));
+        tmpVertexBuffer[2] = (f2i(0f));
+        tmpVertexBuffer[3] = (packedColor);
 
-        lineVertices.put(f2i(glx2 - coreDx));
-        lineVertices.put(f2i(gly2 - coreDy));
-        lineVertices.put(f2i(0f));
-        lineVertices.put(packedColor);
+        tmpVertexBuffer[4] = (f2i(glx2 - coreDx));
+        tmpVertexBuffer[5] = (f2i(gly2 - coreDy));
+        tmpVertexBuffer[6] = (f2i(0f));
+        tmpVertexBuffer[7] = (packedColor);
 
-        lineVertices.put(f2i(glx1 + coreDx));
-        lineVertices.put(f2i(gly1 + coreDy));
-        lineVertices.put(f2i(0f));
-        lineVertices.put(packedColor);
+        tmpVertexBuffer[8] = (f2i(glx1 + coreDx));
+        tmpVertexBuffer[9] = (f2i(gly1 + coreDy));
+        tmpVertexBuffer[10] = (f2i(0f));
+        tmpVertexBuffer[11] = (packedColor);
 
-        lineVertices.put(f2i(glx2 + coreDx));
-        lineVertices.put(f2i(gly2 + coreDy));
-        lineVertices.put(f2i(0f));
-        lineVertices.put(packedColor);
+        tmpVertexBuffer[12] = (f2i(glx2 + coreDx));
+        tmpVertexBuffer[13] = (f2i(gly2 + coreDy));
+        tmpVertexBuffer[14] = (f2i(0f));
+        tmpVertexBuffer[15] = (packedColor);
 
-        lineVertexIndices.put(baseIndex + 0);
-        lineVertexIndices.put(baseIndex + 1);
-        lineVertexIndices.put(baseIndex + 2);
-        lineVertexIndices.put(baseIndex + 1);
-        lineVertexIndices.put(baseIndex + 2);
-        lineVertexIndices.put(baseIndex + 3);
+        tmpIndexBuffer[0] = baseIndex + 0;
+        tmpIndexBuffer[1] = baseIndex + 1;
+        tmpIndexBuffer[2] = baseIndex + 2;
+        tmpIndexBuffer[3] = baseIndex + 1;
+        tmpIndexBuffer[4] = baseIndex + 2;
+        tmpIndexBuffer[5] = baseIndex + 3;
 
         if (useAA) {
             int alphaZeroColor = packColor(Color.withAlpha(color, 0));
@@ -370,43 +370,45 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             float aaDx = aaPerpDistGl * cosPerp;
             float aaDy = aaPerpDistGl * sinPerp;
 
-            lineVertices.put(f2i(glx1 - aaDx));
-            lineVertices.put(f2i(gly1 - aaDy));
-            lineVertices.put(f2i(0f));
-            lineVertices.put(f2i(alphaZeroColor));
+            tmpVertexBuffer[16] = (f2i(glx1 - aaDx));
+            tmpVertexBuffer[17] = (f2i(gly1 - aaDy));
+            tmpVertexBuffer[18] = (f2i(0f));
+            tmpVertexBuffer[19] = (f2i(alphaZeroColor));
 
-            lineVertices.put(f2i(glx2 - aaDx));
-            lineVertices.put(f2i(gly2 - aaDy));
-            lineVertices.put(f2i(0f));
-            lineVertices.put(alphaZeroColor);
+            tmpVertexBuffer[20] = (f2i(glx2 - aaDx));
+            tmpVertexBuffer[21] = (f2i(gly2 - aaDy));
+            tmpVertexBuffer[22] = (f2i(0f));
+            tmpVertexBuffer[23] = (alphaZeroColor);
 
-            lineVertices.put(f2i(glx1 + aaDx));
-            lineVertices.put(f2i(gly1 + aaDy));
-            lineVertices.put(f2i(0f));
-            lineVertices.put(alphaZeroColor);
+            tmpVertexBuffer[24] = (f2i(glx1 + aaDx));
+            tmpVertexBuffer[25] = (f2i(gly1 + aaDy));
+            tmpVertexBuffer[26] = (f2i(0f));
+            tmpVertexBuffer[27] = (alphaZeroColor);
 
-            lineVertices.put(f2i(glx2 + aaDx));
-            lineVertices.put(f2i(gly2 + aaDy));
-            lineVertices.put(f2i(0f));
-            lineVertices.put(alphaZeroColor);
+            tmpVertexBuffer[28] = (f2i(glx2 + aaDx));
+            tmpVertexBuffer[29] = (f2i(gly2 + aaDy));
+            tmpVertexBuffer[30] = (f2i(0f));
+            tmpVertexBuffer[31] = (alphaZeroColor);
 
-            lineVertexIndices.put(baseIndex + 0);
-            lineVertexIndices.put(baseIndex + 1);
-            lineVertexIndices.put(baseIndex + 4);
-            lineVertexIndices.put(baseIndex + 1);
-            lineVertexIndices.put(baseIndex + 4);
-            lineVertexIndices.put(baseIndex + 5);
+            tmpIndexBuffer[6] = baseIndex + 0;
+            tmpIndexBuffer[7] = baseIndex + 1;
+            tmpIndexBuffer[8] = baseIndex + 4;
+            tmpIndexBuffer[9] = baseIndex + 1;
+            tmpIndexBuffer[10] = baseIndex + 4;
+            tmpIndexBuffer[11] = baseIndex + 5;
 
-            lineVertexIndices.put(baseIndex + 2);
-            lineVertexIndices.put(baseIndex + 3);
-            lineVertexIndices.put(baseIndex + 6);
-            lineVertexIndices.put(baseIndex + 3);
-            lineVertexIndices.put(baseIndex + 6);
-            lineVertexIndices.put(baseIndex + 7);
+            tmpIndexBuffer[12] = baseIndex + 2;
+            tmpIndexBuffer[13] = baseIndex + 3;
+            tmpIndexBuffer[14] = baseIndex + 6;
+            tmpIndexBuffer[15] = baseIndex + 3;
+            tmpIndexBuffer[16] = baseIndex + 6;
+            tmpIndexBuffer[17] = baseIndex + 7;
         }
 
         this.numLineVertices += numVerticesToAdd;
         this.numLineVertexIndices += numIndicesToAdd;
+        this.lineVertices.put(tmpVertexBuffer, 0, useAA ? 32 : 16);
+        this.lineVertexIndices.put(tmpIndexBuffer, 0, useAA ? 18 : 6);
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
@@ -426,10 +428,13 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             drawLine(xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], color);
         }
     }
+    
+    int[] tmpVertexBuffer = new int[64];
+    int[] tmpIndexBuffer = new int[64];
 
     private void addFilledCircle(float cx, float cy, float coreRadius, float aaRadius, int color) {
-        circleVertices = ensureRemaining(
-                circleVertices, CIRCLE_VERTEX_STRIDE_BYTES * 4 / 4);
+        int vertexIntsToAdd = (CIRCLE_VERTEX_STRIDE_BYTES / 4) * 4;
+        circleVertices = ensureRemaining(circleVertices, vertexIntsToAdd);
         float glx = world2glX(cx);
         float gly = world2glY(cy);
         float glrad = world2glX(aaRadius) - world2glX(0);
@@ -445,53 +450,56 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         // Draw a square covering the circle. We pass aaRadiusSq as the "outer" radius. Pixels are
         // transparent outside of it, with an alpha gradient between aaRadiusSq and coreRadiusSq.
-        circleVertices.put(f2i(glx - glrad));
-        circleVertices.put(f2i(gly - glrad));
-        circleVertices.put(f2i(0f));
-        circleVertices.put(packedColor);
-        circleVertices.put(f2i(centerPixelX));
-        circleVertices.put(f2i(centerPixelY));
-        circleVertices.put(f2i(aaRadiusSq));
-        circleVertices.put(f2i(coreRadiusSq));
+        tmpVertexBuffer[0] = (f2i(glx - glrad));
+        tmpVertexBuffer[1] = (f2i(gly - glrad));
+        tmpVertexBuffer[2] = (f2i(0f));
+        tmpVertexBuffer[3] = (packedColor);
+        tmpVertexBuffer[4] = (f2i(centerPixelX));
+        tmpVertexBuffer[5] = (f2i(centerPixelY));
+        tmpVertexBuffer[6] = (f2i(aaRadiusSq));
+        tmpVertexBuffer[7] = (f2i(coreRadiusSq));
 
-        circleVertices.put(f2i(glx + glrad));
-        circleVertices.put(f2i(gly - glrad));
-        circleVertices.put(f2i(0f));
-        circleVertices.put(packedColor);
-        circleVertices.put(f2i(centerPixelX));
-        circleVertices.put(f2i(centerPixelY));
-        circleVertices.put(f2i(aaRadiusSq));
-        circleVertices.put(f2i(coreRadiusSq));
+        tmpVertexBuffer[8] = (f2i(glx + glrad));
+        tmpVertexBuffer[9] = (f2i(gly - glrad));
+        tmpVertexBuffer[10] = (f2i(0f));
+        tmpVertexBuffer[11] = (packedColor);
+        tmpVertexBuffer[12] = (f2i(centerPixelX));
+        tmpVertexBuffer[13] = (f2i(centerPixelY));
+        tmpVertexBuffer[14] = (f2i(aaRadiusSq));
+        tmpVertexBuffer[15] = (f2i(coreRadiusSq));
 
-        circleVertices.put(f2i(glx - glrad));
-        circleVertices.put(f2i(gly + glrad));
-        circleVertices.put(f2i(0f));
-        circleVertices.put(packedColor);
-        circleVertices.put(f2i(centerPixelX));
-        circleVertices.put(f2i(centerPixelY));
-        circleVertices.put(f2i(aaRadiusSq));
-        circleVertices.put(f2i(coreRadiusSq));
+        tmpVertexBuffer[16] = (f2i(glx - glrad));
+        tmpVertexBuffer[17] = (f2i(gly + glrad));
+        tmpVertexBuffer[18] = (f2i(0f));
+        tmpVertexBuffer[19] = (packedColor);
+        tmpVertexBuffer[20] = (f2i(centerPixelX));
+        tmpVertexBuffer[21] = (f2i(centerPixelY));
+        tmpVertexBuffer[22] = (f2i(aaRadiusSq));
+        tmpVertexBuffer[23] = (f2i(coreRadiusSq));
 
-        circleVertices.put(f2i(glx + glrad));
-        circleVertices.put(f2i(gly + glrad));
-        circleVertices.put(f2i(0f));
-        circleVertices.put(packedColor);
-        circleVertices.put(f2i(centerPixelX));
-        circleVertices.put(f2i(centerPixelY));
-        circleVertices.put(f2i(aaRadiusSq));
-        circleVertices.put(f2i(coreRadiusSq));
+        tmpVertexBuffer[24] = (f2i(glx + glrad));
+        tmpVertexBuffer[25] = (f2i(gly + glrad));
+        tmpVertexBuffer[26] = (f2i(0f));
+        tmpVertexBuffer[27] = (packedColor);
+        tmpVertexBuffer[28] = (f2i(centerPixelX));
+        tmpVertexBuffer[29] = (f2i(centerPixelY));
+        tmpVertexBuffer[30] = (f2i(aaRadiusSq));
+        tmpVertexBuffer[31] = (f2i(coreRadiusSq));
 
         circleVertexIndices = ensureRemaining(circleVertexIndices, 6);
         int baseIndex = this.numCircleVertices;
-        circleVertexIndices.put(baseIndex);
-        circleVertexIndices.put(baseIndex + 1);
-        circleVertexIndices.put(baseIndex + 2);
-        circleVertexIndices.put(baseIndex + 1);
-        circleVertexIndices.put(baseIndex + 2);
-        circleVertexIndices.put(baseIndex + 3);
+        tmpIndexBuffer[0] = (baseIndex);
+        tmpIndexBuffer[1] = (baseIndex + 1);
+        tmpIndexBuffer[2] = (baseIndex + 2);
+        tmpIndexBuffer[3] = (baseIndex + 1);
+        tmpIndexBuffer[4] = (baseIndex + 2);
+        tmpIndexBuffer[5] = (baseIndex + 3);
 
         this.numCircleVertices += 4;
         this.numCircleVertexIndices += 6;
+
+        circleVertices.put(tmpVertexBuffer, 0, 32);
+        circleVertexIndices.put(tmpIndexBuffer, 0, 6);
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
@@ -536,34 +544,37 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         float outerRadius = glrad + corePerpDistGl;
         int packedColor = packColor(color);
         for (int i = 0; i < polySides; i++) {
-            lineVertices.put(f2i(glcx + innerRadius * sinCosValues.cosAtIndex(i)));
-            lineVertices.put(f2i(glcy + innerRadius * sinCosValues.sinAtIndex(i)));
-            lineVertices.put(f2i(0f));
-            lineVertices.put(packedColor);
+            tmpVertexBuffer[0] = (f2i(glcx + innerRadius * sinCosValues.cosAtIndex(i)));
+            tmpVertexBuffer[1] = (f2i(glcy + innerRadius * sinCosValues.sinAtIndex(i)));
+            tmpVertexBuffer[2] = (f2i(0f));
+            tmpVertexBuffer[3] = (packedColor);
 
-            lineVertices.put(f2i(glcx + outerRadius * sinCosValues.cosAtIndex(i)));
-            lineVertices.put(f2i(glcy + outerRadius * sinCosValues.sinAtIndex(i)));
-            lineVertices.put(f2i(0));
-            lineVertices.put(packedColor);
+            tmpVertexBuffer[4] = (f2i(glcx + outerRadius * sinCosValues.cosAtIndex(i)));
+            tmpVertexBuffer[5] = (f2i(glcy + outerRadius * sinCosValues.sinAtIndex(i)));
+            tmpVertexBuffer[6] = (f2i(0));
+            tmpVertexBuffer[7] = (packedColor);
 
             int baseIndex = this.numLineVertices + 2 * i;
             if (i < polySides - 1) {
-                lineVertexIndices.put(baseIndex + 0);
-                lineVertexIndices.put(baseIndex + 1);
-                lineVertexIndices.put(baseIndex + 2);
-                lineVertexIndices.put(baseIndex + 1);
-                lineVertexIndices.put(baseIndex + 2);
-                lineVertexIndices.put(baseIndex + 3);
+                tmpIndexBuffer[0] = (baseIndex + 0);
+                tmpIndexBuffer[1] = (baseIndex + 1);
+                tmpIndexBuffer[2] = (baseIndex + 2);
+                tmpIndexBuffer[3] = (baseIndex + 1);
+                tmpIndexBuffer[4] = (baseIndex + 2);
+                tmpIndexBuffer[5] = (baseIndex + 3);
             }
             else {
                 // Wrap around to start.
-                lineVertexIndices.put(baseIndex + 0);
-                lineVertexIndices.put(baseIndex + 1);
-                lineVertexIndices.put(this.numLineVertices);
-                lineVertexIndices.put(baseIndex + 1);
-                lineVertexIndices.put(this.numLineVertices);
-                lineVertexIndices.put(this.numLineVertices + 1);
+                tmpIndexBuffer[0] = (baseIndex + 0);
+                tmpIndexBuffer[1] = (baseIndex + 1);
+                tmpIndexBuffer[2] = (this.numLineVertices);
+                tmpIndexBuffer[3] = (baseIndex + 1);
+                tmpIndexBuffer[4] = (this.numLineVertices);
+                tmpIndexBuffer[5] = (this.numLineVertices + 1);
             }
+            
+            lineVertices.put(tmpVertexBuffer, 0, 8);
+            lineVertexIndices.put(tmpIndexBuffer, 0, 6);
         }
 
         if (useAA) {
@@ -572,49 +583,52 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             float aaOuterRadius = glrad + aaPerpDistGl;
             int alphaZeroColor = packColor(Color.withAlpha(color, 0));
             for (int i = 0; i < polySides; i++) {
-                lineVertices.put(f2i(glcx + aaInnerRadius * sinCosValues.cosAtIndex(i)));
-                lineVertices.put(f2i(glcy + aaInnerRadius * sinCosValues.sinAtIndex(i)));
-                lineVertices.put(f2i(0f));
-                lineVertices.put(alphaZeroColor);
+                tmpVertexBuffer[0] = (f2i(glcx + aaInnerRadius * sinCosValues.cosAtIndex(i)));
+                tmpVertexBuffer[1] = (f2i(glcy + aaInnerRadius * sinCosValues.sinAtIndex(i)));
+                tmpVertexBuffer[2] = (f2i(0f));
+                tmpVertexBuffer[3] = (alphaZeroColor);
 
-                lineVertices.put(f2i(glcx + aaOuterRadius * sinCosValues.cosAtIndex(i)));
-                lineVertices.put(f2i(glcy + aaOuterRadius * sinCosValues.sinAtIndex(i)));
-                lineVertices.put(f2i(0f));
-                lineVertices.put(alphaZeroColor);
+                tmpVertexBuffer[4] = (f2i(glcx + aaOuterRadius * sinCosValues.cosAtIndex(i)));
+                tmpVertexBuffer[5] = (f2i(glcy + aaOuterRadius * sinCosValues.sinAtIndex(i)));
+                tmpVertexBuffer[6] = (f2i(0f));
+                tmpVertexBuffer[7] = (alphaZeroColor);
 
                 int baseCoreIndex = this.numLineVertices + 2 * i;
                 int baseAaIndex = baseCoreIndex + 2 * polySides;
                 if (i < polySides - 1) {
-                    lineVertexIndices.put(baseAaIndex + 0);
-                    lineVertexIndices.put(baseCoreIndex + 0);
-                    lineVertexIndices.put(baseAaIndex + 2);
-                    lineVertexIndices.put(baseCoreIndex + 0);
-                    lineVertexIndices.put(baseAaIndex + 2);
-                    lineVertexIndices.put(baseCoreIndex + 2);
+                    tmpIndexBuffer[0] = baseAaIndex + 0;
+                    tmpIndexBuffer[1] = baseCoreIndex + 0;
+                    tmpIndexBuffer[2] = baseAaIndex + 2;
+                    tmpIndexBuffer[3] = baseCoreIndex + 0;
+                    tmpIndexBuffer[4] = baseAaIndex + 2;
+                    tmpIndexBuffer[5] = baseCoreIndex + 2;
 
-                    lineVertexIndices.put(baseAaIndex + 1);
-                    lineVertexIndices.put(baseCoreIndex + 1);
-                    lineVertexIndices.put(baseAaIndex + 3);
-                    lineVertexIndices.put(baseCoreIndex + 1);
-                    lineVertexIndices.put(baseAaIndex + 3);
-                    lineVertexIndices.put(baseCoreIndex + 3);
+                    tmpIndexBuffer[6] = baseAaIndex + 1;
+                    tmpIndexBuffer[7] = baseCoreIndex + 1;
+                    tmpIndexBuffer[8] = baseAaIndex + 3;
+                    tmpIndexBuffer[9] = baseCoreIndex + 1;
+                    tmpIndexBuffer[10] = baseAaIndex + 3;
+                    tmpIndexBuffer[11] = baseCoreIndex + 3;
                 }
                 else {
                     // Wrap around to start.
-                    lineVertexIndices.put(baseAaIndex + 0);
-                    lineVertexIndices.put(baseCoreIndex + 0);
-                    lineVertexIndices.put(this.numLineVertices + 2 * polySides);
-                    lineVertexIndices.put(baseCoreIndex + 0);
-                    lineVertexIndices.put(this.numLineVertices + 2 * polySides);
-                    lineVertexIndices.put(this.numLineVertices);
+                    tmpIndexBuffer[0] = baseAaIndex + 0;
+                    tmpIndexBuffer[1] = baseCoreIndex + 0;
+                    tmpIndexBuffer[2] = this.numLineVertices + 2 * polySides;
+                    tmpIndexBuffer[3] = baseCoreIndex + 0;
+                    tmpIndexBuffer[4] = this.numLineVertices + 2 * polySides;
+                    tmpIndexBuffer[5] = this.numLineVertices;
 
-                    lineVertexIndices.put(baseAaIndex + 1);
-                    lineVertexIndices.put(baseCoreIndex + 1);
-                    lineVertexIndices.put(this.numLineVertices + 2 * polySides + 1);
-                    lineVertexIndices.put(baseCoreIndex + 1);
-                    lineVertexIndices.put(this.numLineVertices + 2 * polySides + 1);
-                    lineVertexIndices.put(this.numLineVertices + 1);
+                    tmpIndexBuffer[6] = baseAaIndex + 1;
+                    tmpIndexBuffer[7] = baseCoreIndex + 1;
+                    tmpIndexBuffer[8] = this.numLineVertices + 2 * polySides + 1;
+                    tmpIndexBuffer[9] = baseCoreIndex + 1;
+                    tmpIndexBuffer[10] = this.numLineVertices + 2 * polySides + 1;
+                    tmpIndexBuffer[11] = this.numLineVertices + 1;
                 }
+
+                lineVertices.put(tmpVertexBuffer, 0, 8);
+                lineVertexIndices.put(tmpIndexBuffer, 0, 12);
             }
 
         }
