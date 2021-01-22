@@ -445,7 +445,9 @@ public class BouncyActivity extends Activity {
     public void doEndGame(View view) {
         // Game might be paused, if manually ended from button.
         unpauseGame();
-        field.endGame();
+        synchronized (field) {
+            field.endGame();
+        }
     }
 
     public void doPreferences(View view) {

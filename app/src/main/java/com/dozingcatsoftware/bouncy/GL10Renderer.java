@@ -110,13 +110,14 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     @Override public void onDrawFrame(GL10 gl) {
         Field field = manager.getField();
-        if (field == null) return;
-        synchronized (field) {
-            startGLElements(gl);
-            field.draw(this);
-            endGLElements(gl);
+        if (field == null) {
+            return;
         }
-
+        startGLElements(gl);
+        synchronized (field) {
+            field.draw(this);
+        }
+        endGLElements(gl);
         synchronized (renderLock) {
             renderDone = true;
             renderLock.notify();

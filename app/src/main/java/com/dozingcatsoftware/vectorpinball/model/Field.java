@@ -296,8 +296,7 @@ public class Field implements ContactListener {
 
     /** Removes a ball from play. If there are no other balls on the field, calls doBallLost. */
     public void removeBall(Ball ball) {
-        ball.destroySelf();
-        this.balls.remove(ball);
+        this.removeBallWithoutBallLoss(ball);
         if (this.balls.isEmpty()) {
             this.doBallLost();
         }
@@ -362,9 +361,6 @@ public class Field implements ContactListener {
         return this.getBalls().size() > 0 || zoomNanos > 0;
     }
 
-
-    ArrayList<Ball> deadBalls = new ArrayList<>(); // avoid allocation every time
-
     /**
      * Removes balls that are not in play, as determined by optional "deadzone" property of
      * launch parameters in field layout.
@@ -373,26 +369,32 @@ public class Field implements ContactListener {
         List<Float> deadRect = layout.getLaunchDeadZone();
         if (deadRect == null) return;
 
+        ArrayList<Ball> deadBalls = null;  // Don't allocate until needed.
         for (int i = 0; i < this.balls.size(); i++) {
             Ball ball = this.balls.get(i);
             Vector2 bpos = ball.getPosition();
             if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
                     bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
+                if (deadBalls == null) {
+                    deadBalls = new ArrayList<>();
+                }
                 deadBalls.add(ball);
                 ball.destroySelf();
             }
         }
 
-        for (int i = 0; i < deadBalls.size(); i++) {
-            this.balls.remove(deadBalls.get(i));
+        if (deadBalls != null) {
+            for (Ball b : deadBalls) {
+                this.removeBallWithoutBallLoss(b);
+            }
         }
-        deadBalls.clear();
     }
 
     // Reusable array for sorting elements and balls into the order in which they should be draw.
     // Earlier items are drawn first, so "upper" items should compare "greater" than lower.
     private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<>();
     // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
+    // Except bumpers which are drawn last, so balls appear under their outer circles.
     private Comparator<IDrawable> drawOrdering = Comparator
             .comparingInt(IDrawable::getLayer)
             .thenComparingInt(Field::drawOrderRank);

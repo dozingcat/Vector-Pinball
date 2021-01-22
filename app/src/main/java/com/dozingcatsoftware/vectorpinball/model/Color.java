@@ -72,4 +72,15 @@ public class Color {
     public static int toARGB(int color) {
         return color;
     }
+
+    public static int toAGBR(int color) {
+        int blue = (color & 0xff) << 16;
+        int red = (color >> 16) & 0xff;
+        return (color & 0xff00ff00) | blue | red;
+    }
+
+    public static int toRGBA(int color) {
+        int alpha = (color >> 24) & 0xff;
+        return (color << 8) | alpha;
+    }
 }
