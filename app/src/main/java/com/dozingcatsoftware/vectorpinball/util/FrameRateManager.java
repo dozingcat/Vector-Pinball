@@ -46,8 +46,9 @@ public class FrameRateManager {
     long totalFrames = 0;
     boolean resetRequested = false;
 
-    final static long BILLION = 1000000000L; // nanoseconds per second.
-    final static long MILLION = 1000000L; // nanoseconds per millisecond.
+    final static long BILLION = 1_000_000_000L; // nanoseconds per second.
+    final static long MILLION = 1_000_000L; // nanoseconds per millisecond.
+    final static long MIN_SLEEP_NANOS = 100_000L;
 
     /**
      * Creates a new FrameRateManager object with the specified target frame rates. The first array
@@ -193,7 +194,7 @@ public class FrameRateManager {
     public long nanosToWaitUntilNextFrame() {
         long time = nanoTimeFn.getAsLong();
         if (previousFrameTimestamps.isEmpty()) {
-            return MILLION;
+            return MIN_SLEEP_NANOS;
         }
         long lastStartTime = previousFrameTimestamps.getLast();
         long singleFrameGoalTime = lastStartTime + currentNanosPerFrame;
@@ -208,8 +209,8 @@ public class FrameRateManager {
             if (behind > 0) waitTime -= behind;
         }
 
-        // always wait for at least 1 millisecond
-        return Math.max(waitTime, MILLION);
+        // Always wait for a minimum duration.
+        return Math.max(waitTime, MIN_SLEEP_NANOS);
     }
 
     /**

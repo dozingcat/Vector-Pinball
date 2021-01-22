@@ -78,7 +78,6 @@ public class Ball implements IDrawable {
     }
 
     public float getRadius() {
-        body.getFixtureList();
         CircleShape shape = (CircleShape)body.getFixtureList().get(0).getShape();
         return shape.getRadius();
     }
