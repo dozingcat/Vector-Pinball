@@ -36,7 +36,7 @@ public class BouncyActivity extends Activity {
     }
 
     CanvasFieldView canvasFieldView;
-    ScoreView scoreView;
+    static ScoreView scoreView;
 
     GLFieldView glFieldView;
     GL10Renderer gl10Renderer;
@@ -296,6 +296,7 @@ public class BouncyActivity extends Activity {
 
         VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
+        VPSoundpool.setHapticFeedbackEnabled(prefs.getBoolean("vibrate",true));
     }
 
     // Called every 100 milliseconds while app is visible, to update score view and high score.

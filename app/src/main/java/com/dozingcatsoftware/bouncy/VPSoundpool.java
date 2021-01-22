@@ -9,7 +9,9 @@ import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 
 import com.dozingcatsoftware.vectorpinball.model.AudioPlayer;
 
@@ -21,6 +23,7 @@ public class VPSoundpool {
     private static Context mContext;
     private static Random mRandom = new Random();
 
+    private static boolean hapticFeedbackEnabled = true;
     private static boolean soundEnabled = true;
     private static boolean musicEnabled = true;
     private static int cScore = 0;
@@ -102,6 +105,9 @@ public class VPSoundpool {
     public static void setSoundEnabled(boolean enabled) {
         soundEnabled = enabled;
     }
+    public static void setHapticFeedbackEnabled(boolean enabled) {
+        hapticFeedbackEnabled = enabled;
+    }
 
     public static void setMusicEnabled(boolean enabled) {
         musicEnabled = enabled;
@@ -127,6 +133,12 @@ public class VPSoundpool {
             Integer soundID = mSoundPoolMap.get(soundKey);
             if (soundID!=null) {
                 mSoundPool.play(soundID, volume, volume, 1, 0, pitch);
+
+                if (hapticFeedbackEnabled) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                        BouncyActivity.scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
+                }
             }
         }
     }
