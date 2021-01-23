@@ -1,0 +1,3 @@
+- Fixed possible crash when ending game.
+- Improved OpenGL performance.
+- Improved performance on star table.
