@@ -53,16 +53,13 @@ public class FieldDriver {
         }
     }
 
-    int counter = 0;
     /**
      * Main loop for the game thread. Repeatedly calls field.tick to advance the game simulation,
      * redraws the field, and sleeps until it's time for the next frame. Dynamically adjusts sleep
      * times in an attempt to maintain a consistent frame rate.
      */
     void threadMain() {
-        long t1, t2, t3;
         while (running) {
-            counter++;
             frameRateManager.frameStarted();
             boolean fieldActive = true;
             if (field != null) {
@@ -77,15 +74,9 @@ public class FieldDriver {
                             fieldTickNanos = (long)
                                     (INACTIVE_FRAME_MSECS * MILLION * field.getTargetTimeRatio());
                         }
-                        t1 = System.nanoTime();
                         field.tick(fieldTickNanos, 4);
-                        t2 = System.nanoTime();
                     }
                     drawFn.run();
-                    t3 = System.nanoTime();
-                    if (counter % 100 == 0) {
-                        android.util.Log.i("Timing", "tick: " + (t2 - t1) + " draw: " + (t3 - t2));
-                    }
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
@@ -104,9 +95,6 @@ public class FieldDriver {
                 continue;
             }
 
-            if (counter % 100 == 0) {
-                android.util.Log.i("FRM", "Sleeping for: " + frameRateManager.nanosToWaitUntilNextFrame());
-            }
             frameRateManager.sleepUntilNextFrame();
 
             // For debugging, show frames per second and other info.
