@@ -42,6 +42,8 @@ public class VPSoundpool {
 
     static int ID_ROLLOVER 		= 200;
 
+    static Runnable hapticFn;
+
     private static final String LOG_TAG = "VPSoundPool";
 
     public static void initSounds(Context theContext) {
@@ -127,6 +129,10 @@ public class VPSoundpool {
             Integer soundID = mSoundPoolMap.get(soundKey);
             if (soundID!=null) {
                 mSoundPool.play(soundID, volume, volume, 1, 0, pitch);
+
+                if (hapticFn != null) {
+                    hapticFn.run();
+                }
             }
         }
     }

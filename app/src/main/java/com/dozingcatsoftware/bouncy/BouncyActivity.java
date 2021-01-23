@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -146,6 +147,7 @@ public class BouncyActivity extends Activity {
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
         (new Thread(VPSoundpool::loadSounds)).start();
+        VPSoundpool.hapticFn = () -> scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
