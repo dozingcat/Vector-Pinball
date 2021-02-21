@@ -11,6 +11,7 @@
 
     <string name="sound_pref_title">Sound</string>
     <string name="music_pref_title">Background Music</string>
+    <string name="haptic_feedback_pref_title">Haptic Feedback</string>
     <string name="show_fps_pref_title">Show FPS</string>
     <string name="zoom_pref_title">Zoom Playfield</string>
     <string name="use_opengl_pref_title">OpenGL Rendering</string>

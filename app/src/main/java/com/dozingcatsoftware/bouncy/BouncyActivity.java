@@ -21,6 +21,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
@@ -42,7 +43,9 @@ public class BouncyActivity extends Activity {
     GLFieldView glFieldView;
     GL10Renderer gl10Renderer;
     GL20Renderer gl20Renderer;
-    boolean useOpenGL20;
+    // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
+    // Older devices tend to perform better with 1.0.
+    final boolean useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
     View buttonPanel;
     Button switchTableButton;
@@ -50,7 +53,7 @@ public class BouncyActivity extends Activity {
     CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
 
-    Handler handler = new Handler();
+    Handler handler = new Handler(Looper.myLooper());
 
     IStringResolver stringLookupFn = (key, params) -> {
         int stringId = getResources().getIdentifier(key, "string", getPackageName());
@@ -68,6 +71,9 @@ public class BouncyActivity extends Activity {
 
     boolean useZoom = true;
     static final float ZOOM_FACTOR = 1.5f;
+
+    final boolean supportsHapticFeedback = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+    boolean useHapticFeedback;
 
     // Delay after ending a game, before a touch will start a new game.
     static final long END_GAME_DELAY_MS = 1000;
@@ -96,9 +102,6 @@ public class BouncyActivity extends Activity {
         canvasFieldView.setManager(fieldViewManager);
 
         glFieldView = findViewById(R.id.glFieldView);
-        // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
-        // Older devices tend to perform better with 1.0.
-        useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
         if (useOpenGL20) {
             gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
                 try {
@@ -147,7 +150,11 @@ public class BouncyActivity extends Activity {
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
         (new Thread(VPSoundpool::loadSounds)).start();
-        VPSoundpool.hapticFn = () -> scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+        VPSoundpool.hapticFn = () -> {
+            if (supportsHapticFeedback && useHapticFeedback) {
+                scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            }
+        };
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
@@ -298,6 +305,7 @@ public class BouncyActivity extends Activity {
 
         VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
+        useHapticFeedback = prefs.getBoolean("haptic", false);
     }
 
     // Called every 100 milliseconds while app is visible, to update score view and high score.
