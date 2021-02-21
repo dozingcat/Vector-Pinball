@@ -3,6 +3,8 @@ package com.dozingcatsoftware.bouncy;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Window;
@@ -14,6 +16,10 @@ public class AboutActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.about);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.getWindow().setNavigationBarColor(Color.BLACK);
+        }
 
         // Get text to display by replacing "[TABLE_RULES]" with the contents of string resource
         // with ID table[level]_rules.

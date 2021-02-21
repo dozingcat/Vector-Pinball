@@ -17,6 +17,7 @@ import com.dozingcatsoftware.vectorpinball.model.GameState;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,6 +94,10 @@ public class BouncyActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.getWindow().setNavigationBarColor(Color.BLACK);
+        }
 
         this.numberOfLevels = FieldLayoutReader.getNumberOfLevels(this);
         this.currentLevel = getInitialLevel();
