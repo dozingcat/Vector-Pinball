@@ -1,0 +1,2 @@
+- Added optional haptic feedback.
+- Set navigation bar background to black.
