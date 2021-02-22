@@ -17,7 +17,7 @@ public class BouncyPreferences extends PreferenceActivity {
 
         // If multitouch or haptic feedback APIs aren't available, disable the preference items.
         // Coincidentally, both require Froyo (API level 8).
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
             CheckBoxPreference mtPref = (CheckBoxPreference) findPreference("independentFlippers");
             mtPref.setChecked(false);
             mtPref.setEnabled(false);
