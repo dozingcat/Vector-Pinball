@@ -157,7 +157,9 @@ public class BouncyActivity extends Activity {
         (new Thread(VPSoundpool::loadSounds)).start();
         VPSoundpool.hapticFn = () -> {
             if (supportsHapticFeedback && useHapticFeedback) {
-                scoreView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                scoreView.performHapticFeedback(
+                        HapticFeedbackConstants.KEYBOARD_TAP,
+                        HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             }
         };
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
