@@ -123,17 +123,14 @@ public class VPSoundpool {
     }
 
     static void playSound(int soundKey, float volume, float pitch) {
-        if (!soundsLoaded) return;
-
-        if (soundEnabled && mSoundPoolMap!=null) {
+        if (soundsLoaded && soundEnabled && mSoundPoolMap != null) {
             Integer soundID = mSoundPoolMap.get(soundKey);
-            if (soundID!=null) {
+            if (soundID != null) {
                 mSoundPool.play(soundID, volume, volume, 1, 0, pitch);
-
-                if (hapticFn != null) {
-                    hapticFn.run();
-                }
             }
+        }
+        if (hapticFn != null) {
+            hapticFn.run();
         }
     }
 
