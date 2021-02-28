@@ -13,8 +13,8 @@ android {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
         targetSdkVersion 30
-        versionCode 32
-        versionName "1.9.5"
+        versionCode 33
+        versionName "1.9.6"
         multiDexEnabled true
     }
 

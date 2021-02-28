@@ -1,0 +1,1 @@
+- Fix bug where haptic feedback didn't work if sound was disabled.
