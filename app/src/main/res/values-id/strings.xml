@@ -35,7 +35,7 @@
     <string name="ball_number_message">Bola ke-%1$d</string>
     <string name="shoot_again_message">Luncurkan Lagi</string>
     <string name="game_over_message">Permainan Berakhir</string>
-    <string name="bump_message">Bum!</string>
+    <string name="bump_message">Pantul!</string>
     <string name="touch_to_start_message">Tekan untuk memulai</string>
     <string name="last_score_message">Skor Terakhir: %1$s</string>
     <string name="top_high_score_message">Skor Tertinggi: %1$s</string>
