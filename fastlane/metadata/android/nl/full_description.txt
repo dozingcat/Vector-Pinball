@@ -1,0 +1,3 @@
+Flipperspel met eenvoudige vectorafbeeldingen en zeven tafellay-outs, met behulp van een physics-bibliotheek voor nauwkeurige simulatie.
+
+Zie de GitHub-projectpagina op https://github.com/dozingcat/Vector-Pinball als je wilt helpen met het coderen of ontwerpen van tabellen.
