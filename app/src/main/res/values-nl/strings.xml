@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">Onafhankelijke Flippers</string>
+    <string name="independent_flippers_pref_summary_on">Een aanraakje activeert de flippers op tegengestelde kanten van de scherm</string>
+    <string name="independent_flippers_pref_summary_off">Elke aanraakje activeert alle flippers</string>
+
+    <string name="line_width_pref_title">Lijn-Breedte</string>
+    <string name="line_width_pref_dialog_message">Typ de lijn-breedte in het pixel-formaat, of letterlijk 0 om een gewone breedte te gebruiken afhankelijk van uw scherm-grootte.</string>
+
+    <string name="sound_pref_title">Geluid</string>
+    <string name="music_pref_title">Achtergrondmuziek</string>
+    <string name="haptic_feedback_pref_title">Haptische Feedback</string>
+    <string name="show_fps_pref_title">Toon FPS</string>
+    <string name="zoom_pref_title">De Speelveld Inzoomen</string>
+    <string name="use_opengl_pref_title">OpenGL-Rendering</string>
+
+    <string name="about_text">Vector Pinball 1.9.6\n© 2010-2021 Brian Nenninger\nComments en bug-opmerkingen: bnenning@gmail.com\n\nRaak de scherm aan om een nieuwe speel te beginnen, een bal lanceren als een is niet in het spel, en ook de flippers te activeren. Raak het scoregebied aan om het spel te pauzeren.\n\n[TABLE_RULES]\n\nDoor de knop Voorkeuren of het menu-item te selecteren, kunt u de volgende instellingen wijzigen:\n- Geluid: Schakelt geluidseffecten in en uit.\n- Achtergrondmuziek: Schakelt achtergrondmuziek in en uit.\n- Haptische Feedback: trilt bij bumperhits en andere game-evenementen.\nOnafhankelijke Flippers: indien niet aangevinkt, activeert elke aanraking beide flippers. Als dit is aangevinkt, moet u de linkerkant van het scherm aanraken voor de linkerflipper en de rechterkant voor de rechterflipper.\n- De Speelveld Inzoomen: Als deze optie is aangevinkt, wordt tijdens het spelen ingezoomd op de locatie van de bal.\n- OpenGL-Rendering: Gebruikt OpenGL om afbeeldingen te tekenen. Dit biedt meestal de beste combinatie van grafische kwaliteit en prestaties, maar sommige apparaten doen het misschien beter als het is uitgeschakeld.\n- Toon FPS: indien aangevinkt, toont frames per seconde getekend in de linkerbovenhoek.\n\nVector Pinball is open source; de code staat op https://github.com/dozingcat/Vector-Pinball\n\nMet dank aan Mario op www.badlogicgames.com voor codeverbeteringen en libgdx.\n\ngeluid, muziek &amp; audiocode, door pdx\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">Tabel Regels:\n- Steek alle cyaan rollovers in de bovenste of onderste rijen aan om de scorevermenigvuldiger te verhogen. Alle punten die u verdient, worden met dit bedrag vermenigvuldigd. Als je op de linkerhelling schiet, gaat de vermenigvuldiger ook vooruit.\n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.\n- Als je een groep drop-doelen raakt, wordt het volgende licht in het midden van het veld geactiveerd. Wanneer het grote witte centrale licht is geactiveerd, schiet je op de linkerhelling om multiball te starten.</string>
+    <string name="table2_rules">Tabel Regels:\n- Steek alle cyaan rollovers in de onderste rijen aan om de scorevermenigvuldiger te verhogen. Alle punten die u verdient, worden met dit bedrag vermenigvuldigd. \n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.\n- De cirkels in het midden van het veld houden bij hoe vaak je alle linker, bovenste en rechter drop-doelen hebt geraakt. Als ze allemaal minstens 3 keer zijn geraakt, schiet je op de rode bumper rechtsboven om multiball te starten.</string>
+    <string name="table3_rules">Tabel Regels:\n- Steek alle cyaan rollovers in de onderste rijen aan om de scorevermenigvuldiger te verhogen. Alle punten die u verdient, worden met dit bedrag vermenigvuldigd. \n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.\n- Als je op een van beide hellingen schiet, worden de bumpers rood en worden ze binnen enkele seconden weer blauw. Raak ze gedurende deze tijd voor extra punten.\n- Draai de middelste ringen rood door de bumpers te raken, en de middelste sets drop-targets. Als alle ringen rood zijn, schiet je op een van de hellingen om multiball te starten.</string>
+    <string name="table4_rules">Tabel Regels:\n- Elke bumper verhoogt de scorevermenigvuldiger met 0,01x. Door op de bovenste drop-doelen te schieten of alle rollovers van de baan te verlichten, wordt dit aantal verhoogd.\n- Schiet alle zes bumpers neer om de middelste richtingaanwijzers te verlichten. Wanneer alle indicatoren voor een rij branden, schiet je het juiste gat om de bal te vergrendelen voor multiball.\n- Multiball begint wanneer je drie ballen lockt. Tijdens multiball lichten de middelste indicatoren op als er een bal overheen gaat. Steek ze allemaal aan om een jackpot te scoren.\n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.</string>
+    <string name="table5_rules">Tabel Regels:\n- De centrale cirkel heeft twaalf punten eromheen, 3 van elk 4 kleuren. Als je op een bovenste helling schiet, verandert de kleur van de bal en kan deze de punten met bijpassende kleur activeren.\n- Wanneer alle 12 punten rond de cirkel zijn geactiveerd, worden ze verwijderd door de randen van de roterende driehoek te raken. Schiet op het doelwit in het midden van de driehoek om multiball te starten.\n- Steek tijdens multiball de 12 cirkelpunten opnieuw aan om een jackpot te scoren, die elke keer in waarde stijgt.\n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.</string>
+    <string name="table6_rules">Tabel Regels:\n- In het midden van de tafel draaien vijf planeten om een zon. Wanneer de bal over een van de planeten rolt, verandert deze in de kleur van de planeet en begint de planeet te knipperen.\n- Schiet op het bijbehorende doelwit om de planeet te &quot;activeren&quot; en stevig te maken. Voor de binnenste oranje planeet, raak de doelen in de linkerbovenhoek. Activeer voor de tweede blauwe planeet de rollovers rechtsboven. Voor de overige planeten schiet je op de helling van de bijpassende kleur.\n- Activeer alle vijf planeten om multiball te starten. Activeer in multiball alle planeten opnieuw voor een jackpot.\n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.\n- De zon en planeten hebben zwaartekracht en zullen ballen aantrekken als ze dichtbij komen.</string>
+    <string name="table7_rules">Tabel Regels:\n- Het midden van de tafel bevat een sterrenkaart. Schiet op een van de hellingen met de knipperende groene pijlen om de kaart naar een sterrenbeeld te laten bewegen.\n- De sterren waaruit het sterrenbeeld bestaat, worden groen weergegeven. Rol de bal erover om ze te activeren; ze worden geel en lijnen verbinden geactiveerde sterren om de omtrek van het sterrenbeeld te tekenen.\n- Wanneer de omtrek van het sterrenbeeld voltooid is, schiet je op de rechterhelling met de knipperende gele pijl om de bal te vergrendelen. Herhaal dit proces met nog twee sterrenbeelden. Het vergrendelen van de derde bal zal multiball starten.\n- Voltooi in multiball de resterende sterrenbeelden en schiet vervolgens op de juiste helling voor een jackpot.\n- Het spel begint met ball savers in de linker en rechter outlanes, die verdwijnen bij gebruik. Raak alle drop-doelen aan de linker- of rechterkant om ze te herstellen.</string>
+
+    <string name="change_table_button_label">Tabel Wijzigen</string>
+    <string name="help_button_label">Hulp</string>
+    <string name="preferences_button_label">Voorkeuren</string>
+    <string name="end_game_button_label">Beëindig het Spel</string>
+    <string name="unlimited_balls_label">Onbeperkte Ballen</string>
+
+    <string name="ball_number_message">Bal %1$d</string>
+    <string name="shoot_again_message">Opnieuw Schieten</string>
+    <string name="game_over_message">Game Over</string>
+    <string name="bump_message">Bump!</string>
+    <string name="touch_to_start_message">Raak aan om te starten</string>
+    <string name="last_score_message">Laatste score: %1$s</string>
+    <string name="top_high_score_message">Hoogste score: %1$s</string>
+    <string name="other_high_score_message">#%1$d Score: %2$s</string>
+
+    <string name="left_save_enabled_message">Linkerbesparing Ingeschakeld</string>
+    <string name="right_save_enabled_message">Rechterbesparing Ingeschakeld</string>
+    <string name="shoot_ramp_multiball_message">Schiethelling voor Multiball</string>
+    <string name="multiball_started_message">Multiball!</string>
+    <string name="multiplier_message">%1$dx Vermenigvuldiger</string>
+    <string name="shoot_red_bumper_message">Schiet de Rode Bumper</string>
+    <string name="bumper_multiplier_message">Bumpervermenigvuldiger %1$d%%"</string>
+    <string name="jackpot_received_message">Jackpot!</string>
+    <string name="jackpot_received_with_multipler_message">%1$dx Jackpot!</string>
+    <string name="multiball_ready_message">Multiball Klaar</string>
+    <string name="ball_lock_ready_message">Kogelslot Klaar</string>
+    <string name="ball_locked_message">Bal %1$d Gesloten</string>
+    <string name="shoot_pyramid_message">Schiet op de Piramide!</string>
+    <string name="extra_ball_received_message">Extra Bal!</string>
+    <string name="blue_ramp_bonus_message">Blauwe ramp +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Rode ramp +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Gele ramp +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Groene ramp +%1$d%%</string>
+    <string name="color_blue">Blauw</string>
+    <string name="color_red">Rood</string>
+    <string name="color_yellow">Geel</string>
+    <string name="color_green">Groen</string>
+    <string name="planet_activated_message">Planeet %1$d Geactiveerd!</string>
+    <string name="ramp_bonus_message">%1$dx Ramp</string>
+    <string name="ramp_bonus_increased_message">Ramp bonus toegenomen</string>
+    <string name="shoot_ramp_jackpot_message">Schiet de ramp voor een jackpot</string>
+    <string name="constellation_complete_message">%1$s voltooid</string>
+
+</resources>
