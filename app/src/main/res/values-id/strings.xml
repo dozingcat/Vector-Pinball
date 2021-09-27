@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">Palang Tersendiri</string>
+    <string name="independent_flippers_pref_summary_on">Tekanan akan mengaktifkan palang pada sisi yang sama di layar</string>
+    <string name="independent_flippers_pref_summary_off">Tekanan apa pun akan mengaktifkan semua palang</string>
+
+    <string name="line_width_pref_title">Lebar Garis</string>
+    <string name="line_width_pref_dialog_message">Masukkan lebar garis dalam pixel atau 0 untuk menggunakan lebar baku berdasarkan resolusi layar.</string>
+
+    <string name="sound_pref_title">Suara</string>
+    <string name="music_pref_title">Musik Latar Belakang</string>
+    <string name="haptic_feedback_pref_title">Umpan Balik Haptik</string>
+    <string name="show_fps_pref_title">Perlihatkan FPS</string>
+    <string name="zoom_pref_title">Perbesar Area Permainan</string>
+    <string name="use_opengl_pref_title">OpenGL Rendering</string>
+
+    <string name="about_text">Vector Pinball 1.9.6\n© 2010-2021 Brian Nenninger\nKomentar dan pelaporan masalah: bnenning@gmail.com\n\nTekan layar untuk memulai permainan baru, luncurkan bola jika tidak ada yang dimainkan, dan aktifkan palangnya. Tekan area skor untuk menjeda permainan.\n\n[TABLE_RULES]\n\nMemilih tombol Preferensi atau item menu memperbolehkan Anda untuk mengubah pengaturan sebagai berikut:\n- Suara: Menyalakan dan mematikan efek suara.\n- Musik Latar Belakang: Menyalakan dan mematikan musik latar belakang.\n- Umpan Balik Haptik: Bergetar saat bola menyentuh bumper dan alat dalam permainan lainnya.\nPalang Tersendiri: Ketika tidak dicentang, tekanan apa pun akan mengaktifkan kedua palang. Ketika dicentang Anda harus menekan sisi kiri layar untuk palang kiri dan sisi kanan untuk palang kanan.\n- Perbesar: Ketika dicentang, layar akan diperbesar pada lokasi bola saat bermain\n- OpenGL Rendering: Menggunakan OpenGL untuk menggambar grafik. Ini biasanya memberikan kombinasi terbaik untuk kualitas grafik dan performa, tapi beberapa perangkat akan lebih baik jika ini dimatikan.\n- Perlihatkan FPS: When checked, shows frames drawn per second in the upper left. Ketika dicentang, perlihatkan bingkai tergambar per detik di kanan atas.\n\nVector Pinball merupakan aplikasi sumber terbuka; kodenya ada di https://github.com/dozingcat/Vector-Pinball\n\nTerima kasih kepada Mario di www.badlogicgames.com untuk perbaikan kode dan libgdx.\n\nsuara, musik, &amp; kode audio, oleh pdx\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">Peraturan Meja:\n- </string>
+    <string name="table2_rules">Peraturan Meja:\n- Nyalakan semua cincin sian di jalur atas atau bawah untuk meningkatkan pengkali skor. Semua poin yang Anda dapatkan akan dikalikan oleh angka ini. Menembak landaian kiri juga akan meningkatkan pengkali.\n- Permainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.\n- Menembak grup target manapun akan menyalakan cahaya berikutnya di tengah-tengah meja. Ketika cahaya putih besar di tengah menyala, tembak landaian kiri untuk memulai multi-bola.</string>
+    <string name="table3_rules">Peraturan Meja:\n- Nyalakan semua cincin sian di jalur bawah untuk meningkatkan pengkali skor. Semua poin yang Anda dapatkan akan dikalikan oleh angka ini. \n- Permainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.\n- Menembak landaian manapun akan mengubah bumper menjadi merah dan akan kembali menjadi biru dalam beberapa detik. Kenai bumper dalam waktu ini untuk poin tambahan.\n- Ubah cincin tengah menjadi merah dengan mengenai bumper dan set target di tengah. Ketika semua cincin berubah merah, tembak landaian manapun untuk memulai multi-bola.</string>
+    <string name="table4_rules">Peraturan Meja:\n- Setiap bumper meningkatkan pengkali skor sebanyak 0.01x. Menembak target teratas atau menyalakan seluruh cincin barisan akan menambahkan angka ini.\n- Tembak semua enam bumper untuk menyalakan indikator tengah. Ketika semua indikator untuk sebaris telah menyala, tembak lubang kanan untuk mengunci bola untuk multi-bola.\n- Multi-bola dimulai ketika Anda mengunci tiga bola. Ketika multi-bola, indikator tengah akan menyala ketika bola melewati mereka. Nyalakan mereka semua untuk menskor jackpot\n- Permainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.</string>
+    <string name="table5_rules">Peraturan Meja:\n- Cincin tengah mempunyai dua belas poin di sekitarnya, empat warna dengan tiga poin setiap warnanya. Menembak landaian paling atas akan mengubah warna bola dan memperbolehkanya untuk mengaktifkan poin dengan warna yang sama.\n- Ketika semua dua belas poin di sekitar cincin telah dinyalakan, mengenai sudut dari segitiga berputar akan menghapusnya. Tembak target di tengah-tengah segitiga untuk memulai multi-bola.\n- Ketika multi-bola, nyalakan dua belas poin cincin lagi untuk menskor jackpot yang akan terus bertambah berjalannya waktu.\n- Permainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.</string>
+    <string name="table6_rules">Peraturan Meja:\n- Di tengah-tengah meja, lima planet mengorbit matahari. Ketika bola melewati salah satu planet, planetnya akan berganti warna dan mulai berkedap-kedip.\n- Tembak target yang sesuai untuk &quot;menyalakan&quot; planet dan membuatnya solid. Untuk planet oranye paling dalam, tembak target di kiri atas. Untuk planet biru kedua paling dalam, nyalakan cincin di kanan atas. Untuk planet lainnya, tembak landaian dengan warna yang sama.\n- Nyalakan semua lima planet untuk memulai multi-bola. Dalam multi-bola, nyalakan semua planet lagi untuk jackpot.\n- PerPermainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.\n- Matahari dan planetnya memiliki gravitasi dan akan menarik bola ketika bolanya dekat dengan mereka.</string>
+    <string name="table7_rules">Peraturan Meja:\n- Di tengah-tengah meja ada peta bintang. Menembak salah satu landaian dengan panah hijau berkedap-kedip akan menjadikan peta berpindah ke sebuah konstelasi.\n- Bintang yang membentuk konstelasi akan muncul dengan warna hijau. Lewati mereka untuk menyalakannya; mereka akan berubah warna menjadi kuning dan garis akan menghubungkan bintang yang aktif untuk menggambar garis besar konstelasi.\- Ketika garis besar konstelasi terselesaikan, tembak landaian kanan dengan panah kuning berkedap-kedip untuk mengunci bola. Ulangi proses ini dengan dua konstelasi lagi. Mengunci bola ketiga akan memulai multi-bola.\n- Dalam multi-bola, selesaikan konstelasi yang tersisa dan tembak landaian kanan untuk jackpot.\n- Permainan dimulai dengan pelindung bola di kiri dan kanan jalan keluaran yang akan menghilang jika digunakan. Kenai target di sisi kiri atau kanan untuk mengembalikannya.</string>
+
+    <string name="change_table_button_label">Ganti Meja</string>
+    <string name="help_button_label">Bantuan</string>
+    <string name="preferences_button_label">Preferensi</string>
+    <string name="end_game_button_label">Akhiri Permainan</string>
+    <string name="unlimited_balls_label">Bola Tak Terhingga</string>
+
+    <string name="ball_number_message">Bola ke-%1$d</string>
+    <string name="shoot_again_message">Luncurkan Lagi</string>
+    <string name="game_over_message">Permainan Berakhir</string>
+    <string name="bump_message">Pantul!</string>
+    <string name="touch_to_start_message">Tekan untuk memulai</string>
+    <string name="last_score_message">Skor Terakhir: %1$s</string>
+    <string name="top_high_score_message">Skor Tertinggi: %1$s</string>
+    <string name="other_high_score_message">Skor #%1$d: %2$s</string>
+
+    <string name="left_save_enabled_message">Pelindung Kiri Dinyalakan</string>
+    <string name="right_save_enabled_message">Pelindung Kanan Dinyalakan</string>
+    <string name="shoot_ramp_multiball_message">Tembak Landaian untuk Multi-Bola</string>
+    <string name="multiball_started_message">Multi-Bola!</string>
+    <string name="multiplier_message">%1$dx Pengkali</string>
+    <string name="shoot_red_bumper_message">Tembak Bumper Merah</string>
+    <string name="bumper_multiplier_message">Pengkali Bumper %1$d%%"</string>
+    <string name="jackpot_received_message">Jackpot!</string>
+    <string name="jackpot_received_with_multipler_message">%1$dx Jackpot!</string>
+    <string name="multiball_ready_message">Multi-Bola Siap</string>
+    <string name="ball_lock_ready_message">Kunci Bola Siap</string>
+    <string name="ball_locked_message">Bola %1$d Dikunci</string>
+    <string name="shoot_pyramid_message">Tembak Piramida!</string>
+    <string name="extra_ball_received_message">Bola Tambahan!</string>
+    <string name="blue_ramp_bonus_message">Landaian Biru +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Landaian Merah +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Landaian Kuning +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Landaian Hijau +%1$d%%</string>
+    <string name="color_blue">Biru</string>
+    <string name="color_red">Merah</string>
+    <string name="color_yellow">Kuning</string>
+    <string name="color_green">Hijau</string>
+    <string name="planet_activated_message">Planet %1$d Diaktifkan!</string>
+    <string name="ramp_bonus_message">%1$dx Landaian</string>
+    <string name="ramp_bonus_increased_message">Bonus landaian ditambahkan</string>
+    <string name="shoot_ramp_jackpot_message">Tembak landaian untuk jackpot</string>
+    <string name="constellation_complete_message">%1$s terselesaikan</string>
+
+</resources>

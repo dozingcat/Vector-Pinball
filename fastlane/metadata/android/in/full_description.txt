@@ -1,0 +1,3 @@
+Permainan Pinball dengan grafik vektor sederhana dan tujuh tata letak meja, menggunakan perpustakaan fisika untuk simulasi yang akurat.
+
+Lihat halaman projek di GitHub di https://github.com/dozingcat/Vector-Pinball jika Anda ingin membantu dalam pengkodean atau merancang meja.
