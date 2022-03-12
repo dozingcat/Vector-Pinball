@@ -486,7 +486,15 @@ public class BouncyActivity extends Activity {
             }
         }
         else {
-            doStartGame(null);
+            // https://github.com/dozingcat/Vector-Pinball/issues/91
+            // doStartGame() needs to be synchronized so that we don't try to
+            // start the game while the FieldDriver thread is updating the
+            // Box2d world. But pauseGame() above should not be synchronized
+            // because that can deadlock the FieldDriver thread. Yes, all of
+            // this concurrency is badly in need of refactoring.
+            synchronized (field) {
+                doStartGame(null);
+            }
         }
     }
 
