@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -181,6 +182,15 @@ public class FieldViewManager {
         if (field.getBalls().size() == 0) field.launchBall();
     }
 
+    Long leftFlipperActivationMillis = null;
+    Long rightFlipperActivationMillis = null;
+    long minFlipperActivationMillis = 50;
+    Handler handler = new Handler();
+
+    long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
     /**
      * Called when the view is touched. Activates flippers, starts a new game if one is not in
      * progress, and launches a ball if one is not in play.
@@ -229,18 +239,74 @@ public class FieldViewManager {
             if (actionType == MotionEvent.ACTION_DOWN) {
                 launchBallIfNeeded();
             }
-            // Treat both active separately because setAllFlippersEngaged will cycle the rollovers,
-            // as opposed to separate calls to set(Left|Right)FlippersEngaged which would result in
-            // cycling one way and then immediately back the other, for no net change.
-            if (left && right) {
-                field.setAllFlippersEngaged(true);
-            }
-            else {
-                field.setLeftFlippersEngaged(left);
-                field.setRightFlippersEngaged(right);
-            }
+
+            updateFlippersFromTouchEvent(left, right);
         }
         return true;
+    }
+
+    private void updateFlippersFromTouchEvent(boolean left, boolean right) {
+        if (left && leftFlipperActivationMillis == null) {
+            leftFlipperActivationMillis = currentTimeMillis();
+        }
+        if (right && rightFlipperActivationMillis == null) {
+            rightFlipperActivationMillis = currentTimeMillis();
+        }
+        // Treat both active separately because setAllFlippersEngaged will cycle the rollovers,
+        // as opposed to separate calls to set(Left|Right)FlippersEngaged which would result in
+        // cycling one way and then immediately back the other, for no net change.
+        if (left && right) {
+            field.setAllFlippersEngaged(true);
+        }
+        else {
+            if (left) {
+                field.setLeftFlippersEngaged(true);
+            }
+            else {
+                Long interval = (leftFlipperActivationMillis != null) ?
+                        currentTimeMillis() - leftFlipperActivationMillis : null;
+                android.util.Log.i("FVM", "FVM Left flipper interval: " + interval);
+                if (interval == null || interval >= minFlipperActivationMillis) {
+                    field.setLeftFlippersEngaged(false);
+                    leftFlipperActivationMillis = null;
+                }
+                else {
+                    long delay = minFlipperActivationMillis - interval;
+                    android.util.Log.i("FVM", "Delaying left flipper release: " + delay);
+                    final long start = leftFlipperActivationMillis;
+                    handler.postDelayed(() -> {
+                        long actualDelay = currentTimeMillis() - start;
+                        android.util.Log.i("FVM", "Releasing left flipper after delay: " + actualDelay);
+                        field.setLeftFlippersEngaged(false);
+                        leftFlipperActivationMillis = null;
+                    }, delay);
+                }
+            }
+
+            if (right) {
+                field.setRightFlippersEngaged(true);
+            }
+            else {
+                Long interval = (rightFlipperActivationMillis != null) ?
+                        currentTimeMillis() - rightFlipperActivationMillis : null;
+                android.util.Log.i("FVM", "FVM Right flipper interval: " + interval);
+                if (interval == null || interval >= minFlipperActivationMillis) {
+                    field.setRightFlippersEngaged(false);
+                    rightFlipperActivationMillis = null;
+                }
+                else {
+                    long delay = minFlipperActivationMillis - interval;
+                    android.util.Log.i("FVM", "Delaying right flipper release: " + delay);
+                    final long start = rightFlipperActivationMillis;
+                    handler.postDelayed(() -> {
+                        long actualDelay = currentTimeMillis() - start;
+                        android.util.Log.i("FVM", "Releasing right flipper after delay: " + actualDelay);
+                        field.setRightFlippersEngaged(false);
+                        rightFlipperActivationMillis = null;
+                    }, delay);
+                }
+            }
+        }
     }
 
     static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(
