@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -229,18 +230,105 @@ public class FieldViewManager {
             if (actionType == MotionEvent.ACTION_DOWN) {
                 launchBallIfNeeded();
             }
-            // Treat both active separately because setAllFlippersEngaged will cycle the rollovers,
-            // as opposed to separate calls to set(Left|Right)FlippersEngaged which would result in
-            // cycling one way and then immediately back the other, for no net change.
-            if (left && right) {
-                field.setAllFlippersEngaged(true);
-            }
-            else {
-                field.setLeftFlippersEngaged(left);
-                field.setRightFlippersEngaged(right);
-            }
+            updateFlippersFromTouchEvent(left, right);
         }
         return true;
+    }
+
+    // These instance variables and the annoyingly complex logic in `updateFlippersFromTouchEvent`
+    // are a workaround for an edge case in Android's touch behavior. On some devices, if you touch
+    // near the edge of the screen, Android will not immediately send a touch event because that
+    // might just be incidental contact from how you're holding it. A touch event is only sent if
+    // you break contact quickly, and in that case Android sends a "touch down" event followed very
+    // quickly by a "touch up" event. On my Pixel 3a, the time between down and up events is around
+    // 10ms, compared to 50-100ms for quick touches not at the edge of the screen.
+    //
+    // If we handled those events normally, then the flipper would be engaged and then almost
+    // immediately disengaged, so it would barely move at all and not be able to apply force to
+    // the ball. Instead, we keep track of the most recent time that the left and right flippers
+    // were engaged. If we get a "touch up" event that is too soon after that, rather than
+    // disengaging the flipper right away, we schedule a future action. This ensures that flippers
+    // will be engaged for at least 50ms, which is typically long enough for them to fully rotate.
+    //
+    // Edge touches are still not ideal because the flipper will only start to move after you
+    // release your finger, rather than when you first touch the screen. But this at least gives you
+    // a chance of hitting the ball, and it doesn't affect non-edge touches.
+    private Long leftFlipperActivationMillis = null;
+    private Long rightFlipperActivationMillis = null;
+    private final long minFlipperActivationMillis = 50;
+    private final Handler handler = new Handler();
+
+    private long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    private void updateFlippersFromTouchEvent(boolean left, boolean right) {
+        if (left && leftFlipperActivationMillis == null) {
+            leftFlipperActivationMillis = currentTimeMillis();
+        }
+        if (right && rightFlipperActivationMillis == null) {
+            rightFlipperActivationMillis = currentTimeMillis();
+        }
+        // Treat both active separately because setAllFlippersEngaged will cycle the rollovers,
+        // as opposed to separate calls to set(Left|Right)FlippersEngaged which would result in
+        // cycling one way and then immediately back the other, for no net change.
+        if (left && right) {
+            field.setAllFlippersEngaged(true);
+        }
+        else {
+            if (left) {
+                field.setLeftFlippersEngaged(true);
+            }
+            else {
+                Long interval = (leftFlipperActivationMillis != null) ?
+                        currentTimeMillis() - leftFlipperActivationMillis : null;
+                // if (interval != null) android.util.Log.i("FVM", "FVM Left flipper interval: " + interval);
+                if (interval == null || interval >= minFlipperActivationMillis) {
+                    field.setLeftFlippersEngaged(false);
+                    leftFlipperActivationMillis = null;
+                }
+                else {
+                    long delay = minFlipperActivationMillis - interval;
+                    // android.util.Log.i("FVM", "Delaying left flipper release: " + delay);
+                    final long start = leftFlipperActivationMillis;
+                    handler.postDelayed(() -> {
+                        // Only deactivate the flipper if its state hasn't changed.
+                        if (leftFlipperActivationMillis != null && leftFlipperActivationMillis == start) {
+                            // long actualDelay = currentTimeMillis() - start;
+                            // android.util.Log.i("FVM", "Releasing left flipper after delay: " + actualDelay);
+                            field.setLeftFlippersEngaged(false);
+                            leftFlipperActivationMillis = null;
+                        }
+                    }, delay);
+                }
+            }
+
+            if (right) {
+                field.setRightFlippersEngaged(true);
+            }
+            else {
+                Long interval = (rightFlipperActivationMillis != null) ?
+                        currentTimeMillis() - rightFlipperActivationMillis : null;
+                // if (interval != null) android.util.Log.i("FVM", "FVM Right flipper interval: " + interval);
+                if (interval == null || interval >= minFlipperActivationMillis) {
+                    field.setRightFlippersEngaged(false);
+                    rightFlipperActivationMillis = null;
+                }
+                else {
+                    long delay = minFlipperActivationMillis - interval;
+                    // android.util.Log.i("FVM", "Delaying right flipper release: " + delay);
+                    final long start = rightFlipperActivationMillis;
+                    handler.postDelayed(() -> {
+                        if (rightFlipperActivationMillis != null && rightFlipperActivationMillis == start) {
+                            // long actualDelay = currentTimeMillis() - start;
+                            // android.util.Log.i("FVM", "Releasing right flipper after delay: " + actualDelay);
+                            field.setRightFlippersEngaged(false);
+                            rightFlipperActivationMillis = null;
+                        }
+                    }, delay);
+                }
+            }
+        }
     }
 
     static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(
