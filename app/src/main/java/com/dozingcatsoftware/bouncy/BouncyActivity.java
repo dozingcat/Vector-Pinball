@@ -49,8 +49,10 @@ public class BouncyActivity extends Activity {
     final boolean useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
     View buttonPanel;
-    Button switchTableButton;
+    Button startGameButton;
+    Button resumeGameButton;
     Button endGameButton;
+    Button switchTableButton;
     CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
 
@@ -137,8 +139,10 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
-        switchTableButton = findViewById(R.id.switchTableButton);
+        startGameButton = findViewById(R.id.startGameButton);
+        resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
+        switchTableButton = findViewById(R.id.switchTableButton);
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
@@ -176,6 +180,7 @@ public class BouncyActivity extends Activity {
         }
         // Reset frame rate since app or system settings that affect performance could have changed.
         fieldDriver.resetFrameRate();
+        updateButtons();
     }
 
     @Override public void onPause() {
@@ -197,7 +202,7 @@ public class BouncyActivity extends Activity {
                     glFieldView.onResume();
                 }
                 fieldViewManager.draw();
-                showPausedButtons();
+                updateButtons();
             }
             else {
                 unpauseGame();
@@ -211,12 +216,12 @@ public class BouncyActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
                 pauseGame();
-                showPausedButtons();
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
     public void pauseGame() {
         VPSoundpool.pauseMusic();
@@ -226,6 +231,8 @@ public class BouncyActivity extends Activity {
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
         if (glFieldView != null) glFieldView.onPause();
+
+        updateButtons();
     }
 
     public void unpauseGame() {
@@ -238,16 +245,34 @@ public class BouncyActivity extends Activity {
         fieldDriver.start();
         if (glFieldView != null) glFieldView.onResume();
 
-        if (field.getGameState().isGameInProgress()) {
-            buttonPanel.setVisibility(View.GONE);
-        }
+        updateButtons();
     }
 
-    void showPausedButtons() {
-        endGameButton.setVisibility(View.VISIBLE);
-        switchTableButton.setVisibility(View.GONE);
-        unlimitedBallsToggle.setVisibility(View.GONE);
-        buttonPanel.setVisibility(View.VISIBLE);
+    void updateButtons() {
+        GameState state = field.getGameState();
+        if (state.isPaused()) {
+            buttonPanel.setVisibility(View.VISIBLE);
+            startGameButton.setVisibility(View.GONE);
+            resumeGameButton.setVisibility(View.VISIBLE);
+            endGameButton.setVisibility(View.VISIBLE);
+            switchTableButton.setVisibility(View.GONE);
+            unlimitedBallsToggle.setVisibility(View.GONE);
+            resumeGameButton.requestFocus();
+        }
+        else {
+            if (state.isGameInProgress()) {
+                buttonPanel.setVisibility(View.GONE);
+            }
+            else {
+                buttonPanel.setVisibility(View.VISIBLE);
+                startGameButton.setVisibility(View.VISIBLE);
+                resumeGameButton.setVisibility(View.GONE);
+                endGameButton.setVisibility(View.GONE);
+                switchTableButton.setVisibility(View.VISIBLE);
+                unlimitedBallsToggle.setVisibility(View.VISIBLE);
+                startGameButton.requestFocus();
+            }
+        }
     }
 
     @Override public void onDestroy() {
@@ -335,10 +360,7 @@ public class BouncyActivity extends Activity {
             if (!field.getGameState().isGameInProgress()) {
                 // game just ended, show button panel and set end game timestamp
                 this.endGameTime = System.currentTimeMillis();
-                endGameButton.setVisibility(View.GONE);
-                switchTableButton.setVisibility(View.VISIBLE);
-                unlimitedBallsToggle.setVisibility(View.VISIBLE);
-                buttonPanel.setVisibility(View.VISIBLE);
+                updateButtons();
 
                 // No high scores for unlimited balls.
                 if (!state.hasUnlimitedBalls()) {
@@ -445,14 +467,23 @@ public class BouncyActivity extends Activity {
             return;
         }
         if (!field.getGameState().isGameInProgress()) {
-            buttonPanel.setVisibility(View.GONE);
-            resetFieldForCurrentLevel();
+            // https://github.com/dozingcat/Vector-Pinball/issues/91
+            // These actions need to be synchronized so that we don't try to
+            // start the game while the FieldDriver thread is updating the
+            // Box2d world. It's not clear what should be synchronized and what
+            // shouldn't; for example pauseGame() above should not be
+            // synchronized because that can deadlock the FieldDriver thread.
+            // All of this concurrency is badly in need of refactoring.
+            synchronized (field) {
+                buttonPanel.setVisibility(View.GONE);
+                resetFieldForCurrentLevel();
 
-            if (unlimitedBallsToggle.isChecked()) {
-                field.startGameWithUnlimitedBalls();
-            }
-            else {
-                field.startGame();
+                if (unlimitedBallsToggle.isChecked()) {
+                    field.startGameWithUnlimitedBalls();
+                }
+                else {
+                    field.startGame();
+                }
             }
             VPSoundpool.playStart();
             endGameTime = null;
@@ -482,19 +513,10 @@ public class BouncyActivity extends Activity {
             }
             else {
                 pauseGame();
-                showPausedButtons();
             }
         }
         else {
-            // https://github.com/dozingcat/Vector-Pinball/issues/91
-            // doStartGame() needs to be synchronized so that we don't try to
-            // start the game while the FieldDriver thread is updating the
-            // Box2d world. But pauseGame() above should not be synchronized
-            // because that can deadlock the FieldDriver thread. Yes, all of
-            // this concurrency is badly in need of refactoring.
-            synchronized (field) {
-                doStartGame(null);
-            }
+            doStartGame(null);
         }
     }
 
