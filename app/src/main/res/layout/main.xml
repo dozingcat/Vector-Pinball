@@ -9,6 +9,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="0px"
 		android:layout_weight="1"
+		android:focusable="false"
 		android:onClick="scoreViewClicked" />
 
 	<FrameLayout
@@ -38,11 +39,31 @@
 			android:padding="20dp">
 
 			<Button
+				android:id="@+id/startGameButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:onClick="doStartGame"
+				android:focusableInTouchMode="true"
+				android:text="@string/start_game_button_label" />
+
+			<Button
+				android:id="@+id/resumeGameButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:onClick="doStartGame"
+				android:focusableInTouchMode="true"
+				android:text="@string/resume_game_button_label"
+				android:visibility="gone" />
+
+			<Button
 				android:id="@+id/endGameButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
 				android:onClick="doEndGame"
+				android:focusableInTouchMode="true"
 				android:text="@string/end_game_button_label"
 				android:visibility="gone" />
 
@@ -53,6 +74,7 @@
 				android:layout_marginBottom="10sp"
 				android:maxLines="1"
 				android:onClick="doSwitchTable"
+				android:focusableInTouchMode="true"
 				android:text="@string/change_table_button_label" />
 
 			<Button
@@ -61,6 +83,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10sp"
 				android:onClick="doAbout"
+				android:focusableInTouchMode="true"
 				android:text="@string/help_button_label" />
 
 			<Button
@@ -69,12 +92,14 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10sp"
 				android:onClick="doPreferences"
+				android:focusableInTouchMode="true"
 				android:text="@string/preferences_button_label" />
 
 			<CheckBox
 				android:id="@+id/unlimitedBallsToggle"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:focusableInTouchMode="true"
 				android:text="@string/unlimited_balls_label" />
 		</TableLayout>
 

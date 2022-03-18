@@ -29,6 +29,8 @@
     <string name="change_table_button_label">Change Table</string>
     <string name="help_button_label">Help</string>
     <string name="preferences_button_label">Preferences</string>
+    <string name="start_game_button_label">Start Game</string>
+    <string name="resume_game_button_label">Resume Game</string>
     <string name="end_game_button_label">End Game</string>
     <string name="unlimited_balls_label">Unlimited Balls</string>
 

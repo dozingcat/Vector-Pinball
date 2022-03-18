@@ -339,6 +339,7 @@ public class FieldViewManager {
             KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER);
 
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
+        android.util.Log.i("FMV", "key down: " + event.getKeyCode());
         if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
             synchronized (field) {
                 // Don't let a pressed flipper key start a game, but do launch a ball if needed.
@@ -354,6 +355,7 @@ public class FieldViewManager {
     }
 
     public boolean handleKeyUp(int keyCode, KeyEvent event) {
+        android.util.Log.i("FMV", "key up: " + event.getKeyCode());
         if (event.getAction() == KeyEvent.ACTION_UP) {
             synchronized (field) {
                 if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
