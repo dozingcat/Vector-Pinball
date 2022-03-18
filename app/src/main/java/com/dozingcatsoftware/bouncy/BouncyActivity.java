@@ -210,52 +210,18 @@ public class BouncyActivity extends Activity {
         }
     }
 
-    @Override public void onBackPressed() {
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         // When a game is in progress, pause rather than exit when the back button is pressed.
         // This prevents accidentally quitting the game.
-        if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
-            pauseGame();
-            return;
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
+                pauseGame();
+                return true;
+            }
         }
-        super.onBackPressed();
+        return super.onKeyDown(keyCode, event);
     }
 
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.i(TAG, "onKeyDown: " + event.getKeyCode());
-        // Treat Escape and "Q" the same as the back button.
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-            case KeyEvent.KEYCODE_ESCAPE:
-            case KeyEvent.KEYCODE_Q:
-                onBackPressed();
-                return true;
-            case KeyEvent.KEYCODE_P:
-                if (!field.getGameState().isGameInProgress()) {
-                    break;
-                }
-                if (field.getGameState().isPaused()) {
-                    unpauseGame();
-                }
-                else {
-                    pauseGame();
-                }
-                return true;
-            case KeyEvent.KEYCODE_E:
-                if (field.getGameState().isPaused()) {
-                    doEndGame(null);
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_S:
-            case KeyEvent.KEYCODE_R:
-                doStartGame(null);
-                return true;
-            case KeyEvent.KEYCODE_C:
-                doSwitchTable(null);
-        }
-        return false;
-        // return fieldViewManager.handleKeyDown(keyCode, event);
-    }
 
     public void pauseGame() {
         VPSoundpool.pauseMusic();
