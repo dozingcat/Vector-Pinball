@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -53,6 +56,8 @@ public class BouncyActivity extends Activity {
     Button resumeGameButton;
     Button endGameButton;
     Button switchTableButton;
+    Button aboutButton;
+    Button preferencesButton;
     CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
 
@@ -143,7 +148,44 @@ public class BouncyActivity extends Activity {
         resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
         switchTableButton = findViewById(R.id.switchTableButton);
+        aboutButton = findViewById(R.id.aboutButton);
+        preferencesButton = findViewById(R.id.preferencesButton);
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
+
+        // Ugly workaround that seems to be required when supporting keyboard navigation.
+        // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
+        // If it's not, then they don't get focused even when using the dpad on a
+        // Motorola Droid or plugging in a keyboard to a Pixel 3a. (Android documentation
+        // says that the UI should automatically go in and out of touch mode, but that
+        // seems to not happen). With that setting, the default touch behavior on a
+        // non-focused button is to focus it but not click it. We want a click in that case,
+        // so we have to set a touch listener and call `performClick` on a ACTION_UP event
+        // (after checking that the event was within the button bounds). This is likely
+        // fragile but seems to be working ok.
+        List<View> allButtons = Arrays.asList(
+                startGameButton, resumeGameButton, endGameButton, switchTableButton,
+                aboutButton, preferencesButton, unlimitedBallsToggle);
+        for (View button : allButtons) {
+            button.setOnTouchListener((view, motionEvent) -> {
+                // Log.i(TAG, "Button motion event: " + motionEvent);
+                // Log.i(TAG, "View: " + view);
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    Rect r = new Rect();
+                    view.getLocalVisibleRect(r);
+                    // Log.i(TAG, "Button rect: " + r);
+                    // Log.i(TAG, "Event location: " + motionEvent.getX() + " " + motionEvent.getY());
+                    if (r.contains((int)motionEvent.getX(), (int)motionEvent.getY())) {
+                        // Log.i(TAG, "Button click, focused: " + view.hasFocus());
+                        // This calls the button's click action, but for some reason doesn't
+                        // do the ripple animation if the button was previously focused.
+                        view.requestFocus();
+                        view.performClick();
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -225,8 +267,10 @@ public class BouncyActivity extends Activity {
 
     public void pauseGame() {
         VPSoundpool.pauseMusic();
-        if (field.getGameState().isPaused()) return;
-        field.getGameState().setPaused(true);
+        GameState state = field.getGameState();
+        if (!state.isGameInProgress()) return;
+        if (state.isPaused()) return;
+        state.setPaused(true);
 
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
