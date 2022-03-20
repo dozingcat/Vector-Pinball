@@ -29,6 +29,8 @@ public class FieldLayout {
     static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
     static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
     static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+    static final String MERCY_BALL_DURATION_PROPERTY = "mercyBallDuration";
+    static final String MULTIBALL_SAVER_DURATION_PROPERTY = "multiballSaverDuration";
     static final String SCRIPT_PROPERTY = "script";
 
     static final String VARIABLES_PROPERTY = "variables";
@@ -46,6 +48,9 @@ public class FieldLayout {
     int ballColor;
     int secondaryBallColor;
     float targetTimeRatio;
+    long mercyBallDurationMillis;
+    long multiballSaverDurationMillis;
+
     List<Float> launchPosition;
     List<Float> launchVelocity;
     List<Float> launchVelocityRandomDelta;
@@ -59,6 +64,8 @@ public class FieldLayout {
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
         this.targetTimeRatio = asFloat(layoutMap.get(TARGET_TIME_RATIO_PROPERTY));
+        this.mercyBallDurationMillis = asInt(layoutMap.get(MERCY_BALL_DURATION_PROPERTY), 15000);
+        this.multiballSaverDurationMillis = asInt(layoutMap.get(MULTIBALL_SAVER_DURATION_PROPERTY), 25000);
         this.numberOfBalls = asInt(layoutMap.get(NUM_BALLS_PROPERTY), 3);
         this.ballRadius = asFloat(layoutMap.get(BALL_RADIUS_PROPERTY), 0.5f);
         this.ballColor = colorFromMap(layoutMap, BALL_COLOR_PROPERTY, DEFAULT_BALL_COLOR);
@@ -136,6 +143,14 @@ public class FieldLayout {
 
     public int getNumberOfBalls() {
         return numberOfBalls;
+    }
+
+    public long getMercyBallDurationNanos() {
+        return mercyBallDurationMillis * 1_000_000L;
+    }
+
+    public long getMultiballSaverDurationNanos() {
+        return multiballSaverDurationMillis * 1_000_000L;
     }
 
     public List<Float> getLaunchPosition() {

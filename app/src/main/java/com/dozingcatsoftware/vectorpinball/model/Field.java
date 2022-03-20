@@ -62,7 +62,10 @@ public class Field implements ContactListener {
     // so this will be about 5 real-world seconds.
     static final long STUCK_BALL_NANOS = 10_000_000_000L;
 
-    Long lostBallTimeMillis = null;
+    boolean usedMercyBall = false;
+    Long launchBallGameTimeNanos = null;
+    Long multiballStartGameTimeNanos = null;
+    Long lostBallWallTimeMillis = null;
 
     // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
     // zoomed in fully.
@@ -181,6 +184,10 @@ public class Field implements ContactListener {
     }
 
     private void _startGame(boolean unlimitedBalls) {
+        launchBallGameTimeNanos = null;
+        multiballStartGameTimeNanos = null;
+        lostBallWallTimeMillis = null;
+        usedMercyBall = false;
         gameState.setTotalBalls(layout.getNumberOfBalls());
         gameState.setUnlimitedBalls(unlimitedBalls);
         gameState.startNewGame();
@@ -290,15 +297,37 @@ public class Field implements ContactListener {
         Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
-        lostBallTimeMillis = null;
+        lostBallWallTimeMillis = null;
+        if (balls.size() > 1) {
+            multiballStartGameTimeNanos = gameTimeNanos;
+        }
+        else {
+            launchBallGameTimeNanos = gameTimeNanos;
+        }
         return ball;
+    }
+
+    private boolean shouldLaunchMercyBall() {
+        return (!usedMercyBall && gameTimeNanos - launchBallGameTimeNanos <= layout.getMercyBallDurationNanos());
+    }
+
+    private void launchMercyBall() {
+        usedMercyBall = true;
+        String msg = stringResolver.resolveString("ball_saved_message");
+        showGameMessage(msg, 1500, true);
+        launchBall();
     }
 
     /** Removes a ball from play. If there are no other balls on the field, calls doBallLost. */
     public void removeBall(Ball ball) {
         this.removeBallWithoutBallLoss(ball);
         if (this.balls.isEmpty()) {
-            this.doBallLost();
+            if (shouldLaunchMercyBall()) {
+                launchMercyBall();
+            }
+            else {
+                this.doBallLost();
+            }
         }
     }
 
@@ -316,7 +345,9 @@ public class Field implements ContactListener {
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
      */
     private void doBallLost() {
-        lostBallTimeMillis = milliTimeFn.getAsLong();
+        lostBallWallTimeMillis = milliTimeFn.getAsLong();
+        usedMercyBall = false;
+
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
         // Display message for next ball or game over.
@@ -343,7 +374,7 @@ public class Field implements ContactListener {
      * `millis` of the current time.
      */
     public boolean ballLostWithinMillis(long millis) {
-        return lostBallTimeMillis != null && milliTimeFn.getAsLong() - lostBallTimeMillis <= millis;
+        return lostBallWallTimeMillis != null && milliTimeFn.getAsLong() - lostBallWallTimeMillis <= millis;
     }
 
     /**
