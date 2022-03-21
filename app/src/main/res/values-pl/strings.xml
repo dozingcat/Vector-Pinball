@@ -4,7 +4,6 @@
     <string name="independent_flippers_pref_summary_on">Stuknięcie aktywuje łapkę po tej samej stronie ekranu</string>
     <string name="independent_flippers_pref_summary_off">Każde stuknięcie aktywuje obie łapki</string>
 
-
     <string name="line_width_pref_title">Grubość linii</string>
     <string name="line_width_pref_dialog_message">Wprowadź grubość linii w pikselach, „0” oznacza domyślną grubość zależną od rozdzielczości ekranu.</string>
 
@@ -69,6 +68,5 @@
     <string name="ramp_bonus_increased_message">Zwiększono bonus rampy</string>
     <string name="shoot_ramp_jackpot_message">Strzel w rampę, aby zgarnąć premię</string>
     <string name="constellation_complete_message">Konstelacja %1$s kompletna</string>
-
 
 </resources>
