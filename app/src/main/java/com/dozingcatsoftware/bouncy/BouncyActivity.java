@@ -254,8 +254,8 @@ public class BouncyActivity extends Activity {
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         // When a game is in progress, pause rather than exit when the back button is pressed.
-        // This prevents accidentally quitting the game.
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        // This prevents accidentally quitting the game. Also pause (but don't quit) on "P".
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_P) {
             if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
                 pauseGame();
                 return true;
