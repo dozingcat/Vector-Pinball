@@ -4,12 +4,12 @@
     <string name="independent_flippers_pref_summary_on">Stuknięcie aktywuje łapkę po tej samej stronie ekranu</string>
     <string name="independent_flippers_pref_summary_off">Każde stuknięcie aktywuje obie łapki</string>
 
-
     <string name="line_width_pref_title">Grubość linii</string>
     <string name="line_width_pref_dialog_message">Wprowadź grubość linii w pikselach, „0” oznacza domyślną grubość zależną od rozdzielczości ekranu.</string>
 
     <string name="sound_pref_title">Dźwięk</string>
     <string name="music_pref_title">Muzyka</string>
+    <string name="haptic_feedback_pref_title">Wibracje</string>
     <string name="show_fps_pref_title">Wyświetl FPS</string>
     <string name="zoom_pref_title">Przybliż pole gry</string>
     <string name="use_opengl_pref_title">Renderowanie OpenGL</string>
@@ -27,6 +27,8 @@
     <string name="change_table_button_label">Zmień stół</string>
     <string name="help_button_label">Pomoc</string>
     <string name="preferences_button_label">Ustawienia</string>
+    <string name="start_game_button_label">Nowa gra</string>
+    <string name="resume_game_button_label">Wznów grę</string>
     <string name="end_game_button_label">Zakończ grę</string>
     <string name="unlimited_balls_label">Nieskończone piłki</string>
 
@@ -56,16 +58,15 @@
     <string name="blue_ramp_bonus_message">Niebieska rampa +%1$d%%</string>
     <string name="red_ramp_bonus_message">Czerwona rampa +%1$d%%</string>
     <string name="yellow_ramp_bonus_message">Żółta rampa +%1$d%%</string>
-    <string name="green_ramp_bonus_message">Zielona ramp +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Zielona rampa +%1$d%%</string>
     <string name="color_blue">Niebieska</string>
     <string name="color_red">Czerwona</string>
     <string name="color_yellow">Żółta</string>
     <string name="color_green">Zielona</string>
     <string name="planet_activated_message">Planeta %1$d aktywna!</string>
-    <string name="ramp_bonus_message">%1$dx rampa</string>
+    <string name="ramp_bonus_message">Rampa ×%1$d</string>
     <string name="ramp_bonus_increased_message">Zwiększono bonus rampy</string>
     <string name="shoot_ramp_jackpot_message">Strzel w rampę, aby zgarnąć premię</string>
     <string name="constellation_complete_message">Konstelacja %1$s kompletna</string>
-
 
 </resources>
