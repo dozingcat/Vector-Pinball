@@ -62,7 +62,11 @@ public class Field implements ContactListener {
     // so this will be about 5 real-world seconds.
     static final long STUCK_BALL_NANOS = 10_000_000_000L;
 
-    Long lostBallTimeMillis = null;
+    boolean usedMercyBall = false;
+    Long ballStartGameTimeNanos = null;
+    Long multiballStartGameTimeNanos = null;
+    Long lastBallLaunchGameTimeNanos = null;
+    Long lostBallWallTimeMillis = null;
 
     // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
     // zoomed in fully.
@@ -181,6 +185,11 @@ public class Field implements ContactListener {
     }
 
     private void _startGame(boolean unlimitedBalls) {
+        ballStartGameTimeNanos = null;
+        multiballStartGameTimeNanos = null;
+        lostBallWallTimeMillis = null;
+        lastBallLaunchGameTimeNanos = null;
+        usedMercyBall = false;
         gameState.setTotalBalls(layout.getNumberOfBalls());
         gameState.setUnlimitedBalls(unlimitedBalls);
         gameState.startNewGame();
@@ -290,15 +299,63 @@ public class Field implements ContactListener {
         Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
-        lostBallTimeMillis = null;
+        lostBallWallTimeMillis = null;
+        lastBallLaunchGameTimeNanos = gameTimeNanos;
+        if (balls.size() > 1) {
+            if (multiballStartGameTimeNanos == null) {
+                multiballStartGameTimeNanos = gameTimeNanos;
+            }
+        }
+        else {
+            if (ballStartGameTimeNanos == null) {
+                ballStartGameTimeNanos = gameTimeNanos;
+            }
+        }
         return ball;
+    }
+
+    private boolean shouldLaunchMercyBall() {
+        return (!usedMercyBall && gameTimeNanos - ballStartGameTimeNanos <= layout.getMercyBallDurationNanos());
+    }
+
+    private void launchMercyBall() {
+        usedMercyBall = true;
+        String msg = stringResolver.resolveString("ball_saved_message");
+        showGameMessage(msg, 1500, true);
+        launchBall();
+    }
+
+    private boolean shouldRestoreLostBallInMultiball() {
+        return multiballStartGameTimeNanos != null &&
+                gameTimeNanos - multiballStartGameTimeNanos <= layout.getMultiballSaverDurationNanos();
+    }
+
+    private void restoreLostBallInMultiball() {
+        // Don't launch multiple balls in quick succession. If you lose two balls simultaneously,
+        // you'll only get one back.
+        if (gameTimeNanos - lastBallLaunchGameTimeNanos < 1000) {
+            return;
+        }
+        String msg = stringResolver.resolveString("ball_saved_message");
+        showGameMessage(msg, 1000, true);
+        launchBall();
     }
 
     /** Removes a ball from play. If there are no other balls on the field, calls doBallLost. */
     public void removeBall(Ball ball) {
         this.removeBallWithoutBallLoss(ball);
         if (this.balls.isEmpty()) {
-            this.doBallLost();
+            if (shouldLaunchMercyBall()) {
+                launchMercyBall();
+            }
+            else {
+                this.doBallLost();
+            }
+        }
+        else {
+            if (shouldRestoreLostBallInMultiball()) {
+                restoreLostBallInMultiball();
+            }
         }
     }
 
@@ -316,7 +373,9 @@ public class Field implements ContactListener {
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
      */
     private void doBallLost() {
-        lostBallTimeMillis = milliTimeFn.getAsLong();
+        lostBallWallTimeMillis = milliTimeFn.getAsLong();
+        usedMercyBall = false;
+
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
         // Display message for next ball or game over.
@@ -343,7 +402,7 @@ public class Field implements ContactListener {
      * `millis` of the current time.
      */
     public boolean ballLostWithinMillis(long millis) {
-        return lostBallTimeMillis != null && milliTimeFn.getAsLong() - lostBallTimeMillis <= millis;
+        return lostBallWallTimeMillis != null && milliTimeFn.getAsLong() - lostBallWallTimeMillis <= millis;
     }
 
     /**
@@ -673,6 +732,26 @@ public class Field implements ContactListener {
             }
         }
         return false;
+    }
+
+    // Not used in production builds, but shows the returned value in the ScoreView for debugging.
+    public String getDebugMessage() {
+        return null;
+        /*
+        if (!gameState.isGameInProgress() || ballStartGameTimeNanos == null) {
+            return null;
+        }
+        if (balls.size() <= 1) {
+            long elapsed = gameTimeNanos - ballStartGameTimeNanos;
+            long remaining = layout.getMercyBallDurationNanos() - elapsed;
+            return String.format("%.1f", Math.max(0, remaining) / 1e9);
+        }
+        else {
+            long elapsed = gameTimeNanos - multiballStartGameTimeNanos;
+            long remaining = layout.getMultiballSaverDurationNanos() - elapsed;
+            return String.format("%.1f", Math.max(0, remaining) / 1e9);
+        }
+        */
     }
 
     /**

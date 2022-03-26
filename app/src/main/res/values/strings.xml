@@ -36,6 +36,7 @@
 
     <string name="ball_number_message">Ball %1$d</string>
     <string name="shoot_again_message">Shoot Again</string>
+    <string name="ball_saved_message">Ball Saved</string>
     <string name="game_over_message">Game Over</string>
     <string name="bump_message">Bump!</string>
     <string name="touch_to_start_message">Touch to start</string>

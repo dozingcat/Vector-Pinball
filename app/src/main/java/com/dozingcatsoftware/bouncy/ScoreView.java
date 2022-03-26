@@ -46,6 +46,8 @@ public class ScoreView extends View {
     double fps;
     boolean showFPS = false;
 
+    String debugMessage = null;
+
     static NumberFormat SCORE_FORMAT = NumberFormat.getInstance();
 
     public ScoreView(Context context, AttributeSet attrs) {
@@ -128,6 +130,9 @@ public class ScoreView extends View {
                 textPaint);
         if (showFPS && fps > 0) {
             c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
+        }
+        if (debugMessage != null) {
+            c.drawText(debugMessage, width * 0.02f, height * 0.75f, fpsPaint);
         }
         if (gameInProgress) {
             // Draw balls.
@@ -249,5 +254,9 @@ public class ScoreView extends View {
 
     public void setShowFPS(boolean value) {
         showFPS = value;
+    }
+
+    public void setDebugMessage(String msg) {
+        debugMessage = msg;
     }
 }
