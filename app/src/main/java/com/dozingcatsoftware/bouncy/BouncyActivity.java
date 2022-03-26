@@ -388,6 +388,7 @@ public class BouncyActivity extends Activity {
     void tick() {
         scoreView.invalidate();
         scoreView.setFPS(fieldDriver.getAverageFPS());
+        scoreView.setDebugMessage(field.getDebugMessage());
         updateHighScoreAndButtonPanel();
         handler.postDelayed(this::tick, 100);
     }

@@ -29,7 +29,9 @@ public class FieldLayout {
     static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
     static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
     static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+    // If the ball is lost within this duration after launching, it will be saved.
     static final String MERCY_BALL_DURATION_PROPERTY = "mercyBallDuration";
+    // For this duration after multiball starts, lost balls will be saved.
     static final String MULTIBALL_SAVER_DURATION_PROPERTY = "multiballSaverDuration";
     static final String SCRIPT_PROPERTY = "script";
 
@@ -64,8 +66,8 @@ public class FieldLayout {
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
         this.targetTimeRatio = asFloat(layoutMap.get(TARGET_TIME_RATIO_PROPERTY));
-        this.mercyBallDurationMillis = asInt(layoutMap.get(MERCY_BALL_DURATION_PROPERTY), 15000);
-        this.multiballSaverDurationMillis = asInt(layoutMap.get(MULTIBALL_SAVER_DURATION_PROPERTY), 25000);
+        this.mercyBallDurationMillis = asInt(layoutMap.get(MERCY_BALL_DURATION_PROPERTY), 20000);
+        this.multiballSaverDurationMillis = asInt(layoutMap.get(MULTIBALL_SAVER_DURATION_PROPERTY), 30000);
         this.numberOfBalls = asInt(layoutMap.get(NUM_BALLS_PROPERTY), 3);
         this.ballRadius = asFloat(layoutMap.get(BALL_RADIUS_PROPERTY), 0.5f);
         this.ballColor = colorFromMap(layoutMap, BALL_COLOR_PROPERTY, DEFAULT_BALL_COLOR);
