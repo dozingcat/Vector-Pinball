@@ -68,6 +68,8 @@ public class Field implements ContactListener {
     Long lastBallLaunchGameTimeNanos = null;
     Long lostBallWallTimeMillis = null;
 
+    Long lastMultiplerIncrementGameTimeNanos = null;
+
     // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
     // zoomed in fully.
     static final long ZOOM_DURATION_NANOS = 1_000_000_000L;
@@ -189,6 +191,7 @@ public class Field implements ContactListener {
         multiballStartGameTimeNanos = null;
         lostBallWallTimeMillis = null;
         lastBallLaunchGameTimeNanos = null;
+        lastMultiplerIncrementGameTimeNanos = null;
         usedMercyBall = false;
         gameState.setTotalBalls(layout.getNumberOfBalls());
         gameState.setUnlimitedBalls(unlimitedBalls);
@@ -307,15 +310,15 @@ public class Field implements ContactListener {
             }
         }
         else {
-            if (ballStartGameTimeNanos == null) {
-                ballStartGameTimeNanos = gameTimeNanos;
-            }
+            ballStartGameTimeNanos = gameTimeNanos;
         }
         return ball;
     }
 
     private boolean shouldLaunchMercyBall() {
-        return (!usedMercyBall && gameTimeNanos - ballStartGameTimeNanos <= layout.getMercyBallDurationNanos());
+        Long t = ballStartGameTimeNanos;
+        // if (t != null) android.util.Log.i("Field", "Mercy time: " + (gameTimeNanos - t));
+        return (!usedMercyBall && gameTimeNanos - t <= layout.getMercyBallDurationNanos());
     }
 
     private void launchMercyBall() {
@@ -368,6 +371,12 @@ public class Field implements ContactListener {
         this.balls.remove(ball);
     }
 
+    private boolean shouldPreserveLastMultiplierIncrease() {
+        Long t = lastMultiplerIncrementGameTimeNanos;
+        // if (t != null) android.util.Log.i("Field", "Multiplier time: " + (gameTimeNanos - t));
+        return t != null && gameTimeNanos - t <= layout.getPreserveMultiplierIncreaseDurationNanos();
+    }
+
     /**
      * Called when a ball has ended. Ends the game if that was the last ball, otherwise updates
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
@@ -378,6 +387,12 @@ public class Field implements ContactListener {
 
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
+        // If ball was lost right after increasing the multiplier, preserve the increase.
+        if (shouldPreserveLastMultiplierIncrease()) {
+            gameState.incrementScoreMultiplier();
+        }
+        lastMultiplerIncrementGameTimeNanos = null;
+
         // Display message for next ball or game over.
         String msg = null;
         if (hasExtraBall) {
@@ -774,6 +789,7 @@ public class Field implements ContactListener {
     }
 
     public void incrementAndDisplayScoreMultiplier(long durationMillis) {
+        lastMultiplerIncrementGameTimeNanos = gameTimeNanos;
         gameState.incrementScoreMultiplier();
         String msg = resolveString("multiplier_message", (int) this.gameState.getScoreMultiplier());
         this.showGameMessage(msg, durationMillis);
