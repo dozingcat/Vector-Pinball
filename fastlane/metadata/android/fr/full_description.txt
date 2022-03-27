@@ -1,0 +1,3 @@
+Un jeu de flipper avec des graphismes vectoriels simples, 7 tables différentes et utilisant une bibliothèque de physique pour une simulation précise
+
+Rendez-vous sur la page Github du projet https://github.com/dozingcat/Vector-Pinball si vous souhaitez aider au code ou à créer de nouvelles tables.
