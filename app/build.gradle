@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 30
-        versionCode 33
-        versionName "1.9.6"
+        targetSdkVersion 31
+        versionCode 34
+        versionName "1.10.0"
         multiDexEnabled true
     }
 
@@ -30,5 +30,5 @@ android {
 dependencies {
     implementation files('libs/gdx-box2d-1.9.13.jar')
     implementation files('libs/gdx-1.9.13.jar')
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }

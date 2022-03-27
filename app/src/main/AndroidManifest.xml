@@ -9,6 +9,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
+        android:isGame="true"
+        android:appCategory="game"
         android:theme="@style/Theme.VPTheme" >
         <!--
             "uiMode" in android:configChanges prevents the app from restarting when battery saver
@@ -17,8 +19,8 @@
 
         <activity
             android:name=".BouncyActivity"
+            android:exported="true"
             android:configChanges="keyboard|keyboardHidden|orientation|uiMode"
-            android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
