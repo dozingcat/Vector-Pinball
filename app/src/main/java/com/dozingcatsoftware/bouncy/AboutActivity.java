@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -42,6 +43,16 @@ public class AboutActivity extends Activity {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int padding = Math.min(metrics.widthPixels, metrics.heightPixels) / 25;
         tv.setPadding(padding, padding, padding, padding);
+    }
+
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Return to main activity when "P" is pressed, to avoid accidentally quitting by hitting
+        // "back" multiple times. See https://github.com/dozingcat/Vector-Pinball/issues/103.
+        if (keyCode == KeyEvent.KEYCODE_P) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public static Intent startForLevel(Context context, int level) {

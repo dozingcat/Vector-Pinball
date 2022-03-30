@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
+import android.view.KeyEvent;
 
 public class BouncyPreferences extends PreferenceActivity {
 
@@ -46,5 +47,15 @@ public class BouncyPreferences extends PreferenceActivity {
             hapticPref.setChecked(false);
             hapticPref.setEnabled(false);
         }
+    }
+
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Return to main activity when "P" is pressed, to avoid accidentally quitting by hitting
+        // "back" multiple times. See https://github.com/dozingcat/Vector-Pinball/issues/103.
+        if (keyCode == KeyEvent.KEYCODE_P) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
