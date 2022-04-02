@@ -43,6 +43,10 @@ public class AboutActivity extends Activity {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int padding = Math.min(metrics.widthPixels, metrics.heightPixels) / 25;
         tv.setPadding(padding, padding, padding, padding);
+
+        // Use larger text on physically larger screens.
+        float widthInches = metrics.widthPixels / metrics.xdpi;
+        tv.setTextSize(widthInches > 4 ? 18f : 14f);
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
