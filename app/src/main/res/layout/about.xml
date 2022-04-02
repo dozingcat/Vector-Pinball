@@ -11,7 +11,9 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:includeFontPadding="true"
-            android:layout_weight="1"/>
+            android:lineSpacingMultiplier="1.225"
+            android:textSize="14sp"
+        />
 
     
 </FrameLayout>
