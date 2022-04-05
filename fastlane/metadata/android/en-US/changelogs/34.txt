@@ -1,0 +1,5 @@
+- Added "mercy ball": The first ball you launch is saved if you lose it too quickly.
+- For a short interval after starting multiball, lost balls are replaced.
+- If you lose a ball immediately after increasing the score multiplier, the increase is applied to the next ball.
+- Improved keyboard and controller support.
+- Fixed possible crashes when starting a game or launching a ball.
