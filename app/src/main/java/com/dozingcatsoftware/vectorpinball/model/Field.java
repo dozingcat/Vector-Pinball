@@ -453,7 +453,6 @@ public class Field implements ContactListener {
                     deadBalls = new ArrayList<>();
                 }
                 deadBalls.add(ball);
-                ball.destroySelf();
             }
         }
 
