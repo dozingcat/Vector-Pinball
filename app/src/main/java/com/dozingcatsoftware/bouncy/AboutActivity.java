@@ -46,7 +46,12 @@ public class AboutActivity extends Activity {
 
         // Use larger text on physically larger screens.
         float widthInches = metrics.widthPixels / metrics.xdpi;
-        tv.setTextSize(widthInches > 4 ? 18f : 14f);
+        float heightInches = metrics.heightPixels / metrics.ydpi;
+        float minInches = Math.min(widthInches, heightInches);
+        float fontSize = minInches > 4 ? 18f : (minInches > 3.5 ? 16f : 14f);
+        tv.setTextSize(fontSize);
+        // Uncomment to see the pixel dimensions and computed physical size.
+        // tv.setText(metrics.widthPixels + ":" + metrics.heightPixels + ":" + widthInches + ":" + heightInches + "\n" + tv.getText());
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
