@@ -72,7 +72,7 @@ public class FieldLayout {
         this.targetTimeRatio = asFloat(layoutMap.get(TARGET_TIME_RATIO_PROPERTY));
         this.mercyBallDurationMillis = asInt(layoutMap.get(MERCY_BALL_DURATION_PROPERTY), 20000);
         this.multiballSaverDurationMillis = asInt(layoutMap.get(MULTIBALL_SAVER_DURATION_PROPERTY), 30000);
-        this.preserveMultiplierIncreaseDurationMillis = asInt(PRESERVE_MULTIPLIER_INCREASE_DURATION_PROPERTY, 7500);
+        this.preserveMultiplierIncreaseDurationMillis = asInt(layoutMap.get(PRESERVE_MULTIPLIER_INCREASE_DURATION_PROPERTY), 7500);
         this.numberOfBalls = asInt(layoutMap.get(NUM_BALLS_PROPERTY), 3);
         this.ballRadius = asFloat(layoutMap.get(BALL_RADIUS_PROPERTY), 0.5f);
         this.ballColor = colorFromMap(layoutMap, BALL_COLOR_PROPERTY, DEFAULT_BALL_COLOR);
