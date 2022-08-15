@@ -242,7 +242,6 @@ public class Field implements ContactListener {
 
     /** Calls the tick() method of every FieldElement in the layout. */
     private void processElementTicks(long nanos) {
-        int size = fieldElementsToTick.length;
         for (FieldElement elem : fieldElementsToTick) {
             elem.tick(this, nanos);
         }
