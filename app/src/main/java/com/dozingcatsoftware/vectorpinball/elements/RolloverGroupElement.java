@@ -165,7 +165,9 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     public void setRolloverRadiusAtIndex(int index, float radius) {
-        rollovers.get(index).radius = radius;
+        Rollover r = rollovers.get(index);
+        r.radius = radius;
+        r.radiusSquared = radius * radius;
     }
 
     public void setRolloverColorAtIndex(int index, Integer color) {
