@@ -68,6 +68,15 @@
 				android:visibility="gone" />
 
 			<Button
+				android:id="@+id/highScoreButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:onClick="showHighScore"
+				android:focusableInTouchMode="true"
+				android:text="@string/show_high_score_button_label" />
+
+			<Button
 				android:id="@+id/switchTableButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -101,6 +110,33 @@
 				android:layout_height="wrap_content"
 				android:focusableInTouchMode="true"
 				android:text="@string/unlimited_balls_label" />
+		</TableLayout>
+
+		<TableLayout
+			android:id="@+id/highScorePanel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:background="#A448"
+			android:orientation="vertical"
+			android:padding="20dp"
+			android:visibility="gone">
+
+			<ListView
+				android:id="@+id/highScoreListView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"/>
+
+			<Button
+				android:id="@+id/hideHighScoreButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10sp"
+				android:onClick="hideHighScore"
+				android:focusableInTouchMode="true"
+				android:text="@string/hide_high_score_button_label" />
+
 		</TableLayout>
 
 	</FrameLayout>
