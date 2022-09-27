@@ -38,7 +38,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class BouncyActivity extends Activity {
 
@@ -68,6 +67,8 @@ public class BouncyActivity extends Activity {
     Button hideHighScoreButton;
     CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
+
+    ArrayAdapter<String> highScoreStringsAdapter;
 
     Handler handler = new Handler(Looper.myLooper());
 
@@ -197,6 +198,10 @@ public class BouncyActivity extends Activity {
                 return false;
             });
         }
+
+        this.highScoreStringsAdapter = new ArrayAdapter<String>(this, R.layout.highscoreitemview, R.id.highscoreitemtextview);
+        ListView highScoreListView = findViewById(R.id.highScoreListView);
+        highScoreListView.setAdapter(this.highScoreStringsAdapter);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -601,20 +606,7 @@ public class BouncyActivity extends Activity {
     }
 
     public void showHighScore(View view) {
-        ListView highScoreListView = findViewById(R.id.highScoreListView);
-        String[] highScoreStrings = new String[this.highScores.size()];
-
-        for (int i = 0; i < this.highScores.size(); i++)
-        {
-            highScoreStrings[i] = i == 0 ?
-                    this.getBaseContext().getString(R.string.top_high_score_message, valueOf(this.highScores.get(i))) :
-                    this.getBaseContext().getString(R.string.other_high_score_message, i + 1, valueOf(this.highScores.get(i)));
-        }
-
-        final ArrayAdapter adapter = new ArrayAdapter(this,
-                R.layout.highscoreitemview, R.id.highscoreitemtextview, highScoreStrings);
-
-        highScoreListView.setAdapter(adapter);
+        this.FillHighScoreAdapter();
         this.buttonPanel.setVisibility(View.GONE);
         this.highScorePanel.setVisibility(View.VISIBLE);
     }
@@ -622,5 +614,26 @@ public class BouncyActivity extends Activity {
     public void hideHighScore(View view) {
         this.buttonPanel.setVisibility(View.VISIBLE);
         this.highScorePanel.setVisibility(View.GONE);
+        this.highScoreStringsAdapter.clear();
+    }
+
+    private void FillHighScoreAdapter()
+    {
+        if(!this.highScoreStringsAdapter.isEmpty())
+        {
+            this.highScoreStringsAdapter.clear();
+        }
+
+        for (int index = 0; index < this.highScores.size(); index++)
+        {
+            String highScoreMessage = index == 0 ?
+                this.getBaseContext().getString(
+                    R.string.top_high_score_message,
+                    valueOf(this.highScores.get(index))) :
+                this.getBaseContext().getString(
+                    R.string.other_high_score_message,
+                    index + 1, valueOf(this.highScores.get(index)));
+            this.highScoreStringsAdapter.add(highScoreMessage);
+        }
     }
 }
