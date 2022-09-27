@@ -423,7 +423,8 @@ public class BouncyActivity extends Activity {
      */
     void updateHighScoreAndButtonPanel() {
         // We only need to check once when the game is over, before the button panel is visible.
-        if (buttonPanel.getVisibility() == View.VISIBLE) return;
+        if (buttonPanel.getVisibility() == View.VISIBLE ||
+            highScorePanel.getVisibility() == View.VISIBLE) return;
         synchronized (field) {
             GameState state = field.getGameState();
             if (!field.getGameState().isGameInProgress()) {
@@ -500,7 +501,7 @@ public class BouncyActivity extends Activity {
         Collections.sort(newHighScores);
         Collections.reverse(newHighScores);
         if (newHighScores.size() > MAX_NUM_HIGH_SCORES) {
-            newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
+            newHighScores = newHighScores.subList(0, Math.min(newHighScores.size(), MAX_NUM_HIGH_SCORES));
         }
         this.highScores = newHighScores;
         writeHighScoresToPreferences(theLevel, this.highScores);
