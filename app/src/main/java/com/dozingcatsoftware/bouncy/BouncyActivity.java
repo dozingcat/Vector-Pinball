@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
+import static java.lang.String.valueOf;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -32,8 +34,10 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ListView;
 
 public class BouncyActivity extends Activity {
 
@@ -52,14 +56,19 @@ public class BouncyActivity extends Activity {
     final boolean useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
     View buttonPanel;
+    View highScorePanel;
     Button startGameButton;
     Button resumeGameButton;
     Button endGameButton;
     Button switchTableButton;
     Button aboutButton;
     Button preferencesButton;
+    Button showHighScoreButton;
+    Button hideHighScoreButton;
     CheckBox unlimitedBallsToggle;
     final static int ACTIVITY_PREFERENCES = 1;
+
+    ArrayAdapter<String> highScoreStringsAdapter;
 
     Handler handler = new Handler(Looper.myLooper());
 
@@ -144,6 +153,7 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
+        highScorePanel = findViewById(R.id.highScorePanel);
         startGameButton = findViewById(R.id.startGameButton);
         resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
@@ -151,6 +161,8 @@ public class BouncyActivity extends Activity {
         aboutButton = findViewById(R.id.aboutButton);
         preferencesButton = findViewById(R.id.preferencesButton);
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
+        showHighScoreButton = findViewById(R.id.highScoreButton);
+        hideHighScoreButton = findViewById(R.id.hideHighScoreButton);
 
         // Ugly workaround that seems to be required when supporting keyboard navigation.
         // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
@@ -164,7 +176,7 @@ public class BouncyActivity extends Activity {
         // fragile but seems to be working ok.
         List<View> allButtons = Arrays.asList(
                 startGameButton, resumeGameButton, endGameButton, switchTableButton,
-                aboutButton, preferencesButton, unlimitedBallsToggle);
+                aboutButton, preferencesButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
         for (View button : allButtons) {
             button.setOnTouchListener((view, motionEvent) -> {
                 // Log.i(TAG, "Button motion event: " + motionEvent);
@@ -186,6 +198,10 @@ public class BouncyActivity extends Activity {
                 return false;
             });
         }
+
+        this.highScoreStringsAdapter = new ArrayAdapter<String>(this, R.layout.highscoreitemview, R.id.highscoreitemtextview);
+        ListView highScoreListView = findViewById(R.id.highScoreListView);
+        highScoreListView.setAdapter(this.highScoreStringsAdapter);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -295,16 +311,24 @@ public class BouncyActivity extends Activity {
     void updateButtons() {
         GameState state = field.getGameState();
         if (state.isPaused()) {
-            buttonPanel.setVisibility(View.VISIBLE);
-            startGameButton.setVisibility(View.GONE);
-            resumeGameButton.setVisibility(View.VISIBLE);
-            endGameButton.setVisibility(View.VISIBLE);
-            switchTableButton.setVisibility(View.GONE);
-            unlimitedBallsToggle.setVisibility(View.GONE);
-            resumeGameButton.requestFocus();
+            if (highScorePanel.getVisibility() == View.VISIBLE){
+                buttonPanel.setVisibility(View.GONE);
+            }
+            else {
+                buttonPanel.setVisibility(View.VISIBLE);
+                startGameButton.setVisibility(View.GONE);
+                resumeGameButton.setVisibility(View.VISIBLE);
+                endGameButton.setVisibility(View.VISIBLE);
+                switchTableButton.setVisibility(View.GONE);
+                unlimitedBallsToggle.setVisibility(View.GONE);
+                resumeGameButton.requestFocus();
+            }
         }
         else {
             if (state.isGameInProgress()) {
+                buttonPanel.setVisibility(View.GONE);
+            }
+            else if (highScorePanel.getVisibility() == View.VISIBLE){
                 buttonPanel.setVisibility(View.GONE);
             }
             else {
@@ -399,7 +423,8 @@ public class BouncyActivity extends Activity {
      */
     void updateHighScoreAndButtonPanel() {
         // We only need to check once when the game is over, before the button panel is visible.
-        if (buttonPanel.getVisibility() == View.VISIBLE) return;
+        if (buttonPanel.getVisibility() == View.VISIBLE ||
+            highScorePanel.getVisibility() == View.VISIBLE) return;
         synchronized (field) {
             GameState state = field.getGameState();
             if (!field.getGameState().isGameInProgress()) {
@@ -476,7 +501,7 @@ public class BouncyActivity extends Activity {
         Collections.sort(newHighScores);
         Collections.reverse(newHighScores);
         if (newHighScores.size() > MAX_NUM_HIGH_SCORES) {
-            newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
+            newHighScores = newHighScores.subList(0, Math.min(newHighScores.size(), MAX_NUM_HIGH_SCORES));
         }
         this.highScores = newHighScores;
         writeHighScoresToPreferences(theLevel, this.highScores);
@@ -579,5 +604,37 @@ public class BouncyActivity extends Activity {
 
     void resetFieldForCurrentLevel() {
         field.resetForLayoutMap(FieldLayoutReader.layoutMapForLevel(this, currentLevel));
+    }
+
+    public void showHighScore(View view) {
+        this.FillHighScoreAdapter();
+        this.buttonPanel.setVisibility(View.GONE);
+        this.highScorePanel.setVisibility(View.VISIBLE);
+    }
+
+    public void hideHighScore(View view) {
+        this.buttonPanel.setVisibility(View.VISIBLE);
+        this.highScorePanel.setVisibility(View.GONE);
+        this.highScoreStringsAdapter.clear();
+    }
+
+    private void FillHighScoreAdapter()
+    {
+        if(!this.highScoreStringsAdapter.isEmpty())
+        {
+            this.highScoreStringsAdapter.clear();
+        }
+
+        for (int index = 0; index < this.highScores.size(); index++)
+        {
+            String highScoreMessage = index == 0 ?
+                this.getBaseContext().getString(
+                    R.string.top_high_score_message,
+                    valueOf(this.highScores.get(index))) :
+                this.getBaseContext().getString(
+                    R.string.other_high_score_message,
+                    index + 1, valueOf(this.highScores.get(index)));
+            this.highScoreStringsAdapter.add(highScoreMessage);
+        }
     }
 }

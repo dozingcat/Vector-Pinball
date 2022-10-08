@@ -17,12 +17,9 @@ public class FieldLayoutReader {
 
     public static int getNumberOfLevels(Context context) {
         try {
-            List<String> tableFiles = Arrays.asList(context.getAssets().list("tables"));
-            int count = 0;
-            while (tableFiles.contains("table" + (count + 1) + ".json")) {
-                count++;
-            }
-            return count;
+            return (int) Arrays.stream(context.getAssets().list("tables"))
+                    .filter(name -> name.matches("^table\\d+\\.json"))
+                    .count();
         }
         catch (IOException ex) {
             throw new RuntimeException(ex);

@@ -71,5 +71,7 @@
     <string name="ramp_bonus_increased_message">Ramp bonus increased</string>
     <string name="shoot_ramp_jackpot_message">Shoot ramp for jackpot</string>
     <string name="constellation_complete_message">%1$s complete</string>
+    <string name="show_high_score_button_label">Show Scores</string>
+    <string name="hide_high_score_button_label">Hide Scores</string>
 
 </resources>
