@@ -43,6 +43,7 @@
     <string name="last_score_message">Last Score: %1$s</string>
     <string name="top_high_score_message">High Score: %1$s</string>
     <string name="other_high_score_message">#%1$d Score: %2$s</string>
+    <string name="no_high_scores_message">No scores for this table</string>
 
     <string name="left_save_enabled_message">Left Save Enabled</string>
     <string name="right_save_enabled_message">Right Save Enabled</string>
@@ -71,7 +72,8 @@
     <string name="ramp_bonus_increased_message">Ramp bonus increased</string>
     <string name="shoot_ramp_jackpot_message">Shoot ramp for jackpot</string>
     <string name="constellation_complete_message">%1$s complete</string>
-    <string name="show_high_score_button_label">Show Scores</string>
-    <string name="hide_high_score_button_label">Hide Scores</string>
+    <string name="show_high_score_button_label">High scores</string>
+    <string name="hide_high_score_button_label">OK</string>
+    <string name="high_score_table_title">High scores</string>
 
 </resources>

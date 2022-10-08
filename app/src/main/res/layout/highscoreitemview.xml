@@ -4,9 +4,8 @@
     android:id="@+id/highscoreitemtextview"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textStyle="bold"
-    android:padding="4dp"
-    android:textColor="#FFFFFF"
+    android:padding="10dp"
+    android:textColor="#F0F0F0"
     android:textSize="22sp"
-    android:textAlignment="center"
-    android:gravity="center_horizontal" />
+    android:textAlignment="viewEnd"
+    android:gravity="end" />

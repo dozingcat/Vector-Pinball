@@ -1,7 +1,5 @@
 package com.dozingcatsoftware.bouncy;
 
-import static java.lang.String.valueOf;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -327,6 +325,7 @@ public class BouncyActivity extends Activity {
         else {
             if (state.isGameInProgress()) {
                 buttonPanel.setVisibility(View.GONE);
+                highScorePanel.setVisibility(View.GONE);
             }
             else if (highScorePanel.getVisibility() == View.VISIBLE){
                 buttonPanel.setVisibility(View.GONE);
@@ -501,7 +500,7 @@ public class BouncyActivity extends Activity {
         Collections.sort(newHighScores);
         Collections.reverse(newHighScores);
         if (newHighScores.size() > MAX_NUM_HIGH_SCORES) {
-            newHighScores = newHighScores.subList(0, Math.min(newHighScores.size(), MAX_NUM_HIGH_SCORES));
+            newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
         writeHighScoresToPreferences(theLevel, this.highScores);
@@ -546,6 +545,7 @@ public class BouncyActivity extends Activity {
             // All of this concurrency is badly in need of refactoring.
             synchronized (field) {
                 buttonPanel.setVisibility(View.GONE);
+                highScorePanel.setVisibility(View.GONE);
                 resetFieldForCurrentLevel();
 
                 if (unlimitedBallsToggle.isChecked()) {
@@ -607,7 +607,7 @@ public class BouncyActivity extends Activity {
     }
 
     public void showHighScore(View view) {
-        this.FillHighScoreAdapter();
+        this.fillHighScoreAdapter();
         this.buttonPanel.setVisibility(View.GONE);
         this.highScorePanel.setVisibility(View.VISIBLE);
     }
@@ -618,23 +618,16 @@ public class BouncyActivity extends Activity {
         this.highScoreStringsAdapter.clear();
     }
 
-    private void FillHighScoreAdapter()
-    {
-        if(!this.highScoreStringsAdapter.isEmpty())
-        {
-            this.highScoreStringsAdapter.clear();
+    private void fillHighScoreAdapter() {
+        this.highScoreStringsAdapter.clear();
+        for (int index = 0; index < this.highScores.size(); index++) {
+            long score = this.highScores.get(index);
+            if (score > 0) {
+                this.highScoreStringsAdapter.add(ScoreView.SCORE_FORMAT.format(score));
+            }
         }
-
-        for (int index = 0; index < this.highScores.size(); index++)
-        {
-            String highScoreMessage = index == 0 ?
-                this.getBaseContext().getString(
-                    R.string.top_high_score_message,
-                    valueOf(this.highScores.get(index))) :
-                this.getBaseContext().getString(
-                    R.string.other_high_score_message,
-                    index + 1, valueOf(this.highScores.get(index)));
-            this.highScoreStringsAdapter.add(highScoreMessage);
+        if (this.highScoreStringsAdapter.isEmpty()) {
+            this.highScoreStringsAdapter.add(getString(R.string.no_high_scores_message));
         }
     }
 }
