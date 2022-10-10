@@ -1,5 +1,6 @@
 .idea/
 .gradle/
+app/libs/
 app/release/
 build/
 gen/
