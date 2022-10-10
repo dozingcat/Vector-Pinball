@@ -24,15 +24,52 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
-// libgdx jars and native libraries retrieved from https://oss.sonatype.org/content/repositories/releases/com/badlogicgames/gdx/
-// gdx-jnigen-loader is a dependency of libgdx as of 1.11.0; should figure out how to load
-// via Gradle to avoid manually managing the jars.
+ext {
+    gdxVersion = '1.11.0'
+}
+
+configurations { natives }
+
+// libgdx native libraries are copied to libs/ by the copyAndroidNatives task.
 // desugar_jdk_libs 2.0.0 is available as of Oct 2022, but produces build errors.
 dependencies {
-    implementation files('libs/gdx-box2d-1.11.0.jar')
-    implementation files('libs/gdx-1.11.0.jar')
-    implementation files('libs/gdx-jnigen-loader-2.3.1.jar')
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
+
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+}
+
+// From https://github.com/libgdx/libgdx/blob/master/extensions/gdx-setup/res/com/badlogic/gdx/setup/resources/android/build.gradle
+task copyAndroidNatives() {
+    file("libs/armeabi-v7a/").mkdirs()
+    file("libs/arm64-v8a/").mkdirs()
+    file("libs/x86/").mkdirs()
+    file("libs/x86_64/").mkdirs()
+
+    configurations.getByName("natives").copy().files.each { jar ->
+        def outputDir = null
+        if (jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
+        if (jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
+        if (jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
+        if (jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
+        if (outputDir != null) {
+            copy {
+                from zipTree(jar)
+                into outputDir
+                include "*.so"
+            }
+        }
+    }
 }
