@@ -309,8 +309,9 @@ public class BouncyActivity extends Activity {
     void updateButtons() {
         GameState state = field.getGameState();
         if (state.isPaused()) {
-            if (highScorePanel.getVisibility() == View.VISIBLE){
+            if (highScorePanel.getVisibility() == View.VISIBLE) {
                 buttonPanel.setVisibility(View.GONE);
+                hideHighScoreButton.requestFocus();
             }
             else {
                 buttonPanel.setVisibility(View.VISIBLE);
@@ -327,8 +328,9 @@ public class BouncyActivity extends Activity {
                 buttonPanel.setVisibility(View.GONE);
                 highScorePanel.setVisibility(View.GONE);
             }
-            else if (highScorePanel.getVisibility() == View.VISIBLE){
+            else if (highScorePanel.getVisibility() == View.VISIBLE) {
                 buttonPanel.setVisibility(View.GONE);
+                hideHighScoreButton.requestFocus();
             }
             else {
                 buttonPanel.setVisibility(View.VISIBLE);
@@ -610,12 +612,14 @@ public class BouncyActivity extends Activity {
         this.fillHighScoreAdapter();
         this.buttonPanel.setVisibility(View.GONE);
         this.highScorePanel.setVisibility(View.VISIBLE);
+        updateButtons();
     }
 
     public void hideHighScore(View view) {
         this.buttonPanel.setVisibility(View.VISIBLE);
         this.highScorePanel.setVisibility(View.GONE);
         this.highScoreListLayout.removeAllViews();
+        updateButtons();
     }
 
     private void fillHighScoreAdapter() {

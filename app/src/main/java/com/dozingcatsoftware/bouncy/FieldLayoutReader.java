@@ -17,9 +17,14 @@ public class FieldLayoutReader {
 
     public static int getNumberOfLevels(Context context) {
         try {
-            return (int) Arrays.stream(context.getAssets().list("tables"))
-                    .filter(name -> name.matches("^table\\d+\\.json"))
-                    .count();
+            // This would be cleaner with Arrays.stream/filter/count, but that's not supported
+            // by Android's desugaring library so it breaks on older devices.
+            List<String> tableFiles = Arrays.asList(context.getAssets().list("tables"));
+            int count = 0;
+            while (tableFiles.contains("table" + (count + 1) + ".json")) {
+                count++;
+            }
+            return count;
         }
         catch (IOException ex) {
             throw new RuntimeException(ex);
