@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 34
         versionName "1.10.0"
         multiDexEnabled true
@@ -26,9 +26,13 @@ android {
     }
 }
 
-// jars and native libraries retrieved from https://oss.sonatype.org/content/repositories/releases/com/badlogicgames/gdx/
+// libgdx jars and native libraries retrieved from https://oss.sonatype.org/content/repositories/releases/com/badlogicgames/gdx/
+// gdx-jnigen-loader is a dependency of libgdx as of 1.11.0; should figure out how to load
+// via Gradle to avoid manually managing the jars.
+// desugar_jdk_libs 2.0.0 is available as of Oct 2022, but produces build errors.
 dependencies {
-    implementation files('libs/gdx-box2d-1.9.13.jar')
-    implementation files('libs/gdx-1.9.13.jar')
+    implementation files('libs/gdx-box2d-1.11.0.jar')
+    implementation files('libs/gdx-1.11.0.jar')
+    implementation files('libs/gdx-jnigen-loader-2.3.1.jar')
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
