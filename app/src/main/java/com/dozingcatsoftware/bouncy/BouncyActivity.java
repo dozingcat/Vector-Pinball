@@ -27,15 +27,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class BouncyActivity extends Activity {
 
@@ -64,9 +66,9 @@ public class BouncyActivity extends Activity {
     Button showHighScoreButton;
     Button hideHighScoreButton;
     CheckBox unlimitedBallsToggle;
+    ViewGroup highScoreListLayout;
+    View noHighScoresTextView;
     final static int ACTIVITY_PREFERENCES = 1;
-
-    ArrayAdapter<String> highScoreStringsAdapter;
 
     Handler handler = new Handler(Looper.myLooper());
 
@@ -161,6 +163,8 @@ public class BouncyActivity extends Activity {
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
         showHighScoreButton = findViewById(R.id.highScoreButton);
         hideHighScoreButton = findViewById(R.id.hideHighScoreButton);
+        highScoreListLayout = findViewById(R.id.highScoreListLayout);
+        noHighScoresTextView = findViewById(R.id.noHighScoresTextView);
 
         // Ugly workaround that seems to be required when supporting keyboard navigation.
         // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
@@ -196,10 +200,6 @@ public class BouncyActivity extends Activity {
                 return false;
             });
         }
-
-        this.highScoreStringsAdapter = new ArrayAdapter<String>(this, R.layout.highscoreitemview, R.id.highscoreitemtextview);
-        ListView highScoreListView = findViewById(R.id.highScoreListView);
-        highScoreListView.setAdapter(this.highScoreStringsAdapter);
 
         // TODO: allow field configuration to specify whether tilting is allowed
         /*
@@ -615,19 +615,31 @@ public class BouncyActivity extends Activity {
     public void hideHighScore(View view) {
         this.buttonPanel.setVisibility(View.VISIBLE);
         this.highScorePanel.setVisibility(View.GONE);
-        this.highScoreStringsAdapter.clear();
+        this.highScoreListLayout.removeAllViews();
     }
 
     private void fillHighScoreAdapter() {
-        this.highScoreStringsAdapter.clear();
+        LinearLayout.LayoutParams params = null;
+        this.highScoreListLayout.removeAllViews();
         for (int index = 0; index < this.highScores.size(); index++) {
             long score = this.highScores.get(index);
             if (score > 0) {
-                this.highScoreStringsAdapter.add(ScoreView.SCORE_FORMAT.format(score));
+                if (params == null) {
+                    params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.bottomMargin = (int)(16 * getResources().getDisplayMetrics().scaledDensity);
+                }
+                TextView scoreItem = new TextView(this);
+                scoreItem.setLayoutParams(params);
+                scoreItem.setText(ScoreView.SCORE_FORMAT.format(score));
+                scoreItem.setTextSize(22);
+                scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
+                scoreItem.setGravity(Gravity.END);
+                this.highScoreListLayout.addView(scoreItem);
             }
         }
-        if (this.highScoreStringsAdapter.isEmpty()) {
-            this.highScoreStringsAdapter.add(getString(R.string.no_high_scores_message));
-        }
+        this.noHighScoresTextView.setVisibility(
+                this.highScoreListLayout.getChildCount() == 0 ? View.VISIBLE : View.GONE);
     }
 }

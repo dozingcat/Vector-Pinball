@@ -125,29 +125,42 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#F0F0F0"
                 android:paddingBottom="20dp"
                 android:text="@string/high_score_table_title" />
 
-			<ListView
-				android:id="@+id/highScoreListView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center"/>
+            <LinearLayout
+                android:id="@+id/highScoreListLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="4dp"
+                android:orientation="vertical" />
 
-			<Button
-				android:id="@+id/hideHighScoreButton"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="10sp"
-				android:onClick="hideHighScore"
-				android:focusableInTouchMode="true"
-				android:text="@string/hide_high_score_button_label" />
+            <TextView
+                android:id="@+id/noHighScoresTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#F0F0F0"
+                android:textSize="18sp"
+                android:paddingBottom="24dp"
+                android:text="@string/no_high_scores_message" />
 
-		</TableLayout>
+            <Button
+                android:id="@+id/hideHighScoreButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
+                android:onClick="hideHighScore"
+                android:focusableInTouchMode="true"
+                android:text="@string/hide_high_score_button_label" />
 
-	</FrameLayout>
+        </TableLayout>
+
+    </FrameLayout>
 
 </LinearLayout>
