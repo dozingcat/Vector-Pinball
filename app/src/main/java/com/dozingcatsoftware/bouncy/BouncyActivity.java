@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,10 +58,12 @@ public class BouncyActivity extends Activity {
 
     View buttonPanel;
     View highScorePanel;
+    View selectTableRow;
+    ImageButton nextTableButton;
+    ImageButton previousTableButton;
     Button startGameButton;
     Button resumeGameButton;
     Button endGameButton;
-    Button switchTableButton;
     Button aboutButton;
     Button preferencesButton;
     Button showHighScoreButton;
@@ -153,11 +156,13 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
+        selectTableRow = findViewById(R.id.selectTableRow);
         highScorePanel = findViewById(R.id.highScorePanel);
+        nextTableButton = findViewById(R.id.nextTableButton);
+        previousTableButton = findViewById(R.id.previousTableButton);
         startGameButton = findViewById(R.id.startGameButton);
         resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
-        switchTableButton = findViewById(R.id.switchTableButton);
         aboutButton = findViewById(R.id.aboutButton);
         preferencesButton = findViewById(R.id.preferencesButton);
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
@@ -177,7 +182,7 @@ public class BouncyActivity extends Activity {
         // (after checking that the event was within the button bounds). This is likely
         // fragile but seems to be working ok.
         List<View> allButtons = Arrays.asList(
-                startGameButton, resumeGameButton, endGameButton, switchTableButton,
+                nextTableButton, previousTableButton, startGameButton, resumeGameButton, endGameButton,
                 aboutButton, preferencesButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
         for (View button : allButtons) {
             button.setOnTouchListener((view, motionEvent) -> {
@@ -275,6 +280,19 @@ public class BouncyActivity extends Activity {
                 return true;
             }
         }
+        // When showing the main menu, switch tables with the flipper buttons.
+        if (!field.getGameState().isGameInProgress() && buttonPanel.getVisibility() == View.VISIBLE) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                doPreviousTable(null);
+                startGameButton.requestFocus();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                doNextTable(null);
+                startGameButton.requestFocus();
+                return true;
+            }
+        }
         return super.onKeyDown(keyCode, event);
     }
 
@@ -315,11 +333,11 @@ public class BouncyActivity extends Activity {
             }
             else {
                 buttonPanel.setVisibility(View.VISIBLE);
+                selectTableRow.setVisibility(View.GONE);
+                unlimitedBallsToggle.setVisibility(View.GONE);
                 startGameButton.setVisibility(View.GONE);
                 resumeGameButton.setVisibility(View.VISIBLE);
                 endGameButton.setVisibility(View.VISIBLE);
-                switchTableButton.setVisibility(View.GONE);
-                unlimitedBallsToggle.setVisibility(View.GONE);
                 resumeGameButton.requestFocus();
             }
         }
@@ -334,11 +352,11 @@ public class BouncyActivity extends Activity {
             }
             else {
                 buttonPanel.setVisibility(View.VISIBLE);
+                selectTableRow.setVisibility(View.VISIBLE);
+                unlimitedBallsToggle.setVisibility(View.VISIBLE);
                 startGameButton.setVisibility(View.VISIBLE);
                 resumeGameButton.setVisibility(View.GONE);
                 endGameButton.setVisibility(View.GONE);
-                switchTableButton.setVisibility(View.VISIBLE);
-                unlimitedBallsToggle.setVisibility(View.VISIBLE);
                 startGameButton.requestFocus();
             }
         }
@@ -592,8 +610,8 @@ public class BouncyActivity extends Activity {
         }
     }
 
-    public void doSwitchTable(View view) {
-        currentLevel = (currentLevel == numberOfLevels) ? 1 : currentLevel + 1;
+    void switchToTable(int tableNum) {
+        this.currentLevel = tableNum;
         synchronized (field) {
             resetFieldForCurrentLevel();
         }
@@ -602,6 +620,20 @@ public class BouncyActivity extends Activity {
         scoreView.setHighScores(highScores);
         // Performance can be different on different tables.
         fieldDriver.resetFrameRate();
+    }
+
+    public void doSwitchTable(View view) {
+        doNextTable(view);
+    }
+
+    public void doNextTable(View view) {
+        int nextTableNum = (currentLevel == numberOfLevels) ? 1 : currentLevel + 1;
+        switchToTable(nextTableNum);
+    }
+
+    public void doPreviousTable(View view) {
+        int prevTableNum = (currentLevel == 1) ? numberOfLevels : currentLevel - 1;
+        switchToTable(prevTableNum);
     }
 
     void resetFieldForCurrentLevel() {
