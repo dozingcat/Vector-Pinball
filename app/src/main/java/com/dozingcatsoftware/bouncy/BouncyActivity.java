@@ -218,7 +218,6 @@ public class BouncyActivity extends Activity {
         	}
         });
          */
-        enterFullscreenMode();
         updateFromPreferences();
 
         // Initialize audio, loading resources in a separate thread.
@@ -267,6 +266,9 @@ public class BouncyActivity extends Activity {
     @Override public void onResume() {
         super.onResume();
 
+        // Go to full screen mode here; if we only do it in onCreate then the UI can get stuck
+        // with the navigation bar on top of the field.
+        enterFullscreenMode();
         // Reset frame rate since app or system settings that affect performance could have changed.
         fieldDriver.resetFrameRate();
         updateButtons();
