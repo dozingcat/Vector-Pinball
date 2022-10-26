@@ -34,6 +34,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -84,6 +86,7 @@ public class BouncyActivity extends Activity {
     int numberOfLevels;
     int currentLevel = 1;
     List<Long> highScores;
+    boolean showingHighScores = false;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
     static String OLD_HIGHSCORE_PREFS_KEY = "highScore";
@@ -109,7 +112,7 @@ public class BouncyActivity extends Activity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String arch = System.getProperty("os.arch");
-        Log.i(TAG, "App started, os.arch=" + arch);
+        Log.i(TAG, "App started, os.arch: " + arch + ", API level: " + Build.VERSION.SDK_INT);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
@@ -215,6 +218,7 @@ public class BouncyActivity extends Activity {
         	}
         });
          */
+        enterFullscreenMode();
         updateFromPreferences();
 
         // Initialize audio, loading resources in a separate thread.
@@ -230,15 +234,39 @@ public class BouncyActivity extends Activity {
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
+    void enterFullscreenMode() {
+        // https://stackoverflow.com/questions/62643517/immersive-fullscreen-on-android-11
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController insetsController = getWindow().getInsetsController();
+            if (insetsController != null) {
+                insetsController.hide(WindowInsets.Type.statusBars());
+                insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    |  View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    |  View.SYSTEM_UI_FLAG_FULLSCREEN
+                    |  View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            final View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(flags);
+            decorView.setOnSystemUiVisibilityChangeListener((visibility) -> {
+                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    decorView.setSystemUiVisibility(flags);
+                }
+            });
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        }
+    }
+
     @Override public void onResume() {
         super.onResume();
-        // Attempt to call setSystemUiVisibility(1) which is "low profile" mode.
-        try {
-            Method setUiMethod = View.class.getMethod("setSystemUiVisibility", int.class);
-            setUiMethod.invoke(scoreView, 1);
-        }
-        catch (Exception ignored) {
-        }
+
         // Reset frame rate since app or system settings that affect performance could have changed.
         fieldDriver.resetFrameRate();
         updateButtons();
@@ -300,13 +328,13 @@ public class BouncyActivity extends Activity {
     public void pauseGame() {
         VPSoundpool.pauseMusic();
         GameState state = field.getGameState();
-        if (!state.isGameInProgress()) return;
         if (state.isPaused()) return;
         state.setPaused(true);
 
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
         if (glFieldView != null) glFieldView.onPause();
+        showingHighScores = false;
 
         updateButtons();
     }
@@ -320,45 +348,46 @@ public class BouncyActivity extends Activity {
 
         fieldDriver.start();
         if (glFieldView != null) glFieldView.onResume();
+        showingHighScores = false;
 
         updateButtons();
     }
 
     void updateButtons() {
         GameState state = field.getGameState();
-        if (state.isPaused()) {
-            if (highScorePanel.getVisibility() == View.VISIBLE) {
-                buttonPanel.setVisibility(View.GONE);
-                hideHighScoreButton.requestFocus();
-            }
-            else {
-                buttonPanel.setVisibility(View.VISIBLE);
-                selectTableRow.setVisibility(View.GONE);
-                unlimitedBallsToggle.setVisibility(View.GONE);
-                startGameButton.setVisibility(View.GONE);
-                resumeGameButton.setVisibility(View.VISIBLE);
-                endGameButton.setVisibility(View.VISIBLE);
-                resumeGameButton.requestFocus();
-            }
+        boolean paused = state.isPaused();
+        boolean gameInProgress = state.isGameInProgress();
+        if (gameInProgress && !paused) {
+            // Game is active, no menus visible.
+            buttonPanel.setVisibility(View.GONE);
+            highScorePanel.setVisibility(View.GONE);
         }
-        else {
-            if (state.isGameInProgress()) {
-                buttonPanel.setVisibility(View.GONE);
-                highScorePanel.setVisibility(View.GONE);
-            }
-            else if (highScorePanel.getVisibility() == View.VISIBLE) {
-                buttonPanel.setVisibility(View.GONE);
-                hideHighScoreButton.requestFocus();
-            }
-            else {
-                buttonPanel.setVisibility(View.VISIBLE);
-                selectTableRow.setVisibility(View.VISIBLE);
-                unlimitedBallsToggle.setVisibility(View.VISIBLE);
-                startGameButton.setVisibility(View.VISIBLE);
-                resumeGameButton.setVisibility(View.GONE);
-                endGameButton.setVisibility(View.GONE);
-                startGameButton.requestFocus();
-            }
+        else if (showingHighScores) {
+            // High scores are visible, hide main menu.
+            buttonPanel.setVisibility(View.GONE);
+            highScorePanel.setVisibility(View.VISIBLE);
+            hideHighScoreButton.requestFocus();
+        }
+        else if (gameInProgress) {
+            // Menu when game is in progress, show resume/end buttons, hide table picker.
+            buttonPanel.setVisibility(View.VISIBLE);
+            highScorePanel.setVisibility(View.GONE);
+            selectTableRow.setVisibility(View.GONE);
+            unlimitedBallsToggle.setVisibility(View.GONE);
+            startGameButton.setVisibility(View.GONE);
+            resumeGameButton.setVisibility(View.VISIBLE);
+            endGameButton.setVisibility(View.VISIBLE);
+            resumeGameButton.requestFocus();
+        } else {
+            // Menu when game is not in progress, show table picker.
+            buttonPanel.setVisibility(View.VISIBLE);
+            highScorePanel.setVisibility(View.GONE);
+            selectTableRow.setVisibility(View.VISIBLE);
+            unlimitedBallsToggle.setVisibility(View.VISIBLE);
+            startGameButton.setVisibility(View.VISIBLE);
+            resumeGameButton.setVisibility(View.GONE);
+            endGameButton.setVisibility(View.GONE);
+            startGameButton.requestFocus();
         }
     }
 
@@ -642,15 +671,12 @@ public class BouncyActivity extends Activity {
 
     public void showHighScore(View view) {
         this.fillHighScoreAdapter();
-        this.buttonPanel.setVisibility(View.GONE);
-        this.highScorePanel.setVisibility(View.VISIBLE);
+        showingHighScores = true;
         updateButtons();
     }
 
     public void hideHighScore(View view) {
-        this.buttonPanel.setVisibility(View.VISIBLE);
-        this.highScorePanel.setVisibility(View.GONE);
-        this.highScoreListLayout.removeAllViews();
+        showingHighScores = false;
         updateButtons();
     }
 
