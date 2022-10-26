@@ -628,16 +628,9 @@ public class BouncyActivity extends Activity {
     }
 
     public void scoreViewClicked(View view) {
-        if (field.getGameState().isGameInProgress()) {
-            if (field.getGameState().isPaused()) {
-                unpauseGame();
-            }
-            else {
-                pauseGame();
-            }
-        }
-        else {
-            doStartGame(null);
+        GameState state = field.getGameState();
+        if (state.isGameInProgress() && !state.isPaused()) {
+            pauseGame();
         }
     }
 
