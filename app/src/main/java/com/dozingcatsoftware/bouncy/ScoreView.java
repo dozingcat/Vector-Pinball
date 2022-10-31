@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -31,6 +32,8 @@ public class ScoreView extends View {
     Paint usedBallPaint = new Paint();
     Paint remainingBallPaint = new Paint();
     Paint multiplierPaint = new Paint();
+    int backgroundColor = Color.argb(255, 24, 24, 24);
+    DisplayMetrics metrics = new DisplayMetrics();
 
     List<Long> highScores;
     Long lastUpdateTime;
@@ -55,7 +58,6 @@ public class ScoreView extends View {
         textPaint.setARGB(255, 255, 255, 0);
         textPaint.setAntiAlias(true);
         // setTextSize uses absolute pixels, get screen density to scale.
-        DisplayMetrics metrics = new DisplayMetrics();
         WindowManager windowManager =
                 (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
@@ -99,7 +101,7 @@ public class ScoreView extends View {
             ballInPlay = field.getBalls().size() > 0;
         }
 
-        c.drawARGB(255, 8, 8, 8);
+        c.drawColor(backgroundColor);
         String displayString = (msg != null) ? msg.text : null;
         if (displayString == null) {
             // Show score if game is in progress, otherwise cycle between
@@ -126,20 +128,20 @@ public class ScoreView extends View {
         // textRect ends up being too high
         c.drawText(
                 displayString,
-                width / 2.0f - textRect.width() / 2.0f, height / 2.0f + textRect.height() / 2.0f,
+                width / 2.0f - textRect.width() / 2.0f, height / 2.0f + textRect.height() / 3.0f,
                 textPaint);
         if (showFPS && fps > 0) {
-            c.drawText(String.format("%.1f fps", fps), width * 0.02f, height * 0.25f, fpsPaint);
+            c.drawText(String.format("%.1f fps", fps), 16 * metrics.density, height * 0.25f, fpsPaint);
         }
         if (debugMessage != null) {
             c.drawText(debugMessage, width * 0.02f, height * 0.75f, fpsPaint);
         }
         if (gameInProgress) {
             // Draw balls.
-            int ballPaintWidth = getWidth() / 240;
+            float ballRadius = height / 10f;
+            float ballPaintWidth = ballRadius / 3.2f;
             usedBallPaint.setStrokeWidth(ballPaintWidth);
             remainingBallPaint.setStrokeWidth(ballPaintWidth);
-            float ballRadius = width / 75f;
             float ballOuterMargin = 2 * ballRadius;
             float ballCenterY = height - (ballOuterMargin + ballRadius);
             float ballRightmostCenterX = width - ballOuterMargin - ballRadius;
@@ -167,7 +169,7 @@ public class ScoreView extends View {
                 int intValue = (int) multiplier;
                 String multiplierString = (multiplier == intValue) ?
                         intValue + "x" : String.format("%.2fx", multiplier);
-                float messageStartX = ballRightmostCenterX - 2 * distanceBetweenBallCenters;
+                float messageStartX = ballRightmostCenterX - 2 * distanceBetweenBallCenters - ballRadius;
                 c.drawText(multiplierString, messageStartX, height * 0.4f, multiplierPaint);
             }
         }

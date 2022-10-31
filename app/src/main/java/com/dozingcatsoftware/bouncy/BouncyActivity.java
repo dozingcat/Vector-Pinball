@@ -50,6 +50,7 @@ public class BouncyActivity extends Activity {
 
     CanvasFieldView canvasFieldView;
     ScoreView scoreView;
+    View pauseButton;
 
     GLFieldView glFieldView;
     GL10Renderer gl10Renderer;
@@ -68,6 +69,7 @@ public class BouncyActivity extends Activity {
     Button endGameButton;
     Button aboutButton;
     Button preferencesButton;
+    Button quitButton;
     Button showHighScoreButton;
     Button hideHighScoreButton;
     CheckBox unlimitedBallsToggle;
@@ -168,11 +170,13 @@ public class BouncyActivity extends Activity {
         endGameButton = findViewById(R.id.endGameButton);
         aboutButton = findViewById(R.id.aboutButton);
         preferencesButton = findViewById(R.id.preferencesButton);
+        quitButton = findViewById(R.id.quitButton);
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
         showHighScoreButton = findViewById(R.id.highScoreButton);
         hideHighScoreButton = findViewById(R.id.hideHighScoreButton);
         highScoreListLayout = findViewById(R.id.highScoreListLayout);
         noHighScoresTextView = findViewById(R.id.noHighScoresTextView);
+        pauseButton = findViewById(R.id.pauseIcon);
 
         // Ugly workaround that seems to be required when supporting keyboard navigation.
         // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
@@ -186,7 +190,7 @@ public class BouncyActivity extends Activity {
         // fragile but seems to be working ok.
         List<View> allButtons = Arrays.asList(
                 nextTableButton, previousTableButton, startGameButton, resumeGameButton, endGameButton,
-                aboutButton, preferencesButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
+                aboutButton, preferencesButton, quitButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
         for (View button : allButtons) {
             button.setOnTouchListener((view, motionEvent) -> {
                 // Log.i(TAG, "Button motion event: " + motionEvent);
@@ -359,16 +363,19 @@ public class BouncyActivity extends Activity {
         GameState state = field.getGameState();
         boolean paused = state.isPaused();
         boolean gameInProgress = state.isGameInProgress();
+
         if (gameInProgress && !paused) {
-            // Game is active, no menus visible.
+            // Game is active, no menus visible, show pause "button".
             buttonPanel.setVisibility(View.GONE);
             highScorePanel.setVisibility(View.GONE);
+            pauseButton.setVisibility(View.VISIBLE);
         }
         else if (showingHighScores) {
             // High scores are visible, hide main menu.
             buttonPanel.setVisibility(View.GONE);
             highScorePanel.setVisibility(View.VISIBLE);
             hideHighScoreButton.requestFocus();
+            pauseButton.setVisibility(View.GONE);
         }
         else if (gameInProgress) {
             // Menu when game is in progress, show resume/end buttons, hide table picker.
@@ -380,6 +387,7 @@ public class BouncyActivity extends Activity {
             resumeGameButton.setVisibility(View.VISIBLE);
             endGameButton.setVisibility(View.VISIBLE);
             resumeGameButton.requestFocus();
+            pauseButton.setVisibility(View.GONE);
         } else {
             // Menu when game is not in progress, show table picker.
             buttonPanel.setVisibility(View.VISIBLE);
@@ -390,6 +398,7 @@ public class BouncyActivity extends Activity {
             resumeGameButton.setVisibility(View.GONE);
             endGameButton.setVisibility(View.GONE);
             startGameButton.requestFocus();
+            pauseButton.setVisibility(View.GONE);
         }
     }
 
@@ -608,6 +617,7 @@ public class BouncyActivity extends Activity {
             }
             VPSoundpool.playStart();
             endGameTime = null;
+            updateButtons();
         }
     }
 
@@ -623,14 +633,22 @@ public class BouncyActivity extends Activity {
         gotoPreferences();
     }
 
+    public void doQuit(View view) {
+        this.finish();
+    }
+
     public void doAbout(View view) {
         gotoAbout();
     }
 
     public void scoreViewClicked(View view) {
+        // Start a new game or pause a running game, but don't resume a paused game.
         GameState state = field.getGameState();
         if (state.isGameInProgress() && !state.isPaused()) {
             pauseGame();
+        }
+        else if (!state.isGameInProgress()) {
+            doStartGame(view);
         }
     }
 
