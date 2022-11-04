@@ -57,8 +57,10 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         this.glView = view;
         view.getHolder().setFormat(PixelFormat.RGBA_8888);
         view.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        view.setEGLConfigChooser(8,8,8,8,16,0);
+        // This order matters at least on some devices: setEGLContextClientVersion must be called
+        // before setEGLConfigChooser. See https://stackoverflow.com/questions/26504742/open-gl-bad-config-error-on-samsung-s4
         view.setEGLContextClientVersion(2);
+        view.setEGLConfigChooser(8,8,8,8,16,0);
         view.setRenderer(this);
         view.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         this.shaderLookupFn = shaderLookupFn;
