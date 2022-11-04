@@ -443,7 +443,7 @@ public class BouncyActivity extends Activity {
             fieldViewManager.setCustomLineWidth(lineWidth);
         }
 
-        boolean useOpenGL = prefs.getBoolean("useOpenGL", false);
+        boolean useOpenGL = prefs.getBoolean("useOpenGL", true);
         if (useOpenGL) {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
