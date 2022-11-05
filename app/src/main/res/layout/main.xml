@@ -173,7 +173,7 @@
                     android:layout_marginBottom="16dp"
                     android:onClick="doQuit"
                     android:focusableInTouchMode="true"
-                    android:text="Quit" />
+                    android:text="@string/quit_button_label" />
             </TableLayout>
         </LinearLayout>
 

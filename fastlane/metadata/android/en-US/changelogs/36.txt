@@ -1,0 +1,4 @@
+- Updated full screen mode, menu layout and table selection UI.
+- Improved keyboard/controller navigation.
+- Added pause button and improved layout in score area.
+- Fixed OpenGL bugs.
