@@ -41,12 +41,14 @@
 			android:id="@+id/canvasFieldView"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
+			android:defaultFocusHighlightEnabled="false"
 			android:visibility="gone" />
 
 		<com.dozingcatsoftware.bouncy.GLFieldView
 			android:id="@+id/glFieldView"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
+			android:defaultFocusHighlightEnabled="false"
 			android:visibility="gone" />
 
         <LinearLayout
