@@ -54,8 +54,10 @@ public class Field implements ContactListener {
     GameMessage gameMessage;
 
     // Used in checkForStuckBall() to see if the ball hasn't moved recently.
-    float lastBallPositionX;
-    float lastBallPositionY;
+    // Primitive arrays so we don't have to box floats or allocate vector objects.
+    float[] lastBallPositionsX = new float[10];
+    float[] lastBallPositionsY = new float[10];
+    int numLastBallPositions = 0;
     long nanosSinceBallMoved = -1;
     // Duration after which the ball is considered stuck if it hasn't moved significantly,
     // if it's a single ball and no flippers are active. Normally the time ratio is around 2,
@@ -314,6 +316,22 @@ public class Field implements ContactListener {
         return ball;
     }
 
+    /**
+     * Launches a ball either if there are no balls currently in play, or if there is a ball in
+     * the "dead zone" indicating that a previous launch failed to clear the launch chute. In that
+     * case the ball in the dead zone is removed and a new ball is launched.
+     * Workaround for https://github.com/dozingcat/Vector-Pinball/issues/26
+     */
+    public boolean launchBallIfNeeded() {
+        // Remove "dead" balls and launch if none already in play.
+        int numRemoved = removeDeadBalls();
+        if (getBalls().size() == 0 || numRemoved > 0) {
+            launchBall();
+            return true;
+        }
+        return false;
+    }
+
     private boolean shouldLaunchMercyBall() {
         Long t = ballStartGameTimeNanos;
         // if (t != null) android.util.Log.i("Field", "Mercy time: " + (gameTimeNanos - t));
@@ -436,11 +454,11 @@ public class Field implements ContactListener {
 
     /**
      * Removes balls that are not in play, as determined by optional "deadzone" property of
-     * launch parameters in field layout.
+     * launch parameters in field layout. Returns the number of removed balls.
      */
-    public void removeDeadBalls() {
+    public int removeDeadBalls() {
         List<Float> deadRect = layout.getLaunchDeadZone();
-        if (deadRect == null) return;
+        if (deadRect == null) return 0;
 
         ArrayList<Ball> deadBalls = null;  // Don't allocate until needed.
         for (int i = 0; i < this.balls.size(); i++) {
@@ -459,7 +477,9 @@ public class Field implements ContactListener {
             for (Ball b : deadBalls) {
                 this.removeBallWithoutBallLoss(b);
             }
+            return deadBalls.size();
         }
+        return 0;
     }
 
     // Reusable array for sorting elements and balls into the order in which they should be draw.
@@ -691,45 +711,58 @@ public class Field implements ContactListener {
         zoomCenter = (this.balls.size() >= 1) ? this.balls.get(0).getPosition() : zoomCenter;
     }
 
+    // True if balls have near-zero velocity and the same positions as lastBallPositions.
+    private boolean areBallsPossiblyStuck() {
+        int numBalls = this.balls.size();
+        if (numBalls == 0 || numBalls != numLastBallPositions) {
+            return false;
+        }
+        for (int i = 0; i < numBalls; i++) {
+            Ball b = this.balls.get(i);
+            if (b.getLinearVelocity().len2() > 0.01f ||
+                    b.getPosition().dst2(lastBallPositionsX[i], lastBallPositionsY[i]) > 0.01f) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
-     * Checks whether the ball appears to be stuck, and nudges it if so.
+     * Checks whether the balls appear to be stuck, and nudges them if so.
      */
     private void checkForStuckBall(long nanos) {
-        // Only do this for single balls. This means it's theoretically possible for multiple
-        // balls to be simultaneously stuck during multiball; that would be impressive.
-        if (this.getBalls().size() != 1) {
-            nanosSinceBallMoved = -1;
-            return;
+        boolean maybeStuck = areBallsPossiblyStuck();
+
+        int numBalls = this.balls.size();
+        numLastBallPositions = this.balls.size();
+        for (int i = 0; i < numBalls; i++) {
+            Vector2 pos = this.balls.get(i).getPosition();
+            lastBallPositionsX[i] = pos.x;
+            lastBallPositionsY[i] = pos.y;
         }
-        Ball ball = this.getBalls().get(0);
-        Vector2 pos = ball.getPosition();
-        if (nanosSinceBallMoved < 0) {
-            // New ball.
-            lastBallPositionX = pos.x;
-            lastBallPositionY = pos.y;
+
+        if (!maybeStuck) {
             nanosSinceBallMoved = 0;
             return;
         }
-        if (ball.getLinearVelocity().len2() > 0.01f ||
-                pos.dst2(lastBallPositionX, lastBallPositionY) > 0.01f) {
-            // Ball has moved since last time; reset counter.
-            lastBallPositionX = pos.x;
-            lastBallPositionY = pos.y;
-            nanosSinceBallMoved = 0;
-            return;
-        }
+
         // Don't add time if any flipper is activated (the flipper could be trapping the ball).
         List<FlipperElement> flippers = this.getFlipperElements();
         for (int i = 0; i < flippers.size(); i++) {
-            if (flippers.get(i).isFlipperEngaged()) return;
+            if (flippers.get(i).isFlipperEngaged()) {
+                return;
+            }
         }
-        // Increment time counter and bump if the ball hasn't moved in a while.
+
+        // Increment time counter and bump if the balls haven't moved in a while.
         nanosSinceBallMoved += nanos;
         if (nanosSinceBallMoved > STUCK_BALL_NANOS) {
             showGameMessage(this.stringResolver.resolveString("bump_message"), 1000);
             // Could make the bump impulse table-specific if needed.
-            Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
-            ball.applyLinearImpulse(impulse);
+            for (int i = 0; i < numBalls; i++) {
+                Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
+                this.balls.get(i).applyLinearImpulse(impulse);                    
+            }
             nanosSinceBallMoved = 0;
         }
     }
