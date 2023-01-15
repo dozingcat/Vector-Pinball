@@ -46,6 +46,19 @@ public class MathUtils {
         return defvalue;
     }
 
+    public static double asDouble(Object obj) {
+        return asDouble(obj, 0);
+    }
+
+    public static List<Double> asDoubleList(List<?> values) {
+        if (values == null) return null;
+        List<Double> converted = new ArrayList<Double>();
+        for (int i=0; i<values.size(); i++) {
+            converted.add(asDouble(values.get(i)));
+        }
+        return converted;
+    }
+        
     public static int asInt(Object obj, int defvalue) {
         if (obj instanceof Number) return ((Number) obj).intValue();
         if (obj instanceof String) {
