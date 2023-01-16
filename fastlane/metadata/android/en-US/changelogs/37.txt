@@ -1,0 +1,2 @@
+- Fixed bugs with keyboard navigation.
+- Improved stuck ball handling.
