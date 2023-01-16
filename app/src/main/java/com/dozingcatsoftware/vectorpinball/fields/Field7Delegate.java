@@ -518,7 +518,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         lockAndJackpotGuide.setNewColor(lockColor);
     }
 
-    private void launchBallForMulitball(Field field, Ball existingBall) {
+    private void launchBallForMultiball(Field field, Ball existingBall) {
         Ball ball = existingBall;
         if (ball == null) {
             Vector2 center =
@@ -528,6 +528,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         ball.moveToLayer(BALL_LOCK_LAYER);
         ball.getBody().setLinearVelocity(0, -(5.0f + RAND.nextFloat()));
         field.playBallLaunchSound();
+        field.updateBallLaunchTimes();
         numBallsLocked--;
     }
 
@@ -551,11 +552,11 @@ public class Field7Delegate extends BaseFieldDelegate {
         // Release the current ball, then create additional balls over the corresponding rollovers.
         field.scheduleAction(1000, () -> {
             bb.setGravityScale(origGravity);
-            launchBallForMulitball(field, ball);
+            launchBallForMultiball(field, ball);
         });
-        field.scheduleAction(3500, () -> launchBallForMulitball(field, null));
+        field.scheduleAction(3500, () -> launchBallForMultiball(field, null));
         field.scheduleAction(6000, () -> {
-            launchBallForMulitball(field, null);
+            launchBallForMultiball(field, null);
             multiballStatus = MultiballStatus.ACTIVE;
         });
     }
