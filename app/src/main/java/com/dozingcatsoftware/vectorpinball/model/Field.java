@@ -303,6 +303,14 @@ public class Field implements ContactListener {
         Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
+        updateBallLaunchTimes();
+        return ball;
+    }
+
+    // Called by launchBall, but should be called separately in fields that add balls in other ways.
+    // (e.g. table 7 which manually positions multiball balls so they appear to come from the
+    // positions where they were locked).
+    public void updateBallLaunchTimes() {
         lostBallWallTimeMillis = null;
         lastBallLaunchGameTimeNanos = gameTimeNanos;
         if (balls.size() > 1) {
@@ -313,7 +321,6 @@ public class Field implements ContactListener {
         else {
             ballStartGameTimeNanos = gameTimeNanos;
         }
-        return ball;
     }
 
     /**

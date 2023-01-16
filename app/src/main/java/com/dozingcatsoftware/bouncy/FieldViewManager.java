@@ -177,9 +177,7 @@ public class FieldViewManager {
         if (field.ballLostWithinMillis(END_BALL_DELAY_MS)) {
             return;
         }
-        // Remove "dead" balls and launch if none already in play.
-        field.removeDeadBalls();
-        if (field.getBalls().size() == 0) field.launchBall();
+        field.launchBallIfNeeded();
     }
 
     /**
