@@ -39,6 +39,7 @@
     <string name="shoot_again_message">Shoot Again</string>
     <string name="ball_saved_message">Ball Saved</string>
     <string name="game_over_message">Game Over</string>
+    <string name="game_restarted_message">Game Restarted</string>
     <string name="bump_message">Bump!</string>
     <string name="touch_to_start_message">Touch to start</string>
     <string name="last_score_message">Last Score: %1$s</string>
@@ -76,5 +77,6 @@
     <string name="show_high_score_button_label">High scores</string>
     <string name="hide_high_score_button_label">OK</string>
     <string name="high_score_table_title">High scores</string>
+    <string name="restart_game_button_label">Restart Game</string>
 
 </resources>

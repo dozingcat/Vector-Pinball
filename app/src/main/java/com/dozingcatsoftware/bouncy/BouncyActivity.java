@@ -66,6 +66,7 @@ public class BouncyActivity extends Activity {
     ImageButton previousTableButton;
     Button startGameButton;
     Button resumeGameButton;
+    Button restartGameButton;
     Button endGameButton;
     Button aboutButton;
     Button preferencesButton;
@@ -166,6 +167,7 @@ public class BouncyActivity extends Activity {
         nextTableButton = findViewById(R.id.nextTableButton);
         previousTableButton = findViewById(R.id.previousTableButton);
         startGameButton = findViewById(R.id.startGameButton);
+        restartGameButton = findViewById(R.id.restartGameButton);
         resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
         aboutButton = findViewById(R.id.aboutButton);
@@ -189,7 +191,7 @@ public class BouncyActivity extends Activity {
         // (after checking that the event was within the button bounds). This is likely
         // fragile but seems to be working ok.
         List<View> allButtons = Arrays.asList(
-                nextTableButton, previousTableButton, startGameButton, resumeGameButton, endGameButton,
+                nextTableButton, previousTableButton, startGameButton, restartGameButton, resumeGameButton, endGameButton,
                 aboutButton, preferencesButton, quitButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
         for (View button : allButtons) {
             button.setOnTouchListener((view, motionEvent) -> {
@@ -384,6 +386,7 @@ public class BouncyActivity extends Activity {
             selectTableRow.setVisibility(View.GONE);
             unlimitedBallsToggle.setVisibility(View.GONE);
             startGameButton.setVisibility(View.GONE);
+            restartGameButton.setVisibility(View.VISIBLE);
             resumeGameButton.setVisibility(View.VISIBLE);
             endGameButton.setVisibility(View.VISIBLE);
             resumeGameButton.requestFocus();
@@ -395,6 +398,7 @@ public class BouncyActivity extends Activity {
             selectTableRow.setVisibility(View.VISIBLE);
             unlimitedBallsToggle.setVisibility(View.VISIBLE);
             startGameButton.setVisibility(View.VISIBLE);
+            restartGameButton.setVisibility(View.GONE);
             resumeGameButton.setVisibility(View.GONE);
             endGameButton.setVisibility(View.GONE);
             startGameButton.requestFocus();
@@ -596,28 +600,33 @@ public class BouncyActivity extends Activity {
             return;
         }
         if (!field.getGameState().isGameInProgress()) {
-            // https://github.com/dozingcat/Vector-Pinball/issues/91
-            // These actions need to be synchronized so that we don't try to
-            // start the game while the FieldDriver thread is updating the
-            // Box2d world. It's not clear what should be synchronized and what
-            // shouldn't; for example pauseGame() above should not be
-            // synchronized because that can deadlock the FieldDriver thread.
-            // All of this concurrency is badly in need of refactoring.
-            synchronized (field) {
-                buttonPanel.setVisibility(View.GONE);
-                highScorePanel.setVisibility(View.GONE);
-                resetFieldForCurrentLevel();
-
-                if (unlimitedBallsToggle.isChecked()) {
-                    field.startGameWithUnlimitedBalls();
-                }
-                else {
-                    field.startGame();
-                }
-            }
+            startGameSynchronized();
             VPSoundpool.playStart();
             endGameTime = null;
             updateButtons();
+        }
+    }
+
+    private void startGameSynchronized()
+    {
+        // https://github.com/dozingcat/Vector-Pinball/issues/91
+        // These actions need to be synchronized so that we don't try to
+        // start the game while the FieldDriver thread is updating the
+        // Box2d world. It's not clear what should be synchronized and what
+        // shouldn't; for example pauseGame() above should not be
+        // synchronized because that can deadlock the FieldDriver thread.
+        // All of this concurrency is badly in need of refactoring.
+        synchronized (field) {
+            buttonPanel.setVisibility(View.GONE);
+            highScorePanel.setVisibility(View.GONE);
+            resetFieldForCurrentLevel();
+
+            if (unlimitedBallsToggle.isChecked()) {
+                field.startGameWithUnlimitedBalls();
+            }
+            else {
+                field.startGame();
+            }
         }
     }
 
@@ -716,5 +725,11 @@ public class BouncyActivity extends Activity {
         }
         this.noHighScoresTextView.setVisibility(
                 this.highScoreListLayout.getChildCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    public void doRestartGame(View view) {
+        doEndGame(view);
+        this.startGameSynchronized();
+        this.field.showGameMessage(this.field.resolveString("game_restarted_message"), 2500);
     }
 }

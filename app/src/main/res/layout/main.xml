@@ -132,6 +132,16 @@
                     android:visibility="gone" />
 
                 <Button
+                    android:id="@+id/restartGameButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:onClick="doRestartGame"
+                    android:focusableInTouchMode="true"
+                    android:text="@string/restart_game_button_label"
+                    android:visibility="gone" />
+
+                <Button
                     android:id="@+id/endGameButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
