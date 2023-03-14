@@ -88,6 +88,7 @@ public class BouncyActivity extends Activity {
     int numberOfLevels;
     int currentLevel = 1;
     List<Long> highScores;
+    Long lastHighScore = 0L;
     boolean showingHighScores = false;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
@@ -563,6 +564,7 @@ public class BouncyActivity extends Activity {
             newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
+        this.lastHighScore = score;
         writeHighScoresToPreferences(theLevel, this.highScores);
         scoreView.setHighScores(this.highScores);
     }
@@ -705,16 +707,29 @@ public class BouncyActivity extends Activity {
                             LinearLayout.LayoutParams.WRAP_CONTENT);
                     params.bottomMargin = (int)(16 * getResources().getDisplayMetrics().scaledDensity);
                 }
-                TextView scoreItem = new TextView(this);
-                scoreItem.setLayoutParams(params);
-                scoreItem.setText(ScoreView.SCORE_FORMAT.format(score));
-                scoreItem.setTextSize(22);
-                scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
-                scoreItem.setGravity(Gravity.END);
+                TextView scoreItem = this.createHighScoreTextView(ScoreView.SCORE_FORMAT.format(score), params);
                 this.highScoreListLayout.addView(scoreItem);
             }
         }
+
+        if(this.lastHighScore > 0 && params != null){
+            String lastScoreText = this.getString(
+                    R.string.last_score_message, ScoreView.SCORE_FORMAT.format(this.lastHighScore));
+            TextView lastScoreItem = this.createHighScoreTextView(lastScoreText, params);
+            this.highScoreListLayout.addView(lastScoreItem);
+        }
+
         this.noHighScoresTextView.setVisibility(
                 this.highScoreListLayout.getChildCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private TextView createHighScoreTextView(String scoreText, LinearLayout.LayoutParams params){
+        TextView scoreItem = new TextView(this);
+        scoreItem.setLayoutParams(params);
+        scoreItem.setText(scoreText);
+        scoreItem.setTextSize(22);
+        scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
+        scoreItem.setGravity(Gravity.END);
+        return scoreItem;
     }
 }
