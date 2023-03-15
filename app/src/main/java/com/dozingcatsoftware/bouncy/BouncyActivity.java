@@ -2,7 +2,6 @@ package com.dozingcatsoftware.bouncy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,7 +87,7 @@ public class BouncyActivity extends Activity {
     int numberOfLevels;
     int currentLevel = 1;
     List<Long> highScores;
-    Long lastHighScore = 0L;
+    Long lastScore = 0L;
     boolean showingHighScores = false;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
@@ -160,7 +159,7 @@ public class BouncyActivity extends Activity {
         fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
-        lastHighScore = this.lastScoreFromPreferencesForCurrentLevel();
+        lastScore = this.lastScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
@@ -581,8 +580,8 @@ public class BouncyActivity extends Activity {
             newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
-        this.lastHighScore = score;
-        writeHighScoresToPreferences(theLevel, this.highScores, this.lastHighScore);
+        this.lastScore = score;
+        writeHighScoresToPreferences(theLevel, this.highScores, this.lastScore);
         scoreView.setHighScores(this.highScores);
     }
 
@@ -678,7 +677,7 @@ public class BouncyActivity extends Activity {
         }
         this.setInitialLevel(currentLevel);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();
-        this.lastHighScore = this.lastScoreFromPreferencesForCurrentLevel();
+        this.lastScore = this.lastScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
         // Performance can be different on different tables.
         fieldDriver.resetFrameRate();
@@ -730,9 +729,8 @@ public class BouncyActivity extends Activity {
             }
         }
 
-        if(this.lastHighScore > 0 && params != null){
-            String lastScoreText = this.getString(
-                    R.string.last_score_message, ScoreView.SCORE_FORMAT.format(this.lastHighScore));
+        if(this.lastScore > 0 && params != null){
+            String lastScoreText = this.getString(R.string.last_score_message, ScoreView.SCORE_FORMAT.format(this.lastScore));
             TextView lastScoreItem = this.createHighScoreTextView(lastScoreText, params);
             this.highScoreListLayout.addView(lastScoreItem);
         }
