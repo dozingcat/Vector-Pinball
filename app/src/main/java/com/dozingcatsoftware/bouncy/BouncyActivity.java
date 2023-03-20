@@ -2,7 +2,6 @@ package com.dozingcatsoftware.bouncy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,9 +88,11 @@ public class BouncyActivity extends Activity {
     int numberOfLevels;
     int currentLevel = 1;
     List<Long> highScores;
+    Long lastScore = 0L;
     boolean showingHighScores = false;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
+    static String LAST_SCORE_PREFS_KEY = "lastScore";
     static String OLD_HIGHSCORE_PREFS_KEY = "highScore";
     static String INITIAL_LEVEL_PREFS_KEY = "initialLevel";
 
@@ -159,6 +160,7 @@ public class BouncyActivity extends Activity {
         fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
+        lastScore = this.lastScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
 
         buttonPanel = findViewById(R.id.buttonPanel);
@@ -514,6 +516,11 @@ public class BouncyActivity extends Activity {
         return HIGHSCORES_PREFS_KEY + "." + theLevel;
     }
 
+    // Store separate high scores for each field, using unique suffix in prefs key.
+    String lastScorePrefsKeyForLevel(int theLevel) {
+        return LAST_SCORE_PREFS_KEY + "." + theLevel;
+    }
+
     /**
      * Returns a list of the high score stored in SharedPreferences. Always returns a nonempty
      * list, which will be [0] if no high scores have been stored.
@@ -541,7 +548,12 @@ public class BouncyActivity extends Activity {
         }
     }
 
-    void writeHighScoresToPreferences(int level, List<Long> scores) {
+    Long lastScoreFromPreferences(int theLevel) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return prefs.getLong(lastScorePrefsKeyForLevel(theLevel), 0L);
+    }
+
+    void writeHighScoresToPreferences(int level, List<Long> scores, long lastScore) {
         StringBuilder scoresAsString = new StringBuilder();
         scoresAsString.append(scores.get(0));
         for (int i = 1; i < scores.size(); i++) {
@@ -550,11 +562,16 @@ public class BouncyActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(highScorePrefsKeyForLevel(level), scoresAsString.toString());
+        editor.putLong(lastScorePrefsKeyForLevel(level), lastScore);
         editor.commit();
     }
 
     List<Long> highScoresFromPreferencesForCurrentLevel() {
         return highScoresFromPreferences(currentLevel);
+    }
+
+    Long lastScoreFromPreferencesForCurrentLevel() {
+        return lastScoreFromPreferences(currentLevel);
     }
 
     /** Updates the high score in the ScoreView display, and persists it to SharedPreferences. */
@@ -567,7 +584,8 @@ public class BouncyActivity extends Activity {
             newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
-        writeHighScoresToPreferences(theLevel, this.highScores);
+        this.lastScore = score;
+        writeHighScoresToPreferences(theLevel, this.highScores, this.lastScore);
         scoreView.setHighScores(this.highScores);
     }
 
@@ -668,6 +686,7 @@ public class BouncyActivity extends Activity {
         }
         this.setInitialLevel(currentLevel);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();
+        this.lastScore = this.lastScoreFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
         // Performance can be different on different tables.
         fieldDriver.resetFrameRate();
@@ -714,17 +733,29 @@ public class BouncyActivity extends Activity {
                             LinearLayout.LayoutParams.WRAP_CONTENT);
                     params.bottomMargin = (int)(16 * getResources().getDisplayMetrics().scaledDensity);
                 }
-                TextView scoreItem = new TextView(this);
-                scoreItem.setLayoutParams(params);
-                scoreItem.setText(ScoreView.SCORE_FORMAT.format(score));
-                scoreItem.setTextSize(22);
-                scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
-                scoreItem.setGravity(Gravity.END);
+                TextView scoreItem = this.createHighScoreTextView(ScoreView.SCORE_FORMAT.format(score), params);
                 this.highScoreListLayout.addView(scoreItem);
             }
         }
+
+        if(this.lastScore > 0 && params != null){
+            String lastScoreText = this.getString(R.string.last_score_message, ScoreView.SCORE_FORMAT.format(this.lastScore));
+            TextView lastScoreItem = this.createHighScoreTextView(lastScoreText, params);
+            this.highScoreListLayout.addView(lastScoreItem);
+        }
+
         this.noHighScoresTextView.setVisibility(
                 this.highScoreListLayout.getChildCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private TextView createHighScoreTextView(String scoreText, LinearLayout.LayoutParams params){
+        TextView scoreItem = new TextView(this);
+        scoreItem.setLayoutParams(params);
+        scoreItem.setText(scoreText);
+        scoreItem.setTextSize(22);
+        scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
+        scoreItem.setGravity(Gravity.END);
+        return scoreItem;
     }
 
     public void doRestartGame(View view) {
