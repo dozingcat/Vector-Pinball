@@ -84,7 +84,7 @@
                     android:layout_gravity="center"
                     android:textSize="20dp"
                     android:textColor="#F0F0F0"
-                    android:text="Select table" />
+                    android:text="@string/change_table_button_label" />
                 <ImageButton
                     android:id="@+id/nextTableButton"
                     android:src="@drawable/ic_baseline_arrow_right_60"
