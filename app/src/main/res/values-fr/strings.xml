@@ -68,7 +68,7 @@
     <string name="extra_ball_received_message">Bille supplémentaire !</string>
     <string name="blue_ramp_bonus_message">Rampe Bleue +%1$d%%</string>
     <string name="red_ramp_bonus_message">Rampe Rouge +%1$d%%</string>
-    <string name="yellow_ramp_bonus_mevssage">Rampe Jaune +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Rampe Jaune +%1$d%%</string>
     <string name="green_ramp_bonus_message">Rampe Verte +%1$d%%</string>
     <string name="color_blue">Bleu</string>
     <string name="color_red">Rouge</string>
