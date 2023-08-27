@@ -40,7 +40,6 @@ ext {
 configurations { natives }
 
 // libgdx native libraries are copied to libs/ by the copyAndroidNatives task.
-// desugar_jdk_libs 2.0.0 is available as of Oct 2022, but produces build errors.
 dependencies {
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
