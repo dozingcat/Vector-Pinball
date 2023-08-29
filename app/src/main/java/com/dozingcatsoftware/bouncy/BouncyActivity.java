@@ -445,6 +445,9 @@ public class BouncyActivity extends Activity {
             fieldViewManager.setCustomLineWidth(lineWidth);
         }
 
+        boolean showBallTrails = prefs.getBoolean("showBallTrails", true);
+        field.setBallTrailsEnabled(showBallTrails);
+
         boolean useOpenGL = prefs.getBoolean("useOpenGL", true);
         if (useOpenGL) {
             if (glFieldView.getVisibility() != View.VISIBLE) {

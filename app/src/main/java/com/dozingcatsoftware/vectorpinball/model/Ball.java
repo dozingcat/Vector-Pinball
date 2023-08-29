@@ -12,12 +12,20 @@ import com.dozingcatsoftware.vectorpinball.elements.Box2DFactory;
  * removed at "runtime" rather than being part of the table definition.
  */
 public class Ball implements IDrawable {
+    static class PreviousPosition {
+        long nanos;
+        float x;
+        float y;
+    }
+
     private WorldLayers worlds;
     private int layer;
     private Body body;
     private int primaryColor;
     private int secondaryColor;
     private String mostRecentSensorId;
+    private PreviousPosition[] previousPositions = new PreviousPosition[20];
+    private int previousPositionHeadIndex = -1;
 
     private Ball(
             WorldLayers worlds, int layer, Body body, int primaryColor, int secondaryColor) {
@@ -26,6 +34,11 @@ public class Ball implements IDrawable {
         this.body = body;
         this.primaryColor = primaryColor;
         this.secondaryColor = secondaryColor;
+
+        for (int i = 0; i < previousPositions.length; i++) {
+            previousPositions[i] = new PreviousPosition();
+            previousPositions[i].nanos = -1;
+        }
     }
 
     public static Ball create(
@@ -45,7 +58,24 @@ public class Ball implements IDrawable {
         return ballBody;
     }
 
+    public void tick(Field field, long nanos) {
+        if (previousPositionHeadIndex == -1) {
+            previousPositionHeadIndex = 0;
+        }
+        else {
+            previousPositionHeadIndex = (previousPositionHeadIndex + 1) % previousPositions.length;
+        }
+        PreviousPosition pp = previousPositions[previousPositionHeadIndex];
+        Vector2 pos = this.getPosition();
+        pp.nanos = field.getGameTimeNanos();
+        pp.x = pos.x;
+        pp.y = pos.y;
+    }
+
     @Override public void draw(Field field, IFieldRenderer renderer) {
+        if (field.ballTrailsEnabled()) {
+            drawTrails(field, renderer);
+        }
         Vector2 center = this.getPosition();
         float radius = this.getRadius();
         renderer.fillCircle(center.x, center.y, radius, primaryColor);
@@ -55,6 +85,48 @@ public class Ball implements IDrawable {
         float smallCenterX = center.x + (radius / 2) * MathUtils.cos(angle);
         float smallCenterY = center.y + (radius / 2) * MathUtils.sin(angle);
         renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
+    }
+
+    private void drawTrails(Field field, IFieldRenderer renderer) {
+        final int maxTrailImages = 25;
+        final long nanosPerTrailImage = 12_000_000L;
+
+        Vector2 center = this.getPosition();
+        int numTrailsDrawn = 0;
+        float prevX = center.x;
+        float prevY = center.y;
+        long now = field.getGameTimeNanos();
+        long prevDiffNanos = 0;
+        long nextTrailBoundary = nanosPerTrailImage;
+
+        for (int i = 0; i < previousPositions.length && numTrailsDrawn < maxTrailImages; i++) {
+            int pi = previousPositionHeadIndex - i;
+            if (pi < 0) {
+                pi += previousPositions.length;
+            }
+            PreviousPosition pp = previousPositions[pi];
+            if (pp.nanos <= 0) {
+                break;
+            }
+
+            long diffNanos = now - pp.nanos;
+            while (diffNanos > nextTrailBoundary && numTrailsDrawn < maxTrailImages) {
+                // Interpolate position.
+                float positionFraction = ((float)(nextTrailBoundary - prevDiffNanos)) / (diffNanos - prevDiffNanos);
+                float x = prevX + positionFraction * (pp.x - prevX);
+                float y = prevY + positionFraction * (pp.y - prevY);
+                // Trail circles get gradually smaller and more transparent.
+                float sizeFraction = 1.0f - (numTrailsDrawn / (float) maxTrailImages);
+                float radius = this.getRadius() * sizeFraction;
+                int color = Color.blend(Color.withAlpha(primaryColor, 0), primaryColor, sizeFraction * 0.3f);
+                renderer.fillCircle(x, y, radius, color);
+                numTrailsDrawn += 1;
+                nextTrailBoundary += nanosPerTrailImage;
+            }
+            prevDiffNanos = diffNanos;
+            prevX = pp.x;
+            prevY = pp.y;
+        }
     }
 
     @Override public int getLayer() {
