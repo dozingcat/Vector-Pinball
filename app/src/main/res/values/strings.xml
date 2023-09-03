@@ -2,19 +2,20 @@
 <resources>
     <string name="app_name" translatable="false">Vector Pinball</string>
 
-    <string name="independent_flippers_pref_title">Independent Flippers</string>
+    <string name="independent_flippers_pref_title">Independent flippers</string>
     <string name="independent_flippers_pref_summary_on">A touch activates the flippers on the same side of the screen</string>
     <string name="independent_flippers_pref_summary_off">Any touch activates all flippers</string>
 
-    <string name="line_width_pref_title">Line Width</string>
+    <string name="line_width_pref_title">Line width</string>
     <string name="line_width_pref_dialog_message">Enter the line width in pixels, or 0 to use a default width based on the screen resolution.</string>
 
     <string name="sound_pref_title">Sound</string>
-    <string name="music_pref_title">Background Music</string>
-    <string name="haptic_feedback_pref_title">Haptic Feedback</string>
+    <string name="music_pref_title">Background music</string>
+    <string name="haptic_feedback_pref_title">Haptic feedback</string>
     <string name="show_fps_pref_title">Show FPS</string>
-    <string name="zoom_pref_title">Zoom Playfield</string>
-    <string name="use_opengl_pref_title">OpenGL Rendering</string>
+    <string name="zoom_pref_title">Zoom playfield</string>
+    <string name="ball_trails_pref_title">Ball trails</string>
+    <string name="use_opengl_pref_title">OpenGL rendering</string>
 
     <string name="about_text">Vector Pinball 1.12.1\n© 2010–2023 Brian Nenninger\n\nComments and bug reports:\nbnenning@gmail.com\n\nTouch the screen to start a new game, launch a ball if one is not in play, and activate the flippers. Touch the score area to pause the game.\n\n[TABLE_RULES]\n\nThe Preferences menu item allows you to change the following settings:\n- Sound: Enables and disables sound effects.\n- Background Music: Enables and disabled background music.\n- Haptic Feedback: Vibrates on bumper hits and other game events.\n- Independent Flippers: When unchecked, any touch activates both flippers. When checked, you must touch the left side of the screen for the left flipper, and the right side for the right flipper.\n- Zoom: When checked, the view will zoom in on the ball\'s location during play.\n- OpenGL Rendering: Uses OpenGL to draw graphics. This usually provides the best combination of graphics quality and performance, but some devices may do better with it disabled.\n- Show FPS: When checked, shows frames drawn per second in the upper left.\n\nVector Pinball is open source; the code is at\nhttps://github.com/dozingcat/Vector-Pinball\n\nThanks to Mario Zechner for code improvements and libgdx.\n\nsound, music, &amp; audio code, by pdx\nTwittering Machine\nhttps://www.twittering.com</string>
 

@@ -18,8 +18,11 @@
 		
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/zoom_pref_title" />
-		
-		<CheckBoxPreference android:key="useOpenGL" android:defaultValue="true" android:enabled="true"
+
+        <CheckBoxPreference android:key="showBallTrails" android:defaultValue="true" android:enabled="true"
+            android:title="@string/ball_trails_pref_title" />
+
+        <CheckBoxPreference android:key="useOpenGL" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/use_opengl_pref_title" />
 
 		<EditTextPreference android:key="lineWidth" android:enabled="true"
