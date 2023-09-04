@@ -1,5 +1,6 @@
 .idea/
 .gradle/
+.vscode/
 app/libs/
 app/release/
 build/
