@@ -11,6 +11,7 @@
 
     <string name="sound_pref_title">Ses</string>
     <string name="music_pref_title">Arka Plan Müziği</string>
+    <string name="haptic_feedback_pref_title">Dokunsal Geribildirim</string>
     <string name="show_fps_pref_title">FPS Göster</string>
     <string name="zoom_pref_title">Yakınlaştır</string>
     <string name="use_opengl_pref_title">OpenGL Kullan</string>
@@ -28,17 +29,22 @@
     <string name="change_table_button_label">Masayı değiştir</string>
     <string name="help_button_label">Yardım</string>
     <string name="preferences_button_label">Tercihler</string>
+    <string name="start_game_button_label">Oyunu Başlat</string>
+    <string name="resume_game_button_label">Oyuna Devam et</string>
     <string name="end_game_button_label">Oyunu bitir</string>
+    <string name="quit_button_label">Çık</string>
     <string name="unlimited_balls_label">Sınırsız top</string>
 
     <string name="ball_number_message">Top %1$d</string>
     <string name="shoot_again_message">Tekrar vurun!</string>
+    <string name="ball_saved_message">Top Kurtarıldı</string>
     <string name="game_over_message">Oyun bitti!</string>
     <string name="bump_message">Zıplatın!</string>
     <string name="touch_to_start_message">Başlamak için dokunun</string>
     <string name="last_score_message">En son puan: %1$s</string>
     <string name="top_high_score_message">En yüksek puan: %1$s</string>
-    <string name="other_high_score_message">#%1$d paun: %2$s</string>
+    <string name="other_high_score_message">#%1$d puan: %2$s</string>
+    <string name="no_high_scores_message">Bu masa için hiçbir skor yok</string>
 
     <string name="left_save_enabled_message">Sol top kurtarıcı etkin!</string>
     <string name="right_save_enabled_message">Sağ top kurtarıcı etkin!</string>
@@ -64,8 +70,11 @@
     <string name="color_green">Yeşil</string>
     <string name="planet_activated_message">Gezegen %1$d etkin!</string>
     <string name="ramp_bonus_message">%1$dx rampa</string>
-    <string name="ramp_bonus_increased_message">Rampa bonusu etkin!</string>
+    <string name="ramp_bonus_increased_message">Rampa bonüsü etkin!</string>
     <string name="shoot_ramp_jackpot_message">Vurgun için rampadan geçin!</string>
     <string name="constellation_complete_message">%1$s tamamlandı!</string>
+    <string name="show_high_score_button_label">Yüksek puanlar</string>
+    <string name="hide_high_score_button_label">Tamam</string>
+    <string name="high_score_table_title">Yüksek puanlar</string>
 
 </resources>

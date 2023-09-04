@@ -30,16 +30,19 @@
     <string name="start_game_button_label">Nowa gra</string>
     <string name="resume_game_button_label">Wznów grę</string>
     <string name="end_game_button_label">Zakończ grę</string>
+    <string name="quit_button_label">Wyjdź</string>
     <string name="unlimited_balls_label">Nieskończone piłki</string>
 
     <string name="ball_number_message">Piłka %1$d</string>
     <string name="shoot_again_message">Wystrzel ponownie</string>
+    <string name="ball_saved_message">Nieutracona piłka</string>
     <string name="game_over_message">Gra skończona</string>
     <string name="bump_message">Wstrząs!</string>
-    <string name="touch_to_start_message">Stuknij, aby rozpocząc</string>
+    <string name="touch_to_start_message">Stuknij, aby rozpocząć</string>
     <string name="last_score_message">Poprzedni wynik: %1$s</string>
     <string name="top_high_score_message">Najlepszy wynik: %1$s</string>
     <string name="other_high_score_message">#%1$d wynik: %2$s</string>
+     <string name="no_high_scores_message">Brak wyników dla tego stołu</string>
 
     <string name="left_save_enabled_message">Lewe zabezpieczenie aktywne</string>
     <string name="right_save_enabled_message">Prawe zabezpieczenie aktywne</string>
@@ -68,5 +71,8 @@
     <string name="ramp_bonus_increased_message">Zwiększono bonus rampy</string>
     <string name="shoot_ramp_jackpot_message">Strzel w rampę, aby zgarnąć premię</string>
     <string name="constellation_complete_message">Konstelacja %1$s kompletna</string>
+    <string name="show_high_score_button_label">Rekordy</string>
+    <string name="hide_high_score_button_label">Potwierdź</string>
+    <string name="high_score_table_title">Najlepsze wyniki</string>
 
 </resources>

@@ -37,19 +37,20 @@
     <string name="help_button_label">Aide</string>
     <string name="preferences_button_label">Préférences</string>
     <string name="start_game_button_label">Commencer le jeu</string>
-    <string name="resume_game_button_label">Résumer le jeu</string>
+    <string name="resume_game_button_label">Reprendre le jeu</string>
     <string name="end_game_button_label">Fin du jeu</string>
     <string name="unlimited_balls_label">Billes illimitées</string>
 
     <string name="ball_number_message">Bille %1$d</string>
-    <string name="shoot_again_message">Shoot Again</string>
+    <string name="shoot_again_message">Tirez à nouveau</string>
     <string name="ball_saved_message">Bille Sauvée</string>
-    <string name="game_over_message">Game Over</string>
+    <string name="game_over_message">Jeu terminé</string>
     <string name="bump_message">Bump!</string>
     <string name="touch_to_start_message">Toucher pour Démarrer</string>
     <string name="last_score_message">Dernier Score : %1$s</string>
     <string name="top_high_score_message">Meilleur Score: %1$s</string>
     <string name="other_high_score_message">#%1$d Score: %2$s</string>
+    <string name="no_high_scores_message">Aucun score pour cette table</string>
 
     <string name="left_save_enabled_message">Sauvetage de Gauche Activé</string>
     <string name="right_save_enabled_message">Sauvetage de Droite Activé</string>
@@ -64,7 +65,7 @@
     <string name="ball_lock_ready_message">Bille bloquée prêt</string>
     <string name="ball_locked_message">Bille %1$d Bloquée</string>
     <string name="shoot_pyramid_message">Viser la Pyramide !</string>
-    <string name="extra_ball_received_message">Extra Ball!</string>
+    <string name="extra_ball_received_message">Bille supplémentaire !</string>
     <string name="blue_ramp_bonus_message">Rampe Bleue +%1$d%%</string>
     <string name="red_ramp_bonus_message">Rampe Rouge +%1$d%%</string>
     <string name="yellow_ramp_bonus_message">Rampe Jaune +%1$d%%</string>
@@ -78,5 +79,8 @@
     <string name="ramp_bonus_increased_message">Bonus de Rampe Augmenté</string>
     <string name="shoot_ramp_jackpot_message">Tirer la Rampe pour la Jackpot</string>
     <string name="constellation_complete_message">%1$s compléter</string>
+    <string name="show_high_score_button_label">Scores élevés</string>
+    <string name="hide_high_score_button_label">OK</string>
+    <string name="high_score_table_title">Scores élevés</string>
 
 </resources>
