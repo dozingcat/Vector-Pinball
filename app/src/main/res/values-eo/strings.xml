@@ -30,16 +30,19 @@
     <string name="start_game_button_label">Ekigi ludon</string>
     <string name="resume_game_button_label">Pluigi ludon</string>
     <string name="end_game_button_label">Fini ludon</string>
+    <string name="quit_button_label">Eliri</string>
     <string name="unlimited_balls_label">Senlimnombraj globoj</string>
 
     <string name="ball_number_message">Globo: %1$d-a</string>
     <string name="shoot_again_message">Katapultu ree</string>
+    <string name="ball_saved_message">Globo malperdita</string>
     <string name="game_over_message">Ludo finita</string>
     <string name="bump_message">Frapu!</string>
     <string name="touch_to_start_message">Frapetu por komenci</string>
     <string name="last_score_message">Antaŭa poentaro: %1$s</string>
     <string name="top_high_score_message">Rekordo: %1$s</string>
     <string name="other_high_score_message">%1$d-a rekordo: %2$s</string>
+    <string name="no_high_scores_message">Neniu rekordo por tiu ĉi tablo</string>
 
     <string name="left_save_enabled_message">Maldekstra savilo aktiva</string>
     <string name="right_save_enabled_message">Dekstra savilo aktiva</string>
@@ -68,5 +71,8 @@
     <string name="ramp_bonus_increased_message">Pliigo al rampla poent‑obligilo</string>
     <string name="shoot_ramp_jackpot_message">Trafu ramplon por gajni premion</string>
     <string name="constellation_complete_message">Stelfiguro %1$s kompleta</string>
+    <string name="show_high_score_button_label">Rekordoj</string>
+    <string name="hide_high_score_button_label">Bone</string>
+    <string name="high_score_table_title">Rekordoj</string>
 
 </resources>
