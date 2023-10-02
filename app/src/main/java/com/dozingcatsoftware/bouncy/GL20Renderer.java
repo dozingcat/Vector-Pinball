@@ -61,7 +61,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private class ShapeBatch {
         ShapeType shape;
         int startIndex;
-        int endIndex;
+        int count;
     }
 
     private ShapeBatch[] shapeBatches = new ShapeBatch[16];
@@ -122,11 +122,17 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         return shapeBatches[index];
     }
 
-    private ShapeBatch currentShapeBatch() {
-        if (numShapeBatches == 0) {
-            return null;
+    private void recordShapesInBatch(ShapeType shape, int startIndex, int count) {
+        if (numShapeBatches > 0 && shapeBatches[numShapeBatches - 1].shape == shape) {
+            ShapeBatch currentBatch = shapeBatches[numShapeBatches - 1];
+            currentBatch.count += count;
         }
-        return shapeBatches[numShapeBatches - 1];
+        else {
+            ShapeBatch newBatch = addShapeBatch();
+            newBatch.shape = shape;
+            newBatch.startIndex = startIndex;
+            newBatch.count = count;
+        }
     }
 
     private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
@@ -283,10 +289,10 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
             // android.util.Log.i("GL", "*** i=" + i + ", batch shape:" + b.shape + ", startIndex: " + b.startIndex + ", endIndex:" + b.endIndex);
             switch (b.shape) {
                 case LINE:
-                    drawLines(b.startIndex, b.endIndex - b.startIndex);
+                    drawLines(b.startIndex, b.count);
                     break;
                 case CIRCLE:
-                    drawCircles(b.startIndex, b.endIndex - b.startIndex);
+                    drawCircles(b.startIndex, b.count);
                     break;
             }
         }
@@ -412,14 +418,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private void addLine(
             float x1, float y1, float x2, float y2,
             float coreWidthPixels, float aaWidthPixels, int color) {
-
-        ShapeBatch batch = currentShapeBatch();
-        if (batch == null || batch.shape != ShapeType.LINE) {
-            batch = addShapeBatch();
-            batch.shape = ShapeType.LINE;
-            batch.startIndex = numLineVertexIndices;
-        }
-
         boolean useAA = (aaWidthPixels > coreWidthPixels);
         int numVerticesToAdd = useAA ? 8 : 4;
         int numIndicesToAdd = useAA ? 18 : 6;
@@ -428,6 +426,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 tmpLineVertices, numLineVertices, numVerticesToAdd * LINE_VERTEX_STRIDE_INTS);
         tmpLineVertexIndices = ensureRemaining(
                 tmpLineVertexIndices, numLineVertexIndices, numIndicesToAdd);
+
+        recordShapesInBatch(ShapeType.LINE, numLineVertexIndices, numIndicesToAdd);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
@@ -523,7 +523,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         this.numLineVertices = v;
         this.numLineVertexIndices = i;
-        batch.endIndex = i;
     }
 
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
@@ -545,19 +544,17 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
     
     private void addFilledCircle(float cx, float cy, float coreRadius, float aaRadius, int color) {
-        ShapeBatch batch = currentShapeBatch();
-        if (batch == null || batch.shape != ShapeType.CIRCLE) {
-            batch = addShapeBatch();
-            batch.shape = ShapeType.CIRCLE;
-            batch.startIndex = numCircleVertexIndices;
-        }
-
-        int numVerticesToAdd = 4;
-        int vertexIntsToAdd = CIRCLE_VERTEX_STRIDE_INTS * numVerticesToAdd;
+        final int numVerticesToAdd = 4;
+        final int vertexIntsToAdd = CIRCLE_VERTEX_STRIDE_INTS * numVerticesToAdd;
         tmpCircleVertices = ensureRemaining(
                 tmpCircleVertices, numCircleVertices, vertexIntsToAdd);
+
+        final int numIndicesToAdd = 6;
         tmpCircleVertexIndices = ensureRemaining(
                 tmpCircleVertexIndices, numCircleVertexIndices, 6);
+
+        recordShapesInBatch(ShapeType.CIRCLE, numCircleVertexIndices, numIndicesToAdd);
+
         float glx = world2glX(cx);
         float gly = world2glY(cy);
         float glrad = world2glX(aaRadius) - world2glX(0);
@@ -624,7 +621,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         this.numCircleVertices = v;
         this.numCircleVertexIndices = i;
-        batch.endIndex = i;
     }
 
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
@@ -644,13 +640,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     private void addPolygonOutline(
             float cx, float cy, float radius, int minPolySides,
             float coreWidthPixels, float aaWidthPixels, int color) {
-        ShapeBatch batch = currentShapeBatch();
-        if (batch == null || batch.shape != ShapeType.LINE) {
-            batch = addShapeBatch();
-            batch.shape = ShapeType.LINE;
-            batch.startIndex = numLineVertexIndices;
-        }
-
         TrigLookupTable.SinCosValues sinCosValues = trigTable.valuesWithSizeAtLeast(minPolySides);
         int polySides = sinCosValues.size();
         boolean useAA = (aaWidthPixels > coreWidthPixels);
@@ -668,6 +657,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 tmpLineVertices, numLineVertices, LINE_VERTEX_STRIDE_INTS * numVerticesToAdd);
         tmpLineVertexIndices = ensureRemaining(
                 tmpLineVertexIndices, numLineVertexIndices, numIndicesToAdd);
+
+        recordShapesInBatch(ShapeType.LINE, numLineVertexIndices, numIndicesToAdd);
 
         float glcx = world2glX(cx);
         float glcy = world2glY(cy);
@@ -768,7 +759,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
         this.numLineVertices = v;
         this.numLineVertexIndices = i;
-        batch.endIndex = i;
     }
 
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
