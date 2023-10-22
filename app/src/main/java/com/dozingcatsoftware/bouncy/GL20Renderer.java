@@ -286,7 +286,6 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         prepareBuffers();
         for (int i = 0; i < numShapeBatches; i++) {
             ShapeBatch b = shapeBatches[i];
-            // android.util.Log.i("GL", "*** i=" + i + ", batch shape:" + b.shape + ", startIndex: " + b.startIndex + ", endIndex:" + b.endIndex);
             switch (b.shape) {
                 case LINE:
                     drawLines(b.startIndex, b.count);
