@@ -16,7 +16,6 @@ import javax.microedition.khronos.opengles.GL10;
 public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurfaceView.Renderer {
     private final GLFieldView glView;
     private GLVertexListManager vertexListManager = new GLVertexListManager();
-    private GLVertexList lineVertexList;
 
     private FieldViewManager manager;
 
@@ -37,7 +36,6 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     void startGLElements(GL10 gl) {
         vertexListManager.begin();
-        lineVertexList = vertexListManager.addVertexListForMode(GL10.GL_LINES);
     }
 
     void endGLElements(GL10 gl) {
@@ -62,6 +60,11 @@ public class GL10Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     // Implementation of IFieldRenderer drawing methods that FieldElement classes can call.
     // Assumes cacheScaleAndOffsets has been called.
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
+        // Continue with "current" line vertex list if possible.
+        GLVertexList lastList = vertexListManager.mostRecentVertexList();
+        GLVertexList lineVertexList = (lastList != null && lastList.getGlMode() == GL10.GL_LINES)
+                ? lastList
+                : vertexListManager.addVertexListForMode(GL10.GL_LINES);
         lineVertexList.addVertex(manager.world2pixelX(x1), manager.world2pixelY(y1));
         lineVertexList.addVertex(manager.world2pixelX(x2), manager.world2pixelY(y2));
         addColorToVertexList(lineVertexList, color);

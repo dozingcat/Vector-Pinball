@@ -294,19 +294,24 @@ public class RolloverGroupElement extends FieldElement {
         // default color defined at the group level
         int groupColor = currentColor(DEFAULT_COLOR);
 
-        // for each rollover, draw outlined circle for inactive or filled circle for active
-        int rsize = this.rollovers.size();
-        for (int i = 0; i < rsize; i++) {
+        // For each rollover, draw outlined circle for inactive or filled circle for active.
+        // As a probably-useless optimization, draw outlines before filled circles, to reduce
+        // the number of switches the OpenGL renderer has to make between circle and line programs.
+        int numRollovers = this.rollovers.size();
+        for (int i = 0; i < numRollovers; i++) {
             Rollover r = this.rollovers.get(i);
-            // use custom rollover color if available
-            int color = (r.color != null) ? r.color : groupColor;
-
-            if (activeRollovers.contains(r)) {
-                renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
-            }
-            else {
+            if (!this.activeRollovers.contains(r)) {
+                // use custom rollover color if available
+                int color = (r.color != null) ? r.color : groupColor;
                 renderer.frameCircle(r.position.x, r.position.y, r.radius, color);
             }
+        }
+
+        int numActive = this.activeRollovers.size();
+        for (int i = 0; i < numActive; i++) {
+            Rollover r = this.activeRollovers.get(i);
+            int color = (r.color != null) ? r.color : groupColor;
+            renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
         }
     }
 }

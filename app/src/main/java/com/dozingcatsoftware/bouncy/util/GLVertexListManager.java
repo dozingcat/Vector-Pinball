@@ -45,4 +45,11 @@ public class GLVertexListManager {
         vertexListCount++;
         return vl;
     }
+
+    public GLVertexList mostRecentVertexList() {
+        if (vertexListCount == 0) {
+            return null;
+        }
+        return vertexLists[vertexListCount - 1];
+    }
 }
