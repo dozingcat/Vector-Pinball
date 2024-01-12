@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 33
-        versionCode 37
-        versionName "1.12.1"
+        targetSdkVersion 34
+        versionCode 38
+        versionName "1.13.0"
         multiDexEnabled true
     }
 
@@ -30,16 +30,16 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+    namespace 'com.dozingcatsoftware.bouncy'
 }
 
 ext {
-    gdxVersion = '1.11.0'
+    gdxVersion = '1.12.0'
 }
 
 configurations { natives }
 
 // libgdx native libraries are copied to libs/ by the copyAndroidNatives task.
-// desugar_jdk_libs 2.0.0 is available as of Oct 2022, but produces build errors.
 dependencies {
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -48,7 +48,7 @@ dependencies {
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
 
 // From https://github.com/libgdx/libgdx/blob/master/extensions/gdx-setup/res/com/badlogic/gdx/setup/resources/android/build.gradle

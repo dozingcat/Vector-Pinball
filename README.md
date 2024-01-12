@@ -31,4 +31,5 @@ Also make a folder in "fastlane/metadata/android" with a folder named "**_lang_*
 
 ## Download
 
-[![Download from F-Droid](https://camo.githubusercontent.com/7df0eafa4433fa4919a56f87c3d99cf81b68d01c/68747470733a2f2f662d64726f69642e6f72672f77696b692f696d616765732f632f63342f462d44726f69642d627574746f6e5f617661696c61626c652d6f6e2e706e67 "Download from F-Droid")](https://f-droid.org/repository/browse/?fdid=com.dozingcatsoftware.bouncy)    [![Download from Google Play](https://user-images.githubusercontent.com/33793273/132640445-ee1c74c2-9330-4ba9-93f8-218acd52fab9.png "Download from Google Play")](https://play.google.com/store/apps/details?id=com.dozingcatsoftware.bouncy)
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="100">]([https://f-droid.org/packages/com.dozingcatsoftware.bouncy/])
+[<img src="https://user-images.githubusercontent.com/33793273/132640445-ee1c74c2-9330-4ba9-93f8-218acd52fab9.png">](https://play.google.com/store/apps/details?id=com.dozingcatsoftware.bouncy)

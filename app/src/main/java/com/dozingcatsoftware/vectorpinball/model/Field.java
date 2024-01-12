@@ -81,6 +81,7 @@ public class Field implements ContactListener {
     LongSupplier milliTimeFn;
     AudioPlayer audioPlayer;
     IStringResolver stringResolver;
+    boolean showBallTrails = false;
 
     // Pass System::currentTimeMillis as `milliTimeFn` to use the standard system clock.
     public Field(LongSupplier milliTimeFn, IStringResolver sr, AudioPlayer player) {
@@ -246,6 +247,9 @@ public class Field implements ContactListener {
     private void processElementTicks(long nanos) {
         for (FieldElement elem : fieldElementsToTick) {
             elem.tick(this, nanos);
+        }
+        for (Ball ball : balls) {
+            ball.tick(this, nanos);
         }
     }
 
@@ -892,5 +896,13 @@ public class Field implements ContactListener {
 
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
+    }
+
+    public boolean ballTrailsEnabled() {
+        return showBallTrails;
+    }
+
+    public void setBallTrailsEnabled(boolean enabled) {
+        showBallTrails = enabled;
     }
 }

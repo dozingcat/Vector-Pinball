@@ -20,6 +20,9 @@ public class GLVertexList {
 
     int glMode;
 
+    public int getGlMode() {
+        return this.glMode;
+    }
     public void setGLMode(int glMode) {
         this.glMode = glMode;
     }

@@ -53,6 +53,20 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
 
     TrigLookupTable trigTable = new TrigLookupTable(16, 32, 64, 128);
 
+    enum ShapeType {
+        LINE,
+        CIRCLE,
+    }
+
+    private class ShapeBatch {
+        ShapeType shape;
+        int startIndex;
+        int count;
+    }
+
+    private ShapeBatch[] shapeBatches = new ShapeBatch[16];
+    private int numShapeBatches = 0;
+
     public GL20Renderer(GLFieldView view, Function<String, String> shaderLookupFn) {
         this.glView = view;
         view.getHolder().setFormat(PixelFormat.RGBA_8888);
@@ -92,6 +106,33 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         int[] newArr = new int[newSize];
         System.arraycopy(arr, 0, newArr, 0, used);
         return newArr;
+    }
+
+    private ShapeBatch addShapeBatch() {
+        numShapeBatches += 1;
+        if (shapeBatches.length < numShapeBatches) {
+            ShapeBatch[] newShapeBatches = new ShapeBatch[shapeBatches.length * 2];
+            System.arraycopy(shapeBatches, 0, newShapeBatches, 0, shapeBatches.length);
+            shapeBatches = newShapeBatches;
+        }
+        int index = numShapeBatches - 1;
+        if (shapeBatches[index] == null) {
+            shapeBatches[index] = new ShapeBatch();
+        }
+        return shapeBatches[index];
+    }
+
+    private void recordShapesInBatch(ShapeType shape, int startIndex, int count) {
+        if (numShapeBatches > 0 && shapeBatches[numShapeBatches - 1].shape == shape) {
+            ShapeBatch currentBatch = shapeBatches[numShapeBatches - 1];
+            currentBatch.count += count;
+        }
+        else {
+            ShapeBatch newBatch = addShapeBatch();
+            newBatch.shape = shape;
+            newBatch.startIndex = startIndex;
+            newBatch.count = count;
+        }
     }
 
     private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
@@ -226,6 +267,7 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         numLineVertexIndices = 0;
         numCircleVertices = 0;
         numCircleVertexIndices = 0;
+        numShapeBatches = 0;
     }
 
     private void endDraw() {
@@ -241,11 +283,22 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        drawLines();
-        drawCircles();
+        prepareBuffers();
+        for (int i = 0; i < numShapeBatches; i++) {
+            ShapeBatch b = shapeBatches[i];
+            switch (b.shape) {
+                case LINE:
+                    drawLines(b.startIndex, b.count);
+                    break;
+                case CIRCLE:
+                    drawCircles(b.startIndex, b.count);
+                    break;
+            }
+        }
+        unbindBuffers();
     }
 
-    private void drawCircles() {
+    private void prepareBuffers() {
         // Copy vertex and index data to the buffers that are sent to the GPU.
         circleVertices = ensureBufferCapacity(circleVertices, numCircleVertices);
         circleVertices.clear();
@@ -256,20 +309,39 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         circleVertexIndices.clear();
         circleVertexIndices.put(tmpCircleVertexIndices, 0, numCircleVertexIndices);
 
+        lineVertices = ensureBufferCapacity(lineVertices, numLineVertices);
+        lineVertices.clear();
+        lineVertices.put(tmpLineVertices, 0, numLineVertices);
+
+        lineVertexIndices = ensureBufferCapacity(lineVertexIndices, numLineVertexIndices);
+        lineVertexIndices.clear();
+        lineVertexIndices.put(tmpLineVertexIndices, 0, numLineVertexIndices);
+    }
+
+    private void unbindBuffers() {
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    private void drawCircles(int offset, int count) {
         GLES20.glUseProgram(circleProgramId);
         GLES20.glUniformMatrix4fv(circleMvpMatrixHandle, 1, false, vPMatrix, 0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, circleVertexBufferId);
         // After calling flip(), the buffer's limit is the number of ints that were copied from
         // the array. glBufferData wants the number of bytes, which is 4 times that.
-        circleVertices.flip();
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
-                circleVertices.limit() * 4, circleVertices, GLES20.GL_STATIC_DRAW);
+        if (offset == 0) {
+            circleVertices.flip();
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+                    circleVertices.limit() * 4, circleVertices, GLES20.GL_STATIC_DRAW);
+        }
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, circleIndexBufferId);
-        circleVertexIndices.flip();
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-                circleVertexIndices.limit() * 4, circleVertexIndices, GLES20.GL_STATIC_DRAW);
+        if (offset == 0) {
+            circleVertexIndices.flip();
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                    circleVertexIndices.limit() * 4, circleVertexIndices, GLES20.GL_STATIC_DRAW);
+        }
 
         GLES20.glEnableVertexAttribArray(circlePositionHandle);
         GLES20.glVertexAttribPointer(circlePositionHandle, 3,
@@ -296,11 +368,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 GLES20.GL_FLOAT, false,
                 CIRCLE_VERTEX_STRIDE_INTS * 4, 28);
 
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES, numCircleVertexIndices, GLES20.GL_UNSIGNED_INT, 0);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_INT, offset * 4);
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glDisableVertexAttribArray(circlePositionHandle);
         GLES20.glDisableVertexAttribArray(circleColorHandle);
         GLES20.glDisableVertexAttribArray(circleCenterHandle);
@@ -308,27 +377,23 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         GLES20.glDisableVertexAttribArray(circleInnerRadiusSquaredHandle);
     }
 
-    private void drawLines() {
-        lineVertices = ensureBufferCapacity(lineVertices, numLineVertices);
-        lineVertices.clear();
-        lineVertices.put(tmpLineVertices, 0, numLineVertices);
-
-        lineVertexIndices = ensureBufferCapacity(lineVertexIndices, numLineVertexIndices);
-        lineVertexIndices.clear();
-        lineVertexIndices.put(tmpLineVertexIndices, 0, numLineVertexIndices);
-
+    private void drawLines(int offset, int count) {
         GLES20.glUseProgram(lineProgramId);
         GLES20.glUniformMatrix4fv(lineMvpMatrixHandle, 1, false, vPMatrix, 0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, lineVertexBufferId);
-        lineVertices.flip();
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
-                lineVertices.limit() * 4, lineVertices, GLES20.GL_STATIC_DRAW);
+        if (offset == 0) {
+            lineVertices.flip();
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+                    lineVertices.limit() * 4, lineVertices, GLES20.GL_STATIC_DRAW);
+        }
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, lineIndexBufferId);
-        lineVertexIndices.flip();
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-                lineVertexIndices.limit() * 4, lineVertexIndices, GLES20.GL_STATIC_DRAW);
+        if (offset == 0) {
+            lineVertexIndices.flip();
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                    lineVertexIndices.limit() * 4, lineVertexIndices, GLES20.GL_STATIC_DRAW);
+        }
 
         GLES20.glEnableVertexAttribArray(linePositionHandle);
         GLES20.glVertexAttribPointer(
@@ -338,11 +403,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
         GLES20.glVertexAttribPointer(
                 lineColorHandle, 4, GLES20.GL_UNSIGNED_BYTE, true, LINE_VERTEX_STRIDE_INTS * 4, 12);
 
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES, numLineVertexIndices, GLES20.GL_UNSIGNED_INT, 0);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_INT, offset * 4);
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glDisableVertexAttribArray(linePositionHandle);
         GLES20.glDisableVertexAttribArray(lineColorHandle);
     }
@@ -363,6 +425,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 tmpLineVertices, numLineVertices, numVerticesToAdd * LINE_VERTEX_STRIDE_INTS);
         tmpLineVertexIndices = ensureRemaining(
                 tmpLineVertexIndices, numLineVertexIndices, numIndicesToAdd);
+
+        recordShapesInBatch(ShapeType.LINE, numLineVertexIndices, numIndicesToAdd);
 
         float glx1 = world2glX(x1);
         float gly1 = world2glY(y1);
@@ -479,12 +543,17 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
     }
     
     private void addFilledCircle(float cx, float cy, float coreRadius, float aaRadius, int color) {
-        int numVerticesToAdd = 4;
-        int vertexIntsToAdd = CIRCLE_VERTEX_STRIDE_INTS * numVerticesToAdd;
+        final int numVerticesToAdd = 4;
+        final int vertexIntsToAdd = CIRCLE_VERTEX_STRIDE_INTS * numVerticesToAdd;
         tmpCircleVertices = ensureRemaining(
                 tmpCircleVertices, numCircleVertices, vertexIntsToAdd);
+
+        final int numIndicesToAdd = 6;
         tmpCircleVertexIndices = ensureRemaining(
                 tmpCircleVertexIndices, numCircleVertexIndices, 6);
+
+        recordShapesInBatch(ShapeType.CIRCLE, numCircleVertexIndices, numIndicesToAdd);
+
         float glx = world2glX(cx);
         float gly = world2glY(cy);
         float glrad = world2glX(aaRadius) - world2glX(0);
@@ -587,6 +656,8 @@ public class GL20Renderer implements IFieldRenderer.FloatOnlyRenderer, GLSurface
                 tmpLineVertices, numLineVertices, LINE_VERTEX_STRIDE_INTS * numVerticesToAdd);
         tmpLineVertexIndices = ensureRemaining(
                 tmpLineVertexIndices, numLineVertexIndices, numIndicesToAdd);
+
+        recordShapesInBatch(ShapeType.LINE, numLineVertexIndices, numIndicesToAdd);
 
         float glcx = world2glX(cx);
         float glcy = world2glY(cy);

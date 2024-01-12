@@ -1,0 +1,970 @@
+{
+    "ballcolor": [192, 192, 224],
+    "ballradius": "0.4",
+    "delegate": "Field8Delegate",
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": [16.7, 0.1, 16.7, 22.24]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [17.9, 0.1, 17.9, 23]
+        }, 
+        {
+            "center": [8, 23],
+            "class": "WallArcElement",
+            "maxangle": "120",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "6.5"
+        }, 
+        {
+            "center": [8, 22.24],
+            "class": "WallArcElement",
+            "maxangle": "70",
+            "minangle": "0",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "6.1"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": [0.14, 0.1, 16.7, 0.1]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [16.7, 0.1, 17.9, 0.1]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [0.52, 3.36, 5.88, 0.8]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [16.14, 3.36, 10.82, 0.8]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": [0.14, 4, 0.14, 23.36]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [1.5, 8.35, 1.5, 5.3]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.16, 8.35, 15.16, 5.3]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchGate",
+            "kick": "1",
+            "position": [10.97, 28.01, 11.23, 29.1]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchGateRetract",
+            "rect": [11.44, 27.58, 12.44, 29.58]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.07, 4.44, 5.09, 2.9]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [14.59, 4.44, 11.57, 2.9]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "2",
+            "position": [3.62, 8.37, 5.24, 4.87],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": [3.09, 8.16, 3.07, 5.37]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [3.07, 5.37, 4.93, 4.48]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "4",
+            "position": [13.06, 8.37, 11.42, 4.87],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": [13.59, 8.16, 13.61, 5.37]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [13.59, 5.37, 11.73, 4.48]
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "5",
+            "id": "LeftFlipper",
+            "layer": 0,
+            "length": "2.55",
+            "maxangle": "15",
+            "minangle": "-28",
+            "position": [5.19, 2.75],
+            "upspeed": "8"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "5",
+            "id": "RightFlipper",
+            "layer": 0,
+            "length": "-2.55",
+            "maxangle": "15",
+            "minangle": "-28",
+            "position": [11.47, 2.75],
+            "upspeed": "8"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "id": "LeftGate",
+            "kick": "1",
+            "position": [3.82, 27.28, 2.9, 28.52]
+        }, 
+        {
+            "center": [13.28, 8.16],
+            "class": "WallArcElement",
+            "maxangle": "135",
+            "minangle": "0",
+            "radius": "0.3",
+            "segments": 24
+        }, 
+        {
+            "center": [11.62, 4.72],
+            "class": "WallArcElement",
+            "maxangle": "290",
+            "minangle": "145",
+            "radius": "0.25",
+            "segments": 24
+        }, 
+        {
+            "center": [3.4, 8.16],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "45",
+            "radius": "0.3"
+        }, 
+        {
+            "center": [5.04, 4.72],
+            "class": "WallArcElement",
+            "maxangle": "-110",
+            "minangle": "35",
+            "radius": "0.25"
+        }, 
+        {
+            "center": [5.14, 23.18],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "115",
+            "segments": 64,
+            "xradius": "5",
+            "yradius": "6"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [0.22, 19.92, 0.14, 23.2]
+        }, 
+        {
+            "center": [4.72, 19.96],
+            "class": "WallArcElement",
+            "maxangle": "230",
+            "minangle": "180",
+            "segments": 24,
+            "xradius": "4.5",
+            "yradius": "9"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "5",
+            "length": "2.5",
+            "maxangle": "-20",
+            "minangle": "-60",
+            "position": [1.8, 12.88],
+            "upspeed": "6"
+        }, 
+        {
+            "center": [4.86, 22.56],
+            "class": "WallArcElement",
+            "maxangle": "198",
+            "minangle": "110",
+            "segments": 24,
+            "xradius": "3",
+            "yradius": "5"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.42, 18.04, 2, 21]
+        }, 
+        {
+            "center": [2.71, 18.08],
+            "class": "WallArcElement",
+            "maxangle": "-180",
+            "minangle": "20",
+            "radius": "0.3",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.99, 18.2, 2.54, 21.48]
+        }, 
+        {
+            "center": [3.7, 22.36],
+            "class": "WallArcElement",
+            "maxangle": "195",
+            "minangle": "100",
+            "segments": 24,
+            "xradius": "1.2",
+            "yradius": "3.5"
+        }, 
+        {
+            "center": [5.54, 22.2],
+            "class": "WallArcElement",
+            "maxangle": "210",
+            "minangle": "130",
+            "segments": 24,
+            "xradius": "1.5",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [4.58, 19.02, 4.24, 20.2]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [4.58, 25.28, 3.5, 25.8]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "color": [192, 50, 33],
+            "gapFromWall": 0.2,
+            "id": "SpecialTarget",
+            "numTargets": 1,
+            "positions": [],
+            "reset": "2",
+            "score": 50000,
+            "startDistanceAlongWall": 0.25,
+            "targetWidth": "0.75",
+            "wallEnd": [3.5, 25.8],
+            "wallStart": [4.58, 25.28]
+        }, 
+        {
+            "center": [1.8, 11.05],
+            "class": "WallArcElement",
+            "maxangle": "140",
+            "minangle": "90",
+            "segments": 24,
+            "xradius": "0.3",
+            "yradius": "2"
+        }, 
+        {
+            "center": [2.08, 12.36],
+            "class": "WallArcElement",
+            "maxangle": "220",
+            "minangle": "180",
+            "radius": "0.5",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.94, 10.6, 1.7, 12.04]
+        }, 
+        {
+            "center": [2, 10.42],
+            "class": "WallArcElement",
+            "maxangle": "-55",
+            "minangle": "20",
+            "xradius": "1",
+            "yradius": "0.5"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [0.62, 9.4, 2.58, 10.02]
+        }, 
+        {
+            "center": [0.7, 8.8],
+            "class": "WallArcElement",
+            "maxangle": "160",
+            "minangle": "100",
+            "radius": "0.6"
+        }, 
+        {
+            "center": [0.9, 4],
+            "class": "WallArcElement",
+            "maxangle": "240",
+            "minangle": "180",
+            "radius": "0.75"
+        }, 
+        {
+            "center": [15.76, 4],
+            "class": "WallArcElement",
+            "maxangle": "-60",
+            "minangle": "0",
+            "radius": "0.75"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [16.51, 4, 16.51, 9]
+        }, 
+        {
+            "center": [16.01, 9],
+            "class": "WallArcElement",
+            "maxangle": "60",
+            "minangle": "0",
+            "radius": "0.5",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "position": [16.26, 9.44, 14.98, 10.2]
+        }, 
+        {
+            "center": [15.36, 10.53],
+            "class": "WallArcElement",
+            "maxangle": "220",
+            "minangle": "140",
+            "radius": "0.5"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.5, 11.54, 14.98, 10.84]
+        }, 
+        {
+            "center": [15.14, 11.88],
+            "class": "WallArcElement",
+            "maxangle": "-45",
+            "minangle": "12",
+            "radius": "0.5"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.62, 12, 14.51, 18]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "color": [255, 255, 255],
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": 0.288603,
+            "id": "RightBankTargets",
+            "numTargets": 7,
+            "positions": [],
+            "reset": "0",
+            "score": 2000,
+            "startDistanceAlongWall": 0.179303,
+            "targetWidth": "0.65",
+            "wallEnd": [14.5, 18],
+            "wallStart": [15.62, 12]
+        }, 
+        {
+            "center": [14.98, 18.28],
+            "class": "WallArcElement",
+            "maxangle": "200",
+            "minangle": "120",
+            "xradius": "0.5",
+            "yradius": "0.8"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [14.72, 18.96, 15.32, 19.76]
+        }, 
+        {
+            "center": [12.86, 22.04],
+            "class": "WallArcElement",
+            "maxangle": "55",
+            "minangle": "-35",
+            "segments": 24,
+            "xradius": "3",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [10.94, 27.84, 14.58, 25.32]
+        }, 
+        {
+            "center": [10.98, 27.9],
+            "class": "WallArcElement",
+            "maxangle": "260",
+            "minangle": "90",
+            "radius": "0.07",
+            "segments": 12
+        }, 
+        {
+            "class": "WallElement",
+            "position": [5.32, 19.02, 5.46, 20.42]
+        }, 
+        {
+            "center": [4.94, 19.16],
+            "class": "WallArcElement",
+            "maxangle": "340",
+            "minangle": "200",
+            "radius": "0.4",
+            "segments": 24
+        }, 
+        {
+            "center": [5.68, 21.72],
+            "class": "WallArcElement",
+            "maxangle": "260",
+            "minangle": "108",
+            "radius": "1.3",
+            "segments": 24
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [227, 154, 59],
+            "kick": "2",
+            "outerColor": [237, 191, 130],
+            "outerRadius": "1",
+            "position": [5.48, 21.72],
+            "radius": "0.8",
+            "score": 100
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [227, 154, 59],
+            "kick": "2",
+            "outerColor": [237, 191, 130],
+            "outerRadius": "1",
+            "position": [9.34, 21.72],
+            "radius": "0.8",
+            "score": 100
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [227, 154, 59],
+            "kick": "2",
+            "outerColor": [237, 191, 130],
+            "outerRadius": "1",
+            "position": [7.41, 18.8],
+            "radius": "0.8",
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": [5.29, 22.97, 5.29, 25.84]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [6.38, 24.34, 6.38, 25.84]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [7.18, 24.34, 7.18, 25.84]
+        }, 
+        {
+            "center": [6.78, 25.84],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "0",
+            "radius": "0.4",
+            "segments": 24
+        }, 
+        {
+            "center": [6.78, 24.34],
+            "class": "WallArcElement",
+            "maxangle": "-180",
+            "minangle": "0",
+            "radius": "0.4",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "position": [8.27, 24.34, 8.27, 25.84]
+        }, 
+        {
+            "center": [8.67, 24.34],
+            "class": "WallArcElement",
+            "maxangle": "330",
+            "minangle": "180",
+            "radius": "0.4",
+            "segments": 24
+        }, 
+        {
+            "center": [8.67, 25.84],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "110",
+            "radius": "0.4",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "kick": "0.5",
+            "position": [5.22, 26, 3.82, 27.26]
+        }, 
+        {
+            "center": [5.09, 25.84],
+            "class": "WallArcElement",
+            "maxangle": "50",
+            "minangle": "0",
+            "radius": "0.2",
+            "segments": 24
+        }, 
+        {
+            "center": [9.38, 23.78],
+            "class": "WallArcElement",
+            "maxangle": "135",
+            "minangle": "80",
+            "radius": "0.5"
+        }, 
+        {
+            "class": "WallElement",
+            "kick": "1",
+            "position": [11.72, 23.5, 9.48, 24.28]
+        }, 
+        {
+            "class": "WallElement",
+            "kick": "1",
+            "position": [12.7, 21.38, 12, 23.26]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "color": [255, 255, 255],
+            "gapFromWall": 0.066408,
+            "id": "EightBallTarget",
+            "numTargets": 1,
+            "positions": [],
+            "reset": "0",
+            "startDistanceAlongWall": -0.294092,
+            "targetWidth": "0.75",
+            "wallEnd": [14.06, 23.24],
+            "wallStart": [14.78, 23.48]
+        }, 
+        {
+            "center": [12.34, 22.36],
+            "class": "WallArcElement",
+            "maxangle": "65",
+            "minangle": "-60",
+            "segments": 24,
+            "xradius": "1.6",
+            "yradius": "2.6"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [13, 24.72, 9.88, 26.76]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "id": "RightGate",
+            "kick": "1",
+            "position": [10.94, 27.84, 9.88, 26.76]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [12.62, 20.36, 12.7, 20.72]
+        }, 
+        {
+            "center": [11.66, 23.16],
+            "class": "WallArcElement",
+            "maxangle": "80",
+            "minangle": "20",
+            "radius": "0.35",
+            "segments": 24
+        }, 
+        {
+            "center": [12.64, 21.04],
+            "class": "WallArcElement",
+            "maxangle": "-50",
+            "minangle": "65",
+            "segments": 24,
+            "xradius": "0.1",
+            "yradius": "0.4"
+        }, 
+        {
+            "center": [12.92, 20.32],
+            "class": "WallArcElement",
+            "maxangle": "325",
+            "minangle": "160",
+            "radius": "0.3",
+            "segments": 24
+        }, 
+        {
+            "class": "WallElement",
+            "kick": "0.5",
+            "position": [8.52, 26.21, 9.88, 26.76]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [83, 145, 126],
+            "cycleOnFlipper": true,
+            "id": "LaneRollovers",
+            "ignoreBall": false,
+            "radius": "0.45",
+            "reset": "0",
+            "rollovers": [
+                {
+                    "position": [2.26, 7]
+                }, 
+                {
+                    "position": [5.84, 25.42]
+                }, 
+                {
+                    "position": [7.73, 25.42]
+                }, 
+                {
+                    "position": [14.4, 7]
+                }
+            ],
+            "score": 3000
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "id": "RightBankInserts",
+            "ignoreBall": true,
+            "radius": "0.3",
+            "rollovers": [
+                {
+                    "color": [227, 154, 59],
+                    "position": [13.2, 17.06]
+                }, 
+                {
+                    "color": [57, 147, 221],
+                    "position": [13.35, 16.21]
+                }, 
+                {
+                    "color": [192, 50, 33],
+                    "position": [13.5, 15.36]
+                }, 
+                {
+                    "color": [74, 37, 69],
+                    "position": [13.65, 14.51]
+                }, 
+                {
+                    "color": [237, 191, 130],
+                    "position": [13.8, 13.66]
+                }, 
+                {
+                    "color": [83, 145, 126],
+                    "position": [13.95, 12.81]
+                }, 
+                {
+                    "color": [192, 50, 33],
+                    "position": [14.1, 11.96]
+                }
+            ]
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [255, 255, 255],
+            "kick": "0.5",
+            "position": [1.6, 8.35],
+            "radius": "0.1"
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [255, 255, 255],
+            "kick": "0.5",
+            "position": [15.06, 8.35],
+            "radius": "0.1"
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [255, 255, 255],
+            "id": "BonusInserts",
+            "ignoreBall": true,
+            "radius": "0.35",
+            "rollovers": [
+                {
+                    "position": [8.06, 5.3]
+                }, 
+                {
+                    "position": [6.95, 6.1]
+                }, 
+                {
+                    "position": [9.25, 6.2]
+                }, 
+                {
+                    "position": [7.45, 7.3]
+                }, 
+                {
+                    "position": [8.85, 7.9]
+                }, 
+                {
+                    "position": [10.3, 8.1]
+                }, 
+                {
+                    "position": [5.95, 8.6]
+                }, 
+                {
+                    "position": [7.8, 9]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "id": "EightBallValueInserts",
+            "ignoreBall": true,
+            "radius": "0.3",
+            "rollovers": [
+                {
+                    "position": [13.18, 18.54]
+                }, 
+                {
+                    "position": [13.86, 19.28]
+                }, 
+                {
+                    "position": [14.36, 20.18]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "id": "BonusMultiplierInserts",
+            "ignoreBall": true,
+            "layer": -1,
+            "radius": "0.35",
+            "rollovers": [
+                {
+                    "color": [83, 145, 126],
+                    "position": [6.66, 3.2]
+                }, 
+                {
+                    "color": [227, 154, 59],
+                    "position": [7.76, 2.5]
+                }, 
+                {
+                    "color": [74, 37, 69],
+                    "position": [8.86, 2.5]
+                }, 
+                {
+                    "color": [255, 255, 255],
+                    "position": [9.96, 3.2]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [227, 154, 59],
+            "id": "LeftOrbitValueInserts",
+            "ignoreBall": true,
+            "radius": "0.3",
+            "rollovers": [
+                {
+                    "position": [2.08, 15.54]
+                }, 
+                {
+                    "position": [1.77, 16.47]
+                }, 
+                {
+                    "position": [1.47, 17.47]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [255, 255, 255],
+            "id": "LeftOrbitRollover",
+            "radius": "0.7",
+            "rollovers": [
+                {
+                    "color": [255, 255, 255],
+                    "position": [1.26, 19.19]
+                }
+            ]
+        }, 
+        {
+            "center": [8.06, 5.52],
+            "class": "WallArcElement",
+            "color": [227, 154, 59],
+            "ignoreBall": true,
+            "layer": -1,
+            "maxangle": "360",
+            "minangle": "0",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [6.82, 5.96],
+            "class": "WallArcElement",
+            "color": [57, 147, 221],
+            "ignoreBall": true,
+            "layer": -2,
+            "maxangle": "305",
+            "minangle": "15",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [9.58, 6.2],
+            "class": "WallArcElement",
+            "color": [192, 50, 33],
+            "ignoreBall": true,
+            "layer": -2,
+            "maxangle": "360",
+            "minangle": "0",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [7.58, 7.24],
+            "class": "WallArcElement",
+            "color": [74, 37, 69],
+            "ignoreBall": true,
+            "layer": -3,
+            "maxangle": "215",
+            "minangle": "-100",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [8.82, 7.64],
+            "class": "WallArcElement",
+            "color": [237, 191, 130],
+            "ignoreBall": true,
+            "layer": -4,
+            "maxangle": "161",
+            "minangle": "-125",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [10.54, 7.88],
+            "class": "WallArcElement",
+            "color": [83, 145, 126],
+            "ignoreBall": true,
+            "layer": -1,
+            "maxangle": "360",
+            "minangle": "0",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "center": [6.1, 8.24],
+            "class": "WallArcElement",
+            "color": [192, 50, 33],
+            "ignoreBall": true,
+            "layer": -1,
+            "maxangle": "360",
+            "minangle": "0",
+            "radius": "0.8",
+            "segments": 360
+        }, 
+        {
+            "center": [7.8, 8.9],
+            "class": "WallArcElement",
+            "ignoreBall": true,
+            "layer": -5,
+            "maxangle": "360",
+            "minangle": "0",
+            "radius": "0.8",
+            "segments": 24
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [255, 255, 255],
+            "id": "EightBallInsert",
+            "ignoreBall": true,
+            "radius": "0.3",
+            "rollovers": [
+                {
+                    "position": [14.9, 22.6]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [192, 50, 33],
+            "id": "BonusCollectSaucer",
+            "radius": "0.5",
+            "rollovers": [
+                {
+                    "position": [12.47, 25.9]
+                }
+            ]
+        }, 
+        {
+            "center": [2.5, 5.34],
+            "class": "WallArcElement",
+            "maxangle": "245",
+            "minangle": "180",
+            "radius": "1",
+            "segments": 24
+        }, 
+        {
+            "center": [14.16, 5.34],
+            "class": "WallArcElement",
+            "maxangle": "-65",
+            "minangle": "0",
+            "radius": "1"
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "EndSkillShot",
+            "rect": [5.24, 4.5, 11.42, 5.5]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "color": [255, 255, 255],
+            "id": "InlineTargets",
+            "positions": [
+                [3.5, 18.5, 4.25, 18.65], 
+                [3.25, 19.75, 4, 19.9], 
+                [3, 21, 3.75, 21.15], 
+                [2.75, 22.25, 3.5, 22.4]
+            ],
+            "score": 5000
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "RightGateRetract",
+            "rect": [10.5, 26.2, 11.8, 27.2]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "id": "LeftOutlane",
+            "radius": "0.5",
+            "reset": "1",
+            "rollovers": [
+                {
+                    "position": [0.8, 7]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "id": "RightOutlane",
+            "radius": "0.5",
+            "reset": "1",
+            "rollovers": [
+                {
+                    "position": [15.8, 7]
+                }
+            ]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "ignoreBall": true,
+            "position": [0.28, 19.04, 2.24, 19.34]
+        }
+    ],
+    "gravity": "4.5",
+    "height": "30",
+    "launchDeadZone": ["16.8", "0", "18", "1.4"],
+    "launchPosition": ["17.3", "3.0"],
+    "launchVelocity": ["0", "20"],
+    "launchVelocityRandomDelta": ["0", "0.1"],
+    "name": "Pool Party",
+    "numballs": 3,
+    "targetTimeRatio": "2.3",
+    "version": 1,
+    "width": "18"
+}
