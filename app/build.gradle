@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
-        minSdkVersion 4
+        minSdkVersion 9
         targetSdkVersion 34
         versionCode 38
         versionName "1.13.0"
