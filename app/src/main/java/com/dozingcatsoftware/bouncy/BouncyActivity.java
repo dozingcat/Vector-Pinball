@@ -1,6 +1,5 @@
 package com.dozingcatsoftware.bouncy;
 
-import static com.dozingcatsoftware.bouncy.ScoreView.LAST_SCORE_MESSAGE;
 import static com.dozingcatsoftware.bouncy.ScoreView.TOUCH_TO_START_MESSAGE;
 
 import java.io.IOException;
