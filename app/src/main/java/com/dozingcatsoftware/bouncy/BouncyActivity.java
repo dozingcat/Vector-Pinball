@@ -1,5 +1,8 @@
 package com.dozingcatsoftware.bouncy;
 
+import static com.dozingcatsoftware.bouncy.ScoreView.LAST_SCORE_MESSAGE;
+import static com.dozingcatsoftware.bouncy.ScoreView.TOUCH_TO_START_MESSAGE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -494,6 +497,9 @@ public class BouncyActivity extends Activity {
             if (!field.getGameState().isGameInProgress()) {
                 // game just ended, show button panel and set end game timestamp
                 this.endGameTime = System.currentTimeMillis();
+                // always show LAST_SCORE_MESSAGE immediately at the end of a game
+                // (LAST_SCORE_MESSAGE is next after TOUCH_TO_START_MESSAGE)
+                scoreView.gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
                 updateButtons();
 
                 // No high scores for unlimited balls.
