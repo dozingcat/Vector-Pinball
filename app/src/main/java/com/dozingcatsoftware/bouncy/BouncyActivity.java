@@ -505,6 +505,7 @@ public class BouncyActivity extends Activity {
                             highScores.size() < MAX_NUM_HIGH_SCORES) {
                         this.updateHighScoreForCurrentLevel(score);
                     }
+                    this.updateLastScoreForCurrentLevel(score);
                 }
             }
         }
@@ -552,7 +553,7 @@ public class BouncyActivity extends Activity {
         return prefs.getLong(lastScorePrefsKeyForLevel(theLevel), 0L);
     }
 
-    void writeHighScoresToPreferences(int level, List<Long> scores, long lastScore) {
+    void writeHighScoresToPreferences(int level, List<Long> scores) {
         StringBuilder scoresAsString = new StringBuilder();
         scoresAsString.append(scores.get(0));
         for (int i = 1; i < scores.size(); i++) {
@@ -561,6 +562,12 @@ public class BouncyActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(highScorePrefsKeyForLevel(level), scoresAsString.toString());
+        editor.commit();
+    }
+
+    void writeLastScoreToPreferences(int level, long lastScore) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(lastScorePrefsKeyForLevel(level), lastScore);
         editor.commit();
     }
@@ -583,13 +590,17 @@ public class BouncyActivity extends Activity {
             newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
-        this.lastScore = score;
-        writeHighScoresToPreferences(theLevel, this.highScores, this.lastScore);
+        writeHighScoresToPreferences(theLevel, this.highScores);
         scoreView.setHighScores(this.highScores);
     }
 
     void updateHighScoreForCurrentLevel(long score) {
         updateHighScore(currentLevel, score);
+    }
+
+    private void updateLastScoreForCurrentLevel(long score) {
+        this.lastScore = score;
+        writeLastScoreToPreferences(currentLevel, score);
     }
 
     int getInitialLevel() {
