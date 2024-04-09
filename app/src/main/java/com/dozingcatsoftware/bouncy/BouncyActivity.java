@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.bouncy;
 
+import static android.view.KeyEvent.KEYCODE_BUTTON_A;
 import static com.dozingcatsoftware.bouncy.FieldViewManager.LEFT_FLIPPER_KEYS;
 import static com.dozingcatsoftware.bouncy.FieldViewManager.RIGHT_FLIPPER_KEYS;
 
@@ -329,6 +330,10 @@ public class BouncyActivity extends Activity {
             if (RIGHT_FLIPPER_KEYS.contains(keyCode)) {
                 doNextTable(null);
                 startGameButton.requestFocus();
+                return true;
+            }
+            if (keyCode == KEYCODE_BUTTON_A) {
+                doStartGame(null);
                 return true;
             }
         }
