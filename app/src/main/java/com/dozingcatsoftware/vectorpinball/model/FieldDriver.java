@@ -16,10 +16,13 @@ public class FieldDriver {
     Thread gameThread;
     Runnable drawFn;
 
+
+    double maxFrameRate = 60;
+
     FrameRateManager frameRateManager = new FrameRateManager(
             System::nanoTime,
-            new double[] {60, 50, 45, 40, 30},
-            new double[] {57, 48, 43, 38});
+            new double[] {120, 90, 60, 50, 45, 40, 30},
+            new double[] {114, 86, 57, 48, 43, 38});
     double averageFPS;
 
     // Sleep this long when field.hasActiveElements() is false.
@@ -109,6 +112,10 @@ public class FieldDriver {
      */
     public void resetFrameRate() {
         frameRateManager.resetFrameRate();
+    }
+
+    public void setMaxTargetFrameRate(double rate) {
+        frameRateManager.setMaxTargetFrameRate(rate);
     }
 
     public double getAverageFPS() {
