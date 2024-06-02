@@ -45,6 +45,8 @@ public class FrameRateManager {
     int slowFrames = 0;
     long totalFrames = 0;
     boolean resetRequested = false;
+    // Never try to go higher than this rate. Typically this will be the display refresh rate.
+    double maxTargetFrameRate = 60.0;
 
     final static long BILLION = 1_000_000_000L; // nanoseconds per second.
     final static long MILLION = 1_000_000L; // nanoseconds per millisecond.
@@ -77,7 +79,7 @@ public class FrameRateManager {
             this.targetFrameRates[i] = targetFrameRateFudgeFactor * targetRates[i];
         }
 
-        setCurrentRateIndex(0);
+        resetCurrentRateIndex();
     }
 
     /**
@@ -94,6 +96,25 @@ public class FrameRateManager {
     private void setCurrentRateIndex(int index) {
         currentRateIndex = index;
         currentNanosPerFrame = (long) (BILLION / targetFrameRates[currentRateIndex]);
+    }
+
+    private void resetCurrentRateIndex() {
+        // Use the first frame rate that's less than or equal to the max target.
+        for (int i = 0; i < unfudgedTargetFrameRates.length; i++) {
+            if (maxTargetFrameRate >= unfudgedTargetFrameRates[i]) {
+                setCurrentRateIndex(i);
+                return;
+            }
+        }
+        throw new IllegalStateException("Invalid target frame rate: " + maxTargetFrameRate);
+    }
+
+    public double getMaxTargetFrameRate() {
+        return maxTargetFrameRate;
+    }
+
+    public void setMaxTargetFrameRate(double value) {
+        maxTargetFrameRate = value;
     }
 
     /** Internal method to reduce the target frame rate to the next lower value. */
@@ -118,7 +139,7 @@ public class FrameRateManager {
     private void resetIfRequested() {
         if (resetRequested) {
             clearTimestamps();
-            setCurrentRateIndex(0);
+            resetCurrentRateIndex();
             frameRateLocked = false;
             resetRequested = false;
         }

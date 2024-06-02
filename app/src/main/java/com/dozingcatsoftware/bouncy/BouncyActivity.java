@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -35,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -114,8 +116,11 @@ public class BouncyActivity extends Activity {
     /** Called when the activity is first created. */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         String arch = System.getProperty("os.arch");
-        Log.i(TAG, "App started, os.arch: " + arch + ", API level: " + Build.VERSION.SDK_INT);
+        Log.i(TAG, "os.arch: " + arch);
+        Log.i(TAG, "API level: " + Build.VERSION.SDK_INT);
+        Log.i(TAG, "Target frame rate: " + getMaxFrameRateForDisplay());
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
@@ -269,6 +274,14 @@ public class BouncyActivity extends Activity {
         }
     }
 
+    private float getMaxFrameRateForDisplay() {
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        // Apparently some devices return bogus values so use a reasonable minimum, and also
+        // apply a slight adjustment factor so if getRefreshRate() returns 119.9 we'll still try to
+        // run at 120fps.
+        return Math.max(60, display.getRefreshRate() * 1.01f);
+    }
+
     @Override public void onResume() {
         super.onResume();
 
@@ -276,6 +289,7 @@ public class BouncyActivity extends Activity {
         // with the navigation bar on top of the field.
         enterFullscreenMode();
         // Reset frame rate since app or system settings that affect performance could have changed.
+        fieldDriver.setMaxTargetFrameRate(getMaxFrameRateForDisplay());
         fieldDriver.resetFrameRate();
         updateButtons();
     }
