@@ -330,9 +330,9 @@ public class FieldViewManager {
     }
 
     static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(
-            KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT);
+            KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_BUTTON_L1);
     static List<Integer> RIGHT_FLIPPER_KEYS = Arrays.asList(
-            KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_DPAD_RIGHT);
+            KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_BUTTON_R1);
     static List<Integer> ALL_FLIPPER_KEYS = Arrays.asList(
             KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER);
 
