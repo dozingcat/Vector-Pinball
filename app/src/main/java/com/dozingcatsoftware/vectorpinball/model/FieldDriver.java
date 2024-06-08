@@ -21,8 +21,8 @@ public class FieldDriver {
 
     FrameRateManager frameRateManager = new FrameRateManager(
             System::nanoTime,
-            new double[] {120, 90, 60, 50, 45, 40, 30},
-            new double[] {114, 86, 57, 48, 43, 38});
+            new double[] {144, 120, 90, 60, 50, 45, 40, 30},
+            new double[] {137, 114, 86, 57, 48, 43, 38});
     double averageFPS;
 
     // Sleep this long when field.hasActiveElements() is false.
