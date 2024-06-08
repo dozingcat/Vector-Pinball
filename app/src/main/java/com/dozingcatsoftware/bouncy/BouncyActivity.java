@@ -1,9 +1,5 @@
 package com.dozingcatsoftware.bouncy;
 
-import static android.view.KeyEvent.KEYCODE_BUTTON_A;
-import static com.dozingcatsoftware.bouncy.FieldViewManager.LEFT_FLIPPER_KEYS;
-import static com.dozingcatsoftware.bouncy.FieldViewManager.RIGHT_FLIPPER_KEYS;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -336,18 +332,14 @@ public class BouncyActivity extends Activity {
         }
         // When showing the main menu, switch tables with the flipper buttons.
         if (!field.getGameState().isGameInProgress() && buttonPanel.getVisibility() == View.VISIBLE) {
-            if (LEFT_FLIPPER_KEYS.contains(keyCode)) {
+            if (FieldViewManager.LEFT_FLIPPER_KEYS.contains(keyCode)) {
                 doPreviousTable(null);
                 startGameButton.requestFocus();
                 return true;
             }
-            if (RIGHT_FLIPPER_KEYS.contains(keyCode)) {
+            if (FieldViewManager.RIGHT_FLIPPER_KEYS.contains(keyCode)) {
                 doNextTable(null);
                 startGameButton.requestFocus();
-                return true;
-            }
-            if (keyCode == KEYCODE_BUTTON_A) {
-                doStartGame(null);
                 return true;
             }
         }
