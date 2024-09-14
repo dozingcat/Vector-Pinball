@@ -329,6 +329,8 @@ public class FieldViewManager {
         }
     }
 
+    // L1 and R1 are left and right buttons on a controller. It would be nice to support
+    // the left and right triggers as well, but they seem to not send events.
     static List<Integer> LEFT_FLIPPER_KEYS = Arrays.asList(
             KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_BUTTON_L1);
     static List<Integer> RIGHT_FLIPPER_KEYS = Arrays.asList(
