@@ -655,6 +655,8 @@ public class BouncyActivity extends Activity {
             // synchronized because that can deadlock the FieldDriver thread.
             // All of this concurrency is badly in need of refactoring.
             synchronized (field) {
+                restoreMenuHeight();
+
                 buttonPanel.setVisibility(View.GONE);
                 highScorePanel.setVisibility(View.GONE);
                 resetFieldForCurrentLevel();
@@ -704,6 +706,8 @@ public class BouncyActivity extends Activity {
     }
 
     void switchToTable(int tableNum) {
+        shrinkMenuToTableSelectionSize();
+
         this.currentLevel = tableNum;
         synchronized (field) {
             resetFieldForCurrentLevel();
@@ -718,6 +722,28 @@ public class BouncyActivity extends Activity {
 
     public void doSwitchTable(View view) {
         doNextTable(view);
+    }
+
+
+    private int menuHeight;
+    private int tableSelectionHeight;
+
+    private void shrinkMenuToTableSelectionSize() {
+        // There must be a better place to obtain this information
+        if (menuHeight == 0) {
+            menuHeight = buttonPanel.getHeight();
+            tableSelectionHeight = previousTableButton.getHeight();
+        }
+
+        buttonPanel.getLayoutParams().height = tableSelectionHeight;
+        buttonPanel.setLayoutParams(buttonPanel.getLayoutParams());
+    }
+
+    private void restoreMenuHeight() {
+        if (menuHeight != 0) {
+            buttonPanel.getLayoutParams().height = menuHeight;
+            buttonPanel.setLayoutParams(buttonPanel.getLayoutParams());
+        }
     }
 
     public void doNextTable(View view) {
