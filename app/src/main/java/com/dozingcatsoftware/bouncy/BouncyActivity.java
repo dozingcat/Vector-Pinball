@@ -16,10 +16,12 @@ import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameState;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.os.Build;
@@ -78,6 +80,10 @@ public class BouncyActivity extends Activity {
     CheckBox unlimitedBallsToggle;
     ViewGroup highScoreListLayout;
     View noHighScoresTextView;
+
+    View topSpacerView;
+    View bottomSpacerView;
+
     final static int ACTIVITY_PREFERENCES = 1;
 
     Handler handler = new Handler(Looper.myLooper());
@@ -187,6 +193,9 @@ public class BouncyActivity extends Activity {
         noHighScoresTextView = findViewById(R.id.noHighScoresTextView);
         pauseButton = findViewById(R.id.pauseIcon);
 
+        topSpacerView = findViewById(R.id.topSpacerView);
+        bottomSpacerView = findViewById(R.id.bottomSpacerView);
+
         // Ugly workaround that seems to be required when supporting keyboard navigation.
         // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
         // If it's not, then they don't get focused even when using the dpad on a
@@ -233,6 +242,14 @@ public class BouncyActivity extends Activity {
          */
         updateFromPreferences();
 
+        // Android 15 and later enforces edge-to-edge mode, but we don't want to draw over the
+        // bottom navigation or any camera or other cutouts. This callback lets us adjust the size
+        // of spacer views so that the score and field views don't draw in those areas.
+        // See https://developer.android.com/develop/ui/views/layout/edge-to-edge
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            scoreView.setOnApplyWindowInsetsListener(this::applyWindowInsets);
+        }
+
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
         (new Thread(VPSoundpool::loadSounds)).start();
@@ -246,9 +263,34 @@ public class BouncyActivity extends Activity {
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
+    @TargetApi(Build.VERSION_CODES.R)
+    WindowInsets applyWindowInsets(View v, WindowInsets windowInsets) {
+        // Adjust the height of the spacer views to cover nav bars and display cutouts.
+        // This doesn't yet handle side insets, which are hopefully not common.
+
+        Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+        // android.util.Log.i(TAG, "insets: " + adjustedInsets);
+
+        ViewGroup.LayoutParams topLayoutParams = topSpacerView.getLayoutParams();
+        topLayoutParams.height = insets.top;
+        topSpacerView.setLayoutParams(topLayoutParams);
+        topSpacerView.setVisibility(View.VISIBLE);
+
+        ViewGroup.LayoutParams bottomLayoutParams = bottomSpacerView.getLayoutParams();
+        bottomLayoutParams.height = insets.bottom;
+        bottomSpacerView.setLayoutParams(bottomLayoutParams);
+        bottomSpacerView.setVisibility(View.VISIBLE);
+
+        return WindowInsets.CONSUMED;
+    }
+
     void enterFullscreenMode() {
         // https://stackoverflow.com/questions/62643517/immersive-fullscreen-on-android-11
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            // Do nothing; we're always in edge-to-edge mode and applyWindowInsets handles avoiding
+            // drawing under display cutouts or navigation bars.
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController insetsController = getWindow().getInsetsController();
             if (insetsController != null) {
                 insetsController.hide(WindowInsets.Type.statusBars());

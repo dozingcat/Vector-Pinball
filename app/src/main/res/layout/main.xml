@@ -4,6 +4,20 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 
+    <!--
+    Android 15 and later enforces "edge-to-edge" mode where content is drawn on the entire display,
+    including the status bars and display cutouts (e.g. camera holes). The top and bottom spacer
+    views get their heights set so that the score and table views won't draw underneath them.
+    (See BouncyActivity.applyWindowInsets).
+    -->
+    <View
+        android:id="@+id/topSpacerView"
+        android:layout_height="0dp"
+        android:layout_width="fill_parent"
+        android:background="#000"
+        android:visibility="gone"
+    />
+
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="56dp"
@@ -229,5 +243,13 @@
         </TableLayout>
 
     </FrameLayout>
+
+    <View
+        android:id="@+id/bottomSpacerView"
+        android:layout_height="0dp"
+        android:layout_width="fill_parent"
+        android:background="#000"
+        android:visibility="gone"
+    />
 
 </LinearLayout>
