@@ -414,9 +414,15 @@ public class Field implements ContactListener {
         usedMercyBall = false;
 
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
+        // If the ball was lost right after increasing the multiplier, treat the increase
+        // as applying to the next ball. That is, decrease the multiplier, call doNextBall
+        // which may reset or reduce the multiplier, then increase it for the next ball.
+        boolean preserveMultIncrease = shouldPreserveLastMultiplierIncrease();
+        if (preserveMultIncrease) {
+            gameState.setScoreMultiplier(gameState.getScoreMultiplier() - 1);
+        }
         this.gameState.doNextBall();
-        // If ball was lost right after increasing the multiplier, preserve the increase.
-        if (shouldPreserveLastMultiplierIncrease()) {
+        if (preserveMultIncrease) {
             gameState.incrementScoreMultiplier();
         }
         lastMultiplerIncrementGameTimeNanos = null;
