@@ -118,7 +118,7 @@ public class FrameRateManager {
     }
 
     /** Internal method to reduce the target frame rate to the next lower value. */
-    private void reduceFPS() {
+    private void reduceFps() {
         setCurrentRateIndex(currentRateIndex + 1);
         goodFrames = 0;
         slowFrames = 0;
@@ -164,9 +164,7 @@ public class FrameRateManager {
                 if (currentFPS < minimumFrameRates[currentRateIndex]) {
                     // Too slow; increment slow frame counter and reduce FPS if hit limit.
                     ++slowFrames;
-                    if (slowFrames >= maxSlowFrames) {
-                        reduceFPS();
-                    }
+                    reduceFpsIfNeeded();
                 }
                 else {
                     ++goodFrames;
@@ -182,6 +180,26 @@ public class FrameRateManager {
                         goodFrames = 0;
                     }
                 }
+            }
+        }
+    }
+
+    // Android 15 throttles games to 60fps unless the user toggles a secret setting.
+    // Unfortunately there seems to be no way to detect the condition where the display is running
+    // at >60fps but the game is throttled, so we'll attempt to run at 90 or 120fps until we
+    // hit the maxSlowFrames limit. The result is that every time the frame rate manager resets
+    // there will be a slowdown until we detect that we can't run faster than 60. The workaround
+    // is to have a lower slow frame limit specifically for >60fps.
+    final int maxSlowFramesFor60fpsLimitDetection = 20;
+
+    void reduceFpsIfNeeded() {
+        if (slowFrames >= maxSlowFrames) {
+            reduceFps();
+        }
+        else if (targetFramesPerSecond() > 60 && slowFrames >= maxSlowFramesFor60fpsLimitDetection && goodFrames == 0) {
+            // Most likely we're locked to 60fps.
+            while (targetFramesPerSecond() > 60) {
+                reduceFps();
             }
         }
     }

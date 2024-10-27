@@ -319,6 +319,10 @@ public class BouncyActivity extends Activity {
     }
 
     private float getMaxFrameRateForDisplay() {
+        // Android 15 limits games to 60fps unless the user toggles a hidden setting.
+        // Ideally we would report 60fps in this mode but there's apparently no way to detect it.
+        // Instead there's an ugly workaround in FrameRateManager to drop to 60fps if it looks like
+        // we're being throttled.
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         // Apparently some devices return bogus values so use a reasonable minimum, and also
         // apply a slight adjustment factor so if getRefreshRate() returns 119.9 we'll still try to
