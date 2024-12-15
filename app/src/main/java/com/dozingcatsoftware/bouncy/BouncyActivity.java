@@ -494,7 +494,7 @@ public class BouncyActivity extends Activity {
     void updateFromPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", true));
-        scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
+        scoreView.setShowFps(prefs.getBoolean("showFPS", false));
 
         // If switching line width or OpenGL/Canvas, reset frame rate manager because maximum
         // achievable frame rate may change.
@@ -537,7 +537,8 @@ public class BouncyActivity extends Activity {
     // Called every 100 milliseconds while app is visible, to update score view and high score.
     void tick() {
         scoreView.invalidate();
-        scoreView.setFPS(fieldDriver.getAverageFPS());
+        scoreView.setCurrentFps(fieldDriver.getAverageFps());
+        scoreView.setTargetFps(fieldDriver.getTargetFps());
         scoreView.setDebugMessage(field.getDebugMessage());
         updateHighScoreAndButtonPanel();
         handler.postDelayed(this::tick, 100);

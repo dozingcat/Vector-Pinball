@@ -46,8 +46,9 @@ public class ScoreView extends View {
     int highScoreIndex = 0;
     int gameOverMessageCycleTime = 3500;
 
-    double fps;
-    boolean showFPS = false;
+    double currentFps;
+    double targetFps;
+    boolean showFps = false;
 
     String debugMessage = null;
 
@@ -130,8 +131,9 @@ public class ScoreView extends View {
                 displayString,
                 width / 2.0f - textRect.width() / 2.0f, height / 2.0f + textRect.height() / 3.0f,
                 textPaint);
-        if (showFPS && fps > 0) {
-            c.drawText(String.format("%.1f fps", fps), 16 * metrics.density, height * 0.25f, fpsPaint);
+        if (showFps && currentFps > 0) {
+            String fpsMessage = String.format("%.1f/%d fps", currentFps, (int) targetFps);
+            c.drawText(fpsMessage, 16 * metrics.density, height * 0.25f, fpsPaint);
         }
         if (debugMessage != null) {
             c.drawText(debugMessage, width * 0.02f, height * 0.75f, fpsPaint);
@@ -250,12 +252,16 @@ public class ScoreView extends View {
         highScores = value;
     }
 
-    public void setFPS(double value) {
-        fps = value;
+    public void setCurrentFps(double value) {
+        currentFps = value;
     }
 
-    public void setShowFPS(boolean value) {
-        showFPS = value;
+    public void setTargetFps(double value) {
+        targetFps = value;
+    }
+
+    public void setShowFps(boolean value) {
+        showFps = value;
     }
 
     public void setDebugMessage(String msg) {
