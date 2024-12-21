@@ -269,7 +269,6 @@ public class BouncyActivity extends Activity {
         // This doesn't yet handle side insets, which are hopefully not common.
 
         Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
-        // android.util.Log.i(TAG, "insets: " + adjustedInsets);
 
         ViewGroup.LayoutParams topLayoutParams = topSpacerView.getLayoutParams();
         topLayoutParams.height = insets.top;
