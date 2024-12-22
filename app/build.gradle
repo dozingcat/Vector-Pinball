@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 34
-        versionCode 38
-        versionName "1.13.0"
+        targetSdkVersion 35
+        versionCode 39
+        versionName "1.14.0"
         multiDexEnabled true
     }
 
@@ -34,7 +34,7 @@ android {
 }
 
 ext {
-    gdxVersion = '1.12.0'
+    gdxVersion = '1.13.0'
 }
 
 configurations { natives }
@@ -48,7 +48,7 @@ dependencies {
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.3'
 }
 
 // From https://github.com/libgdx/libgdx/blob/master/extensions/gdx-setup/res/com/badlogic/gdx/setup/resources/android/build.gradle

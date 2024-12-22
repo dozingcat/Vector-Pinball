@@ -1,0 +1,2 @@
+- Added support for high frame rate displays.
+- Improved support for controllers and Android TV.
