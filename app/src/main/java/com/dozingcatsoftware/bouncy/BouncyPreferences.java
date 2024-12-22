@@ -61,7 +61,7 @@ public class BouncyPreferences extends PreferenceActivity {
     @TargetApi(Build.VERSION_CODES.R)
     WindowInsets applyWindowInsets(View v, WindowInsets windowInsets) {
         Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
-        android.util.Log.i("Preferences", "insets: " + insets);
+        // android.util.Log.i("Preferences", "insets: " + insets);
         v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
 
         return WindowInsets.CONSUMED;
