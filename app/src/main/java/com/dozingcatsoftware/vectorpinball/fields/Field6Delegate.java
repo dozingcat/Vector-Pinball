@@ -116,7 +116,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         int ballColorIndex = ballColors.indexOf(ball.getPrimaryColor());
         if (ballColorIndex == planetIndex) {
             planets[planetIndex].status = PlanetStatus.ON;
-            field.addScore(planetActivatedScore);
+            long totalPoints = planetActivatedScore;
             if (allPlanetsOn()) {
                 if (multiballStatus == MultiballStatus.INACTIVE) {
                     startMultiball(field);
@@ -128,7 +128,7 @@ public class Field6Delegate extends BaseFieldDelegate {
                                     multiballJackpotMultiplier) :
                             field.resolveString("jackpot_received_message");
                     field.showGameMessage(msg, 2000);
-                    field.addScore(multiballJackpotScore * multiballJackpotMultiplier);
+                    totalPoints += multiballJackpotScore * multiballJackpotMultiplier;
                     multiballJackpotMultiplier += 1;
                     for (Planet p : planets) {
                         p.status = PlanetStatus.OFF;
@@ -139,6 +139,7 @@ public class Field6Delegate extends BaseFieldDelegate {
                 String msg = field.resolveString("planet_activated_message", planetIndex + 1);
                 field.showGameMessage(msg, 1500);
             }
+            field.addScoreWithAnimation(totalPoints, ball.getPosition());
         }
     }
 
@@ -150,7 +151,7 @@ public class Field6Delegate extends BaseFieldDelegate {
                 field.showGameMessage(msg, 1000);
             }
             rampBonusNanosRemaining = rampBonusDurationNanos;
-            field.addScore(points * rampBonusMultiplier);
+            field.addScoreWithAnimation(points * rampBonusMultiplier, ball.getPosition());
             rampBonusMultiplier += 1;
             if (planetIndex != null) {
                 activatePlanetIfMatch(field, ball, planetIndex);
@@ -258,7 +259,7 @@ public class Field6Delegate extends BaseFieldDelegate {
             field.showGameMessage(field.resolveString("right_save_enabled_message"), 1500);
         }
         else if ("Planet1Targets".equals(id)) {
-            field.addScore(planet1TargetsScore);
+            field.addScoreWithAnimation(planet1TargetsScore, ball.getPosition());
             activatePlanetIfMatch(field, ball, 0);
         }
     }
@@ -272,7 +273,7 @@ public class Field6Delegate extends BaseFieldDelegate {
         }
         else if ("Planet2Rollovers".equals(id)) {
             group.setAllRolloversActivated(false);
-            field.addScore(planet2RolloversScore);
+            field.addScoreWithAnimation(planet2RolloversScore, ball.getPosition());
             activatePlanetIfMatch(field, ball, 1);
         }
         else {

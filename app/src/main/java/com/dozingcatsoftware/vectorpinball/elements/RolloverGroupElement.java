@@ -208,7 +208,9 @@ public class RolloverGroupElement extends FieldElement {
                 // setting is true. Add score whenever the state changes.
                 if (!activeRollovers.contains(r)) {
                     activeRollovers.add(r);
-                    field.addScore(r.score);
+                    if (r.score != 0) {
+                        field.addScoreWithAnimation(r.score, ball.getPosition());
+                    }
                     field.getAudioPlayer().playRollover();
                     // Set timer to clear rollover if reset parameter is present and >0.
                     if (r.resetDelay > 0) {
@@ -221,7 +223,9 @@ public class RolloverGroupElement extends FieldElement {
                 }
                 else if (this.canToggleOff) {
                     activeRollovers.remove(r);
-                    field.addScore(r.score);
+                    if (r.score != 0) {
+                        field.addScoreWithAnimation(r.score, ball.getPosition());
+                    }
                     field.getAudioPlayer().playRollover();
                 }
             }

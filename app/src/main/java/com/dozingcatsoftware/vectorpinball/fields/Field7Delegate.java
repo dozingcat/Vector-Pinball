@@ -171,7 +171,9 @@ public class Field7Delegate extends BaseFieldDelegate {
             return this.lockedConstellations.containsAll(CONSTELLATIONS);
         }
 
-        void activateStarsInActiveConstellationNearPoint(double x, double y) {
+        // Returns number of new activated stars.
+        int activateStarsInActiveConstellationNearPoint(double x, double y) {
+            int newActivations = 0;
             if (this.currentConstellation != null && (x * x + y * y < 1)) {
                 for (int starIndex : this.currentConstellation.starIndices) {
                     int pi = this.projection.starIndexToProjIndex[starIndex];
@@ -180,11 +182,15 @@ public class Field7Delegate extends BaseFieldDelegate {
                         double py = projection.y[pi] / this.currentTarget.angularRadius;
                         double dist2 = (x - px) * (x - px) + (y - py) * (y - py);
                         if (dist2 < 0.1 * 0.1) {
-                            this.activatedStars.add(starIndex);
+                            if (!this.activatedStars.contains(starIndex)) {
+                                this.activatedStars.add(starIndex);
+                                newActivations += 1;
+                            }
                         }
                     }
                 }
             }
+            return newActivations;
         }
 
         void animateToConstellation(Constellation c) {
@@ -394,20 +400,20 @@ public class Field7Delegate extends BaseFieldDelegate {
             ball.moveToLayer(toLayer);
         }
         else if ("LeftLoopDetector".equals(id) && !id.equals(prevId)) {
-            handleLoop(field);
+            handleLoop(field, ball);
         }
         else if ("RightLoopDetector".equals(id) && !id.equals(prevId)) {
-            handleLoop(field);
+            handleLoop(field, ball);
         }
         else if ("MiniFieldDetector".equals(id)) {
             if (starState.allConstellationsLocked()) {
-                doJackpot(field);
+                doJackpot(field, ball);
             }
         }
         else if (("InnerOrbitLeftTrigger".equals(id) && "InnerOrbitRightTrigger".equals(prevId)) ||
                 ("InnerOrbitRightTrigger".equals(id) && "InnerOrbitLeftTrigger".equals(prevId))) {
             // Looped around the center bumpers. Should this do anything else?
-            field.addScore(rampScore);
+            field.addScoreWithAnimation(rampScore, ball.getPosition());
         }
     }
 
@@ -427,8 +433,8 @@ public class Field7Delegate extends BaseFieldDelegate {
         ballSaverRight = field.getFieldElementById("BallSaver-right");
     }
 
-    void handleLoop(Field field) {
-        field.addScore(rampScore);
+    void handleLoop(Field field, Ball ball) {
+        field.addScoreWithAnimation(rampScore, ball.getPosition());
         if (!starState.allStarsInCurrentConstellationActive()) {
             if (starState.switchToRandomUnlockedConstellation()) {
                 field.showGameMessage(starState.currentConstellation.name, 3000);
@@ -443,7 +449,8 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     private void updateActivatedStars(Field field) {
         List<Ball> balls = field.getBalls();
-        int numPrevStars = starState.activatedStars.size();
+        int numNewStars = 0;
+        Ball ballOverNewStar = null;
         for (int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
             if (ball.getLayer() != 0) {
@@ -451,11 +458,14 @@ public class Field7Delegate extends BaseFieldDelegate {
             }
             double bx = (ball.getPosition().x - starViewCenter.x) / starViewRadius;
             double by = (ball.getPosition().y - starViewCenter.y) / starViewRadius;
-            starState.activateStarsInActiveConstellationNearPoint(bx, by);
+            int newStarsForBall = starState.activateStarsInActiveConstellationNearPoint(bx, by);
+            if (newStarsForBall > 0) {
+                numNewStars += newStarsForBall;
+                ballOverNewStar = ball;
+            }
         }
-        int numNewStars = starState.activatedStars.size() - numPrevStars;
         if (numNewStars > 0) {
-            field.addScore(numNewStars * STAR_SCORE);
+            field.addScoreWithAnimation(numNewStars * STAR_SCORE, ballOverNewStar.getPosition());
             if (starState.allStarsInCurrentConstellationActive()) {
                 if (multiballStatus == MultiballStatus.INACTIVE) {
                     String key = numBallsLocked == 2 ?
@@ -561,9 +571,9 @@ public class Field7Delegate extends BaseFieldDelegate {
         });
     }
 
-    void doJackpot(Field field) {
+    void doJackpot(Field field, Ball ball) {
         field.showGameMessage(field.resolveString("jackpot_received_message"), 3000);
-        field.addScore(JACKPOT_SCORE);
+        field.addScoreWithAnimation(JACKPOT_SCORE, ball.getPosition());
         starState.resetAndWander();
     }
 

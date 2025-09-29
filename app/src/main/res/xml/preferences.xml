@@ -22,6 +22,9 @@
         <CheckBoxPreference android:key="showBallTrails" android:defaultValue="true" android:enabled="true"
             android:title="@string/ball_trails_pref_title" />
 
+        <CheckBoxPreference android:key="showScoreAnimations" android:defaultValue="true" android:enabled="true"
+            android:title="@string/score_animations_pref_title" />
+
         <CheckBoxPreference android:key="useOpenGL" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/use_opengl_pref_title" />
 

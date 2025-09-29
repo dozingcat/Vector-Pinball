@@ -159,7 +159,7 @@ public class Field5Delegate extends BaseFieldDelegate {
         }
     }
 
-    private void updateCenterLines(Field field) {
+    private void updateCenterLines(Field field, Ball ball) {
         boolean allLinesVisible = true;
         for (BallColor ballColor : BALL_COLOR_VALUES) {
             List<RolloverGroupElement> rollovers = centerRolloversByColor.get(ballColor);
@@ -180,7 +180,8 @@ public class Field5Delegate extends BaseFieldDelegate {
                                 "jackpot_received_with_multiplier_message", multiballJackpotCount) :
                         field.resolveString("jackpot_received_message");
                 field.showGameMessage(msg, 3000);
-                field.addScore(JACKPOT_BASE_SCORE * multiballJackpotCount);
+                // ball should always be non-null here.
+                field.addScoreWithAnimation(JACKPOT_BASE_SCORE * multiballJackpotCount, ball.getPosition());
                 // This will make a recursive call to updateCenterLines,
                 // but only one because all the lines will be hidden
                 resetCenter(field);
@@ -203,7 +204,7 @@ public class Field5Delegate extends BaseFieldDelegate {
                 percentMultiplier *= 2;
             }
             long score = (RAMP_BASE_SCORE / 100) * percentMultiplier;
-            field.addScore(score);
+            field.addScoreWithAnimation(score, ball.getPosition());
             field.getAudioPlayer().playRollover();
         }
     }
@@ -216,7 +217,7 @@ public class Field5Delegate extends BaseFieldDelegate {
             }
         }
         updateCenterRollovers(field);
-        updateCenterLines(field);
+        updateCenterLines(field, null);
     }
 
     private void incrementRampBonus(Field field, BallColor ballColor, String messageKey) {
@@ -341,7 +342,7 @@ public class Field5Delegate extends BaseFieldDelegate {
                 field.getFieldElementById("ExtraBallBarrier_Green"));
 
         updateCenterRollovers(field);
-        updateCenterLines(field);
+        updateCenterLines(field, null);
         multiballStatus = MultiballStatus.NOT_READY;
     }
 
@@ -417,7 +418,7 @@ public class Field5Delegate extends BaseFieldDelegate {
         else if (rollovers == extraBallRollover) {
             doExtraBall(field);
         }
-        updateCenterLines(field);
+        updateCenterLines(field, ball);
     }
 
     @Override
