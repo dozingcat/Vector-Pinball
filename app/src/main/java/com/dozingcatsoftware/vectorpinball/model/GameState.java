@@ -54,8 +54,10 @@ public class GameState {
         }
     }
 
-    public void addScore(long points) {
-        score += points * scoreMultiplier;
+    public long addScore(long points) {
+        long pointsToAdd = (long) (points * scoreMultiplier);
+        score += pointsToAdd;
+        return pointsToAdd;
     }
 
     public void addExtraBall() {

@@ -34,6 +34,7 @@ public class Field implements ContactListener {
 
     ArrayList<Ball> balls;
     ArrayList<Shape> shapes;
+    ArrayList<ScoreAnimation> scoreAnimations;
 
     // Allow access to model objects from Box2d bodies.
     Map<Body, FieldElement> bodyToFieldElement;
@@ -82,6 +83,7 @@ public class Field implements ContactListener {
     AudioPlayer audioPlayer;
     IStringResolver stringResolver;
     boolean showBallTrails = false;
+    boolean showScoreAnimations = false;
 
     // Pass System::currentTimeMillis as `milliTimeFn` to use the standard system clock.
     public Field(LongSupplier milliTimeFn, IStringResolver sr, AudioPlayer player) {
@@ -140,6 +142,7 @@ public class Field implements ContactListener {
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
         balls = new ArrayList<>();
         shapes = new ArrayList<>();
+        scoreAnimations = new ArrayList<>();
 
         scheduledActions = new PriorityQueue<>();
         gameTimeNanos = 0;
@@ -239,6 +242,7 @@ public class Field implements ContactListener {
         processGameMessages();
         processZoom(nanos);
         checkForStuckBall(nanos);
+        updateScoreAnimations();
 
         getDelegate().tick(this, nanos);
     }
@@ -269,10 +273,49 @@ public class Field implements ContactListener {
         }
     }
 
+    /**
+     * Updates all active score animations and removes expired ones.
+     */
+    private void updateScoreAnimations() {
+        for (int i = scoreAnimations.size() - 1; i >= 0; i--) {
+            ScoreAnimation animation = scoreAnimations.get(i);
+            animation.updateAnimation(gameTimeNanos);
+            if (animation.isExpired()) {
+                scoreAnimations.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Returns an appropriate color for score animations based on the score value.
+     */
+    private int getScoreAnimationColor(long score) {
+        if (score >= 10000) {
+            return 0xFFFF0080; // Bright magenta for high scores
+        } else if (score > 2000) {
+            return 0xFFFF4000; // Orange-red for medium-high scores
+        } else if (score > 500) {
+            return 0xFFFFFF00; // Yellow for medium scores
+        } else {
+            return 0xFF80FF80; // Light green for low scores
+        }
+    }
+
     public void setShapes(List<Shape> shapes) {
         this.shapes.clear();
         this.shapes.ensureCapacity(shapes.size());
         this.shapes.addAll(shapes);
+    }
+
+    /**
+     * Adds a floating score animation with the specified position and color.
+     */
+    public void addScoreAnimation(long points, double x, double y, int color) {
+        // Use a high layer so score animations appear on top of everything
+        int animationLayer = 1000; 
+        
+        ScoreAnimation animation = new ScoreAnimation(points, x, y, gameTimeNanos, animationLayer, color, 0.1, getWidth() - 0.1);
+        scoreAnimations.add(animation);
     }
 
     public Ball createBall(float x, float y) {
@@ -501,10 +544,10 @@ public class Field implements ContactListener {
 
     // Reusable array for sorting elements and balls into the order in which they should be draw.
     // Earlier items are drawn first, so "upper" items should compare "greater" than lower.
-    private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<>();
+    private final ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<>();
     // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
     // Except bumpers which are drawn last, so balls appear under their outer circles.
-    private Comparator<IDrawable> drawOrdering = Comparator
+    private final Comparator<IDrawable> drawOrdering = Comparator
             .comparingInt(IDrawable::getLayer)
             .thenComparingInt(Field::drawOrderRank);
 
@@ -531,6 +574,9 @@ public class Field implements ContactListener {
         elementsInDrawOrder.addAll(Arrays.asList(this.getFieldElementsArray()));
         elementsInDrawOrder.addAll(this.balls);
         elementsInDrawOrder.addAll(this.shapes);
+        if (this.showScoreAnimations) {
+            elementsInDrawOrder.addAll(this.scoreAnimations);
+        }
         Collections.sort(elementsInDrawOrder, drawOrdering);
 
         for (int i = 0; i < elementsInDrawOrder.size(); i++) {
@@ -631,11 +677,21 @@ public class Field implements ContactListener {
                     delegate.processCollision(this, element, f.getBody(), ball);
                 }
                 if (element.getScore() != 0) {
-                    this.gameState.addScore(element.getScore());
+                    addScoreWithAnimation(element.getScore(), ball.getPosition());
                     audioPlayer.playScore();
                 }
             }
         }
+    }
+
+    public void addScoreWithAnimation(long basePoints, Vector2 position, Integer color) {
+        long addedPoints = this.gameState.addScore(basePoints);
+        int scoreColor = (color != null) ? color : getScoreAnimationColor(addedPoints);
+        addScoreAnimation(addedPoints, position.x, position.y, scoreColor);
+    }
+
+    public void addScoreWithAnimation(long basePoints, Vector2 position) {
+        addScoreWithAnimation(basePoints, position, null);
     }
 
     private Ball ballWithBody(Body body) {
@@ -911,4 +967,13 @@ public class Field implements ContactListener {
     public void setBallTrailsEnabled(boolean enabled) {
         showBallTrails = enabled;
     }
+
+    public boolean scoreAnimationsEnabled() {
+        return showScoreAnimations;
+    }
+
+    public void setScoreAnimationsEnabled(boolean enabled) {
+        showScoreAnimations = enabled;
+    }
+
 }

@@ -33,9 +33,9 @@ public class Field4Delegate extends BaseFieldDelegate {
     int ballsLocked = 0;
     // Lighting all rollovers in multiball scores jackpot*1000 points
     // and increases multiplier by (jackpot) percent.
-    int jackpot = 0;
-    int baseJackpot = 25;
-    int jackpotIncrease = 5;
+    long jackpot = 0;
+    long baseJackpot = 25;
+    long jackpotIncrease = 5;
 
     boolean allStatusRolloversActiveForIndex(int index) {
         for (RolloverGroupElement rollovers : multiballStatusRollovers.values()) {

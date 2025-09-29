@@ -19,6 +19,8 @@ import com.dozingcatsoftware.vectorpinball.elements.WallElement;
 
 public class Field3Delegate extends BaseFieldDelegate {
 
+    static long BASE_BUMPER_SCORE = 500;
+
     static int[] TEMPERATURE_COLORS = {
             // Blue to cyan in steps of 16.
             Color.fromRGB(0, 0, 255),
@@ -258,14 +260,16 @@ public class Field3Delegate extends BaseFieldDelegate {
         // Add bumper bonus if active.
         if (element instanceof BumperElement) {
             double extraEnergy = 0;
+            long bumperScore = BASE_BUMPER_SCORE;
             if (bumperBonusActive) {
                 double fractionRemaining =
                         1 - (((double) bumperBonusNanosElapsed) / bumperBonusDurationNanos);
                 extraEnergy = fractionRemaining * bumperBonusMultiplier;
                 // Round score to nearest multiple of 10.
-                double bonusScore = element.getScore() * extraEnergy;
-                field.addScore(10 * (Math.round(bonusScore / 10)));
+                long bonusScore = Math.round(BASE_BUMPER_SCORE * extraEnergy / 10) * 10;
+                bumperScore += bonusScore;
             }
+            field.addScoreWithAnimation(bumperScore, ball.getPosition());
             bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
             double ratio = (bumperEnergy) / maxBumperEnergy;
             field.getFieldElementById("BumperIndicator")
