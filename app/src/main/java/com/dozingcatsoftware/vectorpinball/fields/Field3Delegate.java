@@ -257,7 +257,9 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
-        // Add bumper bonus if active.
+        // Add bumper bonus if active. Because the score for hitting a bumper varies depending on
+        // the bonus, the score is 0 in the field definition and we manually add the points here
+        // so that the score animation will be accurate.
         if (element instanceof BumperElement) {
             double extraEnergy = 0;
             long bumperScore = BASE_BUMPER_SCORE;
