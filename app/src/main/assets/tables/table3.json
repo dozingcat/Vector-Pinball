@@ -270,7 +270,7 @@
       "outerRadius": "1.15",
       "position": [10.5, 23.7],
       "radius": 0.75,
-      "score": 500
+      "score": 0
     },
     {
       "class": "BumperElement",
@@ -279,7 +279,7 @@
       "outerRadius": "1.15",
       "position": [14.5, 21.8],
       "radius": 0.75,
-      "score": 500
+      "score": 0
     },
     {
       "class": "BumperElement",
@@ -288,7 +288,7 @@
       "outerRadius": "1.15",
       "position": [11.6, 19.5],
       "radius": 0.75,
-      "score": 500
+      "score": 0
     },
     {
       "class": "RolloverGroupElement",

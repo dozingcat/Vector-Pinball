@@ -509,6 +509,9 @@ public class BouncyActivity extends Activity {
         boolean showBallTrails = prefs.getBoolean("showBallTrails", true);
         field.setBallTrailsEnabled(showBallTrails);
 
+        boolean showScoreAnimations = prefs.getBoolean("showScoreAnimations", true);
+        field.setScoreAnimationsEnabled(showScoreAnimations);
+
         boolean useOpenGL = prefs.getBoolean("useOpenGL", true);
         if (useOpenGL) {
             if (glFieldView.getVisibility() != View.VISIBLE) {
