@@ -55,7 +55,7 @@ public class GameState {
     }
 
     public long addScore(long points) {
-        long pointsToAdd = (long) (points * scoreMultiplier);
+        long pointsToAdd = Math.round(points * scoreMultiplier);
         score += pointsToAdd;
         return pointsToAdd;
     }
