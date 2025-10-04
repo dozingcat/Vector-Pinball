@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 35
+    compileSdkVersion 36
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 35
-        versionCode 39
-        versionName "1.14.0"
+        targetSdkVersion 36
+        versionCode 40
+        versionName "1.15.0"
         multiDexEnabled true
     }
 
