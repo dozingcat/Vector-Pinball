@@ -18,7 +18,10 @@ import com.dozingcatsoftware.vectorpinball.model.GameState;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -28,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -118,6 +122,7 @@ public class BouncyActivity extends Activity {
     FieldDriver fieldDriver = new FieldDriver();
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
+    BroadcastReceiver powerSaveModeReceiver;
 
     private static final String TAG = "BouncyActivity";
 
@@ -261,6 +266,20 @@ public class BouncyActivity extends Activity {
             }
         };
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        // Reset frame rate if the user toggles power saver mode.
+        // This will limit to 60fps when power saver mode is on.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            powerSaveModeReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Delay slightly so the display has time to change its refresh rate.
+                    handler.postDelayed(BouncyActivity.this::resetGameFrameRate, 100);
+                }
+            };
+            IntentFilter filter = new IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
+            registerReceiver(powerSaveModeReceiver, filter);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.R)
@@ -329,6 +348,23 @@ public class BouncyActivity extends Activity {
         return Math.max(60, display.getRefreshRate() * 1.01f);
     }
 
+    private boolean isPowerSaveModeEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            return pm.isPowerSaveMode();
+        }
+        return false;
+    }
+
+    private void resetGameFrameRate() {
+        float maxGameFrameRate = getMaxFrameRateForDisplay();
+        if (isPowerSaveModeEnabled()) {
+            maxGameFrameRate = Math.min(60f, maxGameFrameRate);
+        }
+        fieldDriver.setMaxTargetFrameRate(maxGameFrameRate);
+        fieldDriver.resetFrameRate();
+    }
+
     @Override public void onResume() {
         super.onResume();
 
@@ -336,8 +372,7 @@ public class BouncyActivity extends Activity {
         // with the navigation bar on top of the field.
         enterFullscreenMode();
         // Reset frame rate since app or system settings that affect performance could have changed.
-        fieldDriver.setMaxTargetFrameRate(getMaxFrameRateForDisplay());
-        fieldDriver.resetFrameRate();
+        resetGameFrameRate();
         updateButtons();
     }
 
@@ -467,6 +502,9 @@ public class BouncyActivity extends Activity {
 
     @Override public void onDestroy() {
         VPSoundpool.cleanup();
+        if (powerSaveModeReceiver != null) {
+            unregisterReceiver(powerSaveModeReceiver);
+        }
         super.onDestroy();
     }
 
