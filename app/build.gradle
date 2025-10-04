@@ -33,6 +33,7 @@ android {
     namespace 'com.dozingcatsoftware.bouncy'
 }
 
+// TODO: Update to latest 3.x gdx-box2d version which has breaking changes.
 ext {
     gdxVersion = '1.13.0'
 }
@@ -48,7 +49,7 @@ dependencies {
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
 // From https://github.com/libgdx/libgdx/blob/master/extensions/gdx-setup/res/com/badlogic/gdx/setup/resources/android/build.gradle
