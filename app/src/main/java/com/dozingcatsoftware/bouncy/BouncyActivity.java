@@ -527,6 +527,12 @@ public class BouncyActivity extends Activity {
         AboutActivity.startForLevel(this, this.currentLevel);
     }
 
+    private float speedMultiplierForPreferenceValue(String val) {
+        if ("fast".equals(val)) return 1.2f;
+        if ("slow".equals(val)) return 0.8f;
+        return 1.0f;
+    }
+
     // Update settings from preferences, called at launch and when preferences activity finishes.
     void updateFromPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -568,6 +574,9 @@ public class BouncyActivity extends Activity {
 
         useZoom = prefs.getBoolean("zoom", true);
         fieldViewManager.setZoom(useZoom ? ZOOM_FACTOR : 1.0f);
+
+        String gameSpeed = prefs.getString("gameSpeed", "");
+        field.setGameSpeedMultiplier(speedMultiplierForPreferenceValue(gameSpeed));
 
         VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));

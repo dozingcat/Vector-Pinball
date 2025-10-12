@@ -17,6 +17,19 @@
     <string name="ball_trails_pref_title">Ball trails</string>
     <string name="score_animations_pref_title">Score animations</string>
     <string name="use_opengl_pref_title">OpenGL rendering</string>
+    <string name="game_speed_pref_title">Game speed</string>
+
+    <string-array name="game_speed_pref_entries">
+        <item>Slow</item>
+        <item>Normal</item>
+        <item>Fast</item>
+    </string-array>
+    <string-array name="game_speed_pref_values" translatable="false">
+        <item>slow</item>
+        <item>normal</item>
+        <item>fast</item>
+    </string-array>
+
 
     <string name="about_text">Vector Pinball 1.15.0\n© 2010–2025 Brian Nenninger\n\nComments and bug reports:\nbnenning@gmail.com\n\nTouch the screen to start a new game, launch a ball if one is not in play, and activate the flippers. Touch the score area to pause the game.\n\n[TABLE_RULES]\n\nThe Preferences menu item allows you to change the following settings:\n- Sound: Enables and disables sound effects.\n- Background Music: Enables and disabled background music.\n- Haptic Feedback: Vibrates on bumper hits and other game events.\n- Independent Flippers: When unchecked, any touch activates both flippers. When checked, you must touch the left side of the screen for the left flipper, and the right side for the right flipper.\n- Zoom: When checked, the view will zoom in on the ball\'s location during play.\n- OpenGL Rendering: Uses OpenGL to draw graphics. This usually provides the best combination of graphics quality and performance, but some devices may do better with it disabled.\n- Show FPS: When checked, shows frames drawn per second in the upper left.\n\nVector Pinball is open source; the code is at\nhttps://github.com/dozingcat/Vector-Pinball\n\nThanks to Mario Zechner for code improvements and libgdx.\n\nTable 8 design and code by Jack Morgan (jackmorgan8@gmail.com)\n\nsound, music, &amp; audio code, by pdx\nTwittering Machine\nhttps://www.twittering.com</string>
 
@@ -79,5 +92,4 @@
     <string name="show_high_score_button_label">High scores</string>
     <string name="hide_high_score_button_label">OK</string>
     <string name="high_score_table_title">High scores</string>
-
 </resources>
