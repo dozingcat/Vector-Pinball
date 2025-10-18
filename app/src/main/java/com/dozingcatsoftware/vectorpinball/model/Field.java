@@ -48,6 +48,9 @@ public class Field implements ContactListener {
     long gameTimeNanos;
     // Actions scheduled to occur at specific times in the future.
     PriorityQueue<ScheduledAction> scheduledActions;
+    // Multiplier applied to the "target time ratio" defined in each table.
+    // This can make the game faster or slower while keeping the same physics.
+    float gameSpeedMultiplier = 1.0f;
 
     Delegate delegate;
 
@@ -940,8 +943,12 @@ public class Field implements ContactListener {
         return gameTimeNanos;
     }
 
+    public void setGameSpeedMultiplier(float value) {
+        gameSpeedMultiplier = value;
+    }
+
     public float getTargetTimeRatio() {
-        return layout.getTargetTimeRatio();
+        return gameSpeedMultiplier * layout.getTargetTimeRatio();
     }
 
     public Delegate getDelegate() {
