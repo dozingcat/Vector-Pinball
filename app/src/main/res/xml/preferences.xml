@@ -25,7 +25,6 @@
 			android:entries="@array/game_speed_pref_entries"
 			android:entryValues="@array/game_speed_pref_values"
 			android:defaultValue="normal"
-			android:summary="%s"
 		/>
 
         <CheckBoxPreference android:key="showBallTrails" android:defaultValue="true" android:enabled="true"

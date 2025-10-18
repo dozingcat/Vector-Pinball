@@ -8,10 +8,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowInsets;
 
 public class BouncyPreferences extends PreferenceActivity {
@@ -56,6 +56,26 @@ public class BouncyPreferences extends PreferenceActivity {
             hapticPref.setChecked(false);
             hapticPref.setEnabled(false);
         }
+
+        // For the speed preference we want to show the user-visible value as the summary.
+        // Setting the summary to "%s" is supposed to do that, but it doesn't work on older
+        // Android versions (at least not 2.3), so we set it manually.
+        ListPreference speedPref = (ListPreference) findPreference("gameSpeed");
+        speedPref.setSummary(entryForListValue(speedPref, speedPref.getValue()));
+        speedPref.setOnPreferenceChangeListener((pref, newValue) -> {
+            speedPref.setSummary(entryForListValue(speedPref, String.valueOf(newValue)));
+            return true;
+        });
+    }
+
+    private static CharSequence entryForListValue(ListPreference pref, String value) {
+        CharSequence[] entryValues = pref.getEntryValues();
+        for (int i = 0; i < entryValues.length; i++) {
+            if (value.contentEquals(entryValues[i])) {
+                return pref.getEntries()[i];
+            }
+        }
+        return "";
     }
 
     @TargetApi(Build.VERSION_CODES.R)

@@ -529,7 +529,7 @@ public class BouncyActivity extends Activity {
 
     private float speedMultiplierForPreferenceValue(String val) {
         if ("fast".equals(val)) return 1.2f;
-        if ("slow".equals(val)) return 0.8f;
+        if ("slow".equals(val)) return 0.85f;
         return 1.0f;
     }
 
