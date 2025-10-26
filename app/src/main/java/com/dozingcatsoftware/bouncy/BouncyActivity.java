@@ -491,7 +491,6 @@ public class BouncyActivity extends Activity {
     }
 
     private void updateBackCallbackEnabled() {
-        // if (true) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (hasCustomBackAction()) {
                 getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
