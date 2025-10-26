@@ -72,6 +72,10 @@ public class GameState {
         return gameInProgress;
     }
 
+    public boolean isGameRunning() {
+        return gameInProgress && !paused;
+    }
+
     public void setGameInProgress(boolean value) {
         gameInProgress = value;
     }
