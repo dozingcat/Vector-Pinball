@@ -50,6 +50,8 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 public class BouncyActivity extends Activity {
 
@@ -123,6 +125,7 @@ public class BouncyActivity extends Activity {
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
     BroadcastReceiver powerSaveModeReceiver;
+    OnBackInvokedCallback backInvokedCallback;
 
     private static final String TAG = "BouncyActivity";
 
@@ -245,7 +248,6 @@ public class BouncyActivity extends Activity {
         	}
         });
          */
-        updateFromPreferences();
 
         // Android 15 and later enforces edge-to-edge mode, but we don't want to draw over the
         // bottom navigation or any camera or other cutouts. This callback lets us adjust the size
@@ -280,6 +282,13 @@ public class BouncyActivity extends Activity {
             IntentFilter filter = new IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
             registerReceiver(powerSaveModeReceiver, filter);
         }
+
+        // Set up predictive back handler so we pause rather than exit if a game is running.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            backInvokedCallback = this::doCustomBackAction;
+        }
+
+        updateFromPreferences();
     }
 
     @TargetApi(Build.VERSION_CODES.R)
@@ -373,7 +382,7 @@ public class BouncyActivity extends Activity {
         enterFullscreenMode();
         // Reset frame rate since app or system settings that affect performance could have changed.
         resetGameFrameRate();
-        updateButtons();
+        updateUiControls();
     }
 
     @Override public void onPause() {
@@ -395,7 +404,7 @@ public class BouncyActivity extends Activity {
                     glFieldView.onResume();
                 }
                 fieldViewManager.draw();
-                updateButtons();
+                updateUiControls();
             }
             else {
                 unpauseGame();
@@ -403,11 +412,36 @@ public class BouncyActivity extends Activity {
         }
     }
 
+    private boolean hasCustomBackAction() {
+        if (showingHighScores) {
+            return true;
+        }
+        if (field.getGameState().isGameRunning()) {
+            return true;
+        }
+        return false;
+    }
+
+    private void doCustomBackAction() {
+        if (showingHighScores) {
+            hideHighScore(null);
+        }
+        else if (field.getGameState().isGameRunning()) {
+            pauseGame();
+        }
+    }
+
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         // When a game is in progress, pause rather than exit when the back button is pressed.
         // This prevents accidentally quitting the game. Also pause (but don't quit) on "P".
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_P) {
-            if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
+        // KEYCODE_BACK is only sent on Android versions below 13; on 13 and later we use
+        // predictive back with `backInvokedCallback`.
+        if (keyCode == KeyEvent.KEYCODE_BACK && hasCustomBackAction()) {
+            doCustomBackAction();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_P) {
+            if (field.getGameState().isGameRunning()) {
                 pauseGame();
                 return true;
             }
@@ -428,7 +462,6 @@ public class BouncyActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-
     public void pauseGame() {
         VPSoundpool.pauseMusic();
         GameState state = field.getGameState();
@@ -440,7 +473,7 @@ public class BouncyActivity extends Activity {
         if (glFieldView != null) glFieldView.onPause();
         showingHighScores = false;
 
-        updateButtons();
+        updateUiControls();
     }
 
     public void unpauseGame() {
@@ -454,13 +487,27 @@ public class BouncyActivity extends Activity {
         if (glFieldView != null) glFieldView.onResume();
         showingHighScores = false;
 
-        updateButtons();
+        updateUiControls();
     }
 
-    void updateButtons() {
+    private void updateBackCallbackEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (hasCustomBackAction()) {
+                getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                        OnBackInvokedDispatcher.PRIORITY_DEFAULT, backInvokedCallback);
+            }
+            else {
+                getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(backInvokedCallback);
+            }
+        }
+    }
+
+    void updateUiControls() {
         GameState state = field.getGameState();
         boolean paused = state.isPaused();
         boolean gameInProgress = state.isGameInProgress();
+
+        updateBackCallbackEnabled();
 
         if (gameInProgress && !paused) {
             // Game is active, no menus visible, show pause "button".
@@ -609,7 +656,7 @@ public class BouncyActivity extends Activity {
                 // always show LAST_SCORE_MESSAGE immediately at the end of a game
                 // (LAST_SCORE_MESSAGE is next after TOUCH_TO_START_MESSAGE)
                 scoreView.gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
-                updateButtons();
+                updateUiControls();
 
                 // No high scores for unlimited balls.
                 if (!state.hasUnlimitedBalls()) {
@@ -764,7 +811,7 @@ public class BouncyActivity extends Activity {
             }
             VPSoundpool.playStart();
             endGameTime = null;
-            updateButtons();
+            updateUiControls();
         }
     }
 
@@ -833,12 +880,12 @@ public class BouncyActivity extends Activity {
     public void showHighScore(View view) {
         this.fillHighScoreAdapter();
         showingHighScores = true;
-        updateButtons();
+        updateUiControls();
     }
 
     public void hideHighScore(View view) {
         showingHighScores = false;
-        updateButtons();
+        updateUiControls();
     }
 
     private void fillHighScoreAdapter() {
