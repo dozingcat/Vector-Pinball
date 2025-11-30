@@ -1,0 +1,2 @@
+- Added game speed option.
+- Improved behavior of back gestures.
