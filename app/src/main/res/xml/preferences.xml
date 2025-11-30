@@ -19,8 +19,19 @@
 		<CheckBoxPreference android:key="zoom" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/zoom_pref_title" />
 
+		<ListPreference
+			android:key="gameSpeed"
+			android:title="@string/game_speed_pref_title"
+			android:entries="@array/game_speed_pref_entries"
+			android:entryValues="@array/game_speed_pref_values"
+			android:defaultValue="normal"
+		/>
+
         <CheckBoxPreference android:key="showBallTrails" android:defaultValue="true" android:enabled="true"
             android:title="@string/ball_trails_pref_title" />
+
+        <CheckBoxPreference android:key="showScoreAnimations" android:defaultValue="true" android:enabled="true"
+            android:title="@string/score_animations_pref_title" />
 
         <CheckBoxPreference android:key="useOpenGL" android:defaultValue="true" android:enabled="true"
 		    android:title="@string/use_opengl_pref_title" />

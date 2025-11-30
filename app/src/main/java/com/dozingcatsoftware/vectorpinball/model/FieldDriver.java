@@ -18,15 +18,15 @@ public class FieldDriver {
 
     FrameRateManager frameRateManager = new FrameRateManager(
             System::nanoTime,
-            new double[] {60, 50, 45, 40, 30},
-            new double[] {57, 48, 43, 38});
+            new double[] {144, 120, 90, 60, 50, 45, 40, 30},
+            new double[] {137, 114, 86, 57, 48, 43, 38});
     double averageFPS;
 
     // Sleep this long when field.hasActiveElements() is false.
-    static long INACTIVE_FRAME_MSECS = 250;
+    private static final long INACTIVE_FRAME_MSECS = 250;
 
-    private static long MILLION = 1000000;
-    private static long BILLION = MILLION * 1000;
+    private static final long MILLION = 1_000_000;
+    private static final long BILLION = MILLION * 1000;
 
     public void setDrawFunction(Runnable drawFn) {
         this.drawFn = drawFn;
@@ -86,7 +86,7 @@ public class FieldDriver {
             // If field is inactive, clear start time history and bail.
             if (!fieldActive) {
                 frameRateManager.clearTimestamps();
-                setAverageFPS(0);
+                setAverageFps(0);
                 try {
                     Thread.sleep(INACTIVE_FRAME_MSECS);
                 }
@@ -99,7 +99,7 @@ public class FieldDriver {
 
             // For debugging, show frames per second and other info.
             if (frameRateManager.getTotalFrames() % 100 == 0) {
-                setAverageFPS(frameRateManager.currentFramesPerSecond());
+                setAverageFps(frameRateManager.currentFramesPerSecond());
             }
         }
     }
@@ -111,11 +111,19 @@ public class FieldDriver {
         frameRateManager.resetFrameRate();
     }
 
-    public double getAverageFPS() {
+    public void setMaxTargetFrameRate(double rate) {
+        frameRateManager.setMaxTargetFrameRate(rate);
+    }
+
+    public double getAverageFps() {
         return averageFPS;
     }
 
-    public void setAverageFPS(double value) {
+    public void setAverageFps(double value) {
         averageFPS = value;
+    }
+
+    public double getTargetFps() {
+        return frameRateManager.targetFramesPerSecond();
     }
 }

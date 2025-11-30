@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.bouncy;
 
+import static com.dozingcatsoftware.bouncy.ScoreView.TOUCH_TO_START_MESSAGE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,18 +16,25 @@ import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameState;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -35,11 +44,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 public class BouncyActivity extends Activity {
 
@@ -74,6 +86,10 @@ public class BouncyActivity extends Activity {
     CheckBox unlimitedBallsToggle;
     ViewGroup highScoreListLayout;
     View noHighScoresTextView;
+
+    View topSpacerView;
+    View bottomSpacerView;
+
     final static int ACTIVITY_PREFERENCES = 1;
 
     Handler handler = new Handler(Looper.myLooper());
@@ -108,14 +124,19 @@ public class BouncyActivity extends Activity {
     FieldDriver fieldDriver = new FieldDriver();
     FieldViewManager fieldViewManager = new FieldViewManager();
     OrientationListener orientationListener;
+    BroadcastReceiver powerSaveModeReceiver;
+    OnBackInvokedCallback backInvokedCallback;
 
     private static final String TAG = "BouncyActivity";
 
     /** Called when the activity is first created. */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         String arch = System.getProperty("os.arch");
-        Log.i(TAG, "App started, os.arch: " + arch + ", API level: " + Build.VERSION.SDK_INT);
+        Log.i(TAG, "os.arch: " + arch);
+        Log.i(TAG, "API level: " + Build.VERSION.SDK_INT);
+        Log.i(TAG, "Target frame rate: " + getMaxFrameRateForDisplay());
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
@@ -180,6 +201,9 @@ public class BouncyActivity extends Activity {
         noHighScoresTextView = findViewById(R.id.noHighScoresTextView);
         pauseButton = findViewById(R.id.pauseIcon);
 
+        topSpacerView = findViewById(R.id.topSpacerView);
+        bottomSpacerView = findViewById(R.id.bottomSpacerView);
+
         // Ugly workaround that seems to be required when supporting keyboard navigation.
         // In main.xml, all buttons have `android:focusableInTouchMode` set to true.
         // If it's not, then they don't get focused even when using the dpad on a
@@ -224,7 +248,14 @@ public class BouncyActivity extends Activity {
         	}
         });
          */
-        updateFromPreferences();
+
+        // Android 15 and later enforces edge-to-edge mode, but we don't want to draw over the
+        // bottom navigation or any camera or other cutouts. This callback lets us adjust the size
+        // of spacer views so that the score and field views don't draw in those areas.
+        // See https://developer.android.com/develop/ui/views/layout/edge-to-edge
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            scoreView.setOnApplyWindowInsetsListener(this::applyWindowInsets);
+        }
 
         // Initialize audio, loading resources in a separate thread.
         VPSoundpool.initSounds(this);
@@ -237,11 +268,56 @@ public class BouncyActivity extends Activity {
             }
         };
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        // Reset frame rate if the user toggles power saver mode.
+        // This will limit to 60fps when power saver mode is on.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            powerSaveModeReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Delay slightly so the display has time to change its refresh rate.
+                    handler.postDelayed(BouncyActivity.this::resetGameFrameRate, 100);
+                }
+            };
+            IntentFilter filter = new IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
+            registerReceiver(powerSaveModeReceiver, filter);
+        }
+
+        // Set up predictive back handler so we pause rather than exit if a game is running.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            backInvokedCallback = this::doCustomBackAction;
+        }
+
+        updateFromPreferences();
+    }
+
+    @TargetApi(Build.VERSION_CODES.R)
+    WindowInsets applyWindowInsets(View v, WindowInsets windowInsets) {
+        // Adjust the height of the spacer views to cover nav bars and display cutouts.
+        // This doesn't yet handle side insets, which are hopefully not common.
+
+        Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+
+        ViewGroup.LayoutParams topLayoutParams = topSpacerView.getLayoutParams();
+        topLayoutParams.height = insets.top;
+        topSpacerView.setLayoutParams(topLayoutParams);
+        topSpacerView.setVisibility(View.VISIBLE);
+
+        ViewGroup.LayoutParams bottomLayoutParams = bottomSpacerView.getLayoutParams();
+        bottomLayoutParams.height = insets.bottom;
+        bottomSpacerView.setLayoutParams(bottomLayoutParams);
+        bottomSpacerView.setVisibility(View.VISIBLE);
+
+        return WindowInsets.CONSUMED;
     }
 
     void enterFullscreenMode() {
         // https://stackoverflow.com/questions/62643517/immersive-fullscreen-on-android-11
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            // Do nothing; we're always in edge-to-edge mode and applyWindowInsets handles avoiding
+            // drawing under display cutouts or navigation bars.
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController insetsController = getWindow().getInsetsController();
             if (insetsController != null) {
                 insetsController.hide(WindowInsets.Type.statusBars());
@@ -269,6 +345,35 @@ public class BouncyActivity extends Activity {
         }
     }
 
+    private float getMaxFrameRateForDisplay() {
+        // Android 15 limits games to 60fps unless the user toggles a hidden setting.
+        // Ideally we would report 60fps in this mode but there's apparently no way to detect it.
+        // Instead there's an ugly workaround in FrameRateManager to drop to 60fps if it looks like
+        // we're being throttled.
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        // Apparently some devices return bogus values so use a reasonable minimum, and also
+        // apply a slight adjustment factor so if getRefreshRate() returns 119.9 we'll still try to
+        // run at 120fps.
+        return Math.max(60, display.getRefreshRate() * 1.01f);
+    }
+
+    private boolean isPowerSaveModeEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            return pm.isPowerSaveMode();
+        }
+        return false;
+    }
+
+    private void resetGameFrameRate() {
+        float maxGameFrameRate = getMaxFrameRateForDisplay();
+        if (isPowerSaveModeEnabled()) {
+            maxGameFrameRate = Math.min(60f, maxGameFrameRate);
+        }
+        fieldDriver.setMaxTargetFrameRate(maxGameFrameRate);
+        fieldDriver.resetFrameRate();
+    }
+
     @Override public void onResume() {
         super.onResume();
 
@@ -276,8 +381,8 @@ public class BouncyActivity extends Activity {
         // with the navigation bar on top of the field.
         enterFullscreenMode();
         // Reset frame rate since app or system settings that affect performance could have changed.
-        fieldDriver.resetFrameRate();
-        updateButtons();
+        resetGameFrameRate();
+        updateUiControls();
     }
 
     @Override public void onPause() {
@@ -299,7 +404,7 @@ public class BouncyActivity extends Activity {
                     glFieldView.onResume();
                 }
                 fieldViewManager.draw();
-                updateButtons();
+                updateUiControls();
             }
             else {
                 unpauseGame();
@@ -307,23 +412,48 @@ public class BouncyActivity extends Activity {
         }
     }
 
+    private boolean hasCustomBackAction() {
+        if (showingHighScores) {
+            return true;
+        }
+        if (field.getGameState().isGameRunning()) {
+            return true;
+        }
+        return false;
+    }
+
+    private void doCustomBackAction() {
+        if (showingHighScores) {
+            hideHighScore(null);
+        }
+        else if (field.getGameState().isGameRunning()) {
+            pauseGame();
+        }
+    }
+
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         // When a game is in progress, pause rather than exit when the back button is pressed.
         // This prevents accidentally quitting the game. Also pause (but don't quit) on "P".
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_P) {
-            if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
+        // KEYCODE_BACK is only sent on Android versions below 13; on 13 and later we use
+        // predictive back with `backInvokedCallback`.
+        if (keyCode == KeyEvent.KEYCODE_BACK && hasCustomBackAction()) {
+            doCustomBackAction();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_P) {
+            if (field.getGameState().isGameRunning()) {
                 pauseGame();
                 return true;
             }
         }
         // When showing the main menu, switch tables with the flipper buttons.
         if (!field.getGameState().isGameInProgress() && buttonPanel.getVisibility() == View.VISIBLE) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (FieldViewManager.LEFT_FLIPPER_KEYS.contains(keyCode)) {
                 doPreviousTable(null);
                 startGameButton.requestFocus();
                 return true;
             }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (FieldViewManager.RIGHT_FLIPPER_KEYS.contains(keyCode)) {
                 doNextTable(null);
                 startGameButton.requestFocus();
                 return true;
@@ -331,7 +461,6 @@ public class BouncyActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
     public void pauseGame() {
         VPSoundpool.pauseMusic();
@@ -344,7 +473,7 @@ public class BouncyActivity extends Activity {
         if (glFieldView != null) glFieldView.onPause();
         showingHighScores = false;
 
-        updateButtons();
+        updateUiControls();
     }
 
     public void unpauseGame() {
@@ -358,13 +487,27 @@ public class BouncyActivity extends Activity {
         if (glFieldView != null) glFieldView.onResume();
         showingHighScores = false;
 
-        updateButtons();
+        updateUiControls();
     }
 
-    void updateButtons() {
+    private void updateBackCallbackEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (hasCustomBackAction()) {
+                getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                        OnBackInvokedDispatcher.PRIORITY_DEFAULT, backInvokedCallback);
+            }
+            else {
+                getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(backInvokedCallback);
+            }
+        }
+    }
+
+    void updateUiControls() {
         GameState state = field.getGameState();
         boolean paused = state.isPaused();
         boolean gameInProgress = state.isGameInProgress();
+
+        updateBackCallbackEnabled();
 
         if (gameInProgress && !paused) {
             // Game is active, no menus visible, show pause "button".
@@ -406,6 +549,9 @@ public class BouncyActivity extends Activity {
 
     @Override public void onDestroy() {
         VPSoundpool.cleanup();
+        if (powerSaveModeReceiver != null) {
+            unregisterReceiver(powerSaveModeReceiver);
+        }
         super.onDestroy();
     }
 
@@ -428,11 +574,17 @@ public class BouncyActivity extends Activity {
         AboutActivity.startForLevel(this, this.currentLevel);
     }
 
+    private float speedMultiplierForPreferenceValue(String val) {
+        if ("fast".equals(val)) return 1.2f;
+        if ("slow".equals(val)) return 0.85f;
+        return 1.0f;
+    }
+
     // Update settings from preferences, called at launch and when preferences activity finishes.
     void updateFromPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", true));
-        scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
+        scoreView.setShowFps(prefs.getBoolean("showFPS", false));
 
         // If switching line width or OpenGL/Canvas, reset frame rate manager because maximum
         // achievable frame rate may change.
@@ -447,6 +599,9 @@ public class BouncyActivity extends Activity {
 
         boolean showBallTrails = prefs.getBoolean("showBallTrails", true);
         field.setBallTrailsEnabled(showBallTrails);
+
+        boolean showScoreAnimations = prefs.getBoolean("showScoreAnimations", true);
+        field.setScoreAnimationsEnabled(showScoreAnimations);
 
         boolean useOpenGL = prefs.getBoolean("useOpenGL", true);
         if (useOpenGL) {
@@ -467,6 +622,9 @@ public class BouncyActivity extends Activity {
         useZoom = prefs.getBoolean("zoom", true);
         fieldViewManager.setZoom(useZoom ? ZOOM_FACTOR : 1.0f);
 
+        String gameSpeed = prefs.getString("gameSpeed", "");
+        field.setGameSpeedMultiplier(speedMultiplierForPreferenceValue(gameSpeed));
+
         VPSoundpool.setSoundEnabled(prefs.getBoolean("sound", true));
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
         useHapticFeedback = prefs.getBoolean("haptic", false);
@@ -475,7 +633,8 @@ public class BouncyActivity extends Activity {
     // Called every 100 milliseconds while app is visible, to update score view and high score.
     void tick() {
         scoreView.invalidate();
-        scoreView.setFPS(fieldDriver.getAverageFPS());
+        scoreView.setCurrentFps(fieldDriver.getAverageFps());
+        scoreView.setTargetFps(fieldDriver.getTargetFps());
         scoreView.setDebugMessage(field.getDebugMessage());
         updateHighScoreAndButtonPanel();
         handler.postDelayed(this::tick, 100);
@@ -494,7 +653,10 @@ public class BouncyActivity extends Activity {
             if (!field.getGameState().isGameInProgress()) {
                 // game just ended, show button panel and set end game timestamp
                 this.endGameTime = System.currentTimeMillis();
-                updateButtons();
+                // always show LAST_SCORE_MESSAGE immediately at the end of a game
+                // (LAST_SCORE_MESSAGE is next after TOUCH_TO_START_MESSAGE)
+                scoreView.gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
+                updateUiControls();
 
                 // No high scores for unlimited balls.
                 if (!state.hasUnlimitedBalls()) {
@@ -505,6 +667,7 @@ public class BouncyActivity extends Activity {
                             highScores.size() < MAX_NUM_HIGH_SCORES) {
                         this.updateHighScoreForCurrentLevel(score);
                     }
+                    this.updateLastScoreForCurrentLevel(score);
                 }
             }
         }
@@ -552,7 +715,7 @@ public class BouncyActivity extends Activity {
         return prefs.getLong(lastScorePrefsKeyForLevel(theLevel), 0L);
     }
 
-    void writeHighScoresToPreferences(int level, List<Long> scores, long lastScore) {
+    void writeHighScoresToPreferences(int level, List<Long> scores) {
         StringBuilder scoresAsString = new StringBuilder();
         scoresAsString.append(scores.get(0));
         for (int i = 1; i < scores.size(); i++) {
@@ -561,6 +724,12 @@ public class BouncyActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(highScorePrefsKeyForLevel(level), scoresAsString.toString());
+        editor.commit();
+    }
+
+    void writeLastScoreToPreferences(int level, long lastScore) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(lastScorePrefsKeyForLevel(level), lastScore);
         editor.commit();
     }
@@ -583,13 +752,17 @@ public class BouncyActivity extends Activity {
             newHighScores = newHighScores.subList(0, MAX_NUM_HIGH_SCORES);
         }
         this.highScores = newHighScores;
-        this.lastScore = score;
-        writeHighScoresToPreferences(theLevel, this.highScores, this.lastScore);
+        writeHighScoresToPreferences(theLevel, this.highScores);
         scoreView.setHighScores(this.highScores);
     }
 
     void updateHighScoreForCurrentLevel(long score) {
         updateHighScore(currentLevel, score);
+    }
+
+    private void updateLastScoreForCurrentLevel(long score) {
+        this.lastScore = score;
+        writeLastScoreToPreferences(currentLevel, score);
     }
 
     int getInitialLevel() {
@@ -638,7 +811,7 @@ public class BouncyActivity extends Activity {
             }
             VPSoundpool.playStart();
             endGameTime = null;
-            updateButtons();
+            updateUiControls();
         }
     }
 
@@ -707,12 +880,12 @@ public class BouncyActivity extends Activity {
     public void showHighScore(View view) {
         this.fillHighScoreAdapter();
         showingHighScores = true;
-        updateButtons();
+        updateUiControls();
     }
 
     public void hideHighScore(View view) {
         showingHighScores = false;
-        updateButtons();
+        updateUiControls();
     }
 
     private void fillHighScoreAdapter() {

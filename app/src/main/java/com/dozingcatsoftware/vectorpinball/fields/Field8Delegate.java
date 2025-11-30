@@ -22,6 +22,27 @@ public class Field8Delegate extends BaseFieldDelegate {
         return df.format(number);
     }
 
+    Long previousSpinnerScoreTime = null;
+    static long minNanosBetweenSpinnerScoreAnimations = 250_000_000;
+
+    private void scoreSpinner(Field field, RolloverGroupElement spinner, long score) {
+        // Don't show score animation too soon after the previous one.
+        boolean showAnimation = true;
+        if (previousSpinnerScoreTime != null) {
+            long nanosSinceLastAnimation = field.getGameTimeNanos() - previousSpinnerScoreTime;
+            if (nanosSinceLastAnimation < minNanosBetweenSpinnerScoreAnimations) {
+                showAnimation = false;
+            }
+        }
+        if (showAnimation) {
+            previousSpinnerScoreTime = field.getGameTimeNanos();
+            field.addScoreWithAnimation(score, spinner.getRolloverCenterAtIndex(0));
+        }
+        else {
+            field.addScore(score);
+        }
+    }
+
     // Controls *spinner* behavior
     void startSpinner(Field field, RolloverGroupElement spinner, Ball ball, int score) {
         AtomicBoolean spinnerActive = new AtomicBoolean(true);
@@ -49,7 +70,7 @@ public class Field8Delegate extends BaseFieldDelegate {
 
                 // Schedule spins
                 field.scheduleAction(totalTime, () -> {
-                    field.addScore(score);
+                    scoreSpinner(field, spinner, score);
                     spinnerActive.set(!spinnerActive.get());
                     spinner.setVisible(spinnerActive.get());
                 });
@@ -325,7 +346,7 @@ public class Field8Delegate extends BaseFieldDelegate {
 
             else {
                 eightBallTarget.makeAllTargetsVisible();
-                field.addScore(eightBallValue);
+                field.addScoreWithAnimation(eightBallValue, ball.getPosition());
                 field.showGameMessage("Corner Pocket: " + insertCommas(eightBallValue), 3000);
             }
         }
