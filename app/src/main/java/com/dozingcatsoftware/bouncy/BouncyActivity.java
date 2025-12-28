@@ -782,7 +782,12 @@ public class BouncyActivity extends Activity {
     // Button action methods defined by android:onClick values in main.xml.
     public void doStartGame(View view) {
         if (field.getGameState().isPaused()) {
-            unpauseGame();
+            // If there's an accessibility panel or other overlay visible, this can be called
+            // twice in rapid succession. The first time hasWindowFocus is false because the
+            // overlay is visible, and we want to ignore that event.
+            if (hasWindowFocus() && buttonPanel.getVisibility() == View.VISIBLE) {
+                unpauseGame();
+            }
             return;
         }
         // Avoids accidental starts due to touches just after game ends.

@@ -45,12 +45,9 @@ public class FieldDriver {
 
     /** Stops the game thread, which will pause updates to the game state and view redraws. */
     public void stop() {
+        // Don't explicitly join() the game thread because that can deadlock.
+        // Setting running to false will cause it to exit.
         running = false;
-        try {
-            gameThread.join();
-        }
-        catch (InterruptedException ex) {
-        }
     }
 
     /**
