@@ -98,7 +98,7 @@ public class BouncyActivity extends Activity {
         int stringId = getResources().getIdentifier(key, "string", getPackageName());
         return getString(stringId, params);
     };
-    Field field = new Field(System::currentTimeMillis, stringLookupFn, new VPSoundpool.Player());
+    final Field field = new Field(System::currentTimeMillis, stringLookupFn, new VPSoundpool.Player());
 
     int numberOfLevels;
     int currentLevel = 1;

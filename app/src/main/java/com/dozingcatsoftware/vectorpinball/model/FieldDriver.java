@@ -12,8 +12,9 @@ public class FieldDriver {
 
     Field field;
 
-    boolean running;
-    Thread gameThread;
+    // Volatile so game thread sees updates from main thread immediately.
+    private volatile boolean running;
+    private Thread gameThread;
     Runnable drawFn;
 
     FrameRateManager frameRateManager = new FrameRateManager(
@@ -37,14 +38,15 @@ public class FieldDriver {
     }
 
     /** Starts the game thread running. Does not actually start a new game. */
-    public void start() {
+    public synchronized void start() {
+        if (running) return;
         running = true;
         gameThread = new Thread(this::threadMain);
         gameThread.start();
     }
 
     /** Stops the game thread, which will pause updates to the game state and view redraws. */
-    public void stop() {
+    public synchronized void stop() {
         // Don't explicitly join() the game thread because that can deadlock.
         // Setting running to false will cause it to exit.
         running = false;
