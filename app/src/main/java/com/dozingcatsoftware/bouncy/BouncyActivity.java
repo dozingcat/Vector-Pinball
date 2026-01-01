@@ -121,8 +121,8 @@ public class BouncyActivity extends Activity {
     static final long END_GAME_DELAY_MS = 1000;
     Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY_MS;
 
-    FieldViewManager fieldViewManager = new FieldViewManager(field, () -> doStartGame(null));
-    FieldDriver fieldDriver = new FieldDriver(field, fieldViewManager::draw);
+    final FieldViewManager fieldViewManager = new FieldViewManager(field, () -> doStartGame(null));
+    final FieldDriver fieldDriver = new FieldDriver(field, fieldViewManager::draw);
     OrientationListener orientationListener;
     BroadcastReceiver powerSaveModeReceiver;
     OnBackInvokedCallback backInvokedCallback;
