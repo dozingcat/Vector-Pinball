@@ -1,6 +1,5 @@
 package com.dozingcatsoftware.bouncy;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
+import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,15 +19,20 @@ import android.view.MotionEvent;
  */
 
 public class FieldViewManager {
+    private final Field field;
+    private final Runnable startGameAction;
+
+    public FieldViewManager(Field field, Runnable startGameAction) {
+        this.field = field;
+        this.startGameAction = startGameAction;
+    }
 
     IFieldRenderer fieldRenderer;
-    Runnable startGameAction;
 
     public void setFieldRenderer(IFieldRenderer renderer) {
         this.fieldRenderer = renderer;
     }
 
-    Field field;
     boolean independentFlippers;
     float maxZoom = 1.0f;
     int customLineWidth = 0;
@@ -38,10 +43,6 @@ public class FieldViewManager {
 
     // Delay after losing a ball, before a touch will launch a new ball.
     static final long END_BALL_DELAY_MS = 750;
-
-    public void setField(Field value) {
-        field = value;
-    }
 
     public Field getField() {
         return field;
@@ -69,10 +70,6 @@ public class FieldViewManager {
         // Line width of more than 1/60 of the screen size is too thick.
         int lineWidth = (cw > 0) ? Math.min(cw, minDim / 60) : minDim / 216;
         return Math.max(lineWidth, 1);
-    }
-
-    public void setStartGameAction(Runnable action) {
-        startGameAction = action;
     }
 
     float getScale(float zoom) {
@@ -144,33 +141,6 @@ public class FieldViewManager {
         return cachedHeight - ((y - cachedYOffset) * cachedScale);
     }
 
-    // For compatibility with Android 1.6, use reflection for multitouch features.
-    boolean hasMultitouch;
-    Method getPointerCountMethod;
-    Method getXMethod;
-    int MOTIONEVENT_ACTION_MASK = 0xffffffff; // Defaults to no-op AND mask.
-    int MOTIONEVENT_ACTION_POINTER_UP;
-    int MOTIONEVENT_ACTION_POINTER_INDEX_MASK;
-    int MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
-
-    {
-        try {
-            getPointerCountMethod = MotionEvent.class.getMethod("getPointerCount");
-            getXMethod = MotionEvent.class.getMethod("getX", int.class);
-            MOTIONEVENT_ACTION_MASK = MotionEvent.class.getField("ACTION_MASK").getInt(null);
-            MOTIONEVENT_ACTION_POINTER_UP =
-                    MotionEvent.class.getField("ACTION_POINTER_UP").getInt(null);
-            MOTIONEVENT_ACTION_POINTER_INDEX_MASK =
-                    MotionEvent.class.getField("ACTION_POINTER_INDEX_MASK").getInt(null);
-            MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT =
-                    MotionEvent.class.getField("ACTION_POINTER_INDEX_SHIFT").getInt(null);
-            hasMultitouch = true;
-        }
-        catch (Exception ex) {
-            hasMultitouch = false;
-        }
-    }
-
     void launchBallIfNeeded() {
         // Don't launch a new ball immediately after losing the previous ball, since the user may
         // have been trying to use a flipper.
@@ -185,7 +155,7 @@ public class FieldViewManager {
      * progress, and launches a ball if one is not in play.
      */
     public boolean handleTouchEvent(MotionEvent event) {
-        int actionType = event.getAction() & MOTIONEVENT_ACTION_MASK;
+        int actionType = event.getAction() & MotionEvent.ACTION_MASK;
         synchronized (field) {
             if (!field.getGameState().isGameInProgress() || field.getGameState().isPaused()) {
                 if (startGameAction != null) {
@@ -193,26 +163,24 @@ public class FieldViewManager {
                     return true;
                 }
             }
-            // activate or deactivate flippers
+            // Activate or deactivate flippers. Multitouch APIs require API level 8
             boolean left = false, right = false;
-            if (this.independentFlippers && this.hasMultitouch) {
+            if (this.independentFlippers && Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                 try {
-                    // Determine whether to activate left and/or right flippers,
-                    // using reflection for Android 2.2 multitouch APIs.
                     if (actionType != MotionEvent.ACTION_UP) {
-                        int npointers = (Integer) getPointerCountMethod.invoke(event);
+                        int npointers = event.getPointerCount();
                         // If pointer was lifted (ACTION_POINTER_UP), get its index so we don't
                         // count it as pressed.
                         int liftedPointerIndex = -1;
-                        if (actionType == MOTIONEVENT_ACTION_POINTER_UP) {
+                        if (actionType == MotionEvent.ACTION_POINTER_UP) {
                             liftedPointerIndex =
-                                    (event.getAction() & MOTIONEVENT_ACTION_POINTER_INDEX_MASK) >>
-                                            MOTIONEVENT_ACTION_POINTER_INDEX_SHIFT;
+                                    (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+                                            MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                         }
                         float halfwidth = fieldRenderer.getWidth() / 2.0f;
                         for (int i = 0; i < npointers; i++) {
                             if (i != liftedPointerIndex) {
-                                float touchx = (Float) getXMethod.invoke(event, i);
+                                float touchx = event.getX(i);
                                 if (touchx < halfwidth) left = true;
                                 else right = true;
                             }

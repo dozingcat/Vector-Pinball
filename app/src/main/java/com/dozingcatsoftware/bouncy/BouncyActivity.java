@@ -121,8 +121,8 @@ public class BouncyActivity extends Activity {
     static final long END_GAME_DELAY_MS = 1000;
     Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY_MS;
 
-    FieldDriver fieldDriver = new FieldDriver();
-    FieldViewManager fieldViewManager = new FieldViewManager();
+    FieldViewManager fieldViewManager = new FieldViewManager(field, () -> doStartGame(null));
+    FieldDriver fieldDriver = new FieldDriver(field, fieldViewManager::draw);
     OrientationListener orientationListener;
     BroadcastReceiver powerSaveModeReceiver;
     OnBackInvokedCallback backInvokedCallback;
@@ -170,14 +170,8 @@ public class BouncyActivity extends Activity {
             gl10Renderer.setManager(fieldViewManager);
         }
 
-        fieldViewManager.setField(field);
-        fieldViewManager.setStartGameAction(() -> doStartGame(null));
-
         scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
-
-        fieldDriver.setField(field);
-        fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
         lastScore = this.lastScoreFromPreferencesForCurrentLevel();

@@ -10,12 +10,17 @@ import com.dozingcatsoftware.vectorpinball.util.FrameRateManager;
  */
 public class FieldDriver {
 
-    Field field;
+    private final Field field;
+    private final Runnable drawFn;
+
+    public FieldDriver(Field field, Runnable drawFn) {
+        this.field = field;
+        this.drawFn = drawFn;
+    }
 
     // Volatile so game thread sees updates from main thread immediately.
     private volatile boolean running;
     private Thread gameThread;
-    Runnable drawFn;
 
     FrameRateManager frameRateManager = new FrameRateManager(
             System::nanoTime,
@@ -28,14 +33,6 @@ public class FieldDriver {
 
     private static final long MILLION = 1_000_000;
     private static final long BILLION = MILLION * 1000;
-
-    public void setDrawFunction(Runnable drawFn) {
-        this.drawFn = drawFn;
-    }
-
-    public void setField(Field value) {
-        this.field = value;
-    }
 
     /** Starts the game thread running. Does not actually start a new game. */
     public synchronized void start() {
