@@ -1,0 +1,2 @@
+- Fixed bugs that could cause errors when pausing or resuming.
+- Fixed bug where some bumpers didn't play sounds when hit.
