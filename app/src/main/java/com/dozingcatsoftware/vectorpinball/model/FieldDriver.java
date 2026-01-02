@@ -10,11 +10,17 @@ import com.dozingcatsoftware.vectorpinball.util.FrameRateManager;
  */
 public class FieldDriver {
 
-    Field field;
+    private final Field field;
+    private final Runnable drawFn;
 
-    boolean running;
-    Thread gameThread;
-    Runnable drawFn;
+    public FieldDriver(Field field, Runnable drawFn) {
+        this.field = field;
+        this.drawFn = drawFn;
+    }
+
+    // Volatile so game thread sees updates from main thread immediately.
+    private volatile boolean running;
+    private Thread gameThread;
 
     FrameRateManager frameRateManager = new FrameRateManager(
             System::nanoTime,
@@ -28,29 +34,19 @@ public class FieldDriver {
     private static final long MILLION = 1_000_000;
     private static final long BILLION = MILLION * 1000;
 
-    public void setDrawFunction(Runnable drawFn) {
-        this.drawFn = drawFn;
-    }
-
-    public void setField(Field value) {
-        this.field = value;
-    }
-
     /** Starts the game thread running. Does not actually start a new game. */
-    public void start() {
+    public synchronized void start() {
+        if (running) return;
         running = true;
         gameThread = new Thread(this::threadMain);
         gameThread.start();
     }
 
     /** Stops the game thread, which will pause updates to the game state and view redraws. */
-    public void stop() {
+    public synchronized void stop() {
+        // Don't explicitly join() the game thread because that can deadlock.
+        // Setting running to false will cause it to exit.
         running = false;
-        try {
-            gameThread.join();
-        }
-        catch (InterruptedException ex) {
-        }
     }
 
     /**

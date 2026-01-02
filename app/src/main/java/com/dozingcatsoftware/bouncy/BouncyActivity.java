@@ -98,7 +98,7 @@ public class BouncyActivity extends Activity {
         int stringId = getResources().getIdentifier(key, "string", getPackageName());
         return getString(stringId, params);
     };
-    Field field = new Field(System::currentTimeMillis, stringLookupFn, new VPSoundpool.Player());
+    final Field field = new Field(System::currentTimeMillis, stringLookupFn, new VPSoundpool.Player());
 
     int numberOfLevels;
     int currentLevel = 1;
@@ -121,8 +121,8 @@ public class BouncyActivity extends Activity {
     static final long END_GAME_DELAY_MS = 1000;
     Long endGameTime = System.currentTimeMillis() - END_GAME_DELAY_MS;
 
-    FieldDriver fieldDriver = new FieldDriver();
-    FieldViewManager fieldViewManager = new FieldViewManager();
+    final FieldViewManager fieldViewManager = new FieldViewManager(field, () -> doStartGame(null));
+    final FieldDriver fieldDriver = new FieldDriver(field, fieldViewManager::draw);
     OrientationListener orientationListener;
     BroadcastReceiver powerSaveModeReceiver;
     OnBackInvokedCallback backInvokedCallback;
@@ -170,14 +170,8 @@ public class BouncyActivity extends Activity {
             gl10Renderer.setManager(fieldViewManager);
         }
 
-        fieldViewManager.setField(field);
-        fieldViewManager.setStartGameAction(() -> doStartGame(null));
-
         scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
-
-        fieldDriver.setField(field);
-        fieldDriver.setDrawFunction(fieldViewManager::draw);
 
         highScores = this.highScoresFromPreferencesForCurrentLevel();
         lastScore = this.lastScoreFromPreferencesForCurrentLevel();
@@ -782,7 +776,12 @@ public class BouncyActivity extends Activity {
     // Button action methods defined by android:onClick values in main.xml.
     public void doStartGame(View view) {
         if (field.getGameState().isPaused()) {
-            unpauseGame();
+            // If there's an accessibility panel or other overlay visible, this can be called
+            // twice in rapid succession. The first time hasWindowFocus is false because the
+            // overlay is visible, and we want to ignore that event.
+            if (hasWindowFocus() && buttonPanel.getVisibility() == View.VISIBLE) {
+                unpauseGame();
+            }
             return;
         }
         // Avoids accidental starts due to touches just after game ends.

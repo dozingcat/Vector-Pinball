@@ -272,6 +272,8 @@ public class Field3Delegate extends BaseFieldDelegate {
                 bumperScore += bonusScore;
             }
             field.addScoreWithAnimation(bumperScore, ball.getPosition());
+            // Sounds doesn't play automatically because the base score is 0.
+            field.getAudioPlayer().playScore();
             bumperEnergy = Math.min(bumperEnergy + 1 + extraEnergy, maxBumperEnergy);
             double ratio = (bumperEnergy) / maxBumperEnergy;
             field.getFieldElementById("BumperIndicator")
