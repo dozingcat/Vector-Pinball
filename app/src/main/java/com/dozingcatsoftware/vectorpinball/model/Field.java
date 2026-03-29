@@ -690,14 +690,14 @@ public class Field implements ContactListener {
         }
     }
 
-    public void addScoreWithAnimation(long basePoints, Vector2 position, Integer color) {
-        long addedPoints = this.gameState.addScore(basePoints);
-        int scoreColor = (color != null) ? color : getScoreAnimationColor(addedPoints);
-        addScoreAnimation(addedPoints, position.x, position.y, scoreColor);
+    public void addScoreWithAnimation(long basePoints, Vector2 position) {
+        addScoreWithAnimation(basePoints, position.x, position.y);
     }
 
-    public void addScoreWithAnimation(long basePoints, Vector2 position) {
-        addScoreWithAnimation(basePoints, position, null);
+    public void addScoreWithAnimation(long basePoints, float x, float y) {
+        long addedPoints = this.gameState.addScore(basePoints);
+        int scoreColor = getScoreAnimationColor(addedPoints);
+        addScoreAnimation(addedPoints, x, y, scoreColor);
     }
 
     private Ball ballWithBody(Body body) {

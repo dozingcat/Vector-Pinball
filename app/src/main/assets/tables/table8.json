@@ -771,7 +771,7 @@
         {
             "class": "SpinnerElement",
             "id": "LeftOrbitSpinner",
-            "position": ["1.26", "19.19"],
+            "position": [1.26, 19.19],
             "radius": "0.7",
             "color": [255, 255, 255],
             "score": 500

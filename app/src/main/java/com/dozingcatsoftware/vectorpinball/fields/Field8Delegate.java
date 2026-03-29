@@ -180,7 +180,6 @@ public class Field8Delegate extends BaseFieldDelegate {
     int ballsCollected;
     int racksCompleted;
     int bonusMultiplier;
-    int leftOrbitValue;
     int eightBallValue;
 
     boolean rightBankCompleted;

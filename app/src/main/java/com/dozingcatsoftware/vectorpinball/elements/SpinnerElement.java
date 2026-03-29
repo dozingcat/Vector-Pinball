@@ -19,7 +19,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * The spinner is activated when a ball passes over it with a minimum speed. The spinner activates
  * with a frequency based on the ball's speed, and scores points every time it cycles.
  */
-
 public class SpinnerElement extends FieldElement {
 
     enum Status {INACTIVE, ACTIVE_VISIBLE, ACTIVE_INVISIBLE}
@@ -74,7 +73,7 @@ public class SpinnerElement extends FieldElement {
         }
     }
 
-    Ball _ballInActivationRange(Field field) {
+    private Ball ballInActivationRange(Field field) {
         List<Ball> balls = field.getBalls();
         for (int i = 0; i < balls.size(); i++) {
             Ball b = balls.get(i);
@@ -90,7 +89,7 @@ public class SpinnerElement extends FieldElement {
         return null;
     }
 
-    void _startSpinnerForBall(Ball b) {
+    private void startSpinnerForBall(Ball b) {
         assert status == Status.INACTIVE;
         float ballSpeed = b.getLinearVelocity().len();
         currentCyclesPerSecond = (ballSpeed / minActivationSpeed) * baseCyclesPerSecond;
@@ -109,9 +108,9 @@ public class SpinnerElement extends FieldElement {
             // Start the spinner if a ball is moving across it with sufficient speed.
             // Note that an already active spinner won't have its speed increased if a faster ball
             // crosses it; might want to add that in the future.
-            Ball b = _ballInActivationRange(field);
+            Ball b = ballInActivationRange(field);
             if (b != null) {
-                _startSpinnerForBall(b);
+                startSpinnerForBall(b);
                 field.getDelegate().spinnerActivated(field, this, b);
             }
         }
@@ -122,7 +121,7 @@ public class SpinnerElement extends FieldElement {
                 // Add score and reduce spinner speed, stopping if it's below minCyclesPerSecond.
                 status = (status == Status.ACTIVE_VISIBLE) ? Status.ACTIVE_INVISIBLE : Status.ACTIVE_VISIBLE;
                 if (nanosSinceLastScoreAnimation >= MIN_NANOS_BETWEEN_SCORE_ANIMATIONS) {
-                    field.addScoreWithAnimation(score, new Vector2(cx, cy));
+                    field.addScoreWithAnimation(score, cx, cy);
                     nanosSinceLastScoreAnimation = 0;
                 }
                 else {
