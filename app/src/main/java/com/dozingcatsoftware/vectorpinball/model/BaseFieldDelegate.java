@@ -8,6 +8,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
+import com.dozingcatsoftware.vectorpinball.elements.SpinnerElement;
 
 /**
  * This class implements the Field.Delegate interface and does nothing for each of the interface
@@ -22,6 +23,8 @@ public class BaseFieldDelegate implements Field.Delegate {
     @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {}
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
+
+    @Override public void spinnerActivated(Field field, SpinnerElement spinner, Ball ball) {}
 
     @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
 
