@@ -767,19 +767,15 @@
                     "position": [1.47, 17.47]
                 }
             ]
-        }, 
+        },
         {
-            "class": "RolloverGroupElement",
-            "color": [255, 255, 255],
-            "id": "LeftOrbitRollover",
+            "class": "SpinnerElement",
+            "id": "LeftOrbitSpinner",
+            "position": [1.26, 19.19],
             "radius": "0.7",
-            "rollovers": [
-                {
-                    "color": [255, 255, 255],
-                    "position": [1.26, 19.19]
-                }
-            ]
-        }, 
+            "color": [255, 255, 255],
+            "score": 500
+        },
         {
             "center": [8.06, 5.52],
             "class": "WallArcElement",

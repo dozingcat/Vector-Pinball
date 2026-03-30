@@ -3,6 +3,7 @@ package com.dozingcatsoftware.vectorpinball.fields;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
+import com.dozingcatsoftware.vectorpinball.elements.SpinnerElement;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.BaseFieldDelegate;
 import com.dozingcatsoftware.vectorpinball.model.Field;
@@ -20,74 +21,6 @@ public class Field8Delegate extends BaseFieldDelegate {
     String insertCommas(long number) {
         DecimalFormat df = new DecimalFormat("#,###");
         return df.format(number);
-    }
-
-    Long previousSpinnerScoreTime = null;
-    static long minNanosBetweenSpinnerScoreAnimations = 250_000_000;
-
-    private void scoreSpinner(Field field, RolloverGroupElement spinner, long score) {
-        // Don't show score animation too soon after the previous one.
-        boolean showAnimation = true;
-        if (previousSpinnerScoreTime != null) {
-            long nanosSinceLastAnimation = field.getGameTimeNanos() - previousSpinnerScoreTime;
-            if (nanosSinceLastAnimation < minNanosBetweenSpinnerScoreAnimations) {
-                showAnimation = false;
-            }
-        }
-        if (showAnimation) {
-            previousSpinnerScoreTime = field.getGameTimeNanos();
-            field.addScoreWithAnimation(score, spinner.getRolloverCenterAtIndex(0));
-        }
-        else {
-            field.addScore(score);
-        }
-    }
-
-    // Controls *spinner* behavior
-    void startSpinner(Field field, RolloverGroupElement spinner, Ball ball, int score) {
-        AtomicBoolean spinnerActive = new AtomicBoolean(true);
-
-        final double DELAY_CONST = 1.0 / 96000;
-
-        float magnitude = ball.getLinearVelocity().len();
-
-        // Only activate if magnitude high enough to trigger spinner
-        if (magnitude > 4) {
-            // Schedule spinner activations
-            int totalTime = 0;  // Tracks scheduling times
-            int spinnerDelay = 0;  //
-
-            // Calculate starting spinner speed based on magnitude, higher values spin slower
-            int spinValue = (int) (32 + (-0.5 * Math.pow((magnitude - 8), 3)));
-            if (spinValue < 1) {
-                spinValue = 1;
-            }
-
-            while (spinnerDelay < 600) {
-                // Calculate next delay cycle time
-                spinnerDelay = (int) (DELAY_CONST * 500 * Math.pow(spinValue, 3));
-                totalTime += spinnerDelay;
-
-                // Schedule spins
-                field.scheduleAction(totalTime, () -> {
-                    scoreSpinner(field, spinner, score);
-                    spinnerActive.set(!spinnerActive.get());
-                    spinner.setVisible(spinnerActive.get());
-                });
-
-                spinValue += 1;
-            }
-
-            // Reset spinner at end
-            field.scheduleAction(totalTime + 100, () -> {
-                spinner.setRolloverActiveAtIndex(0, false);
-                spinner.setVisible(false);
-            });
-
-        } else {
-            spinner.setRolloverActiveAtIndex(0, false);
-            spinner.setVisible(false);
-        }
     }
 
     // Activate on right bank hit
@@ -155,7 +88,6 @@ public class Field8Delegate extends BaseFieldDelegate {
         rightGate = field.getFieldElementById("RightGate");
         leftGate = field.getFieldElementById("LeftGate");
 
-        leftOrbitRollover = field.getFieldElementById("LeftOrbitRollover");
         laneRollovers = field.getFieldElementById("LaneRollovers");
         bonusCollectSaucer = field.getFieldElementById("BonusCollectSaucer");
         leftOutlane = field.getFieldElementById("LeftOutlane");
@@ -172,6 +104,8 @@ public class Field8Delegate extends BaseFieldDelegate {
         eightBallTarget = field.getFieldElementById("EightBallTarget");
         inlineTargets = field.getFieldElementById("InlineTargets");
 
+        leftOrbitSpinner = field.getFieldElementById("LeftOrbitSpinner");
+
         leftFlipper = field.getFieldElementById("LeftFlipper");
         rightFlipper = field.getFieldElementById("RightFlipper");
     }
@@ -182,7 +116,6 @@ public class Field8Delegate extends BaseFieldDelegate {
         }
         ballsCollected = 0;
         bonusMultiplier = 1;
-        leftOrbitValue = 500;
         eightBallValue = 20000;
 
         rightBankCompleted = false;
@@ -198,8 +131,6 @@ public class Field8Delegate extends BaseFieldDelegate {
             rightBankLightShow(field);
         }
 
-        leftOrbitRollover.setAllRolloversActivated(false);
-        leftOrbitRollover.setVisible(false);
         laneRollovers.setAllRolloversActivated(false);
         bonusCollectSaucer.setAllRolloversActivated(false);
         bonusCollectSaucer.setVisible(false);
@@ -215,6 +146,8 @@ public class Field8Delegate extends BaseFieldDelegate {
 
         eightBallTarget.makeAllTargetsVisible();
         inlineTargets.makeAllTargetsVisible();
+
+        leftOrbitSpinner.setScore(500);
     }
 
     // Elements
@@ -222,7 +155,6 @@ public class Field8Delegate extends BaseFieldDelegate {
     WallElement rightGate;
     WallElement leftGate;
 
-    RolloverGroupElement leftOrbitRollover;
     RolloverGroupElement laneRollovers;
     RolloverGroupElement bonusCollectSaucer;
     RolloverGroupElement leftOutlane;
@@ -239,6 +171,8 @@ public class Field8Delegate extends BaseFieldDelegate {
     DropTargetGroupElement eightBallTarget;
     DropTargetGroupElement inlineTargets;
 
+    SpinnerElement leftOrbitSpinner;
+
     FlipperElement leftFlipper;
     FlipperElement rightFlipper;
 
@@ -246,7 +180,6 @@ public class Field8Delegate extends BaseFieldDelegate {
     int ballsCollected;
     int racksCompleted;
     int bonusMultiplier;
-    int leftOrbitValue;
     int eightBallValue;
 
     boolean rightBankCompleted;
@@ -300,8 +233,8 @@ public class Field8Delegate extends BaseFieldDelegate {
                 field.showGameMessage("Lanes Completed", 3000);
                 laneRollovers.setAllRolloversActivated(false);
 
-                if (leftOrbitValue != 1500) {
-                    leftOrbitValue += 500;
+                if (leftOrbitSpinner.getScore() < 1500) {
+                    leftOrbitSpinner.setScore(leftOrbitSpinner.getScore() + 500);
                     leftOrbitValueInserts.activateFirstUnactivatedRollover();
 
                     eightBallValue += 20000;
@@ -316,16 +249,17 @@ public class Field8Delegate extends BaseFieldDelegate {
                 field.addScore(bonusTotal);
                 field.showGameMessage("Bonus Collected: " + insertCommas(bonusTotal), 3000);
                 break;
-            case "LeftOrbitRollover":
-                startSpinner(field, rolloverGroup, ball, leftOrbitValue);
-
-                leftGate.setRetracted(true);
-                field.scheduleAction(2000, () -> leftGate.setRetracted(false));
-                break;
             case "LeftOutlane":
             case "RightOutlane":
                 field.showGameMessage("Scratch!", 3000);
                 break;
+        }
+    }
+
+    @Override public void spinnerActivated(Field field, SpinnerElement spinner, Ball ball) {
+        if ("LeftOrbitSpinner".equals(spinner.getElementId())) {
+            leftGate.setRetracted(true);
+            field.scheduleAction(2000, () -> leftGate.setRetracted(false));
         }
     }
 

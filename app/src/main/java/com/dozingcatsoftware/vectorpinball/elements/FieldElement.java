@@ -235,6 +235,10 @@ public abstract class FieldElement implements IDrawable {
         return score;
     }
 
+    public void setScore(long newScore) {
+        score = newScore;
+    }
+
     public void setNewColor(Integer value) {
         this.newColor = value;
     }

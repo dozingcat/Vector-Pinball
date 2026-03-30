@@ -26,6 +26,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
+import com.dozingcatsoftware.vectorpinball.elements.SpinnerElement;
 
 public class Field implements ContactListener {
 
@@ -112,6 +113,8 @@ public class Field implements ContactListener {
         void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
 
         void allRolloversInGroupActivated(Field field, RolloverGroupElement rollovers, Ball ball);
+
+        void spinnerActivated(Field field, SpinnerElement spinner, Ball ball);
 
         void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
@@ -687,14 +690,14 @@ public class Field implements ContactListener {
         }
     }
 
-    public void addScoreWithAnimation(long basePoints, Vector2 position, Integer color) {
-        long addedPoints = this.gameState.addScore(basePoints);
-        int scoreColor = (color != null) ? color : getScoreAnimationColor(addedPoints);
-        addScoreAnimation(addedPoints, position.x, position.y, scoreColor);
+    public void addScoreWithAnimation(long basePoints, Vector2 position) {
+        addScoreWithAnimation(basePoints, position.x, position.y);
     }
 
-    public void addScoreWithAnimation(long basePoints, Vector2 position) {
-        addScoreWithAnimation(basePoints, position, null);
+    public void addScoreWithAnimation(long basePoints, float x, float y) {
+        long addedPoints = this.gameState.addScore(basePoints);
+        int scoreColor = getScoreAnimationColor(addedPoints);
+        addScoreAnimation(addedPoints, x, y, scoreColor);
     }
 
     private Ball ballWithBody(Body body) {
