@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -121,6 +122,20 @@ public class BumperElement extends FieldElement {
         if (radius > 0) {
             int currentInnerColor = currentColor(DEFAULT_COLOR);
             renderer.fillCircle(this.cx, this.cy, radius, currentInnerColor);
+        }
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        if (outerRadius > 0) {
+            int baseOuterColor = this.newOuterColor != null ? this.newOuterColor : this.outerColor;
+            int currentOuterColor = colorApplyingLayerOrFlash(
+                    baseOuterColor, this.inactiveLayerOuterColor);
+            renderer.drawCylinder(cx, cy, TABLE_SURFACE_Z, BUMPER_HEIGHT * 0.5f,
+                    outerRadius, currentOuterColor);
+        }
+        if (radius > 0) {
+            renderer.drawCylinder(cx, cy, TABLE_SURFACE_Z, BUMPER_HEIGHT,
+                    radius, currentColor(DEFAULT_COLOR));
         }
     }
 }

@@ -129,6 +129,12 @@ public class Ball implements IDrawable {
         }
     }
 
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        Vector2 center = this.getPosition();
+        float radius = this.getRadius();
+        renderer.drawSphere(center.x, center.y, radius, radius, primaryColor);
+    }
+
     @Override public int getLayer() {
         return this.layer;
     }

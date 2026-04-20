@@ -44,6 +44,11 @@ public abstract class Shape implements IDrawable {
         @Override public void draw(Field field, IFieldRenderer renderer) {
             renderer.drawLine(f32(x1), f32(y1), f32(x2), f32(y2), colorToDraw(field));
         }
+
+        @Override public void draw3D(Field field, IField3DRenderer renderer) {
+            renderer.drawWallBox(f32(x1), f32(y1), f32(x2), f32(y2),
+                    0f, 0.1f, 0.04f, colorToDraw(field));
+        }
     }
 
     public static class Circle extends Shape {
@@ -73,6 +78,10 @@ public abstract class Shape implements IDrawable {
             else {
                 renderer.fillCircle(f32(cx), f32(cy), f32(radius), colorToDraw(field));
             }
+        }
+
+        @Override public void draw3D(Field field, IField3DRenderer renderer) {
+            renderer.drawCylinder(f32(cx), f32(cy), 0f, 0.05f, f32(radius), colorToDraw(field));
         }
     }
 }

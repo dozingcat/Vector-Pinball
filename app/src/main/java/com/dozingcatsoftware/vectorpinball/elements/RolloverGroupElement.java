@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -316,6 +317,38 @@ public class RolloverGroupElement extends FieldElement {
             Rollover r = this.activeRollovers.get(i);
             int color = (r.color != null) ? r.color : groupColor;
             renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
+        }
+    }
+
+    private static final int RING_SEGMENTS = 16;
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        if (!this.isVisible) return;
+        int groupColor = currentColor(DEFAULT_COLOR);
+        int numRollovers = this.rollovers.size();
+        for (int i = 0; i < numRollovers; i++) {
+            Rollover r = this.rollovers.get(i);
+            int color = (r.color != null) ? r.color : groupColor;
+            if (this.activeRollovers.contains(r)) {
+                // Active: filled disc.
+                renderer.drawCylinder(r.position.x, r.position.y,
+                        TABLE_SURFACE_Z, ROLLOVER_Z + 0.05f, r.radius, color);
+            } else {
+                // Inactive: ring outline made of small wall segments.
+                float cx = r.position.x;
+                float cy = r.position.y;
+                float rad = r.radius;
+                for (int s = 0; s < RING_SEGMENTS; s++) {
+                    float a1 = (float) (s * 2 * Math.PI / RING_SEGMENTS);
+                    float a2 = (float) ((s + 1) * 2 * Math.PI / RING_SEGMENTS);
+                    float x1 = cx + rad * (float) Math.cos(a1);
+                    float y1 = cy + rad * (float) Math.sin(a1);
+                    float x2 = cx + rad * (float) Math.cos(a2);
+                    float y2 = cy + rad * (float) Math.sin(a2);
+                    renderer.drawWallBox(x1, y1, x2, y2,
+                            TABLE_SURFACE_Z, ROLLOVER_Z + 0.03f, 0.03f, color);
+                }
+            }
         }
     }
 }

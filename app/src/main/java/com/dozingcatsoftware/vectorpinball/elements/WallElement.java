@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -166,5 +167,12 @@ public class WallElement extends FieldElement {
     @Override public void draw(Field field, IFieldRenderer renderer) {
         if (!visible || isRetracted()) return;
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        if (!visible || isRetracted()) return;
+        renderer.drawWallBox(x1, y1, x2, y2,
+                TABLE_SURFACE_Z, WALL_HEIGHT, WALL_THICKNESS,
+                currentColor(DEFAULT_WALL_COLOR));
     }
 }

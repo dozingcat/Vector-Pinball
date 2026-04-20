@@ -10,6 +10,7 @@ import java.util.Map;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -103,6 +104,16 @@ public class WallArcElement extends FieldElement {
         }
         else {
             renderer.drawLinePath(xEndpoints, yEndpoints, color);
+        }
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        int color = currentColor(DEFAULT_WALL_COLOR);
+        for (int i = 1; i < xEndpoints.length; i++) {
+            renderer.drawWallBox(
+                    xEndpoints[i - 1], yEndpoints[i - 1],
+                    xEndpoints[i], yEndpoints[i],
+                    TABLE_SURFACE_Z, WALL_HEIGHT, WALL_THICKNESS, color);
         }
     }
 }

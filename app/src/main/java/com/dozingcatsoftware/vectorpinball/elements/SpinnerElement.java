@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -133,6 +134,13 @@ public class SpinnerElement extends FieldElement {
                     status = Status.INACTIVE;
                 }
             }
+        }
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        if (status == Status.ACTIVE_VISIBLE) {
+            renderer.drawCylinder(cx, cy, TABLE_SURFACE_Z, 0.15f, radius,
+                    currentColor(DEFAULT_COLOR));
         }
     }
 }

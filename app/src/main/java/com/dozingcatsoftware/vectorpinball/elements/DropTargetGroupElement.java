@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -157,6 +158,19 @@ public class DropTargetGroupElement extends FieldElement {
             if (body.isActive()) {
                 float[] parray = positions[i];
                 renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
+            }
+        }
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        int color = currentColor(DEFAULT_COLOR);
+        int bsize = allBodies.size();
+        for (int i = 0; i < bsize; i++) {
+            Body body = allBodies.get(i);
+            if (body.isActive()) {
+                float[] parray = positions[i];
+                renderer.drawWallBox(parray[0], parray[1], parray[2], parray[3],
+                        TABLE_SURFACE_Z, DROP_TARGET_HEIGHT, WALL_THICKNESS, color);
             }
         }
     }

@@ -11,6 +11,7 @@ import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IDrawable;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.WorldLayers;
 
@@ -18,6 +19,15 @@ import com.dozingcatsoftware.vectorpinball.model.WorldLayers;
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
 public abstract class FieldElement implements IDrawable {
+
+    // Default heights for 3D rendering, in world units above the table surface.
+    protected static final float TABLE_SURFACE_Z = 0f;
+    protected static final float WALL_HEIGHT = 0.8f;
+    protected static final float WALL_THICKNESS = 0.08f;
+    protected static final float BUMPER_HEIGHT = 0.6f;
+    protected static final float FLIPPER_HEIGHT = 0.3f;
+    protected static final float DROP_TARGET_HEIGHT = 0.5f;
+    protected static final float ROLLOVER_Z = 0.02f;
 
     public static final String CLASS_PROPERTY = "class";
     public static final String ID_PROPERTY = "id";
@@ -177,6 +187,13 @@ public abstract class FieldElement implements IDrawable {
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
     public abstract void draw(Field field, IFieldRenderer renderer);
+
+    /**
+     * Draws this element in 3D. Default implementation does nothing; subclasses override to
+     * provide 3D representations.
+     */
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+    }
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does

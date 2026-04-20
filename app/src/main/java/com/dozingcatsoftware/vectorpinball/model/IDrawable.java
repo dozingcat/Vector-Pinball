@@ -5,5 +5,6 @@ package com.dozingcatsoftware.vectorpinball.model;
  */
 public interface IDrawable {
     void draw(Field field, IFieldRenderer renderer);
+    default void draw3D(Field field, IField3DRenderer renderer) {}
     int getLayer();
 }

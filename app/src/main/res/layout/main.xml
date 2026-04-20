@@ -65,6 +65,13 @@
 			android:defaultFocusHighlightEnabled="false"
 			android:visibility="gone" />
 
+		<com.dozingcatsoftware.bouncy.GLFieldView
+			android:id="@+id/gl3DFieldView"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:defaultFocusHighlightEnabled="false"
+			android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/buttonPanel"
             android:layout_width="wrap_content"

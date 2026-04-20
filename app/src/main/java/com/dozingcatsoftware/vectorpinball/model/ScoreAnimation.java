@@ -127,6 +127,15 @@ public class ScoreAnimation implements IDrawable {
             shape.draw(field, renderer);
         }
     }
+
+    @Override
+    public void draw3D(Field field, IField3DRenderer renderer) {
+        renderer.beginOverlay();
+        for (Shape shape : digitShapes) {
+            shape.draw3D(field, renderer);
+        }
+        renderer.endOverlay();
+    }
     
     @Override
     public int getLayer() {

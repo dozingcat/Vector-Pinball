@@ -70,6 +70,9 @@ public class BouncyActivity extends Activity {
     // Older devices tend to perform better with 1.0.
     final boolean useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
+    GLFieldView gl3DFieldView;
+    GL3DRenderer gl3DRenderer;
+
     View buttonPanel;
     View highScorePanel;
     View selectTableRow;
@@ -169,6 +172,18 @@ public class BouncyActivity extends Activity {
             gl10Renderer = new GL10Renderer(glFieldView);
             gl10Renderer.setManager(fieldViewManager);
         }
+
+        gl3DFieldView = findViewById(R.id.gl3DFieldView);
+        gl3DRenderer = new GL3DRenderer(gl3DFieldView, (shaderPath) -> {
+            try {
+                InputStream input = getAssets().open(shaderPath);
+                return IOUtils.utf8FromStream(input);
+            }
+            catch(IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        gl3DRenderer.setManager(fieldViewManager);
 
         scoreView = findViewById(R.id.scoreView);
         scoreView.setField(field);
@@ -465,6 +480,7 @@ public class BouncyActivity extends Activity {
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
         if (glFieldView != null) glFieldView.onPause();
+        if (gl3DFieldView != null) gl3DFieldView.onPause();
         showingHighScores = false;
 
         updateUiControls();
@@ -479,6 +495,7 @@ public class BouncyActivity extends Activity {
 
         fieldDriver.start();
         if (glFieldView != null) glFieldView.onResume();
+        if (gl3DFieldView != null) gl3DFieldView.onResume();
         showingHighScores = false;
 
         updateUiControls();
@@ -597,10 +614,20 @@ public class BouncyActivity extends Activity {
         boolean showScoreAnimations = prefs.getBoolean("showScoreAnimations", true);
         field.setScoreAnimationsEnabled(showScoreAnimations);
 
+        boolean use3D = prefs.getBoolean("use3D", false);
         boolean useOpenGL = prefs.getBoolean("useOpenGL", true);
-        if (useOpenGL) {
+        if (use3D) {
+            if (gl3DFieldView.getVisibility() != View.VISIBLE) {
+                canvasFieldView.setVisibility(View.GONE);
+                glFieldView.setVisibility(View.GONE);
+                gl3DFieldView.setVisibility(View.VISIBLE);
+                fieldViewManager.setFieldRenderer(gl3DRenderer);
+            }
+        }
+        else if (useOpenGL) {
             if (glFieldView.getVisibility() != View.VISIBLE) {
                 canvasFieldView.setVisibility(View.GONE);
+                gl3DFieldView.setVisibility(View.GONE);
                 glFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldRenderer(useOpenGL20 ? gl20Renderer : gl10Renderer);
             }
@@ -608,6 +635,7 @@ public class BouncyActivity extends Activity {
         else {
             if (canvasFieldView.getVisibility() != View.VISIBLE) {
                 glFieldView.setVisibility(View.GONE);
+                gl3DFieldView.setVisibility(View.GONE);
                 canvasFieldView.setVisibility(View.VISIBLE);
                 fieldViewManager.setFieldRenderer(canvasFieldView);
             }

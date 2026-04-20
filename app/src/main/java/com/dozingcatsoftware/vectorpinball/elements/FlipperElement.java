@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IField3DRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.util.MathUtils;
 
@@ -199,5 +200,20 @@ public class FlipperElement extends FieldElement {
         float y2 = position.y + flipperLength * (float) Math.sin(actualAngle);
 
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
+    }
+
+    @Override public void draw3D(Field field, IField3DRenderer renderer) {
+        Vector2 position = anchorBody.getPosition();
+        float jointAngle = MathUtils.clamp(
+                joint.getJointAngle(), jointDef.lowerAngle, jointDef.upperAngle);
+        float actualAngle = flipperDownAngle + jointAngle;
+        float x1 = position.x;
+        float y1 = position.y;
+        float x2 = position.x + flipperLength * (float) Math.cos(actualAngle);
+        float y2 = position.y + flipperLength * (float) Math.sin(actualAngle);
+
+        renderer.drawWallBox(x1, y1, x2, y2,
+                TABLE_SURFACE_Z, FLIPPER_HEIGHT, 0.12f,
+                currentColor(DEFAULT_COLOR));
     }
 }

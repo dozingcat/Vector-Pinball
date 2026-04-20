@@ -590,6 +590,26 @@ public class Field implements ContactListener {
         }
     }
 
+    /**
+     * Draws all field elements and balls in 3D.
+     */
+    public void draw3D(IField3DRenderer renderer) {
+        renderer.begin3DFrame();
+        elementsInDrawOrder.clear();
+        elementsInDrawOrder.addAll(Arrays.asList(this.getFieldElementsArray()));
+        elementsInDrawOrder.addAll(this.balls);
+        elementsInDrawOrder.addAll(this.shapes);
+        if (this.showScoreAnimations) {
+            elementsInDrawOrder.addAll(this.scoreAnimations);
+        }
+        Collections.sort(elementsInDrawOrder, drawOrdering);
+
+        for (int i = 0; i < elementsInDrawOrder.size(); i++) {
+            this.elementsInDrawOrder.get(i).draw3D(this, renderer);
+        }
+        renderer.end3DFrame();
+    }
+
     ArrayList<FlipperElement> activatedFlippers = new ArrayList<>();
 
     /**

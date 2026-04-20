@@ -17,6 +17,7 @@
     <string name="ball_trails_pref_title">Ball trails</string>
     <string name="score_animations_pref_title">Score animations</string>
     <string name="use_opengl_pref_title">OpenGL rendering</string>
+    <string name="use_3d_pref_title">3D rendering</string>
     <string name="game_speed_pref_title">Game speed</string>
 
     <string-array name="game_speed_pref_entries">
