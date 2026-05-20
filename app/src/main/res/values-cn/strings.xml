@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">独立弹板</string>
+    <string name="independent_flippers_pref_summary_on">触摸屏幕某侧会激活同侧的弹板</string>
+    <string name="independent_flippers_pref_summary_off">触摸屏幕任意位置都会激活所有弹板</string>
+
+    <string name="line_width_pref_title">线条宽度</string>
+    <string name="line_width_pref_dialog_message">输入线条宽度（像素），或输入 0 以根据屏幕分辨率使用默认宽度。</string>
+
+    <string name="sound_pref_title">音效</string>
+    <string name="music_pref_title">背景音乐</string>
+    <string name="haptic_feedback_pref_title">触觉反馈</string>
+    <string name="show_fps_pref_title">显示 FPS</string>
+    <string name="zoom_pref_title">缩放球台</string>
+    <string name="ball_trails_pref_title">弹球拖尾</string>
+    <string name="score_animations_pref_title">得分动画</string>
+    <string name="use_opengl_pref_title">OpenGL 渲染</string>
+    <string name="game_speed_pref_title">游戏速度</string>
+
+    <string-array name="game_speed_pref_entries">
+        <item>慢速</item>
+        <item>正常</item>
+        <item>快速</item>
+    </string-array>
+    <string-array name="game_speed_pref_values" translatable="false">
+        <item>slow</item>
+        <item>normal</item>
+        <item>fast</item>
+    </string-array>
+
+
+    <string name="about_text">Vector Pinball 1.15.2\n© 2010–2026 Brian Nenninger\n\n意见反馈与Bug报告：\nbnenning@gmail.com\n\n点击屏幕可开始新游戏、在无球可用时发射新球，并激活弹板。点击得分区域可暂停游戏。\n\n[TABLE_RULES]\n\n您可以在“偏好设置”菜单中修改以下设置：\n- 音效：开启或关闭游戏音效。\n- 背景音乐：开启或关闭背景音乐。\n- 触觉反馈：在击中反弹器或其他游戏事件时产生震动。\n- 独立弹板：取消勾选时，点击屏幕任意位置都会同时激活左右弹板。勾选时，您必须点击屏幕左侧激活左弹板，点击屏幕右侧激活右弹板。\n- 缩放：勾选时，视角会在游戏过程中跟随并放大弹球所在的位置。\n- OpenGL 渲染：使用 OpenGL 绘制图形。这通常能提供画质与性能的最佳组合，但在某些设备上关闭它可能会运行得更好。\n- 显示 FPS：勾选时，将在左上角显示每秒渲染的帧数。\n\nVector Pinball 是一款开源游戏；源码托管在\nhttps://github.com/dozingcat/Vector-Pinball\n\n感谢 Mario Zechner 带来的代码改进和 libgdx 库支持。\n\n球台 8 的设计与代码由 Jack Morgan 提供 (jackmorgan8@gmail.com)\n\n音效、音乐及音频代码由 pdx 制作\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">球台规则：\n- 点亮顶部或底部通道中所有的青色滚轴，以提高得分倍数。你获得的所有分数都将乘以该倍数。击中左侧斜坡也能提高倍数。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。\n- 击中任意一组落靶都将激活球台中央的下一盏灯。当中央的大型白色指示灯亮起时，击中左侧斜坡即可开启多球模式。</string>
+    <string name="table2_rules">球台规则：\n- 点亮底部通道中所有的青色滚轴，以提高得分倍数。你获得的所有分数都将乘以该倍数。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。\n- 球台中央的圆圈记录了你击中左侧、上方和右侧所有落靶的次数。当所有落靶都至少被击中 3 次时，击中右上方的红色反弹器即可开启多球模式。</string>
+    <string name="table3_rules">球台规则：\n- 点亮底部通道中所有的青色滚轴，以提高得分倍数。你获得的所有分数都将乘以该倍数。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。\n- 击中任意一个斜坡都会使反弹器变成红色，并在几秒钟内逐渐变回蓝色。在此期间击中它们可获得额外分数。\n- 通过击中反弹器和中间的一组落靶来使中间的圆环变红。当所有圆环都变红时，击中任意一个斜坡即可开启多球模式。</string>
+    <string name="table4_rules">球台规则：\n- 每个反弹器会使得分倍数增加 0.01x。击中顶部落靶或点亮所有通道滚轴可以增加该提升量。\n- 击中所有六个反弹器以点亮中央指示灯。当某一行的所有指示灯都点亮时，击中右侧球洞即可锁球以准备多球模式。\n- 当你锁定三个球时，多球模式开始。在多球模式期间，当弹球经过中央指示灯时，指示灯会亮起。点亮所有指示灯即可获得大奖（Jackpot）。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。</string>
+    <string name="table5_rules">球台规则：\n- 中央圆圈周围有十二个点，4种颜色各占3个。击中顶部斜坡会改变弹球的颜色，使其能够激活颜色相匹配的点。\n- 当圆圈周围的所有 12 个点都被激活时，击中旋转三角形的边缘会将其清除。击中三角形中间的目标即可开启多球模式。\n- 在多球模式期间，再次点亮圆圈的 12 个点即可获得大奖（Jackpot），大奖价值每次都会增加。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。</string>
+    <string name="table6_rules">球台规则：\n- 在球台中央，有五颗行星绕着太阳运行。当弹球滚过其中一颗行星时，它会变成该行星的颜色，且该行星开始闪烁。\n- 击中相应的目标来“激活”该行星并使其变为实体。对于内部的橙色行星，击中左上方的目标。对于第二颗蓝色行星，激活右上方的滚轴。对于其余行星，击中对应颜色的斜坡。\n- 激活所有五颗行星即可开启多球模式。在多球模式中，再次激活所有行星可获得大奖（Jackpot）。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。\n- 太阳和行星具有引力，当弹球靠近时会被吸引。</string>
+    <string name="table7_rules">球台规则：\n- 球台中央包含一张星图。击中带有绿色闪烁箭头的斜坡之一，使星图移动到一个星座。\n- 组成该星座的星星将显示为绿色。让弹球滚过它们来将其激活；它们会变成黄色，并且会用线条连接已激活的星星以绘制出星座轮廓。\n- 当星座轮廓完成时，击中带有黄色闪烁箭头的右侧斜坡来锁球。对另外两个星座重复此过程。锁定第三个球将开启多球模式。\n- 在多球模式中，完成剩余的星座，然后击中右侧斜坡即可获得大奖（Jackpot）。\n- 游戏开始时左右两侧的外侧通道各有一个救球器，使用后会消失。击中左侧或右侧的所有落靶可使其恢复。</string>
+    <string name="table8_rules">球台规则：\n- 游戏的主要目标是通过击中正确的靶子来打进台球，然后击中右上方的靶子来打进8号球。\n- 1号到7号球在换球时会保持被打进的状态，除非右侧的靶组被全部击中。如果靶组全部被击中但未击中8号球靶，所有目标将在下一个球时重置。\n- 每颗台球会为结算奖励（Bonus）增加 7,000 分。每次 1 到 8 号球全部被打进时，在后续每颗球结束时，都将为你的结算奖励增加 56,000 分的超级奖励。\n- 打进 8 号球后，8 号球靶后面会亮起一次性的奖励收集指示。\n- 通过击中左侧的并列靶，可以将奖励倍数最高提升至 5x。完成所有 4 个目标后，落靶后面会出现一个价值 50,000 分的红色靶。\n- 完成 4 个滚轴通道将提升旋转器（每次旋转最高 1,500 分）和 8 号球靶（每击最高 60,000 分）的分值。\n- 在发射弹球时按住左弹板，你将获得一次击中 8 号球并清空整组台球的机会。</string>
+
+    <string name="change_table_button_label">选择球台</string>
+    <string name="help_button_label">帮助</string>
+    <string name="preferences_button_label">偏好设置</string>
+    <string name="start_game_button_label">开始游戏</string>
+    <string name="resume_game_button_label">继续游戏</string>
+    <string name="end_game_button_label">结束游戏</string>
+    <string name="quit_button_label">退出</string>
+    <string name="unlimited_balls_label">无限球</string>
+
+    <string name="ball_number_message">第 %1$d 颗球</string>
+    <string name="shoot_again_message">再射一次</string>
+    <string name="ball_saved_message">救球成功</string>
+    <string name="game_over_message">游戏结束</string>
+    <string name="bump_message">震击！</string>
+    <string name="touch_to_start_message">轻触开始</string>
+    <string name="last_score_message">上一把得分：%1$s</string>
+    <string name="top_high_score_message">最高得分：%1$s</string>
+    <string name="other_high_score_message">第 %1$d 名得分：%2$s</string>
+    <string name="no_high_scores_message">此球台暂无高分记录</string>
+
+    <string name="left_save_enabled_message">左侧救球已激活</string>
+    <string name="right_save_enabled_message">右侧救球已激活</string>
+    <string name="shoot_ramp_multiball_message">击中斜坡以开启多球模式</string>
+    <string name="multiball_started_message">多球模式！</string>
+    <string name="multiplier_message">%1$dx 倍数</string>
+    <string name="shoot_red_bumper_message">击中红色反弹器</string>
+    <string name="bumper_multiplier_message">反弹器倍数 %1$d%%"</string>
+    <string name="jackpot_received_message">大奖！</string>
+    <string name="jackpot_received_with_multipler_message">%1$dx 大奖！</string>
+    <string name="multiball_ready_message">多球模式准备就绪</string>
+    <string name="ball_lock_ready_message">锁球准备就绪</string>
+    <string name="ball_locked_message">第 %1$d 颗球已锁定</string>
+    <string name="shoot_pyramid_message">击中金字塔！</string>
+    <string name="extra_ball_received_message">获得额外球！</string>
+    <string name="blue_ramp_bonus_message">蓝色斜坡 +%1$d%%</string>
+    <string name="red_ramp_bonus_message">红色斜坡 +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">黄色斜坡 +%1$d%%</string>
+    <string name="green_ramp_bonus_message">绿色斜坡 +%1$d%%</string>
+    <string name="color_blue">蓝色</string>
+    <string name="color_red">红色</string>
+    <string name="color_yellow">黄色</string>
+    <string name="color_green">绿色</string>
+    <string name="planet_activated_message">行星 %1$d 已激活！</string>
+    <string name="ramp_bonus_message">%1$dx 斜坡奖励</string>
+    <string name="ramp_bonus_increased_message">斜坡奖励已增加</string>
+    <string name="shoot_ramp_jackpot_message">击中斜坡以获得大奖</string>
+    <string name="constellation_complete_message">%1$s 已完成</string>
+    <string name="show_high_score_button_label">高分榜</string>
+    <string name="hide_high_score_button_label">确定</string>
+    <string name="high_score_table_title">高分榜</string>
+</resources>
