@@ -23,10 +23,14 @@ public class WallPathElement extends FieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
 
     private List<Body> wallBodies = new ArrayList<>();
     private float[] xEndpoints;
     private float[] yEndpoints;
+    private float restitution;
+    private float friction;
 
     @Override public void finishCreateElement(
             Map<String, ?> params, FieldElementCollection collection) {
@@ -40,6 +44,8 @@ public class WallPathElement extends FieldElement {
             xEndpoints[i] = asFloat(pos.get(0));
             yEndpoints[i] = asFloat(pos.get(1));
         }
+        this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
+        this.friction = asFloat(params.get(FRICTION_PROPERTY), Box2DFactory.DEFAULT_WALL_FRICTION);
     }
 
     @Override public void createBodies(World world) {
@@ -48,7 +54,8 @@ public class WallPathElement extends FieldElement {
         }
         for (int i = 1; i < xEndpoints.length; i++) {
             Body wall = Box2DFactory.createThinWall(
-                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], 0f);
+                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i],
+                    restitution, friction);
             this.wallBodies.add(wall);
         }
     }

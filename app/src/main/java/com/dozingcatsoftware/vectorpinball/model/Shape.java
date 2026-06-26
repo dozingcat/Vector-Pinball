@@ -46,6 +46,52 @@ public abstract class Shape implements IDrawable {
         }
     }
 
+    public static class Arc extends Shape {
+        private double cx, cy, xRadius, yRadius;
+        private double startAngle, endAngle;  // radians
+        private float[] xEndpoints, yEndpoints;
+
+        private Arc() {}
+
+        public static Arc create(
+                double cx, double cy, double xRadius, double yRadius,
+                double startAngleDegrees, double endAngleDegrees,
+                int layer, int color, Integer inactiveLayerColor) {
+            Arc self = new Arc();
+            self.layer = layer;
+            self.color = color;
+            self.inactiveLayerColor = inactiveLayerColor;
+            self.cx = cx;
+            self.cy = cy;
+            self.xRadius = xRadius;
+            self.yRadius = yRadius;
+            self.startAngle = Math.toRadians(startAngleDegrees);
+            self.endAngle = Math.toRadians(endAngleDegrees);
+            // Precompute a polyline approximation for renderers that can't draw arcs directly.
+            int numSegments = Math.max(4,
+                    (int) Math.ceil(16 * Math.abs(self.endAngle - self.startAngle) / (2 * Math.PI)));
+            self.xEndpoints = new float[numSegments + 1];
+            self.yEndpoints = new float[numSegments + 1];
+            for (int i = 0; i <= numSegments; i++) {
+                double angle = self.startAngle + i * (self.endAngle - self.startAngle) / numSegments;
+                self.xEndpoints[i] = f32(cx + xRadius * Math.cos(angle));
+                self.yEndpoints[i] = f32(cy + yRadius * Math.sin(angle));
+            }
+            return self;
+        }
+
+        @Override public void draw(Field field, IFieldRenderer renderer) {
+            int color = colorToDraw(field);
+            if (renderer.canDrawArc()) {
+                renderer.drawArc(f32(cx), f32(cy), f32(xRadius), f32(yRadius),
+                        f32(startAngle), f32(endAngle), color);
+            }
+            else {
+                renderer.drawLinePath(xEndpoints, yEndpoints, color);
+            }
+        }
+    }
+
     public static class Circle extends Shape {
         private FillType fill;
         private double cx, cy, radius;
