@@ -38,6 +38,8 @@ public class WallArcElement extends FieldElement {
     public static final String MIN_ANGLE_PROPERTY = "minangle";
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
 
     private List<Body> wallBodies = new ArrayList<>();
     private float centerX;
@@ -46,6 +48,8 @@ public class WallArcElement extends FieldElement {
     private float radiusY;
     private float startAngle;
     private float endAngle;
+    private float restitution;
+    private float friction;
     private float[] xEndpoints;
     private float[] yEndpoints;
 
@@ -68,6 +72,8 @@ public class WallArcElement extends FieldElement {
         int numsegments = (segments != null) ? segments.intValue() : 5;
         this.startAngle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
         this.endAngle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+        this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
+        this.friction = asFloat(params.get(FRICTION_PROPERTY), Box2DFactory.DEFAULT_WALL_FRICTION);
         float diff = endAngle - startAngle;
         // Create `numsegments` line segments to approximate circular arc.
         this.xEndpoints = new float[numsegments + 1];
@@ -85,7 +91,8 @@ public class WallArcElement extends FieldElement {
         }
         for (int i = 1; i < xEndpoints.length; i++) {
             Body wall = Box2DFactory.createThinWall(
-                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i], 0f);
+                    world, xEndpoints[i - 1], yEndpoints[i - 1], xEndpoints[i], yEndpoints[i],
+                    restitution, friction);
             this.wallBodies.add(wall);
         }
     }

@@ -35,6 +35,7 @@ public class WallElement extends FieldElement {
 
     public static final String POSITION_PROPERTY = "position";
     public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
     public static final String KICK_PROPERTY = "kick";
     public static final String KILL_PROPERTY = "kill";
     public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";
@@ -50,6 +51,7 @@ public class WallElement extends FieldElement {
     boolean killBall;
     boolean retractWhenHit;
     float restitution;
+    float friction;
     boolean disabled;
     boolean ignoreBall;
     boolean visible = true;
@@ -63,6 +65,7 @@ public class WallElement extends FieldElement {
         this.y2 = asFloat(pos.get(3));
         this.length = (float) Math.hypot(x2 - x1, y2 - y1);
         this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
+        this.friction = asFloat(params.get(FRICTION_PROPERTY), Box2DFactory.DEFAULT_WALL_FRICTION);
 
         this.kick = asFloat(params.get(KICK_PROPERTY));
         this.killBall = (Boolean.TRUE.equals(params.get(KILL_PROPERTY)));
@@ -77,7 +80,7 @@ public class WallElement extends FieldElement {
             return;
         }
 
-        wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution);
+        wallBody = Box2DFactory.createThinWall(world, x1, y1, x2, y2, restitution, friction);
         bodySet = Collections.singletonList(wallBody);
         if (disabled) {
             setRetracted(true);
