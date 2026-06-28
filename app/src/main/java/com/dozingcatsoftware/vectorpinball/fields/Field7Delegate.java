@@ -323,6 +323,25 @@ public class Field7Delegate extends BaseFieldDelegate {
         rampScore = BASE_RAMP_SCORE;
     }
 
+    @Override public void prepareForThumbnail(Field field) {
+        // Show a recognizable, fully-drawn constellation in the center circle so the grid preview
+        // isn't an empty star field.
+        initFieldElements(field);
+        Constellation constellation = CONSTELLATIONS.get(0);
+        for (Constellation c : CONSTELLATIONS) {
+            if ("Orion".equals(c.name)) {
+                constellation = c;
+                break;
+            }
+        }
+        starState.currentConstellation = constellation;
+        starState.mode = StarMode.CONSTELLATION;
+        starState.activatedStars.addAll(constellation.starIndices);
+        // tick(0) projects the current constellation without advancing any animation.
+        starState.tick(0);
+        field.setShapes(shapesFromProjection());
+    }
+
     @Override public void tick(Field field, long nanos) {
         if (starViewCenter == null) {
             initFieldElements(field);

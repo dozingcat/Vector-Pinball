@@ -119,6 +119,12 @@ public class Field implements ContactListener {
         void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
         boolean isFieldActive(Field field);
+
+        // Called when the field is about to be drawn as a static thumbnail (e.g. in the table
+        // selection grid) rather than played. Implementations can set shapes and other display
+        // state to make the preview more representative than the empty initial layout. The field
+        // has been reset but no game has started; this should not launch balls or schedule actions.
+        default void prepareForThumbnail(Field field) {}
     }
 
     // Used by field delegates to retrieve localized strings.
