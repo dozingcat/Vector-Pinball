@@ -932,7 +932,6 @@ public class BouncyActivity extends Activity {
         updateUiControls();
     }
 
-    // Button action method defined by android:onClick in main.xml.
     public void doShowTableList(View view) {
         dialogState = DialogState.TABLE_SELECTION;
         tableListAdapter.notifyDataSetChanged();
