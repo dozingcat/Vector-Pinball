@@ -96,4 +96,5 @@
     <string name="show_high_score_button_label">High scores</string>
     <string name="hide_high_score_button_label">OK</string>
     <string name="high_score_table_title">High scores</string>
+    <string name="select_table_title">Select Table</string>
 </resources>

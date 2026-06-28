@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.dozingcatsoftware.vectorpinball.model.AudioPlayer;
 import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
 import com.dozingcatsoftware.vectorpinball.util.IOUtils;
 import com.dozingcatsoftware.vectorpinball.model.Field;
@@ -45,9 +48,13 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.graphics.Bitmap;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.window.OnBackInvokedCallback;
@@ -73,8 +80,12 @@ public class BouncyActivity extends Activity {
     View buttonPanel;
     View highScorePanel;
     View selectTableRow;
+    View selectTableLabel;
     ImageButton nextTableButton;
     ImageButton previousTableButton;
+    View tableListPanel;
+    GridView tableGridView;
+    TableListAdapter tableListAdapter;
     Button startGameButton;
     Button resumeGameButton;
     Button endGameButton;
@@ -104,7 +115,9 @@ public class BouncyActivity extends Activity {
     int currentLevel = 1;
     List<Long> highScores;
     Long lastScore = 0L;
-    boolean showingHighScores = false;
+    // Which overlay (if any) is shown over the field when no game is actively running.
+    enum DialogState { MAIN_MENU, TABLE_SELECTION, HIGH_SCORE }
+    DialogState dialogState = DialogState.MAIN_MENU;
     static int MAX_NUM_HIGH_SCORES = 5;
     static String HIGHSCORES_PREFS_KEY = "highScores";
     static String LAST_SCORE_PREFS_KEY = "lastScore";
@@ -180,8 +193,17 @@ public class BouncyActivity extends Activity {
         buttonPanel = findViewById(R.id.buttonPanel);
         selectTableRow = findViewById(R.id.selectTableRow);
         highScorePanel = findViewById(R.id.highScorePanel);
+        selectTableLabel = findViewById(R.id.selectTableLabel);
         nextTableButton = findViewById(R.id.nextTableButton);
         previousTableButton = findViewById(R.id.previousTableButton);
+        tableListPanel = findViewById(R.id.tableListPanel);
+        tableGridView = findViewById(R.id.tableGridView);
+        tableListAdapter = new TableListAdapter();
+        tableGridView.setAdapter(tableListAdapter);
+        tableGridView.setOnItemClickListener((parent, view, position, id) -> {
+            switchToTable(position + 1);
+            hideTableList();
+        });
         startGameButton = findViewById(R.id.startGameButton);
         resumeGameButton = findViewById(R.id.resumeGameButton);
         endGameButton = findViewById(R.id.endGameButton);
@@ -209,8 +231,9 @@ public class BouncyActivity extends Activity {
         // (after checking that the event was within the button bounds). This is likely
         // fragile but seems to be working ok.
         List<View> allButtons = Arrays.asList(
-                nextTableButton, previousTableButton, startGameButton, resumeGameButton, endGameButton,
-                aboutButton, preferencesButton, quitButton, unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
+                previousTableButton, selectTableLabel, nextTableButton, startGameButton,
+                resumeGameButton, endGameButton, aboutButton, preferencesButton, quitButton,
+                unlimitedBallsToggle, showHighScoreButton, hideHighScoreButton);
         for (View button : allButtons) {
             button.setOnTouchListener((view, motionEvent) -> {
                 // Log.i(TAG, "Button motion event: " + motionEvent);
@@ -407,7 +430,7 @@ public class BouncyActivity extends Activity {
     }
 
     private boolean hasCustomBackAction() {
-        if (showingHighScores) {
+        if (dialogState != DialogState.MAIN_MENU) {
             return true;
         }
         if (field.getGameState().isGameRunning()) {
@@ -417,8 +440,11 @@ public class BouncyActivity extends Activity {
     }
 
     private void doCustomBackAction() {
-        if (showingHighScores) {
+        if (dialogState == DialogState.HIGH_SCORE) {
             hideHighScore(null);
+        }
+        else if (dialogState == DialogState.TABLE_SELECTION) {
+            hideTableList();
         }
         else if (field.getGameState().isGameRunning()) {
             pauseGame();
@@ -465,7 +491,7 @@ public class BouncyActivity extends Activity {
         if (orientationListener != null) orientationListener.stop();
         fieldDriver.stop();
         if (glFieldView != null) glFieldView.onPause();
-        showingHighScores = false;
+        dialogState = DialogState.MAIN_MENU;
 
         updateUiControls();
     }
@@ -479,7 +505,7 @@ public class BouncyActivity extends Activity {
 
         fieldDriver.start();
         if (glFieldView != null) glFieldView.onResume();
-        showingHighScores = false;
+        dialogState = DialogState.MAIN_MENU;
 
         updateUiControls();
     }
@@ -503,46 +529,65 @@ public class BouncyActivity extends Activity {
 
         updateBackCallbackEnabled();
 
+        // Suppress the rotating score-area messages ("Touch to start"/scores) while the table
+        // selection grid is up, since they'd show through and flash distractingly.
+        scoreView.setShowGameOverMessages(dialogState != DialogState.TABLE_SELECTION);
+
         if (gameInProgress && !paused) {
-            // Game is active, no menus visible, show pause "button".
+            // Game is active, no menus or overlays visible, show pause "button".
             buttonPanel.setVisibility(View.GONE);
             highScorePanel.setVisibility(View.GONE);
+            tableListPanel.setVisibility(View.GONE);
             pauseButton.setVisibility(View.VISIBLE);
+            return;
         }
-        else if (showingHighScores) {
-            // High scores are visible, hide main menu.
-            buttonPanel.setVisibility(View.GONE);
-            highScorePanel.setVisibility(View.VISIBLE);
-            hideHighScoreButton.requestFocus();
-            pauseButton.setVisibility(View.GONE);
-        }
-        else if (gameInProgress) {
-            // Menu when game is in progress, show resume/end buttons, hide table picker.
-            buttonPanel.setVisibility(View.VISIBLE);
-            highScorePanel.setVisibility(View.GONE);
-            selectTableRow.setVisibility(View.GONE);
-            unlimitedBallsToggle.setVisibility(View.GONE);
-            startGameButton.setVisibility(View.GONE);
-            resumeGameButton.setVisibility(View.VISIBLE);
-            endGameButton.setVisibility(View.VISIBLE);
-            resumeGameButton.requestFocus();
-            pauseButton.setVisibility(View.GONE);
-        } else {
-            // Menu when game is not in progress, show table picker.
-            buttonPanel.setVisibility(View.VISIBLE);
-            highScorePanel.setVisibility(View.GONE);
-            selectTableRow.setVisibility(View.VISIBLE);
-            unlimitedBallsToggle.setVisibility(View.VISIBLE);
-            startGameButton.setVisibility(View.VISIBLE);
-            resumeGameButton.setVisibility(View.GONE);
-            endGameButton.setVisibility(View.GONE);
-            startGameButton.requestFocus();
-            pauseButton.setVisibility(View.GONE);
+        pauseButton.setVisibility(View.GONE);
+
+        switch (dialogState) {
+            case HIGH_SCORE:
+                // High scores are visible, hide main menu and grid.
+                buttonPanel.setVisibility(View.GONE);
+                tableListPanel.setVisibility(View.GONE);
+                highScorePanel.setVisibility(View.VISIBLE);
+                hideHighScoreButton.requestFocus();
+                break;
+            case TABLE_SELECTION:
+                // Table grid replaces the main menu (only reachable outside an active game).
+                buttonPanel.setVisibility(View.GONE);
+                highScorePanel.setVisibility(View.GONE);
+                tableListPanel.setVisibility(View.VISIBLE);
+                tableGridView.requestFocus();
+                break;
+            case MAIN_MENU:
+            default:
+                highScorePanel.setVisibility(View.GONE);
+                tableListPanel.setVisibility(View.GONE);
+                buttonPanel.setVisibility(View.VISIBLE);
+                if (gameInProgress) {
+                    // Paused game: show resume/end buttons, hide table picker.
+                    selectTableRow.setVisibility(View.GONE);
+                    unlimitedBallsToggle.setVisibility(View.GONE);
+                    startGameButton.setVisibility(View.GONE);
+                    resumeGameButton.setVisibility(View.VISIBLE);
+                    endGameButton.setVisibility(View.VISIBLE);
+                    resumeGameButton.requestFocus();
+                }
+                else {
+                    // No game in progress: show table picker and start button.
+                    selectTableRow.setVisibility(View.VISIBLE);
+                    unlimitedBallsToggle.setVisibility(View.VISIBLE);
+                    startGameButton.setVisibility(View.VISIBLE);
+                    resumeGameButton.setVisibility(View.GONE);
+                    endGameButton.setVisibility(View.GONE);
+                    startGameButton.requestFocus();
+                }
+                break;
         }
     }
 
     @Override public void onDestroy() {
         VPSoundpool.cleanup();
+        thumbnailExecutor.shutdownNow();
         if (powerSaveModeReceiver != null) {
             unregisterReceiver(powerSaveModeReceiver);
         }
@@ -878,12 +923,23 @@ public class BouncyActivity extends Activity {
 
     public void showHighScore(View view) {
         this.fillHighScoreAdapter();
-        showingHighScores = true;
+        dialogState = DialogState.HIGH_SCORE;
         updateUiControls();
     }
 
     public void hideHighScore(View view) {
-        showingHighScores = false;
+        dialogState = DialogState.MAIN_MENU;
+        updateUiControls();
+    }
+
+    public void doShowTableList(View view) {
+        dialogState = DialogState.TABLE_SELECTION;
+        tableListAdapter.notifyDataSetChanged();
+        updateUiControls();
+    }
+
+    void hideTableList() {
+        dialogState = DialogState.MAIN_MENU;
         updateUiControls();
     }
 
@@ -922,5 +978,91 @@ public class BouncyActivity extends Activity {
         scoreItem.setTextColor(Color.argb(255, 240, 240, 240));
         scoreItem.setGravity(Gravity.END);
         return scoreItem;
+    }
+
+    // ---- Table selection grid ----
+
+    // All thumbnails are rendered into a bitmap of this fixed size (matching the standard 20x30
+    // table aspect) so every grid cell is the same height. Tables that are narrower or shorter than
+    // standard are scaled to fit and centered (letterboxed) rather than stretched, so e.g. table 8
+    // (18 wide) appears at the same height but narrower.
+    private static final int THUMBNAIL_WIDTH_PX = 300;
+    private static final int THUMBNAIL_HEIGHT_PX = 450;
+
+    // Rendered table thumbnails, keyed by 1-based level. Rendered lazily on a background thread the
+    // first time the grid displays each table, then reused.
+    private final java.util.Map<Integer, Bitmap> thumbnailCache =
+            new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Set<Integer> requestedThumbnails =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final ExecutorService thumbnailExecutor = Executors.newSingleThreadExecutor();
+    // Reused across renders so we don't create a Box2D world per table (there's no dispose() in the
+    // model, so a fresh Field per table would leave several native worlds for the GC to reclaim).
+    private Field thumbnailField;
+
+    private void requestThumbnail(int level) {
+        if (!requestedThumbnails.add(level)) {
+            return;
+        }
+        thumbnailExecutor.execute(() -> {
+            try {
+                if (thumbnailField == null) {
+                    thumbnailField = new Field(System::currentTimeMillis,
+                            (key, params) -> key, AudioPlayer.NoOpPlayer.getInstance());
+                }
+                thumbnailField.resetForLayoutMap(
+                        FieldLayoutReader.layoutMapForLevel(this, level));
+                // Let the table's delegate populate representative display state (cards,
+                // constellations, etc.) so the preview isn't just the empty initial layout.
+                thumbnailField.getDelegate().prepareForThumbnail(thumbnailField);
+                Bitmap bmp = TableThumbnailRenderer.render(
+                        thumbnailField, THUMBNAIL_WIDTH_PX, THUMBNAIL_HEIGHT_PX);
+                thumbnailCache.put(level, bmp);
+                runOnUiThread(() -> tableListAdapter.notifyDataSetChanged());
+            }
+            catch (Exception ex) {
+                Log.e(TAG, "Error rendering thumbnail for table " + level, ex);
+                requestedThumbnails.remove(level);
+            }
+        });
+    }
+
+    private class TableListAdapter extends BaseAdapter {
+        @Override public int getCount() {
+            return numberOfLevels;
+        }
+
+        @Override public Object getItem(int position) {
+            return position + 1;
+        }
+
+        @Override public long getItemId(int position) {
+            return position + 1;
+        }
+
+        @Override public View getView(int position, View convertView, ViewGroup parent) {
+            int level = position + 1;
+            ImageView imageView;
+            if (convertView instanceof ImageView) {
+                imageView = (ImageView) convertView;
+            }
+            else {
+                imageView = new ImageView(BouncyActivity.this);
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setAdjustViewBounds(true);
+                int pad = (int) (4 * getResources().getDisplayMetrics().density);
+                imageView.setPadding(pad, pad, pad, pad);
+            }
+            // Highlight the currently selected table.
+            imageView.setBackgroundColor(level == currentLevel
+                    ? Color.argb(255, 80, 160, 255) : Color.TRANSPARENT);
+
+            Bitmap thumbnail = thumbnailCache.get(level);
+            imageView.setImageBitmap(thumbnail);
+            if (thumbnail == null) {
+                requestThumbnail(level);
+            }
+            return imageView;
+        }
     }
 }

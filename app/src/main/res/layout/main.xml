@@ -92,12 +92,20 @@
                     android:onClick="doPreviousTable"
                     android:focusableInTouchMode="true" />
                 <TextView
+                    android:id="@+id/selectTableLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:textSize="20dp"
                     android:textColor="#F0F0F0"
+                    android:background="@drawable/select_table_border"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:onClick="doShowTableList"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:text="@string/change_table_button_label" />
                 <ImageButton
                     android:id="@+id/nextTableButton"
@@ -241,6 +249,42 @@
                 android:text="@string/hide_high_score_button_label" />
 
         </TableLayout>
+
+        <LinearLayout
+            android:id="@+id/tableListPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:background="@layout/rounded_border"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#F0F0F0"
+                android:paddingBottom="16dp"
+                android:text="@string/select_table_title" />
+
+            <GridView
+                android:id="@+id/tableGridView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:numColumns="3"
+                android:horizontalSpacing="12dp"
+                android:verticalSpacing="12dp"
+                android:stretchMode="columnWidth"
+                android:gravity="center"
+                android:listSelector="@drawable/grid_item_selector"
+                android:drawSelectorOnTop="true"
+                android:clipToPadding="false" />
+
+        </LinearLayout>
 
     </FrameLayout>
 

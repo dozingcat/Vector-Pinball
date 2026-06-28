@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Focus/press highlight for table grid cells. Drawn on top of the cell (drawSelectorOnTop), so a
+     transparent fill keeps the thumbnail visible while a thick bright border clearly marks the
+     focused cell. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#33FFFFFF" />
+    <corners android:radius="6dp" />
+    <stroke
+        android:width="3dp"
+        android:color="#FFFFFFFF" />
+</shape>

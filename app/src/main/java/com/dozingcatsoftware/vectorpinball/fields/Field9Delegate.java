@@ -627,6 +627,18 @@ public class Field9Delegate extends BaseFieldDelegate {
         launchBarrier.setRetracted(false);
     }
 
+    @Override public void prepareForThumbnail(Field field) {
+        // Show representative ramp cards (A-spades, 9-hearts) and a partial hand (A-clubs, 8-diamonds,
+        // 7-hearts) so the grid preview looks like a game in progress rather than empty card slots.
+        leftRampCard = new Card(14, "S");
+        rightRampCard = new Card(9, "H");
+        hand.clear();
+        hand.add(new Card(14, "C"));
+        hand.add(new Card(8, "D"));
+        hand.add(new Card(7, "H"));
+        rebuildShapes(field);
+    }
+
     @Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
         String sensorId = sensor.getElementId();
         String prevSensorId = ball.getMostRecentSensorId();

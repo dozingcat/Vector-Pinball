@@ -45,6 +45,9 @@ public class ScoreView extends View {
     int gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
     int highScoreIndex = 0;
     int gameOverMessageCycleTime = 3500;
+    // When false, the rotating "Touch to start"/score messages shown between games are hidden
+    // (e.g. while the table selection grid is up).
+    boolean showGameOverMessages = true;
 
     double currentFps;
     double targetFps;
@@ -109,6 +112,9 @@ public class ScoreView extends View {
             // "Touch to start"/previous score/high score.
             if (gameInProgress) {
                 displayString = formatScore(score, unlimitedBalls);
+            }
+            else if (!showGameOverMessages) {
+                displayString = "";
             }
             else {
                 long now = currentMillis();
@@ -250,6 +256,19 @@ public class ScoreView extends View {
 
     public void setHighScores(List<Long> value) {
         highScores = value;
+    }
+
+    public void setShowGameOverMessages(boolean value) {
+        if (showGameOverMessages == value) {
+            return;
+        }
+        showGameOverMessages = value;
+        if (value) {
+            // Restart the rotation from "Touch to start" so re-showing doesn't flash a stale score.
+            gameOverMessageIndex = TOUCH_TO_START_MESSAGE;
+            highScoreIndex = 0;
+            lastUpdateTime = null;
+        }
     }
 
     public void setCurrentFps(double value) {
