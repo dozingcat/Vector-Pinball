@@ -12,16 +12,16 @@ android {
     defaultConfig {
         applicationId "com.dozingcatsoftware.bouncy"
         minSdkVersion 4
-        targetSdkVersion 36
-        versionCode 42
-        versionName "1.15.2"
+        targetSdkVersion 37
+        versionCode 43
+        versionName "1.16.0"
         multiDexEnabled true
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
 
