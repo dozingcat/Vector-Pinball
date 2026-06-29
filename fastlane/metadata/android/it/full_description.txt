@@ -1,0 +1,3 @@
+Gioco del flipper con una semplice grafica vettoriale e sette tabelloni, che usa una libreria fisica per una simulazione accurata.
+
+Si veda la pagina GitHub del progetto https://github.com/dozingcat/Vector-Pinball se si desidera contribuire al codice o creare dei tabelloni.
