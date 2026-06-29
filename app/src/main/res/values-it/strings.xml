@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">Alette indipendenti</string>
+    <string name="independent_flippers_pref_summary_on">Un tocco attiva le alette in quel lato</string>
+    <string name="independent_flippers_pref_summary_off">Un qualsiasi tocco attiva tutte le alette</string>
+
+    <string name="line_width_pref_title">Dimensione linea</string>
+    <string name="line_width_pref_dialog_message">Dimensione di una linea in pixel, o 0 per un valore di default basato sulla risoluzione dello schermo.</string>
+
+    <string name="sound_pref_title">Suono</string>
+    <string name="music_pref_title">Musica di sottofondo</string>
+    <string name="haptic_feedback_pref_title">Feedback vibrazione</string>
+    <string name="show_fps_pref_title">Mostra FPS</string>
+    <string name="zoom_pref_title">Zoom tabellone</string>
+    <string name="ball_trails_pref_title">Scia della biglia</string>
+    <string name="score_animations_pref_title">Animazione punti</string>
+    <string name="use_opengl_pref_title">Rendering OpenGL</string>
+    <string name="game_speed_pref_title">Velocità del gioco</string>
+
+    <string-array name="game_speed_pref_entries">
+        <item>Lento</item>
+        <item>Normale</item>
+        <item>Veloce</item>
+    </string-array>
+    <string-array name="game_speed_pref_values" translatable="false">
+        <item>slow</item>
+        <item>normal</item>
+        <item>fast</item>
+    </string-array>
+
+
+    <string name="about_text">Vector Pinball 1.16.0\n© 2010–2026 Brian Nenninger\n\nCommenti e bug:\nbnenning@gmail.com\n\nTocca lo schermo per iniziare una nuova partita, lancia una biglia se non è già in gioco e attiva le alette. Tocca l'area punti per mettere in pausa il gioco.\n\n[TABLE_RULES]\n\nIl menu Preferenze permette di cambiare le impostazioni seguenti:\n- Suono: Abilita o disabilita gli effetti sonori.\n- Musica di sottofondo: Abilita o disabilita la musica.\n- Feedback vibrazione: Vibra colpendo i respingenti o per altri eventi del gioco.\n- Alette indipendenti: Se deselezionato, ogni tocco attiva entrambe le alette. Se selezionato, occorre toccare il lato sinistro o destro dello schermo per le alette corrispondenti.\n- Zoom: Se selezionato, la vista evidenzia la posizione della biglia durante il gioco.\n- Rendering OpenGL: Usa OpenGL per la grafica. In genere produce la combinazione migliore di qualità e prestazioni, ma alcuni dispositivi potrebbero funzionare meglio se disattivato.\n- Mostra FPS: Se selezionato, mostra i fotogrammi per secondo in alto a sinistra.\n\nVector Pinball è open source;  il codice si trova all'URL\nhttps://github.com/dozingcat/Vector-Pinball\n\nSi ringrazia Mario Zechner per le migliorie al codice e per libgdx.\n\nTable 8: design e codice di Jack Morgan (jackmorgan8@gmail.com)\n\nsuono, musica &amp; codice audio di pdx\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">Regole Tabellone:\n- Attiva tutti i bersagli azzurri nelle corsie in alto o in basso per far avanzare il moltiplicatore punti. Tutti i punti guadagnati saranno moltiplicati per questo fattore. La rampa a sinistra fa ugualmente avanzare il moltiplicatore.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.\n- Colpire un gruppo di bersagli attiva la luce successiva al centro del tabellone. Quando la luce bianca più grande al centro è accesa, usa la rampa a sinistra per iniziare il multiball.</string>
+    <string name="table2_rules">Table Rules:\n- Light all the cyan rollovers in the bottom lanes to advance the score multiplier. All points you earn will be multiplied by this amount. \n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- The circles in the middle of the field keep track of how many times you\'ve hit all the left, upper, and right drop targets. When all of them have been hit at least 3 times, shoot the red bumper in the upper right to start multiball.</string>
+    <string name="table3_rules">Table Rules:\n- Light all the cyan rollovers in the bottom lanes to advance the score multiplier. All points you earn will be multiplied by this amount. \n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- Shooting either ramp will turn the bumpers red, and they will change back to blue over several seconds. Hit them during this time for extra points.\n- Turn the middle rings red by hitting the bumpers, and the middle sets of drop targets. When all the rings are red, shoot either ramp to start multiball.</string>
+    <string name="table4_rules">Table Rules:\n- Each bumper increases the score multiplier by 0.01x. Shooting the top drop targets or lighting all the lane rollovers will increase this amount.\n- Shoot all six bumpers to light the center indicators. When all indicators for a row are lit, shoot the right hole to lock the ball for multiball.\n- Multiball starts when you lock three balls. During multiball, the center indicators will light up when a ball crosses over them. Light them all to score a jackpot.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.</string>
+    <string name="table5_rules">Table Rules:\n- The central circle has twelve points around it, 3 each of 4 colors. Shooting a top ramp will change the color of the ball and allow it to activate the points with matching color.\n- When all 12 points around the circle are activated, hitting the edges of the rotating triangle will remove them. Shoot the target in the middle of the triangle to start multiball.\n- During multiball, light the 12 circle points again to score a jackpot, which increases in value each time.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.</string>
+    <string name="table6_rules">Table Rules:\n- In the center of the table, five planets orbit a sun. When the ball rolls over one of the planets, it changes to the planet\'s color and the planet starts flashing.\n- Shoot the corresponding target to &quot;activate&quot; the planet and make it solid. For the inner orange planet, hit the targets in the upper left. For the second blue planet, activate the rollovers in the upper right. For the remaining planets, shoot the ramp of the matching color.\n- Activate all five planets to start multiball. In multiball, activate all the planets again for a jackpot.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.\n- The sun and planets have gravity and will attract balls when they get close.</string>
+    <string name="table7_rules">Table Rules:\n- The center of the table contains a star map. Shoot one of the ramps with the flashing green arrows to cause the map to move to a constellation.\n- The stars that make up the constellation will appear in green. Roll the ball over them to activate them; they will turn yellow and lines will connect activated stars to draw the constellation outline.\n- When the constellation outline is complete, shoot the right ramp with the flashing yellow arrow to lock the ball. Repeat this process with two more constellations. Locking the third ball will start multiball.\n- In multiball, complete the remaining constellations and then shoot the right ramp for a jackpot.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.</string>
+    <string name="table8_rules">Table Rules:\n- The main objective of the game is to sink pool balls by shooting the right targets, then sink the 8-ball by hitting the upper right target.\n- Balls 1 through 7 will stay sunk from ball to ball unless the right target bank is completed. If the bank is completed but the 8-ball target is not hit, all targets will reset on the next ball.\n- Each pool ball adds 7,000 points to bonus. Each time balls 1 through 8 are sunk, a super bonus of 56,000 points will be added to your bonus at the end of each subsequent ball.\n- After sinking the 8-ball, a one-time bonus collect will be lit behind the 8-ball target.\n- Bonus multiplier can be increased up to 5x by shooting the left side inline targets. After completing all 4 targets, a 50,000 point red target becomes available behind the drop targets.\n- Completing the 4 rollover lanes will advance the value on the spinner (up to 1,500 per spin) and 8-ball target (up to 60,000 per shot).\n- Holding the left flipper up while launching the ball gives you one chance to shoot the 8-ball and collect the entire rack.</string>
+    <string name="table9_rules">Table Rules:\n- Collect cards to make a poker hand. Shoot the left or right ramps to collect the displayed card.\n- Shoot the upper drop targets to change the card for the nearest ramp. Hitting the last target will put a "lucky" card on the ramp that will help make a high-ranking poker hand.\n- Shoot the upper middle ramp to replace both ramp cards with lucky cards.\n- Collecting five cards will score a bonus based on the poker hand level. Three of a kind or better (including straight, flush, full house, four of a kind, and straight flush) will start multiball. During multiball, shoot any ramp for a jackpot.\n- The game starts with ball savers in the left and right outlanes, which disappear when used. Hit all drop targets on the left or right side to restore them.</string>
+    <string name="change_table_button_label">Seleziona Tabellone</string>
+    <string name="help_button_label">Aiuto</string>
+    <string name="preferences_button_label">Preferenze</string>
+    <string name="start_game_button_label">Inizia Gioco</string>
+    <string name="resume_game_button_label">Riprendi Gioco</string>
+    <string name="end_game_button_label">Termina Gioco</string>
+    <string name="quit_button_label">Esci</string>
+    <string name="unlimited_balls_label">Biglie Illimitate</string>
+
+    <string name="ball_number_message">Biglia %1$d</string>
+    <string name="shoot_again_message">Tira Ancora</string>
+    <string name="ball_saved_message">Biglia Salvata</string>
+    <string name="game_over_message">Game Over</string>
+    <string name="bump_message">Bump!</string>
+    <string name="touch_to_start_message">Tocca per iniziare</string>
+    <string name="last_score_message">Ultimo Punteggio: %1$s</string>
+    <string name="top_high_score_message">Punteggio Record: %1$s</string>
+    <string name="other_high_score_message">%1$d^ Punteggio: %2$s</string>
+    <string name="no_high_scores_message">Nessun punteggio per questo tabellone</string>
+
+    <string name="left_save_enabled_message">Salvataggio Sinistro Attivo</string>
+    <string name="right_save_enabled_message">Salvataggio Destro Attivo</string>
+    <string name="shoot_ramp_multiball_message">Usa la Rampa per Multiball</string>
+    <string name="multiball_started_message">Multiball!</string>
+    <string name="multiplier_message">Moltiplicatore %1$dx</string>
+    <string name="shoot_red_bumper_message">Colpisci Respingente Rosso</string>
+    <string name="bumper_multiplier_message">Moltiplicatore Respingente %1$d%%"</string>
+    <string name="jackpot_received_message">Jackpot!</string>
+    <string name="jackpot_received_with_multipler_message">Jackpot %1$dx!</string>
+    <string name="multiball_ready_message">Multiball Pronto</string>
+    <string name="ball_lock_ready_message">Blocco Biglia Pronto</string>
+    <string name="ball_locked_message">Biglia %1$d Bloccata</string>
+    <string name="shoot_pyramid_message">Colpisci la Piramide!</string>
+    <string name="extra_ball_received_message">Biglia Extra!</string>
+    <string name="blue_ramp_bonus_message">Rampa blu +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Rampa rossa +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Rampa gialla +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Rampa verde +%1$d%%</string>
+    <string name="color_blue">Blu</string>
+    <string name="color_red">Rosso</string>
+    <string name="color_yellow">Giallo</string>
+    <string name="color_green">Verde</string>
+    <string name="planet_activated_message">Pianeta %1$d Attivo!</string>
+    <string name="ramp_bonus_message">Rampa %1$dx</string>
+    <string name="ramp_bonus_increased_message">Bonus rampa aumentato</string>
+    <string name="shoot_ramp_jackpot_message">Usa la rampa per il jackpot</string>
+    <string name="constellation_complete_message">%1$s completo</string>
+    <string name="poker_hand_scored_message">%1$s! +%2$d</string>
+    <string name="lucky_draw_message">Mano fortunata!</string>
+    <string name="lucky_card_message">Carta fortunata!</string>
+    <string name="hand_bonus_increased_message">Bonus mano aumentato</string>
+    <string name="show_high_score_button_label">Punteggi Record</string>
+    <string name="hide_high_score_button_label">OK</string>
+    <string name="high_score_table_title">Punteggi Record</string>
+    <string name="select_table_title">Seleziona Tabellone</string>
+</resources>
