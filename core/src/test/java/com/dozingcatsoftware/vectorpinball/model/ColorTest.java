@@ -1,14 +1,14 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class ColorTest {
+public class ColorTest {
 
-    @Test void testCreate() {
+    @Test public void testCreate() {
         int c = Color.fromRGB(10, 20, 30);
         assertEquals(10, Color.getRed(c));
         assertEquals(20, Color.getGreen(c));
@@ -16,7 +16,7 @@ class ColorTest {
         assertEquals(255, Color.getAlpha(c));
     }
 
-    @Test void testCreateWithAlpha() {
+    @Test public void testCreateWithAlpha() {
         int c = Color.fromRGBA(10, 20, 30, 40);
         assertEquals(10, Color.getRed(c));
         assertEquals(20, Color.getGreen(c));
@@ -24,7 +24,7 @@ class ColorTest {
         assertEquals(40, Color.getAlpha(c));
     }
 
-    @Test void testCreateFromList() {
+    @Test public void testCreateFromList() {
         int c = Color.fromList(Arrays.asList(100, 150, 200));
         assertEquals(100, Color.getRed(c));
         assertEquals(150, Color.getGreen(c));
@@ -32,7 +32,7 @@ class ColorTest {
         assertEquals(255, Color.getAlpha(c));
     }
 
-    @Test void testCreateFromListWithAlpha() {
+    @Test public void testCreateFromListWithAlpha() {
         int c = Color.fromList(Arrays.asList(100, 150, 200, 222));
         assertEquals(100, Color.getRed(c));
         assertEquals(150, Color.getGreen(c));
@@ -40,20 +40,20 @@ class ColorTest {
         assertEquals(222, Color.getAlpha(c));
     }
 
-    @Test void testInverse() {
+    @Test public void testInverse() {
         int c = Color.fromRGBA(0, 100, 200, 111);
         int inv = Color.inverse(c);
         assertEquals(Color.fromRGBA(255, 155, 55, 111), inv);
         assertEquals(c, Color.inverse(inv));
     }
 
-    @Test void testWithAlpha() {
+    @Test public void testWithAlpha() {
         int c = Color.fromRGBA(0, 100, 200, 111);
         int ca = Color.withAlpha(c, 123);
         assertEquals(Color.fromRGBA(0, 100, 200, 123), ca);
     }
 
-    @Test void testBlend() {
+    @Test public void testBlend() {
         int start = Color.fromRGBA(0, 100, 200, 255);
         int end = Color.fromRGBA(100, 110, 190, 155);
         int b0 = Color.blend(start, end, 0);

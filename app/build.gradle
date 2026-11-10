@@ -28,20 +28,18 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
+            // Table definitions are shared with the editor.
+            assets.srcDirs += ['../shared-assets']
         }
     }
     namespace 'com.dozingcatsoftware.bouncy'
-}
-
-// TODO: Update to latest 3.x gdx-box2d version which has breaking changes.
-ext {
-    gdxVersion = '1.13.0'
 }
 
 configurations { natives }
 
 // libgdx native libraries are copied to libs/ by the copyAndroidNatives task.
 dependencies {
+    implementation project(':core')
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"

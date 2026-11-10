@@ -10,18 +10,21 @@ import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 public class JarFileFieldReader {
 
-    private static final String FIELD_PATH = "/fields/";
+    // Built-in tables are shared with the Android app (from shared-assets/tables).
+    private static final String BUILT_IN_TABLE_PATH = "/tables/";
+    // Editor-only tables (from editor/resources/fields).
+    private static final String EDITOR_FIELD_PATH = "/fields/";
 
     String pathForBuiltInField(int level) {
-        return FIELD_PATH + "table" + level + ".json";
+        return BUILT_IN_TABLE_PATH + "table" + level + ".json";
     }
 
     String pathForStarterField() {
-        return FIELD_PATH + "starter.json";
+        return EDITOR_FIELD_PATH + "starter.json";
     }
 
     InputStream inputStreamForStarterField(int level) {
-        return getClass().getResourceAsStream(FIELD_PATH + "starter.json");
+        return getClass().getResourceAsStream(pathForStarterField());
     }
 
     public Map<String, Object> layoutMapForLevel(String resourcePath) {

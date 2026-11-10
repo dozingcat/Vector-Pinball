@@ -11,7 +11,12 @@ Thanks to Peter Drescher for the sound effects; see [his article on creating the
 The GitHub project page is: [github.com/dozingcat/Vector-Pinball/](https://github.com/dozingcat/Vector-Pinball/).
 See [devnotes.txt](devnotes.txt) for an overview of the code layout.
 
-There is a very experimental table editor at [github.com/dozingcat/Vector-Pinball-Editor/](https://github.com/dozingcat/Vector-Pinball-Editor/)
+The repository is split into three Gradle modules:
+* `core`: the game model, field elements, and table delegates (the `com.dozingcatsoftware.vectorpinball` packages), shared by the app and the editor.
+* `app`: the Android app.
+* `editor`: a JavaFX-based table editor; see [editor/README.md](editor/README.md). Run it with `./gradlew :editor:run`.
+
+The built-in table definitions are in `shared-assets/tables`, and are used by both the app and the editor.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of

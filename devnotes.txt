@@ -2,7 +2,7 @@ Thanks for your interest in the Vector Pinball code. This is a very high level d
 which will hopefully give you some pointers if you'd like to make modifications or improvements. Feel free to
 send pull requests, or contact me at bnenning@gmail.com with comments or questions.
 
-The pinball field layouts are defined in assets/tables as JSON documents. Modifying those files is 
+The pinball field layouts are defined in shared-assets/tables as JSON documents. Modifying those files is 
 the easiest way to change the game. All field elements (walls, bumpers, rollovers, etc) are defined in the
 "elements" array. Each element has a "class" attribute indicating its type; the value corresponds to a class 
 in the com.dozingcatsoftware.bouncy.elements package (found under src/com/dozingcatsoftware/bouncy/elements).
