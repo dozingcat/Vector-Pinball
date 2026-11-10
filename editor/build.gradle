@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+javafx {
+    version = "25"
+    modules = [ 'javafx.controls' ]
+}
+
+group 'org.dozingcatsoftware'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs "resources"
+        }
+    }
+}
+
+ext {
+    gdxVersion = '1.12.1'
+}
+
+dependencies {
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    implementation "com.googlecode.json-simple:json-simple:1.1.1"
+    implementation group: 'org.apache.groovy', name: 'groovy', version: '5.0.1'
+}
+
+application {
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.Main'
+}
+
+// Renders a table JSON file to a PNG image. Usage:
+// ./gradlew renderTable -Ptable=resources/fields/table1.json -Pout=/tmp/table1.png
+// Loads a table JSON file and simulates a game headlessly to check for errors. Usage:
+// ./gradlew smokeTestTable -Ptable=resources/fields/table1.json
+tasks.register('smokeTestTable', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.tools.TableSmokeTest'
+    args = [
+        project.findProperty('table') ?: 'resources/fields/table1.json',
+        project.findProperty('seconds') ?: '120',
+    ]
+}
+
+tasks.register('renderTable', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.tools.TableImageRenderer'
+    args = [
+        project.findProperty('table') ?: 'resources/fields/table1.json',
+        project.findProperty('out') ?: 'table.png',
+        project.findProperty('imageHeight') ?: '1200',
+    ] + (project.hasProperty('game') ? ['--game'] : [])
+}

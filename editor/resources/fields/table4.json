@@ -1,0 +1,663 @@
+{
+    "ballcolor": [192, 192, 224],
+    "ballradius": "0.48",
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "18.7", "23"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["19.9", "0.1", "19.9", "23"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "54.5",
+            "minangle": "0",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": ["0.1", "0.1", "18.7", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "19.9", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["0.1", "4", "6", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "4", "12.7", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": ["0.1", "4", "0.1", "9.28"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "8.5", "1.45", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "8.5", "17.35", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchBarrier",
+            "position": [15.09, 27.59, 15.629999999999999, 28.68]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "TopRampSensor",
+            "rect": [14.07, 27.630000000000003, 15.07, 29.1]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierRetract",
+            "rect": ["16.0", "26.5", "17.0", "28.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "4.8", "6.25", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "4.8", "12.45", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-left",
+            "kick": "5.0",
+            "position": ["0.15", "5.0", "1.35", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-right",
+            "kick": "5.0",
+            "position": ["17.45", "5.0", "18.65", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["3.2", "8.77", "5.7", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "3.2", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["5.95", "4", "5.7", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "2.95", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "5.8", "5.95", "4"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["15.6", "8.77", "13.1", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.6", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.85", "4", "13.1", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.85", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "5.8", "12.85", "4"]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "FlipperRollovers",
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["0.775", "7.0"]
+                }, 
+                {
+                    "position": ["2.2", "7.0"]
+                }, 
+                {
+                    "position": ["16.6", "7.0"]
+                }, 
+                {
+                    "position": ["18.025", "7.0"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["6.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "-2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["12.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "65",
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 15,
+            "xradius": "8",
+            "yradius": "5.6"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "200",
+            "minangle": "180",
+            "xradius": "8",
+            "yradius": "5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "200",
+            "minangle": "180",
+            "xradius": "9.9",
+            "yradius": "8"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [1.4, 18.640000000000004, "0.7", "20.26"]
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.3",
+            "maxangle": "-18",
+            "minangle": "-68",
+            "position": [1.446666666666668, 18.353333333333328],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "WallPathElement",
+            "positions": [
+                [1.4, 18.64], 
+                [1.0199999999999998, 18.48], 
+                [2.0, 16.12]
+            ]
+        }, 
+        {
+            "center": ["3.1", "9.28"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "120",
+            "segments": 15,
+            "xradius": "3",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.61", "12.76", "2.0", "16.12"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.3",
+            "gapFromWall": "0.2",
+            "id": "DropTargetLeftSave",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "0.75",
+            "wallEnd": ["1.61", "12.76"],
+            "wallStart": ["2.0", "16.12"]
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [221, 0, 0],
+            "id": "Bumper.Red",
+            "kick": "1.0",
+            "outerColor": [221, 0, 0, 128],
+            "outerRadius": "0.75",
+            "position": [10.373333333333335, 24.046666666666667],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 15,
+            "xradius": "6.5",
+            "yradius": "4.2"
+        }, 
+        {
+            "center": [10.04, 23.040000000000003],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-60",
+            "segments": 15,
+            "xradius": "8.7",
+            "yradius": "5.5"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [221, 221, 221],
+            "id": "RightRampKicker",
+            "ignoreBall": false,
+            "kick": "4",
+            "position": ["15.0933", "25.6933", 16.0133, 26.96]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.2", "12.76", "17.2", "17.4"]
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [221, 221, 0],
+            "id": "Bumper.Yellow",
+            "kick": "1.0",
+            "outerColor": [221, 221, 0, 128],
+            "outerRadius": "0.675",
+            "position": [3.4600333333333353, 24.513333333333335],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [221, 0, 221],
+            "id": "Bumper.Magenta",
+            "kick": "1.0",
+            "outerColor": [221, 0, 221, 128],
+            "outerRadius": "0.675",
+            "position": [6.446666666666666, 25.67333333333334],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [0, 0, 221],
+            "id": "Bumper.Blue",
+            "kick": "1.0",
+            "outerColor": [0, 0, 221, 128],
+            "outerRadius": "0.75",
+            "position": [12.72666666666667, 22.466666666666665],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [0, 221, 221],
+            "id": "Bumper.Cyan",
+            "kick": "1.0",
+            "outerColor": [0, 221, 221, 128],
+            "outerRadius": "0.675",
+            "position": [5.633299999999998, 23.40666666666666],
+            "radius": "0.4",
+            "score": 1000
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [0, 221, 0],
+            "id": "Bumper.Green",
+            "kick": "1.0",
+            "outerColor": [0, 221, 0, 128],
+            "outerRadius": "0.75",
+            "position": [12.940000000000007, 24.813333333333325],
+            "radius": "0.45",
+            "score": 500
+        }, 
+        {
+            "center": ["10", "25.7"],
+            "class": "WallArcElement",
+            "maxangle": "175",
+            "minangle": "90",
+            "radius": "1.5",
+            "segments": 10
+        }, 
+        {
+            "class": "WallElement",
+            "position": [8.120000000000001, 23.140000000000004, 8.5, 25.82]
+        }, 
+        {
+            "center": [6.6800000000000015, 23.520000000000003],
+            "class": "WallArcElement",
+            "maxangle": "-15",
+            "minangle": "-75",
+            "radius": "1.5",
+            "segments": 8
+        }, 
+        {
+            "class": "WallElement",
+            "position": [3.6000000000000005, 20.799999999999997, 7.08, 22.08]
+        }, 
+        {
+            "center": ["15.7", "9.28"],
+            "class": "WallArcElement",
+            "maxangle": "60",
+            "minangle": "0",
+            "xradius": "3",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [221, 221, 221],
+            "id": "LockedBallKicker1",
+            "kick": "6",
+            "position": ["18.68", "13.2", "17.22", "13.2"],
+            "score": 1000
+        }, 
+        {
+            "center": ["17.2", "18.03"],
+            "class": "WallArcElement",
+            "maxangle": "130",
+            "minangle": "0",
+            "radius": "1.5",
+            "segments": 15
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.25",
+            "gapFromWall": "0.2",
+            "id": "DropTargetRightSave",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "0.8",
+            "wallEnd": ["17.2", "13"],
+            "wallStart": ["17.2", "12.76"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "color": [0, 224, 224],
+            "gapBetweenTargets": "0.3",
+            "gapFromWall": "-0.2",
+            "id": "DropTargetTop",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.3",
+            "targetWidth": "1.0",
+            "wallEnd": ["7.08", "22.08"],
+            "wallStart": ["3.6", "20.8"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "RightRampSensor",
+            "rect": [15.779999999999998, 25.26, 16.779999999999998, 26.26]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "TopRampSensor",
+            "rect": [13.059999999999999, 28.34, 14.059999999999999, 29.34]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [221, 221, 221],
+            "id": "TopRampBlocker",
+            "position": ["15.04", "27.56", "13.64", "28.08"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "AfterRampKickerSensor",
+            "rect": [13.8, 26.5, 14.8, 27.5]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-70",
+            "segments": 10,
+            "xradius": "6.5",
+            "yradius": "3.0"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [12.320000000000002, 17.559999999999995, "14.38", "18.27"]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 0, 221],
+            "id": "Rollovers.Blue",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["6.24", "11"]
+                }, 
+                {
+                    "position": ["6.24", "12.3"]
+                }, 
+                {
+                    "position": ["6.24", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 221, 0],
+            "id": "Rollovers.Green",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["8.84", "11"]
+                }, 
+                {
+                    "position": ["8.84", "12.3"]
+                }, 
+                {
+                    "position": ["8.84", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [221, 0, 0],
+            "id": "Rollovers.Red",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["11.44", "11"]
+                }, 
+                {
+                    "position": ["11.44", "12.3"]
+                }, 
+                {
+                    "position": ["11.44", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 221, 221],
+            "id": "Rollovers.Cyan",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["7.54", "11"]
+                }, 
+                {
+                    "position": ["7.54", "12.3"]
+                }, 
+                {
+                    "position": ["7.54", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [221, 221, 0],
+            "id": "Rollovers.Yellow",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["10.14", "11"]
+                }, 
+                {
+                    "position": ["10.14", "12.3"]
+                }, 
+                {
+                    "position": ["10.14", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [221, 0, 221],
+            "id": "Rollovers.Magenta",
+            "ignoreBall": true,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["12.74", "11"]
+                }, 
+                {
+                    "position": ["12.74", "12.3"]
+                }, 
+                {
+                    "position": ["12.74", "13.6"]
+                }
+            ],
+            "score": 500,
+            "toggleOff": false
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [204, 204, 238],
+            "id": "LockedBallRollover1",
+            "ignoreBall": true,
+            "radius": "0.48",
+            "rollovers": [
+                {
+                    "position": ["17.95", "13.9"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [204, 204, 238],
+            "id": "LockedBallRollover2",
+            "ignoreBall": true,
+            "radius": "0.48",
+            "rollovers": [
+                {
+                    "position": ["17.95", "15.3"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [204, 204, 238],
+            "id": "LockedBallRollover3",
+            "ignoreBall": true,
+            "radius": "0.48",
+            "rollovers": [
+                {
+                    "position": ["17.95", "16.7"]
+                }
+            ]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [221, 221, 221],
+            "id": "LockedBallKicker2",
+            "kick": "5.75",
+            "position": ["17.22", "14.6", "18.68", "14.6"],
+            "score": 1000
+        }, 
+        {
+            "class": "WallElement",
+            "color": [221, 221, 221],
+            "id": "LockedBallKicker3",
+            "kick": "5.5",
+            "position": ["17.22", "16.0", "18.68", "16.0"],
+            "score": 1000
+        }
+    ],
+    "gravity": "4",
+    "height": "30",
+    "launchDeadZone": ["18.8", "0", "20", "1.4"],
+    "launchPosition": ["19.3", "3.0"],
+    "launchVelocity": ["0", "16"],
+    "launchVelocityRandomDelta": ["0", "0.6"],
+    "name": "Compound Interest",
+    "numballs": 3,
+    "script": "// Initialized in gameStarted.\u000adef launchBarrier = null;\u000adef topBlocker = null;\u000adef rightKicker = null;\u000adef multiballKickers = null;\u000adef lockedBallRollovers = null;\u000adef lockedBallKickers = null;\u000adef inMultiball = false;\u000adef isMultiballStarting = false;\u000adef bumperMultiplierIncrease = 1;\u000a\u000adef colorSuffixes = [\"Blue\", \"Cyan\", \"Green\", \"Yellow\", \"Red\", \"Magenta\"];\u000adef multiballStatusRollovers = [:]\u000adef ballsLocked = 0;\u000a// Lighting all rollovers in multiball scores jackpot*1000 points\u000a// and increases multiplier by (jackpot) percent.\u000adef jackpot = 0;\u000adef baseJackpot = 25;\u000adef jackpotIncrease = 5;\u000a\u000adef allStatusRolloversActiveForIndex = {index ->\u000a  multiballStatusRollovers.every {key,rollovers -> rollovers.isRolloverActiveAtIndex(index)}\u000a};\u000a\u000adef setAllMultiballStatusRolloversActive = {active ->\u000a  multiballStatusRollovers.each {suffix, rollover ->\u000a    (0..2).forEach {index ->\u000a      rollover.setRolloverActiveAtIndex(index, active);\u000a    };\u000a  }\u000a};\u000a\u000adef setIgnoreBallForMultiballStatusRollovers = {ignoreBall ->\u000a  multiballStatusRollovers.each {suffix, rollover ->\u000a    rollover.setIgnoreBall(ignoreBall);\u000a  };\u000a};\u000a\u000adef clearMultiballStatus = {\u000a  setAllMultiballStatusRolloversActive(false);\u000a  setIgnoreBallForMultiballStatusRollovers(true);\u000a  ballsLocked = 0;\u000a  inMultiball = false;\u000a  isMultiballStarting = false;\u000a};\u000a\u000adef increaseExtraBumperMultiplier = {field, percent ->\u000a  bumperMultiplierIncrease += percent;\u000a  field.showGameMessage(\"Bumper Multiplier \" + bumperMultiplierIncrease + \"%\", 1500);\u000a};\u000a\u000adef startMultiball = {field ->\u000a  field.showGameMessage(\"Multiball!\", 3000);\u000a  lockedBallRollovers[2].setIgnoreBall(true);\u000a  lockedBallRollovers[2].setVisible(false);\u000a  ballsLocked = 3;\u000a  inMultiball = true;\u000a  isMultiballStarting = true;\u000a  setAllMultiballStatusRolloversActive(false);\u000a  setIgnoreBallForMultiballStatusRollovers(false);\u000a  jackpot = baseJackpot;\u000a\u000a  field.scheduleAction(1000, {\u000a    lockedBallKickers[1].setRetracted(true);\u000a    lockedBallKickers[2].setRetracted(true);\u000a    lockedBallRollovers[1].setIgnoreBall(true);\u000a    lockedBallRollovers[1].setVisible(false);\u000a    if (field.getBalls().size() < 3) field.launchBall();\u000a  });\u000a  field.scheduleAction(3500, {\u000a    isMultiballStarting = false;\u000a    lockedBallRollovers[0].setIgnoreBall(true);\u000a    lockedBallRollovers[0].setVisible(false);\u000a    if (field.getBalls().size() < 3) field.launchBall();\u000a  });\u000a};\u000a\u000adef doJackpot = {field ->\u000a  field.addScore(jackpot * 1000);\u000a  field.showGameMessage(\"Jackpot!\", 3000);\u000a  // Increase multiplier by jackpot percentage. This can actually\u000a  // cause an overflow if the player scores a whole lot of jackpots.\u000a  def multiplier = field.getScoreMultiplier();\u000a  def newMultiplierPercent = (multiplier * (100+jackpot)).longValue();\u000a  field.setScoreMultiplier((newMultiplierPercent/100.0).doubleValue());\u000a  jackpot += jackpotIncrease;\u000a  setAllMultiballStatusRolloversActive(false);\u000a};\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    topBlocker = field.getFieldElementById(\"TopRampBlocker\");\u000a    rightKicker = field.getFieldElementById(\"RightRampKicker\");\u000a    multiballKickers = [\u000a      field.getFieldElementById(\"MultiballKicker1\"),\u000a      field.getFieldElementById(\"MultiballKicker2\"),\u000a      field.getFieldElementById(\"MultiballKicker3\"),\u000a    ];\u000a    // Locked ball rollovers start hidden and disabled.\u000a    lockedBallRollovers = [\u000a      field.getFieldElementById(\"LockedBallRollover1\"),\u000a      field.getFieldElementById(\"LockedBallRollover2\"),\u000a      field.getFieldElementById(\"LockedBallRollover3\"),\u000a    ];\u000a    lockedBallRollovers.each {\u000a      it.setRolloverActiveAtIndex(0, false);\u000a      it.setVisible(false);\u000a      it.setIgnoreBall(true);\u000a    };\u000a    // Kickers in the ball lock zone start disabled except the bottom one.\u000a    lockedBallKickers = [\u000a      field.getFieldElementById(\"LockedBallKicker1\"),\u000a      field.getFieldElementById(\"LockedBallKicker2\"),\u000a      field.getFieldElementById(\"LockedBallKicker3\"),\u000a    ];\u000a    lockedBallKickers[1].setRetracted(true);\u000a    lockedBallKickers[2].setRetracted(true);\u000a\u000a    // Get references to multiball status rollovers and initialize them.\u000a    colorSuffixes.each {suffix ->\u000a      multiballStatusRollovers[suffix] = field.getFieldElementById(\"Rollovers.\" + suffix);\u000a    };\u000a    clearMultiballStatus();\u000a\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a    rightKicker.setRetracted(true);\u000a  },\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    bumperMultiplierIncrease = 1;\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'TopRampSensor') {\u000a      launchBarrier.setRetracted(false);\u000a      topBlocker.setRetracted(true);\u000a      rightKicker.setRetracted(false);\u000a    }\u000a    else if (sensorId == \"RightRampSensor\") {\u000a      topBlocker.setRetracted(false);\u000a      rightKicker.setRetracted(true);\u000a    }\u000a    else if (sensorId == \"AfterRampKickerSensor\") {\u000a      topBlocker.setRetracted(false);\u000a      rightKicker.setRetracted(false);\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup, ball ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetTop\") {\u000a      increaseExtraBumperMultiplier(field, 1);\u000a    }\u000a  },\u000a\u000a  processCollision: {field, element, body, ball ->\u000a    def id = element.getElementId();\u000a    if (id!=null && id.startsWith(\"Bumper.\")) {\u000a      def suffix = id.substring(7);\u000a      // Increment multiplier.\u000a      def multiplier = Math.round(field.getScoreMultiplier()*100).longValue();\u000a      multiplier += bumperMultiplierIncrease;\u000a      field.setScoreMultiplier((multiplier/100).doubleValue());\u000a      // Unlock next multiball target if all bumpers hit.\u000a      if (ballsLocked < 3) {\u000a        def rollovers = multiballStatusRollovers[suffix];\u000a        rollovers.setRolloverActiveAtIndex(ballsLocked, true);\u000a        if (allStatusRolloversActiveForIndex(ballsLocked)) {\u000a          // If rollover for ball lock isn't already active, activate and show message.\u000a          if (lockedBallRollovers[ballsLocked].getIgnoreBall()) {\u000a            lockedBallRollovers[ballsLocked].setIgnoreBall(false);\u000a            lockedBallRollovers[ballsLocked].setVisible(true);\u000a            lockedBallRollovers[ballsLocked].setRolloverActiveAtIndex(0, false);\u000a            def msg = (ballsLocked == 2) ? \"Multiball Ready\" : \"Ball Lock Ready\";\u000a            field.showGameMessage(msg, 3000);\u000a          }\u000a        }\u000a      }\u000a    }\u000a  },\u000a\u000a  allRolloversInGroupActivated: {field, rollovers, ball ->\u000a    if (rollovers == lockedBallRollovers[0]) {\u000a      field.removeBallWithoutBallLoss(field.getBalls()[0]);\u000a      lockedBallKickers[1].setRetracted(false);\u000a      field.showGameMessage(\"Ball 1 Locked\", 3000);\u000a      ballsLocked = 1;\u000a    }\u000a    else if (rollovers == lockedBallRollovers[1]) {\u000a      field.removeBallWithoutBallLoss(field.getBalls()[0]);\u000a      lockedBallKickers[2].setRetracted(false);\u000a      field.showGameMessage(\"Ball 2 Locked\", 3000);\u000a      ballsLocked = 2;\u000a    }\u000a    else if (rollovers == lockedBallRollovers[2]) {\u000a      startMultiball(field);\u000a    }\u000a    else if (inMultiball && multiballStatusRollovers.containsValue(rollovers)) {\u000a      // Score jackpot if all rollovers have been activated.\u000a      def isJackpot = multiballStatusRollovers.every {suffix, mr ->\u000a        mr.allRolloversActive();\u000a      };\u000a      if (isJackpot) {\u000a        doJackpot(field);\u000a      }\u000a    }\u000a    else if (rollovers.getElementId() == \"FlipperRollovers\") {\u000a      increaseExtraBumperMultiplier(field, 2);\u000a      rollovers.setAllRolloversActivated(false);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (inMultiball && !isMultiballStarting && field.getBalls().size()<=1) {\u000a      clearMultiballStatus();\u000a    }\u000a  },\u000a]",
+    "targetTimeRatio": "2.3",
+    "version": 1,
+    "width": "20"
+}

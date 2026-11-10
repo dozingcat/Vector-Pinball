@@ -1,0 +1,202 @@
+{
+    "ballcolor": [192, 192, 224],
+    "ballradius": "0.5",
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "18.7", "23"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["19.9", "0.1", "19.9", "23"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "54.5",
+            "minangle": "0",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": ["0.1", "0.1", "18.7", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "19.9", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["0.1", "4", "6", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "4", "12.7", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": ["0.1", "4", "0.1", "23"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "8.5", "1.45", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "8.5", "17.35", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchBarrier",
+            "position": ["15.05", "27.53", "15.75", "28.74"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierSensor",
+            "rect": ["14.05", "27.53", "15.05", "29"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierRetract",
+            "rect": ["16.0", "26.5", "17.0", "28.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "4.8", "6.25", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "4.8", "12.45", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-left",
+            "kick": "6.0",
+            "position": ["0.15", "5.0", "1.35", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-right",
+            "kick": "6.0",
+            "position": ["17.45", "5.0", "18.65", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["3.2", "8.77", "5.7", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "3.2", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["5.95", "4", "5.7", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "2.95", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "5.8", "5.95", "4"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["15.6", "8.77", "13.1", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.6", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.85", "4", "13.1", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.85", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "5.8", "12.85", "4"]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "FlipperRollovers",
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["0.775", "7.0"]
+                }, 
+                {
+                    "position": ["2.2", "7.0"]
+                }, 
+                {
+                    "position": ["16.6", "7.0"]
+                }, 
+                {
+                    "position": ["18.025", "7.0"]
+                }
+            ],
+            "score": 500
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["6.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "-2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["12.35", "2.2"],
+            "upspeed": "7"
+        }
+    ],
+    "gravity": "4",
+    "height": "30",
+    "launchDeadZone": ["18.8", "0", "20", "1.4"],
+    "launchPosition": ["19.3", "3.0"],
+    "launchVelocity": ["0", "15.4"],
+    "launchVelocityRandomDelta": ["0", "0.6"],
+    "name": "New Table",
+    "numballs": 3,
+    "script": "// Initialized in gameStarted.\u000adef launchBarrier = null;\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById('LaunchBarrier');\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a  },\u000a]",
+    "targetTimeRatio": "2.3",
+    "version": 1,
+    "width": "20"
+}

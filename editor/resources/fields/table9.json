@@ -1,0 +1,1052 @@
+{
+    "ballcolor": [240, 240, 240],
+    "ballradius": 0.5,
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "18.7", "25"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["19.9", "0.1", "19.9", "25"]
+        }, 
+        {
+            "center": ["17", "25"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 40,
+            "xradius": "1.7",
+            "yradius": "3.5"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": [0.1, 0.1, 18.7, 0.1]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [18.7, 0.1, 19.9, 0.1]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [0.1, 4, 6, 1]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [18.7, 4, 12.7, 1]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": ["0.1", "4", "0.1", "9.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchBarrier",
+            "position": ["17", "28.5", "17", "29.9"]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "LaunchBarrierSensor",
+            "rect": [15.668464, 28.601042, 16.906473, 29.714028]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "LaunchBarrierRetract",
+            "rect": [17.141955, 28.59252, 17.999149, 29.711885]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [1.45, 8.5, 1.45, 4.8]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [17.35, 8.5, 17.35, 4.8]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [1.45, 4.8, 6.25, 2.3]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [17.35, 4.8, 12.45, 2.3]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-left",
+            "kick": 6,
+            "position": [0.15, 5, 1.35, 5],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-right",
+            "kick": 6,
+            "position": [17.45, 5, 18.65, 5],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [200, 60, 80],
+            "kick": 3.5,
+            "position": [3.2, 8.77, 5.7, 4.43],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.95, 9.2, 3.2, 8.77]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [5.95, 4, 5.7, 4.43]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.95, 9.2, 2.95, 5.8]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [2.95, 5.8, 5.95, 4]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [200, 60, 80],
+            "kick": 3.5,
+            "position": [15.6, 8.77, 13.1, 4.43],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.85, 9.2, 15.6, 8.77]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [12.85, 4, 13.1, 4.43]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.85, 9.2, 15.85, 5.8]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [15.85, 5.8, 12.85, 4]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "FlipperRollovers",
+            "radius": 0.4,
+            "rollovers": [
+                {
+                    "position": [0.775, 7]
+                }, 
+                {
+                    "position": [2.2, 7]
+                }, 
+                {
+                    "position": [16.6, 7]
+                }, 
+                {
+                    "position": [18.025, 7]
+                }
+            ],
+            "score": 500
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [220, 60, 60],
+            "id": "Chip0",
+            "kick": 2.5,
+            "outerColor": [220, 60, 60, 128],
+            "outerRadius": "0.5",
+            "position": ["16.6", "25.3"],
+            "radius": "0.35",
+            "score": 100
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [60, 220, 60],
+            "id": "Chip1",
+            "kick": 2.5,
+            "outerColor": [60, 220, 60, 128],
+            "outerRadius": "0.5",
+            "position": ["14.2", "25.2"],
+            "radius": "0.35",
+            "score": 100
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [70, 100, 230],
+            "id": "Chip2",
+            "kick": 2.5,
+            "outerColor": [70, 100, 230, 128],
+            "outerRadius": "0.5",
+            "position": ["15.5", "23.4"],
+            "radius": "0.35",
+            "score": 100
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": 3,
+            "length": 2.5,
+            "maxangle": 20,
+            "minangle": -20,
+            "position": [6.35, 2.2],
+            "upspeed": 7
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": 3,
+            "length": -2.5,
+            "maxangle": 20,
+            "minangle": -20,
+            "position": [12.35, 2.2],
+            "upspeed": 7
+        }, 
+        {
+            "center": ["17", "25"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "2.9",
+            "yradius": "4.9"
+        }, 
+        {
+            "ballLayerFrom": 3,
+            "class": "SensorElement",
+            "id": "RampDropSensor3",
+            "rect": [1.7222, 7.939899, 2.7222, 8.939899]
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "-2",
+            "maxangle": "-10",
+            "minangle": "-65",
+            "position": ["17.575", "20.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "center": ["2.6", "9.8"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "120",
+            "xradius": "2.5",
+            "yradius": "3"
+        }, 
+        {
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "id": "RampDropSensor2",
+            "rect": [16.099351, 7.97332, 17.099351, 8.97332]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.35", "12.4", "1.9", "15.52"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "205",
+            "minangle": "180",
+            "segments": 60,
+            "xradius": "8.3",
+            "yradius": "9"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "215",
+            "minangle": "180",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "13"
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "TopRollovers",
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["13.525", "27.6"]
+                }, 
+                {
+                    "position": ["14.925", "27.6"]
+                }, 
+                {
+                    "position": ["16.325", "27.6"]
+                }
+            ],
+            "score": 500
+        }, 
+        {
+            "class": "WallElement",
+            "position": [17.585015, 20.282545, "18.7", "23.3129"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.1", "29.9", "17", "29.9"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17", "27", "17", "28.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.6", "27", "15.6", "28.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["14.2", "27", "14.2", "28.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.95", "21.3", "12.7", "22.3"]
+        }, 
+        {
+            "class": "WallPathElement",
+            "positions": [
+                ["12.1", "29.9"], 
+                ["12.1", "29"], 
+                ["12.8", "28.3"], 
+                ["12.8", "27"], 
+                ["12.1", "26.3"], 
+                ["12.1", "23"]
+            ]
+        }, 
+        {
+            "center": ["12.8", "23"],
+            "class": "WallArcElement",
+            "maxangle": "260",
+            "minangle": "180",
+            "radius": "0.7",
+            "segments": 10
+        }, 
+        {
+            "center": ["17", "25.3"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "radius": "1.7",
+            "segments": 12
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "200",
+            "minangle": "180",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "13"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "205",
+            "minangle": "180",
+            "segments": 60,
+            "xradius": "8.3",
+            "yradius": "9"
+        }, 
+        {
+            "ballLayer": 0,
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "rect": [16.684277, 15.732239, 17.660296, 18.160115]
+        }, 
+        {
+            "ballLayer": 1,
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "rect": [0.26181, 21.325279, 1.621587, 22.635983]
+        }, 
+        {
+            "center": [10, 23],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 60,
+            "xradius": "8.3",
+            "yradius": "5.5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "6.9"
+        }, 
+        {
+            "center": [10, 23],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0.1",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 60,
+            "xradius": "6.8",
+            "yradius": "5.5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "0.1",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "8.1",
+            "yradius": "6.9"
+        }, 
+        {
+            "center": ["17.45", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "friction": "1",
+            "id": "RampEndCap_Top",
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "360",
+            "minangle": "180",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "center": ["13", "21.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "90",
+            "minangle": "-51",
+            "segments": 32,
+            "xradius": "6.8",
+            "yradius": "8.3"
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "RampDropSensor1",
+            "rect": [16.963751, 22.510596, 17.924561, 23.451289]
+        }, 
+        {
+            "center": ["16.2", "9.8"],
+            "class": "WallArcElement",
+            "maxangle": "60",
+            "minangle": "0",
+            "xradius": "2.5",
+            "yradius": "3"
+        }, 
+        {
+            "center": ["13", "21.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "0",
+            "minangle": "-40",
+            "segments": 30,
+            "xradius": "5.3",
+            "yradius": "5."
+        }, 
+        {
+            "ballLayer": 2,
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "rect": [17.731879, 17.088532, 18.660296, 19.183195]
+        }, 
+        {
+            "ballLayer": 0,
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "rect": [0.619005, 19.040209, 1.999639, 20.301839]
+        }, 
+        {
+            "center": ["13", "25.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "206",
+            "minangle": "90",
+            "segments": 20,
+            "xradius": "4.1",
+            "yradius": "4.3"
+        }, 
+        {
+            "center": ["13", "25.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "206",
+            "minangle": "90",
+            "segments": 20,
+            "xradius": "2.8",
+            "yradius": "2.8"
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "positions": [
+                ["15.95", "10"], 
+                ["15.95", "8.5"]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "positions": [
+                ["17.25", "8.5"], 
+                ["17.25", "10.5"]
+            ]
+        }, 
+        {
+            "center": ["17.45", "23"],
+            "class": "WallArcElement",
+            "color": [255, 0, 0],
+            "ignoreBall": true,
+            "inactiveLayerColor": [255, 0, 0, 64],
+            "layer": 1,
+            "maxangle": "180",
+            "minangle": "0",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "center": ["13", "21.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "5.3",
+            "yradius": "6.8"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.45", "12.4", "17.28", "15.05"]
+        }, 
+        {
+            "center": ["13", "21.5"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "-34",
+            "minangle": "-51",
+            "segments": 32,
+            "xradius": "6.8",
+            "yradius": "8.3"
+        }, 
+        {
+            "ballLayer": 2,
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "rect": [17.732059, 16.374324, 18.303462, 17.088532]
+        }, 
+        {
+            "center": ["13", "21.5"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "6",
+            "minangle": "-40",
+            "segments": 30,
+            "xradius": "5.3",
+            "yradius": "5."
+        }, 
+        {
+            "class": "WallPathElement",
+            "friction": "0",
+            "positions": [
+                ["8.2", "23.15"], 
+                ["4.1", "24.9"]
+            ]
+        }, 
+        {
+            "class": "WallElement",
+            "friction": "0.2",
+            "position": ["0.1", "23", "1.7", "23"]
+        }, 
+        {
+            "class": "WallPathElement",
+            "positions": [
+                ["3.95", "20.175"], 
+                ["7.6", "21.65"], 
+                ["6.1", "22.65"]
+            ]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "LeftRampSensor_Trigger",
+            "rect": [10.804749, 28.532255, 11.93046, 29.733051]
+        }, 
+        {
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "id": "RightRampSensor_Trigger",
+            "rect": ["11.1913", "28.267", "12.3921", "29.4427"]
+        }, 
+        {
+            "center": ["16.6", "8.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "ignoreBall": true,
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "180",
+            "minangle": "0",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "center": ["16.6", "8.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "1",
+            "id": "RampEndCap_Right",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "360",
+            "minangle": "180",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "205",
+            "minangle": "180",
+            "segments": 60,
+            "xradius": "6.7",
+            "yradius": "6.7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "180",
+            "minangle": "152",
+            "segments": 60,
+            "xradius": "6.7",
+            "yradius": "4"
+        }, 
+        {
+            "class": "SpinnerElement",
+            "color": [255, 255, 255],
+            "position": [2.85254, 20.666035],
+            "radius": "0.5",
+            "score": 100
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0",
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 60,
+            "xradius": "8.3",
+            "yradius": "5.5"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": ["8.2", "23.15", "6.85", "23.72"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": ["7.6", "21.65", "6.1", "22.65"]
+        }, 
+        {
+            "center": ["2.2", "8.5"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "1",
+            "id": "RampEndCap_Left",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "360",
+            "minangle": "180",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "ballLayer": 0,
+            "ballLayerFrom": 3,
+            "class": "SensorElement",
+            "rect": [6.934047, 21.9822, 7.908987, 23.331666]
+        }, 
+        {
+            "ballLayer": 3,
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "rect": [5.82131, 22.489943, 6.846907, 23.941024]
+        }, 
+        {
+            "center": ["2.2", "8.5"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "ignoreBall": true,
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "180",
+            "minangle": "0",
+            "radius": "0.65",
+            "segments": 12
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [220, 60, 60],
+            "kick": "1.0",
+            "outerColor": [220, 60, 60, 128],
+            "outerRadius": "0.7",
+            "position": [7.46468, 26.356512],
+            "radius": "0.5",
+            "score": 250
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [70, 100, 230],
+            "kick": "1.0",
+            "outerColor": [70, 100, 230, 128],
+            "outerRadius": "0.7",
+            "position": [10.232892, 27.084989],
+            "radius": "0.5",
+            "score": 250
+        }, 
+        {
+            "class": "BumperElement",
+            "color": [60, 220, 60],
+            "kick": "1.0",
+            "outerColor": [60, 220, 60, 128],
+            "outerRadius": "0.7",
+            "position": ["9.8", "24.6"],
+            "radius": "0.5",
+            "score": 250
+        }, 
+        {
+            "center": ["7.6", "25.25"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "240",
+            "minangle": "0",
+            "radius": "3",
+            "segments": 32
+        }, 
+        {
+            "center": ["7.6", "25.25"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "245",
+            "minangle": "0",
+            "radius": "1.7",
+            "segments": 32
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "positions": [
+                ["9.3", "23"], 
+                ["9.3", "25.25"]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "positions": [
+                ["10.6", "22.5"], 
+                ["10.6", "25.25"]
+            ]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": "-0.2",
+            "id": "LeftCycleTargets",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.25",
+            "targetWidth": "0.7",
+            "wallEnd": ["7.6", "21.65"],
+            "wallStart": ["3.95", "20.175"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": "0.2",
+            "id": "RightCycleTargets",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.15",
+            "targetWidth": "0.7",
+            "wallEnd": ["12.7", "22.3"],
+            "wallStart": ["15.95", "21.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [255, 255, 255, 128],
+            "ignoreBall": true,
+            "position": [2.09919, 20.404858, 3.605263, 20.947368]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": "-0.2",
+            "id": "DropTargetLeftSave",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.2",
+            "targetWidth": "0.75",
+            "wallEnd": ["1.9", "15.52"],
+            "wallStart": ["1.35", "12.4"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.15",
+            "gapFromWall": "0.2",
+            "id": "DropTargetRightSave",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "score": 500,
+            "startDistanceAlongWall": "0.15",
+            "targetWidth": "0.65",
+            "wallEnd": ["17.28", "15.05"],
+            "wallStart": ["17.45", "12.4"]
+        }, 
+        {
+            "ballLayerFrom": 3,
+            "class": "SensorElement",
+            "id": "CenterRampSensor_Trigger",
+            "rect": [8.098272, 26.817681, 9.1754, 27.921311]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "friction": "0.1",
+            "maxangle": "90",
+            "minangle": "66",
+            "segments": 60,
+            "xradius": "6.8",
+            "yradius": "5.5"
+        }, 
+        {
+            "center": ["12.95", "10"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "26",
+            "minangle": "0",
+            "radius": "3"
+        }, 
+        {
+            "center": ["14.25", "10.5"],
+            "class": "WallArcElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "maxangle": "26",
+            "minangle": "0",
+            "radius": "3"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "position": ["9.32", "23.5929", "15.64", "11.3279"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [255, 255, 0],
+            "friction": "0",
+            "inactiveLayerColor": [255, 255, 0, 64],
+            "layer": 2,
+            "position": ["10.49", "24.25", "16.94", "11.83"]
+        }, 
+        {
+            "center": ["4.55", "10.5"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "180",
+            "minangle": "143.5",
+            "radius": "3"
+        }, 
+        {
+            "center": ["5.85", "10"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "180",
+            "minangle": "143.5",
+            "radius": "3"
+        }, 
+        {
+            "center": [7.6, 22.5],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "-36.5",
+            "minangle": "0",
+            "radius": "3"
+        }, 
+        {
+            "center": ["6.3", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "maxangle": "-36.5",
+            "minangle": "0",
+            "radius": "3"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": [2.147817, 12.291475, 8.706521, 21.214552]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": [3.449436, 11.791475, 10.008141, 20.714552]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": ["1.55", "10.5", "1.55", "8.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 255],
+            "friction": "0",
+            "inactiveLayerColor": [0, 255, 255, 64],
+            "layer": 3,
+            "position": ["2.85", "10", "2.85", "8.5"]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "LeftRampSensor_Enter",
+            "rect": [7.806774, 28.493794, 8.932485, 29.69459]
+        }, 
+        {
+            "ballLayerFrom": 3,
+            "class": "SensorElement",
+            "id": "CenterRampSensor_Enter",
+            "rect": [6.047632, 26.803483, 7.124832, 27.907183]
+        }, 
+        {
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "id": "RightRampSensor_Enter",
+            "rect": ["13.9018", "28.2528", "15.1026", "29.4285"]
+        }
+    ],
+    "gravity": 4,
+    "height": 30,
+    "launchDeadZone": ["18.8", "0", "20", "1.4"],
+    "launchPosition": [19.3, 3],
+    "launchVelocity": ["0", "16"],
+    "launchVelocityRandomDelta": ["0", "0.6"],
+    "name": "Royal Flush",
+    "numballs": 3,
+    "script": "// def deck = [];\u000adef hand = [];\u000adef handBonus = 0;\u000adef launchBarrier = null;\u000a\u000aenum MultiballStatus {INACTIVE, STARTING, ACTIVE};\u000adef multiballStatus = MultiballStatus.INACTIVE;\u000a\u000adef allRanks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].asImmutable();\u000adef allSuits = ['S', 'H', 'D', 'C'].asImmutable();\u000a\u000adef allCards = ({-> \u000a  def cards = [];\u000a  allRanks.each {r -> allSuits.each {s -> cards << [rank: r, suit: s]};\u000a  };\u000a  return cards.asImmutable();\u000a})();\u000a\u000adef leftRampCard = null;\u000adef rightRampCard = null;\u000a\u000adef suitColors = [\u000a  H: Color.fromRGB(235, 60, 70),\u000a  D: Color.fromRGB(90, 140, 255),\u000a  C: Color.fromRGB(80, 210, 100),\u000a  S: Color.fromRGB(225, 225, 235),\u000a];\u000adef suitNames = [H: 'Hearts', D: 'Diamonds', C: 'Clubs', S: 'Spades'];\u000adef rankNames = [2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'];\u000a// 14-segment endpoints in a unit box (x in -0.5..0.5, y in -0.8..0.8).\u000adef segments = [\u000a  a:  [-0.44, 0.8, 0.44, 0.8],\u000a  b:  [0.5, 0.74, 0.5, 0.06],\u000a  c:  [0.5, -0.06, 0.5, -0.74],\u000a  d:  [-0.44, -0.8, 0.44, -0.8],\u000a  e:  [-0.5, -0.74, -0.5, -0.06],\u000a  f:  [-0.5, 0.06, -0.5, 0.74],\u000a  g1: [-0.44, 0, -0.06, 0],\u000a  g2: [0.06, 0, 0.44, 0],\u000a  i:  [0, 0.74, 0, 0.06],\u000a  j:  [0.4, 0.7, 0.1, 0.1],\u000a  l:  [0, -0.74, 0, -0.06],\u000a  m:  [0.4, -0.7, 0.1, -0.1],\u000a];\u000adef rankSegments = [\u000a  2:  ['a', 'b', 'g1', 'g2', 'e', 'd'],\u000a  3:  ['a', 'b', 'g1', 'g2', 'c', 'd'],\u000a  4:  ['f', 'g1', 'g2', 'b', 'c'],\u000a  5:  ['a', 'f', 'g1', 'g2', 'c', 'd'],\u000a  6:  ['a', 'f', 'g1', 'g2', 'c', 'd', 'e'],\u000a  7:  ['a', 'b', 'c'],\u000a  8:  ['a', 'b', 'c', 'd', 'e', 'f', 'g1', 'g2'],\u000a  9:  ['a', 'b', 'c', 'd', 'f', 'g1', 'g2'],\u000a  10: ['a', 'i', 'l'],\u000a  11: ['b', 'c', 'd', 'e'],\u000a  12: ['a', 'b', 'c', 'd', 'e', 'f', 'm'],\u000a  13: ['f', 'e', 'g1', 'j', 'm'],\u000a  14: ['a', 'b', 'c', 'e', 'f', 'g1', 'g2'],\u000a];\u000a\u000a// Returns shapes for one suit glyph centered at (gx, gy) with size s.\u000adef suitShapes = {suit, gx, gy, s, color ->\u000a  def shapes = [];\u000a  if (suit == 'H') {\u000a    shapes << Shape.Arc.create(gx - 0.23*s, gy + 0.17*s, 0.25*s, 0.25*s, 0, 180, 0, color, null);\u000a    shapes << Shape.Arc.create(gx + 0.23*s, gy + 0.17*s, 0.25*s, 0.25*s, 0, 180, 0, color, null);\u000a    shapes << Shape.Line.create(gx - 0.48*s, gy + 0.13*s, gx, gy - 0.5*s, 0, color, null);\u000a    shapes << Shape.Line.create(gx + 0.48*s, gy + 0.13*s, gx, gy - 0.5*s, 0, color, null);\u000a  }\u000a  else if (suit == 'D') {\u000a    shapes << Shape.Line.create(gx, gy + 0.5*s, gx + 0.36*s, gy, 0, color, null);\u000a    shapes << Shape.Line.create(gx + 0.36*s, gy, gx, gy - 0.5*s, 0, color, null);\u000a    shapes << Shape.Line.create(gx, gy - 0.5*s, gx - 0.36*s, gy, 0, color, null);\u000a    shapes << Shape.Line.create(gx - 0.36*s, gy, gx, gy + 0.5*s, 0, color, null);\u000a  }\u000a  else if (suit == 'C') {\u000a    shapes << Shape.Circle.create(gx, gy + 0.26*s, 0.21*s, Shape.FillType.SOLID, 0, color, null);\u000a    shapes << Shape.Circle.create(gx - 0.23*s, gy - 0.06*s, 0.21*s, Shape.FillType.SOLID, 0, color, null);\u000a    shapes << Shape.Circle.create(gx + 0.23*s, gy - 0.06*s, 0.21*s, Shape.FillType.SOLID, 0, color, null);\u000a    shapes << Shape.Line.create(gx, gy - 0.1*s, gx, gy - 0.5*s, 0, color, null);\u000a  }\u000a  else {\u000a    shapes << Shape.Line.create(gx, gy + 0.5*s, gx - 0.4*s, gy - 0.08*s, 0, color, null);\u000a    shapes << Shape.Line.create(gx, gy + 0.5*s, gx + 0.4*s, gy - 0.08*s, 0, color, null);\u000a    shapes << Shape.Arc.create(gx - 0.2*s, gy - 0.14*s, 0.2*s, 0.2*s, 180, 360, 0, color, null);\u000a    shapes << Shape.Arc.create(gx + 0.2*s, gy - 0.14*s, 0.2*s, 0.2*s, 180, 360, 0, color, null);\u000a    shapes << Shape.Line.create(gx, gy - 0.16*s, gx, gy - 0.5*s, 0, color, null);\u000a  }\u000a  return shapes;\u000a};\u000a\u000a// Returns shapes for one card of width w centered at (cx, cy). A null card draws an\u000a// empty slot outline.\u000adef cardShapes = {cx, cy, w, card ->\u000a  def shapes = [];\u000a  def hw = 0.5 * w;\u000a  def hh = 0.7 * w;\u000a  def border = (card != null) ? Color.fromRGB(210, 210, 220) : Color.fromRGB(70, 70, 85);\u000a  shapes << Shape.Line.create(cx - hw, cy - hh, cx - hw, cy + hh, 0, border, null);\u000a  shapes << Shape.Line.create(cx - hw, cy + hh, cx + hw, cy + hh, 0, border, null);\u000a  shapes << Shape.Line.create(cx + hw, cy + hh, cx + hw, cy - hh, 0, border, null);\u000a  shapes << Shape.Line.create(cx + hw, cy - hh, cx - hw, cy - hh, 0, border, null);\u000a  if (card != null) {\u000a    def color = suitColors[card.suit];\u000a    def ds = 0.42 * w;\u000a    def dy = cy + 0.27 * w;\u000a    rankSegments[card.rank].each {name ->\u000a      def u = segments[name];\u000a      shapes << Shape.Line.create(cx + u[0]*ds, dy + u[1]*ds, cx + u[2]*ds, dy + u[3]*ds,\u000a          0, color, null);\u000a    };\u000a    shapes.addAll(suitShapes(card.suit, cx, cy - 0.38 * w, 0.55 * w, color));\u000a  }\u000a  return shapes;\u000a};\u000a\u000a\u000adef handCardXs = [5.9, 7.65, 9.4, 11.15, 12.9];\u000adef handCardY = 11;\u000adef handCardSize = 1.5;\u000a\u000adef leftRampCardPos = [2.8, 17.5];\u000adef leftRampCardSize = 1.6;\u000adef rightRampCardPos = [16.5, 16.6];\u000adef rightRampCardSize = 1.6;\u000a\u000adef rebuildShapes = {field ->\u000a  def shapes = [];\u000a  if (leftRampCard != null) shapes.addAll(cardShapes(leftRampCardPos[0], leftRampCardPos[1], leftRampCardSize, leftRampCard));\u000a  if (rightRampCard != null) shapes.addAll(cardShapes(rightRampCardPos[0], rightRampCardPos[1], rightRampCardSize, rightRampCard));\u000a  (0..4).each {i ->\u000a    shapes.addAll(cardShapes(handCardXs[i], handCardY, handCardSize, (i < hand.size()) ? hand[i] : null));\u000a  };\u000a  field.setShapes(shapes);\u000a};\u000a\u000adef drawRandomCards = {n, usedCards -> \u000a  def deck = allCards.shuffled();\u000a  deck.removeAll(usedCards);\u000a  return deck.subList(0, n);\u000a};\u000a\u000adef drawRandomCard = {usedCards -> drawRandomCards(1, usedCards)[0]};\u000a\u000adef bestRankForStraight = {unsortedRanks -> \u000a  def ranks = unsortedRanks.toSorted {-it};\u000a  if (ranks.toSet().size() < ranks.size()) {\u000a    // One or more pairs, no straight possible.\u000a    return null;\u000a  }\u000a  if (ranks.size() == 1) {\u000a    // JT has better straight possibilities than QJ.\u000a    return ranks[0] >= 11 ? ranks[0] - 1 : ranks[0] + 1;\u000a  }\u000a  // Check for wheel.\u000a  if (ranks.contains(14) && ranks.every {it == 14 || it <= 5}) {\u000a    return [14, 5, 4, 3, 2].find {!ranks.contains(it)};\u000a  }\u000a  def diff = ranks[0] - ranks[-1];\u000a  if (diff > 4) {\u000a    return null;\u000a  }\u000a  if (diff == ranks.size() - 1) {\u000a    // No gaps, e.g. 987.\u000a    return ranks[0] == 14 ? ranks[-1] - 1 : ranks[0] + 1;\u000a  }\u000a  else {\u000a    // Use highest gap.\u000a    return (ranks[0]..ranks[-1]).find {!ranks.contains(it)};\u000a  }\u000a};\u000a\u000adef groupSizesToRanks = {ranks ->\u000a  // [8, 8, 7, 6, 6] -> [2: [8, 6], 1: [7]]\u000a  def groupSizes = [:];\u000a  ranks.toSet().each {r ->\u000a    def size = ranks.count(r);\u000a    if (!groupSizes.containsKey(size)) {\u000a      groupSizes[size] = []\u000a    }\u000a    groupSizes[size].add(r);\u000a  };\u000a  return groupSizes;\u000a}\u000a\u000adef drawLuckyCards = {h -> \u000a  def left = null;\u000a  def right = null;\u000a\u000a  def randSuits = allSuits.shuffled();\u000a  def handRanks = h.collect {it.rank}.sort {-it};\u000a  if (h.size() == 1) {\u000a    // Left for pair, right to build straight flush.\u000a    left = [\u000a      rank: h[0].rank,\u000a      suit: randSuits.find {it != h[0].suit},\u000a    ];\u000a    right = [\u000a      rank: h[0].rank > 10 ? h[0].rank - 1 : h[0].rank + 1,\u000a      suit: h[0].suit,\u000a    ];\u000a  }\u000a  else if (h.size() == 2) {\u000a    def remainingSuits = randSuits - h.collect {it.suit};\u000a    if (h[0].rank == h[1].rank) {\u000a      // Both make 3 of a kind.\u000a      left = [rank: handRanks[0], suit: remainingSuits[0]];\u000a      right = [rank: handRanks[0], suit: remainingSuits[1]];\u000a    }\u000a    else {\u000a      // Left makes pair, right makes straight and/or flush if possible, the other pair if not.\u000a      left = [\u000a        rank: handRanks[0],\u000a        suit: remainingSuits[0],\u000a      ];\u000a      def straightRank = bestRankForStraight(handRanks);\u000a      right = (straightRank != null)\u000a        ? [rank: straightRank, suit: h[0].suit]\u000a        : [rank: handRanks[1], suit: remainingSuits[1]];\u000a    }\u000a  }\u000a  else if (h.size() == 3) {\u000a    def groups = groupSizesToRanks(handRanks);\u000a    if (groups[3] != null) {\u000a      def remainingSuit = (randSuits - h.collect {it.suit})[0];\u000a      left = right = [rank: h[0].rank, suit: remainingSuit];\u000a    }\u000a    else if (groups[2] != null) {\u000a      def remainingSuits = randSuits - (h.findAll {it.rank == groups[2][0]}.collect {it.suit});\u000a      left = [rank: groups[2][0], suit: remainingSuits[0]];\u000a      right = [rank: groups[2][0], suit: remainingSuits[1]];\u000a    }\u000a    else {\u000a      // No pair, left matches highest card, right makes a straight if possible.\u000a      def remainingSuits = randSuits - (h.findAll {it.rank == groups[1][0]}.collect {it.suit});\u000a      def straightRank = bestRankForStraight(handRanks);\u000a      left = [rank: groups[1][0], suit: remainingSuits[0]];\u000a      right = (straightRank != null)\u000a        ? [rank: straightRank, suit: h[0].suit]\u000a        : [rank: groups[1][0], suit: remainingSuits[1]];\u000a    }\u000a  }\u000a  else if (h.size() == 4) {\u000a    def groups = groupSizesToRanks(handRanks);\u000a    if (groups[4] != null) {\u000a      // Already have 4 of a kind, last card is irrelevant.\u000a      def r = h[0].rank == 14 ? 13 : 14;\u000a      left = [rank: r, suit: randSuits[0]];\u000a      right = [rank: r, suit: randSuits[1]];\u000a    }\u000a    else if (groups[3] != null) {\u000a      def remainingSuit = (randSuits - h.collect {it.suit})[0];\u000a      left = right = [rank: groups[3][0], suit: remainingSuit];\u000a    }\u000a    else if (groups[2] != null) {\u000a      def remainingSuits = randSuits - (h.findAll {it.rank == groups[2][0]}.collect {it.suit});\u000a      left = [rank: groups[2][0], suit: remainingSuits[0]];\u000a      right = [rank: groups[2][0], suit: remainingSuits[1]];\u000a    }\u000a    else {\u000a      def remainingSuits = randSuits - (h.findAll {it.rank == groups[1][0]}.collect {it.suit});\u000a      def straightRank = bestRankForStraight(handRanks);\u000a      if (straightRank != null) {\u000a        left = [rank: straightRank, suit: h[0].suit];\u000a        // If left is above top card in hand, we're open-ended. Could be wheel if 5432.\u000a        if (straightRank > handRanks[0]) {\u000a          def bottom = handRanks[-1] == 2 ? 14 : handRanks[-1] - 1;\u000a          right = [rank: bottom, suit: h[0].suit];\u000a        }\u000a        else {\u000a          right = [rank: straightRank, suit: h[0].suit];\u000a        }\u000a      }\u000a      else if (h.every {it.suit == h[0].suit}) {\u000a        // Possible flush.\u000a        def remainingRanks = (allRanks - handRanks).toSorted {-it};\u000a        left = [rank: remainingRanks[0], suit: h[0].suit];\u000a        right = [rank: remainingRanks[1], suit: h[0].suit];\u000a      }\u000a      else {\u000a        left = [rank: groups[1][0], suit: remainingSuits[0]];\u000a        right = [rank: groups[1][0], suit: remainingSuits[1]];\u000a      }\u000a    }\u000a\u000a  }\u000a  return [left, right];\u000a}\u000a\u000a\u000adef evaluateHand = {->\u000a  def counts = [:];\u000a  hand.each {c -> counts[c.rank] = (counts[c.rank] ?: 0) + 1};\u000a  def groups = counts.values().sort {-it};\u000a  def isFlush = hand.every {it.suit == hand[0].suit};\u000a  def ranks = hand.collect {it.rank}.sort();\u000a  // A2345 is a straight.\u000a  def isStraight = groups[0] == 1 && (ranks[0] + 4 == ranks[4] || ranks == [2, 3, 4, 5, 14]);\u000a\u000a  if (isFlush && ranks == [10, 11, 12, 13, 14]) return [name: 'Royal Flush', bonus: 100000, multiball: true];\u000a  if (isStraight && isFlush) return [name: 'Straight Flush', bonus: 75000, multiball: true];\u000a  if (groups[0] == 4) return [name: 'Four of a Kind', bonus: 60000, multiball: true];\u000a  if (groups[0] == 3 && groups[1] == 2) return [name: 'Full House', bonus: 50000, multiball: true];\u000a  if (isFlush) return [name: 'Flush', bonus: 40000, multiball: true];\u000a  if (isStraight) return [name: 'Straight', bonus: 35000, multiball: true];\u000a  if (groups[0] == 3) return [name: 'Three of a Kind', bonus: 30000, multiball: true];\u000a  if (groups[0] == 2 && groups[1] == 2) return [name: 'Two Pair', bonus: 20000, multiball: false];\u000a  if (groups[0] == 2) return [name: 'Pair', bonus: 10000, multiball: false];\u000a  return [name: 'High Card', bonus: 5000, multiball: false];\u000a};\u000a\u000adef startMultiball = {field ->\u000a  multiballStatus = MultiballStatus.STARTING;\u000a  def launchBall = {if (field.getBalls().size() < 3) field.launchBall();};\u000a  field.scheduleAction(1000, launchBall);\u000a  field.scheduleAction(3500, {\u000a    launchBall();\u000a    multiballStatus = MultiballStatus.ACTIVE;\u000a  });\u000a};\u000a\u000adef scoreMultiballJackpot = {field, ball ->\u000a  def jackpot = handBonus + evaluateHand().bonus;\u000a  field.addScoreWithAnimation(jackpot, ball.getPosition());\u000a  field.showGameMessage(\"Jackpot!\", 1500);\u000a};\u000a\u000adef clearMultiballStatus = {field ->\u000a  multiballStatus = MultiballStatus.INACTIVE;\u000a  hand.clear();\u000a  (leftRampCard, rightRampCard) = drawRandomCards(2, []);\u000a  rebuildShapes(field);\u000a};\u000a\u000adef cardCollectScore = 2500;\u000adef centerRampScore = 2500;\u000a\u000adef collectCard = {field, ball, card ->\u000a  hand << card;\u000a  if (hand.size() < 5) {\u000a    field.showGameMessage(\"${rankNames[card.rank]} of ${suitNames[card.suit]}\", 1500);\u000a    field.addScoreWithAnimation(cardCollectScore, ball.getPosition());\u000a\u000a    if (card == leftRampCard) {\u000a      leftRampCard = drawRandomCard(hand + [rightRampCard]);\u000a    }\u000a    if (card == rightRampCard) {\u000a      rightRampCard = drawRandomCard(hand + [leftRampCard]);\u000a    }\u000a  }\u000a  else {\u000a    def result = evaluateHand();\u000a    def jackpot = result.bonus + handBonus;\u000a    field.addScoreWithAnimation(jackpot, ball.getPosition());\u000a    field.showGameMessage(\"${result.name}! +${jackpot}\", 2500);\u000a    if (result.multiball) {\u000a      startMultiball(field);\u000a      leftRampCard = rightRampCard = null;\u000a    }\u000a    else {\u000a      hand.clear();\u000a      (leftRampCard, rightRampCard) = drawRandomCards(2, []);\u000a    }\u000a  }\u000a  rebuildShapes(field);\u000a};\u000a\u000adef handleLeftRamp = {field, ball ->\u000a  if (multiballStatus == MultiballStatus.INACTIVE) {\u000a    collectCard(field, ball, leftRampCard);\u000a  }\u000a  else {\u000a    scoreMultiballJackpot(field, ball);\u000a  }\u000a}\u000a\u000adef handleRightRamp = {field, ball ->\u000a  if (multiballStatus == MultiballStatus.INACTIVE) {\u000a    collectCard(field, ball, rightRampCard);\u000a  }\u000a  else {\u000a    scoreMultiballJackpot(field, ball);\u000a  }\u000a}\u000a\u000adef handleCenterRamp = {field, ball ->\u000a  if (multiballStatus == MultiballStatus.INACTIVE) {\u000a    if (hand.size() == 0) {\u000a      hand << leftRampCard;\u000a    }\u000a    (leftRampCard, rightRampCard) = drawLuckyCards(hand);\u000a    field.showGameMessage(\"Lucky draw!\", 2500);\u000a    field.addScoreWithAnimation(centerRampScore, ball.getPosition());\u000a    rebuildShapes(field);\u000a  }\u000a  else {\u000a    scoreMultiballJackpot(field, ball);\u000a  }\u000a};\u000a\u000adef runTests = {->\u000a  try {\u000a    assert bestRankForStraight([9]) == 10: \"Bad straight, expected 9->10\";\u000a    assert bestRankForStraight([10]) == 11: \"Bad straight, expected 10->J\";\u000a    assert bestRankForStraight([11]) == 10: \"Bad straight, expected J->10\";\u000a    assert bestRankForStraight([14]) == 13: \"Bad straight, expected A->K\";\u000a\u000a    assert bestRankForStraight([10, 5]) == null: \"T5 has no straight\";\u000a    assert bestRankForStraight([7, 8]) == 9: \"78->9 for straight\";\u000a    assert bestRankForStraight([10, 13]) == 12: \"KT->Q for straight\";\u000a    assert bestRankForStraight([3, 14]) == 5: \"A3->5 for wheel\";\u000a    assert bestRankForStraight([10, 6, 7]) == 9: \"T76->9 for straight\";\u000a    assert bestRankForStraight([10, 5, 7]) == null: \"T75 has no straight\";\u000a    assert bestRankForStraight([2, 14, 5, 4]) == 3: \"A542->3 for wheel\";\u000a    assert bestRankForStraight([2, 4, 3, 5]) == 6: \"5432->6 for straight\";\u000a    assert bestRankForStraight([9, 5, 8, 6]) == 7: \"9865->7 for straight\";\u000a    assert bestRankForStraight([11, 14, 13, 12]) == 10: \"AKQJ->T for straight\";\u000a\u000a    {\u000a      def (lucky1, lucky2) = drawLuckyCards([[rank: 10, suit: 'H'], [rank: 6, suit: 'H']]).toSorted {it.rank};\u000a      assert lucky1 == [rank: 9, suit: 'H']: \"Th 6h -> 9h lucky\";\u000a      assert lucky2.rank == 10: \"Lucky pair\";\u000a      assert lucky2.suit != 'H': \"Lucky pair doesn't duplicate suit\";\u000a    }\u000a    {\u000a      def (lucky1, lucky2) = (drawLuckyCards([[rank: 5, suit: 'H'], [rank: 10, suit: 'S']]).toSorted {it.rank});\u000a      assert lucky1.rank == 5 && lucky1.suit != 'H': \"Lucky low pair\";\u000a      assert lucky2.rank == 10 && lucky2.suit != 'S': \"Lucky high pair\";\u000a    }\u000a    {\u000a      def (lucky1, lucky2) = drawLuckyCards([\u000a        [rank: 10, suit: 'H'],\u000a        [rank: 9, suit: 'H'],\u000a        [rank: 8, suit: 'H'],\u000a        [rank: 7, suit: 'H'],\u000a      ]).toSorted {it.rank};\u000a      assert lucky1 == [rank: 6, suit: 'H']: \"Lucky straight flush bottom\";\u000a      assert lucky2 == [rank: 11, suit: 'H']: \"Lucky straight flush top\";\u000a    }\u000a    {\u000a      def (lucky1, lucky2) = drawLuckyCards([\u000a        [rank: 13, suit: 'S'],\u000a        [rank: 9, suit: 'S'],\u000a        [rank: 8, suit: 'S'],\u000a        [rank: 4, suit: 'S'],\u000a      ]).toSorted {it.rank};\u000a      assert lucky1 == [rank: 12, suit: 'S']: \"Lucky flush Q\";\u000a      assert lucky2 == [rank: 14, suit: 'S']: \"Lucky flush A\";\u000a    }\u000a  }\u000a  catch (AssertionError ex) {\u000a    println(ex);\u000a    return ex.getMessage();\u000a  }\u000a  return \"Tests passed!\";\u000a}\u000a\u000a\u000areturn [\u000a  gameStarted: {field ->\u000a    // Uncomment to run \"unit tests\"\u000a    // field.showGameMessage(runTests(), 3000);\u000a    launchBarrier = field.getFieldElementById('LaunchBarrier');\u000a    launchBarrier.setRetracted(true);\u000a    hand.clear();\u000a    multiballStatus = MultiballStatus.INACTIVE;\u000a    handBonus = 0;\u000a    (leftRampCard, rightRampCard) = drawRandomCards(2, []);\u000a    rebuildShapes(field);\u000a  },\u000a\u000a  ballLost: {field ->\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    def prevSensorId = ball.getMostRecentSensorId();\u000a\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftRampSensor_Trigger' && prevSensorId == 'LeftRampSensor_Enter') {\u000a      handleLeftRamp(field, ball);\u000a    }\u000a    else if (sensorId == 'RightRampSensor_Trigger' && prevSensorId == 'RightRampSensor_Enter') {\u000a      handleRightRamp(field, ball);\u000a    }\u000a    else if (sensorId == 'CenterRampSensor_Trigger' && prevSensorId == 'CenterRampSensor_Enter') {\u000a      handleCenterRamp(field, ball);\u000a    }\u000a    else if (sensorId.startsWith('RampDropSensor')) {\u000a      if (ball.getLayer() != 0 && ball.getLinearVelocity().len() < 0.05) {\u000a        ball.moveToLayer(0);\u000a      }\u000a    }\u000a  },\u000a\u000a  processCollision: {field, element, hitBody, ball ->\u000a    def id = element.getElementId();\u000a    if (id.startsWith('RampEndCap')) {\u000a      // The ball can bounce hard off the cap at the bottom of a ramp; bleed off most of its\u000a      // velocity so it settles into the pocket instead of rebounding back down the ramp.\u000a      def v = ball.getLinearVelocity();\u000a      ball.getBody().setLinearVelocity((v.x * 0.2f).toFloat(), (v.y * 0.2f).toFloat());\u000a      return;\u000a    }\u000a    if (id == 'LeftCycleTargets') {\u000a      // If this is the last remaining target, allDropTargetsInGroupHit will draw a lucky card\u000a      // and we don't want to do anything when this is subsequently called.\u000a      if (leftRampCard != null && !element.allTargetsHit()) {\u000a        leftRampCard = drawRandomCard(hand + [leftRampCard, rightRampCard])\u000a      }\u000a      rebuildShapes(field);\u000a    }\u000a    else if (id == 'RightCycleTargets') {\u000a      if (rightRampCard != null && !element.allTargetsHit()) {\u000a        rightRampCard = drawRandomCard(hand + [leftRampCard, rightRampCard])\u000a      }\u000a      rebuildShapes(field);\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup, ball ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a    else if (id == \"LeftCycleTargets\") {\u000a      if (hand.size() > 0 && hand.size() < 5) {\u000a        leftRampCard = drawLuckyCards(hand)[0];\u000a        rebuildShapes(field);\u000a        field.showGameMessage(\"Lucky card!\", 2000);\u000a      }\u000a    }\u000a    else if (id == \"RightCycleTargets\") {\u000a      if (hand.size() > 0 && hand.size() < 5) {\u000a        rightRampCard = drawLuckyCards(hand)[1];\u000a        rebuildShapes(field);\u000a        field.showGameMessage(\"Lucky card!\", 2000);\u000a      }\u000a    }\u000a  },\u000a\u000a  allRolloversInGroupActivated: {field, rolloverGroup, ball ->\u000a    if (rolloverGroup.getElementId() == 'FlipperRollovers') {\u000a      rolloverGroup.setAllRolloversActivated(false);\u000a      field.incrementAndDisplayScoreMultiplier(1500);\u000a    }\u000a    else if (rolloverGroup.getElementId() == 'TopRollovers') {\u000a      rolloverGroup.setAllRolloversActivated(false);\u000a      handBonus += 1000;\u000a      field.showGameMessage(\"Hand bonus increased\", 1500);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (multiballStatus == MultiballStatus.ACTIVE && field.getBalls().size()<=1) {\u000a      clearMultiballStatus(field);\u000a    }\u000a  },\u000a]\u000a",
+    "targetTimeRatio": 2.3,
+    "version": 1,
+    "width": 20
+}
