@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="512"
+   height="384"
+   viewBox="0 0 512 384"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="wallarc.svg"
+   inkscape:export-filename="/Users/brian/programs/PinballEditor/src/com/dozingcatsoftware/vectorpinball/images/wall.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.99"
+     inkscape:cx="222.60456"
+     inkscape:cy="153.59208"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1242"
+     inkscape:window-height="972"
+     inkscape:window-x="1240"
+     inkscape:window-y="243"
+     inkscape:window-maximized="0"
+     showguides="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4226" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-668.36213)">
+    <path
+       transform="matrix(0.10387892,-0.99458995,0.99458995,0.10387892,0,0)"
+       style="fill:none;stroke:#000080;stroke-width:3.9920001;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m -775.51507,137.69438 a 252.04552,252.04552 0 0 1 59.25286,262.67495 252.04552,252.04552 0 0 1 -211.79987,166.28244 l -25.67608,-250.73429 z"
+       id="path4260" />
+    <circle
+       style="fill:#000080;stroke:#000080"
+       id="path3342"
+       cx="61.053196"
+       cy="784.27899"
+       r="33.840111" />
+    <circle
+       r="33.840111"
+       cy="979.08453"
+       cx="467.17349"
+       id="circle3346"
+       style="fill:#000080;stroke:#000080" />
+  </g>
+</svg>

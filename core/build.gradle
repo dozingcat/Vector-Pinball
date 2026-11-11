@@ -1,0 +1,24 @@
+// Game model, field elements, and table delegates shared by the Android app and the editor.
+// This module must not depend on Android or JavaFX.
+plugins {
+    id 'java-library'
+}
+
+// Match the Android app's Java 8 language level. Newer JDK APIs (e.g. Set.of) are available on
+// Android through the app's core library desugaring, so this doesn't restrict API usage; check
+// https://developer.android.com/studio/write/java8-support-table before using new ones.
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+tasks.withType(JavaCompile).configureEach {
+    // Don't warn that Java 8 is obsolete.
+    options.compilerArgs << '-Xlint:-options'
+}
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$rootProject.gdxVersion"
+    api "com.badlogicgames.gdx:gdx-box2d:$rootProject.gdxVersion"
+
+    testImplementation 'junit:junit:4.13.2'
+}

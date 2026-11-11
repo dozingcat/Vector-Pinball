@@ -9,6 +9,12 @@ buildscript {
     }
 }
 
+// Shared by core, app, and editor so they all use the same physics engine version.
+// TODO: Update to latest 3.x gdx-box2d version which has breaking changes.
+ext {
+    gdxVersion = '1.13.0'
+}
+
 allprojects {
     repositories {
         google()
