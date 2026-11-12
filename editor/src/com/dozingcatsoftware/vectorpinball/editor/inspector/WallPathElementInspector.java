@@ -51,8 +51,10 @@ public class WallPathElementInspector extends ElementInspector {
                 EditableWallPathElement.FRICTION_PROPERTY, localizedString("Friction")));
 
         box.getChildren().add(createHBoxWithLabel(localizedString("Points")));
+        box.getChildren().add(createHBoxWithLabel(
+                localizedString("x, y, curve distance before and after point")));
 
-        // Positions: array of 2-element decimal arrays
+        // Positions: array of [x, y], [x, y, curveDistance], or [x, y, curveBefore, curveAfter].
         pointRegion = new VBox(5);
         box.getChildren().add(pointRegion);
 
@@ -67,8 +69,9 @@ public class WallPathElementInspector extends ElementInspector {
         while (pointRows.size() < positions.size()) {
             addPointRow();
         }
-        while (pointRows.size() < positions.size()) {
-            removePointRow(pointRows.get(pointRows.size()-1));
+        while (pointRows.size() > positions.size()) {
+            PointRow row = pointRows.remove(pointRows.size()-1);
+            pointRegion.getChildren().remove(row.region);
         }
         for (int i=0; i<positions.size(); i++) {
             List<Object> pos = positions.get(i);
@@ -76,6 +79,11 @@ public class WallPathElementInspector extends ElementInspector {
             for (int j=0; j<2; j++) {
                 textFields.get(j).setText(Utils.toFormattedNumber(pos.get(j)));
             }
+            // [x, y, distance] uses the same curve distance before and after the point.
+            Object before = (pos.size() > 2) ? pos.get(2) : null;
+            Object after = (pos.size() > 3) ? pos.get(3) : before;
+            textFields.get(2).setText(Utils.toFormattedNumber(before));
+            textFields.get(3).setText(Utils.toFormattedNumber(after));
         }
     }
 
@@ -83,9 +91,10 @@ public class WallPathElementInspector extends ElementInspector {
         PointRow row = new PointRow();
         row.region = new HBox(5);
         row.textFields = new ArrayList<>();
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<4; i++) {
             DecimalTextField field = new DecimalTextField();
-            field.setPrefWidth(80);
+            // The last two fields are the optional curve distances.
+            field.setPrefWidth(i < 2 ? 80 : 50);
             field.setChangeHandler(this::updatePointsList);
 
             row.region.getChildren().add(field);
@@ -163,7 +172,22 @@ public class WallPathElementInspector extends ElementInspector {
         List<List<String>> newPositions = new ArrayList<>();
         for (int i=0; i<pointRows.size(); i++) {
             List<TextField> fields = pointRows.get(i).textFields;
-            newPositions.add(Arrays.asList(fields.get(0).getText(), fields.get(1).getText()));
+            List<String> pos = new ArrayList<>(
+                    Arrays.asList(fields.get(0).getText(), fields.get(1).getText()));
+            String before = fields.get(2).getText().trim();
+            String after = fields.get(3).getText().trim();
+            boolean hasBefore = asDouble(before) != 0;
+            boolean hasAfter = asDouble(after) != 0;
+            if (hasBefore || hasAfter) {
+                if (before.equals(after)) {
+                    pos.add(before);
+                }
+                else {
+                    pos.add(hasBefore ? before : "0");
+                    pos.add(hasAfter ? after : "0");
+                }
+            }
+            newPositions.add(pos);
         }
         getPropertyContainer().setProperty(EditableWallPathElement.POSITIONS_PROPERTY, newPositions);
         notifyChanged();
