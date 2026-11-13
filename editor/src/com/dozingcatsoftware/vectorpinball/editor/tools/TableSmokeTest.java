@@ -14,6 +14,7 @@ import com.dozingcatsoftware.vectorpinball.groovy.GroovyFieldDelegateBuilder;
 import com.dozingcatsoftware.vectorpinball.model.AudioPlayer;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.editor.StringResolver;
 import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
@@ -36,7 +37,14 @@ public class TableSmokeTest {
         Map<String, Object> fieldMap = JSONUtils.mapFromJSONString(json);
         long simSeconds = (args.length > 1) ? Long.parseLong(args[1]) : 120;
 
-        IStringResolver stringResolver = (key, params) -> key;
+        // Use the real strings so that missing keys or bad format arguments cause errors.
+        StringResolver appStrings = new StringResolver();
+        IStringResolver stringResolver = (key, params) -> {
+            if (!appStrings.hasString(key)) {
+                throw new IllegalArgumentException("Missing string resource: " + key);
+            }
+            return appStrings.resolveString(key, params);
+        };
         Function<Field, Field.Delegate> delegateFn = (f -> {
             String script = f.getScriptText();
             if (script != null && script.trim().length() > 0) {

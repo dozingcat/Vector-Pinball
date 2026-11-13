@@ -52,9 +52,9 @@
     <string name="multiball_started_message">Wielopiłka!</string>
     <string name="multiplier_message">Mnożnik %1$dx</string>
     <string name="shoot_red_bumper_message">Traf w czerwony dzwon</string>
-    <string name="bumper_multiplier_message">Mnożnik tarczy %1$d%%"</string>
+    <string name="bumper_multiplier_message">Mnożnik tarczy %1$d%%</string>
     <string name="jackpot_received_message">Premia!</string>
-    <string name="jackpot_received_with_multipler_message">%1$dx premia!</string>
+    <string name="jackpot_received_with_multiplier_message">%1$dx premia!</string>
     <string name="multiball_ready_message">Wielopiłka gotowa</string>
     <string name="ball_lock_ready_message">Blokada piłki gotowa</string>
     <string name="ball_locked_message">Zablokowano piłkę %1$d</string>

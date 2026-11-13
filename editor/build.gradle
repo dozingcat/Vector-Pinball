@@ -22,6 +22,23 @@ sourceSets {
             srcDirs "resources", "../shared-assets"
         }
     }
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+
+// Game messages come from the Android app's string resources; see StringResolver.
+processResources {
+    from('../app/src/main/res/values/strings.xml') {
+        into 'strings'
+    }
+}
+
+test {
+    // Used by StringResolverTest to check that all message keys used in core are defined.
+    systemProperty 'vectorpinball.coreSourceDir', file('../core/src/main/java').absolutePath
 }
 
 dependencies {
@@ -29,6 +46,8 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
     implementation "com.googlecode.json-simple:json-simple:1.1.1"
     implementation group: 'org.apache.groovy', name: 'groovy', version: '5.0.1'
+
+    testImplementation 'junit:junit:4.13.2'
 }
 
 application {

@@ -52,9 +52,9 @@
     <string name="multiball_started_message">Plurglobo!</string>
     <string name="multiplier_message">Poentobligilo: %1$d×</string>
     <string name="shoot_red_bumper_message">Trafu ruĝan puŝturon</string>
-    <string name="bumper_multiplier_message">Poentpliobligilo: %1$d%%"</string>
+    <string name="bumper_multiplier_message">Poentpliobligilo: %1$d%%</string>
     <string name="jackpot_received_message">Premio!</string>
-    <string name="jackpot_received_with_multipler_message">Premio %1$d×!</string>
+    <string name="jackpot_received_with_multiplier_message">Premio %1$d×!</string>
     <string name="multiball_ready_message">Plurglobo preparita</string>
     <string name="ball_lock_ready_message">Eblas bloki globon</string>
     <string name="ball_locked_message">Globo %1$d blokita</string>
