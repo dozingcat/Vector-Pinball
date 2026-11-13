@@ -27,7 +27,7 @@
     <string name="shoot_red_bumper_message">Treffe den roten Bumper</string>
     <string name="bumper_multiplier_message">Bumper Multiplier %1$d%%</string>
     <string name="jackpot_received_message">Jackpot!</string>
-    <string name="jackpot_received_with_multipler_message">%1$dx Jackpot!</string>
+    <string name="jackpot_received_with_multiplier_message">%1$dx Jackpot!</string>
     <string name="multiball_ready_message">Multiball bereit</string>
     <string name="ball_lock_ready_message">Ball Lock bereit</string>
     <string name="ball_locked_message">Ball %1$d Locked</string>
