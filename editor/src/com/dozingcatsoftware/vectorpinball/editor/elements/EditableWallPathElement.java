@@ -78,8 +78,8 @@ public class EditableWallPathElement extends EditableFieldElement {
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         WallPathGeometry geometry = getGeometry();
-        // Accept clicks that are close to any of the points (which may not be on the path if there are
-        // curves), or close to the path itself.
+        // Accept clicks that are close to any of the points (which may not be on the path if there
+        // are curves), or close to the path itself.
         double sqDist = distance * distance;
         for (int i = 0; i < numPoints(); i++) {
             if (point.squaredDistanceTo(getSegmentX(i), getSegmentY(i)) <= sqDist) {

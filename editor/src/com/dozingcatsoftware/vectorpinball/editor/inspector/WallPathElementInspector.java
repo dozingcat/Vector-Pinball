@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -50,9 +51,8 @@ public class WallPathElementInspector extends ElementInspector {
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableWallPathElement.FRICTION_PROPERTY, localizedString("Friction")));
 
-        box.getChildren().add(createHBoxWithLabel(localizedString("Points")));
-        box.getChildren().add(createHBoxWithLabel(
-                localizedString("x, y, curve distance before and after point")));
+        box.getChildren().add(new Label("Points"));
+        box.getChildren().add(new Label("x, y, curve distance before and after point"));
 
         // Positions: array of [x, y], [x, y, curveDistance], or [x, y, curveBefore, curveAfter].
         pointRegion = new VBox(5);
@@ -94,17 +94,17 @@ public class WallPathElementInspector extends ElementInspector {
         for (int i=0; i<4; i++) {
             DecimalTextField field = new DecimalTextField();
             // The last two fields are the optional curve distances.
-            field.setPrefWidth(i < 2 ? 80 : 50);
+            field.setPrefWidth(i < 2 ? 75 : 50);
             field.setChangeHandler(this::updatePointsList);
 
             row.region.getChildren().add(field);
             row.textFields.add(field);
         }
-        Button insertButton = new Button(localizedString("Insert"));
+        Button insertButton = new Button(localizedString("+"));
         insertButton.setOnAction((event) -> insertPointRowBelow(row));
         row.region.getChildren().add(insertButton);
 
-        Button removeButton = new Button(localizedString("Remove"));
+        Button removeButton = new Button(localizedString("-"));
         removeButton.setOnAction((event) -> removePointRow(row));
         row.region.getChildren().add(removeButton);
 
