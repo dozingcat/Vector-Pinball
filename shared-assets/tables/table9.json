@@ -533,7 +533,8 @@
             "inactiveLayerColor": [255, 255, 0, 64],
             "layer": 2,
             "positions": [
-                ["15.95", "10"],
+                ["9.32", "23.5929"],
+                ["15.95", "10.7263", "0.7275"],
                 ["15.95", "8.5"]
             ]
         },
@@ -544,8 +545,9 @@
             "inactiveLayerColor": [255, 255, 0, 64],
             "layer": 2,
             "positions": [
-                ["17.25", "8.5"],
-                ["17.25", "10.5"]
+                ["10.49", "24.25"],
+                ["17.25", "11.2331", "0.7325"],
+                ["17.25", "8.5"]
             ]
         },
         {
@@ -812,8 +814,10 @@
             "inactiveLayerColor": [0, 255, 255, 64],
             "layer": 3,
             "positions": [
-                ["9.3", "23"],
-                ["9.3", "25.25"]
+                ["9.3", "25.25"],
+                ["9.3", "22.022", "0.9839"],
+                ["1.55", "11.4781", "0.9839"],
+                ["1.55", "8.5"]
             ]
         },
         {
@@ -823,8 +827,10 @@
             "inactiveLayerColor": [0, 255, 255, 64],
             "layer": 3,
             "positions": [
-                ["10.6", "22.5"],
-                ["10.6", "25.25"]
+                ["10.6", "25.25"],
+                ["10.6", "21.5198", "0.9839"],
+                ["2.85", "10.9759", "0.9839"],
+                ["2.85", "8.5"]
             ]
         },
         {
@@ -904,120 +910,6 @@
             "segments": 60,
             "xradius": "6.8",
             "yradius": "5.5"
-        },
-        {
-            "center": ["12.95", "10"],
-            "class": "WallArcElement",
-            "color": [255, 255, 0],
-            "friction": "0",
-            "inactiveLayerColor": [255, 255, 0, 64],
-            "layer": 2,
-            "maxangle": "26",
-            "minangle": "0",
-            "radius": "3"
-        },
-        {
-            "center": ["14.25", "10.5"],
-            "class": "WallArcElement",
-            "color": [255, 255, 0],
-            "friction": "0",
-            "inactiveLayerColor": [255, 255, 0, 64],
-            "layer": 2,
-            "maxangle": "26",
-            "minangle": "0",
-            "radius": "3"
-        },
-        {
-            "class": "WallElement",
-            "color": [255, 255, 0],
-            "friction": "0",
-            "inactiveLayerColor": [255, 255, 0, 64],
-            "layer": 2,
-            "position": ["9.32", "23.5929", "15.64", "11.3279"]
-        },
-        {
-            "class": "WallElement",
-            "color": [255, 255, 0],
-            "friction": "0",
-            "inactiveLayerColor": [255, 255, 0, 64],
-            "layer": 2,
-            "position": ["10.49", "24.25", "16.94", "11.83"]
-        },
-        {
-            "center": ["4.55", "10.5"],
-            "class": "WallArcElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "maxangle": "180",
-            "minangle": "143.5",
-            "radius": "3"
-        },
-        {
-            "center": ["5.85", "10"],
-            "class": "WallArcElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "maxangle": "180",
-            "minangle": "143.5",
-            "radius": "3"
-        },
-        {
-            "center": [7.6, 22.5],
-            "class": "WallArcElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "maxangle": "-36.5",
-            "minangle": "0",
-            "radius": "3"
-        },
-        {
-            "center": ["6.3", "23"],
-            "class": "WallArcElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "maxangle": "-36.5",
-            "minangle": "0",
-            "radius": "3"
-        },
-        {
-            "class": "WallElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "position": [2.147817, 12.291475, 8.706521, 21.214552]
-        },
-        {
-            "class": "WallElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "position": [3.449436, 11.791475, 10.008141, 20.714552]
-        },
-        {
-            "class": "WallElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "position": ["1.55", "10.5", "1.55", "8.5"]
-        },
-        {
-            "class": "WallElement",
-            "color": [0, 255, 255],
-            "friction": "0",
-            "inactiveLayerColor": [0, 255, 255, 64],
-            "layer": 3,
-            "position": ["2.85", "10", "2.85", "8.5"]
         },
         {
             "ballLayerFrom": 1,

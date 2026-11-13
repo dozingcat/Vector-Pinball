@@ -18,6 +18,17 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * 		"class": "WallPathElement",
  * 		"positions": [[5,5], [5,10], [8,10], [5, 15]]
  * }
+ *
+ * Corners can be replaced by curves by adding distances to a position: [x, y, distance] starts
+ * the curve `distance` units before the corner and ends it `distance` units after, and
+ * [x, y, distanceBefore, distanceAfter] can use different distances on each side. With equal
+ * distances the curve is a circular arc. For example, this makes a 90 degree arc of radius 1
+ * connecting a vertical and horizontal wall:
+ * {
+ * 		"class": "WallPathElement",
+ * 		"positions": [[5,5], [5,10,1], [8,10]]
+ * }
+ * See WallPathGeometry for details.
  */
 public class WallPathElement extends FieldElement {
 
@@ -36,14 +47,10 @@ public class WallPathElement extends FieldElement {
             Map<String, ?> params, FieldElementCollection collection) {
         @SuppressWarnings("unchecked")
         List<List<?>> positions = (List<List<?>>) params.get(POSITIONS_PROPERTY);
-        // N positions produce N-1 line segments.
-        this.xEndpoints = new float[positions.size()];
-        this.yEndpoints = new float[positions.size()];
-        for (int i = 0; i < positions.size(); i++) {
-            List<?> pos = positions.get(i);
-            xEndpoints[i] = asFloat(pos.get(0));
-            yEndpoints[i] = asFloat(pos.get(1));
-        }
+        // N points produce N-1 line segments. Curves add points between the given positions.
+        WallPathGeometry geometry = WallPathGeometry.fromPositions(positions);
+        this.xEndpoints = geometry.xPointsAsFloats();
+        this.yEndpoints = geometry.yPointsAsFloats();
         this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
         this.friction = asFloat(params.get(FRICTION_PROPERTY), Box2DFactory.DEFAULT_WALL_FRICTION);
     }
