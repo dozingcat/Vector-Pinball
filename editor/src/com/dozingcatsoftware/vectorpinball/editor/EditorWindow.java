@@ -66,7 +66,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class EditorWindow extends Application {
     public static void main(String[] args) {
         launch(args);
     }
