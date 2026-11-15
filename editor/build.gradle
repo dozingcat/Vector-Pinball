@@ -51,7 +51,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.EditorWindow'
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.Main'
 }
 
 // Renders a table JSON file to a PNG image. Usage:

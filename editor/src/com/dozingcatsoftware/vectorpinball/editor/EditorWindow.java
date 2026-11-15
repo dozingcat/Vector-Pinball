@@ -32,7 +32,6 @@ import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -66,10 +65,11 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class EditorWindow extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
+/**
+ * A window for editing a single table. Main creates and tracks the windows; menu commands that
+ * create or open tables use a new window unless this one has an unmodified starter table.
+ */
+public class EditorWindow {
 
     enum EditorState {
         EDITING,
@@ -86,7 +86,11 @@ public class EditorWindow extends Application {
     static int TOOLS_COLUMN_WIDTH = 360;
     static int SCRIPT_COLUMN_WIDTH = 550;
 
-    Stage mainStage;
+    // Offset of new windows from the window that created them.
+    static double NEW_WINDOW_OFFSET = 30;
+
+    final Main app;
+    final Stage stage;
     VBox fieldBox;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
@@ -109,11 +113,15 @@ public class EditorWindow extends Application {
 
     Path savedFilePath;
     Map<String, Object> lastSavedFieldMap;
+    // True if the table was created by "New Table" and hasn't been saved. If it also has no
+    // changes, opening or creating another table will replace it instead of using a new window.
+    boolean isStarterField = false;
 
     final int numTemplateFields = 9;
 
-    @Override public void start(Stage primaryStage) {
-        this.mainStage = primaryStage;
+    EditorWindow(Main app, Stage stage) {
+        this.app = app;
+        this.stage = stage;
 
         editableField = new EditableField();
         editableField.setElementChangedCallback(this::handleElementChangeFromField);
@@ -211,23 +219,52 @@ public class EditorWindow extends Application {
 
         root.getChildren().addAll(menuBar, topLeft, inspectorScroller, scriptView, fieldBox);
 
-        primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
-        primaryStage.setMinWidth(640);
-        primaryStage.setMinHeight(500);
-        primaryStage.setOnCloseRequest((event) -> {
-            if (confirmCloseCurrentField()) {
-                stopGame();  // Stops game thread if needed so that app will terminate.
-            }
-            else {
-                event.consume();  // Prevents exit.
+        stage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
+        stage.setMinWidth(640);
+        stage.setMinHeight(500);
+        stage.setOnCloseRequest((event) -> {
+            if (!confirmCloseCurrentField()) {
+                event.consume();  // Keeps the window open.
             }
         });
-        primaryStage.show();
+        stage.setOnHidden((event) -> {
+            stopGame();  // Stops game thread if needed so that app will terminate.
+            app.windowClosed(this);
+        });
+    }
 
+    /**
+     * Shows the window. If `parent` is not null, the window is placed slightly offset from it.
+     */
+    void show(EditorWindow parent) {
+        if (parent != null) {
+            stage.setX(parent.stage.getX() + NEW_WINDOW_OFFSET);
+            stage.setY(parent.stage.getY() + NEW_WINDOW_OFFSET);
+        }
+        stage.show();
         // Set initial canvas size based on available space after layout is complete
         Platform.runLater(() -> handleContainerResize(fieldBox.getHeight()));
+    }
 
-        loadStarterField();
+    /**
+     * Returns true if this window has a starter table that hasn't been saved or modified, which
+     * can be replaced when opening or creating a table.
+     */
+    boolean hasUnmodifiedStarterField() {
+        return isStarterField && savedFilePath == null && !hasUnsavedChanges();
+    }
+
+    boolean hasUnsavedChanges() {
+        return lastSavedFieldMap != null &&
+                !lastSavedFieldMap.equals(editableField.getPropertyMapSnapshot());
+    }
+
+    /**
+     * Returns the window that a new or opened table should go in: this window if it has an
+     * unmodified starter table, otherwise a new window.
+     */
+    EditorWindow windowForNewTable() {
+        return hasUnmodifiedStarterField() ? this : app.createWindow(this);
     }
 
     void showScoreView() {
@@ -276,14 +313,14 @@ public class EditorWindow extends Application {
         scriptColumnConstraints.setPrefWidth(SCRIPT_COLUMN_WIDTH);
         showScriptButton.setText(localizedString("Hide Script"));
         showScriptButton.setOnAction((event) -> hideScriptView());
-        mainStage.setWidth(mainStage.getWidth() + SCRIPT_COLUMN_WIDTH);
+        stage.setWidth(stage.getWidth() + SCRIPT_COLUMN_WIDTH);
     }
 
     void hideScriptView() {
         scriptColumnConstraints.setPrefWidth(0);
         showScriptButton.setText(localizedString("Show Script"));
         showScriptButton.setOnAction((event) -> showScriptView());
-        mainStage.setWidth(mainStage.getWidth() - SCRIPT_COLUMN_WIDTH);
+        stage.setWidth(stage.getWidth() - SCRIPT_COLUMN_WIDTH);
     }
 
     MenuItem createMenuItem(String label, String shortcutChar, Runnable onAction) {
@@ -304,14 +341,15 @@ public class EditorWindow extends Application {
         for (int i = 1; i <= numTemplateFields; i++) {
             int ii = i;
             newFromTemplateMenu.getItems().add(
-                    createMenuItem("Table " + ii, null, () -> loadBuiltInField(ii))
+                    createMenuItem("Table " + ii, null,
+                            () -> windowForNewTable().loadBuiltInField(ii))
             );
         }
         MenuItem saveAsItem = createMenuItem("Save As...", null, this::saveNewFile);
         saveAsItem.setAccelerator(new KeyCharacterCombination(
             "S", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         fileMenu.getItems().addAll(
-                createMenuItem("New Table", "N", () -> loadStarterField()),
+                createMenuItem("New Table", "N", () -> windowForNewTable().loadStarterField()),
                 newFromTemplateMenu,
                 new SeparatorMenuItem(),
                 createMenuItem("Open...", "O", this::openFile),
@@ -392,8 +430,8 @@ public class EditorWindow extends Application {
             double newWindowWidth = toolsWidth + scriptWidth + canvasWidth + windowChromeWidth;
             double newWindowHeight = requiredFieldBoxHeight + windowChromeHeight;
 
-            mainStage.setWidth(Math.max(newWindowWidth, mainStage.getMinWidth()));
-            mainStage.setHeight(Math.max(newWindowHeight, mainStage.getMinHeight()));
+            stage.setWidth(Math.max(newWindowWidth, stage.getMinWidth()));
+            stage.setHeight(Math.max(newWindowHeight, stage.getMinHeight()));
 
             createCanvas(canvasWidth, canvasHeight);
             renderer.setCanvas(fieldCanvas);
@@ -423,31 +461,33 @@ public class EditorWindow extends Application {
         renderer.doDraw();
     }
 
+    /**
+     * Replaces the current table with `map`. The caller is responsible for making sure that
+     * doesn't lose changes; see windowForNewTable.
+     */
     void loadFieldMap(Map<String, Object> map) {
         displayForEditing(map);
         undoStack.clearStack();
         undoStack.pushSnapshot();
         savedFilePath = null;
+        isStarterField = false;
         // Keep snapshot so we know if it's changed.
         lastSavedFieldMap = editableField.getPropertyMapSnapshot();
     }
 
     void loadBuiltInField(int fieldNum) {
-        if (!confirmCloseCurrentField()) return;
-
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForBuiltInField(fieldNum));
         // TODO: localize
-        mainStage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + fieldNum);
+        stage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + fieldNum);
     }
 
     void loadStarterField() {
-        if (!confirmCloseCurrentField()) return;
-
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForStarterField());
+        isStarterField = true;
         // TODO: localize
-        mainStage.setTitle(WINDOW_TITLE_PREFIX + "New Table");
+        stage.setTitle(WINDOW_TITLE_PREFIX + "New Table");
     }
 
     void displayForEditing(Map<String, Object> fieldMap) {
@@ -460,7 +500,7 @@ public class EditorWindow extends Application {
         editorState = EditorState.EDITING;
     }
 
-    IStringResolver stringResolver = new StringResolver();
+    static IStringResolver stringResolver = new StringResolver();
     Function<Field, Field.Delegate> groovyDelegateFn = (field -> {
         String script = field.getScriptText();
         if (script != null && script.trim().length() > 0) {
@@ -674,13 +714,19 @@ public class EditorWindow extends Application {
     }
 
     void openFile() {
-        if (!confirmCloseCurrentField()) return;
-
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open Table");
-        File selectedFile = chooser.showOpenDialog(mainStage);
+        File selectedFile = chooser.showOpenDialog(stage);
         if (selectedFile != null) {
-            Path openFilePath = selectedFile.toPath();
+            Path openFilePath = selectedFile.toPath().toAbsolutePath().normalize();
+            // If the file is already open, bring its window to the front instead of having
+            // two windows with separate changes to the same file.
+            EditorWindow existing = app.windowForPath(openFilePath);
+            if (existing != null) {
+                existing.stage.toFront();
+                existing.stage.requestFocus();
+                return;
+            }
             // TODO: Check for implausibly large files.
             byte[] contents = null;
             Map<String, Object> map = null;
@@ -697,9 +743,10 @@ public class EditorWindow extends Application {
                 ex.printStackTrace();
                 return;
             }
-            loadFieldMap(map);
-            savedFilePath = openFilePath;
-            mainStage.setTitle(WINDOW_TITLE_PREFIX + savedFilePath.toString());
+            EditorWindow window = windowForNewTable();
+            window.loadFieldMap(map);
+            window.savedFilePath = openFilePath;
+            window.stage.setTitle(WINDOW_TITLE_PREFIX + openFilePath.toString());
         }
     }
 
@@ -715,11 +762,11 @@ public class EditorWindow extends Application {
     void saveNewFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Table");
-        File selectedFile = chooser.showSaveDialog(mainStage);
+        File selectedFile = chooser.showSaveDialog(stage);
         if (selectedFile != null) {
-            savedFilePath = selectedFile.toPath();
+            savedFilePath = selectedFile.toPath().toAbsolutePath().normalize();
             writeToSavedFilePath();
-            mainStage.setTitle("Vector Pinball: " + savedFilePath.toString());
+            stage.setTitle(WINDOW_TITLE_PREFIX + savedFilePath.toString());
         }
     }
 
@@ -741,9 +788,7 @@ public class EditorWindow extends Application {
      * save the current field.
      */
     boolean confirmCloseCurrentField() {
-        // Continue if no previously saved field, or if current field has no changes.
-        if (lastSavedFieldMap == null) return true;
-        if (lastSavedFieldMap.equals(editableField.getPropertyMapSnapshot())) return true;
+        if (!hasUnsavedChanges()) return true;
 
         String title = localizedString("Discard changes?");
         String header = localizedString("The current table has unsaved changes.");
@@ -754,6 +799,7 @@ public class EditorWindow extends Application {
         buttons.add(new ButtonType(localizedString("Cancel"), ButtonBar.ButtonData.CANCEL_CLOSE));
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(stage);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.getButtonTypes().clear();
