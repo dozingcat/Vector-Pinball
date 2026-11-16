@@ -37,6 +37,15 @@ public class Main extends Application {
         windows.remove(window);
     }
 
+    /** Stops any game running in a window other than `window`. */
+    void stopGamesInOtherWindows(EditorWindow window) {
+        for (EditorWindow other : windows) {
+            if (other != window && other.isGameRunning()) {
+                other.stopGame();
+            }
+        }
+    }
+
     /** Returns the window editing the file at `path`, or null if there isn't one. */
     EditorWindow windowForPath(Path path) {
         for (EditorWindow window : windows) {

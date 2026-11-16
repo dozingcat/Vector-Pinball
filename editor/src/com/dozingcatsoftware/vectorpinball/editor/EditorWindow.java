@@ -510,6 +510,8 @@ public class EditorWindow {
     });
 
     void startGame() {
+        // Only one game runs at a time, so starting one stops games in other windows.
+        app.stopGamesInOtherWindows(this);
         stopGame();
         field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
         field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
@@ -518,16 +520,22 @@ public class EditorWindow {
         renderer.setField(field);
         showScoreView();
 
+        // Start the game before the game thread, so that this thread doesn't modify the Box2D
+        // world while the game thread is updating it. (Starting a game can activate and
+        // deactivate bodies, which crashes if the world is in the middle of a step.)
+        field.startGame();
+        field.launchBallIfNeeded();
         fieldDriver = new FieldDriver(field, renderer::doDraw);
         fieldDriver.start();
-
-        field.startGame();
-        launchBallIfNeeded();
 
         editorState = EditorState.SAMPLE_GAME;
         fieldCanvas.requestFocus();
 
         // Start polling every second to detect lost ball?
+    }
+
+    boolean isGameRunning() {
+        return fieldDriver != null;
     }
 
     void stopGame() {
@@ -546,7 +554,9 @@ public class EditorWindow {
         switch (editorState) {
             case SAMPLE_GAME:
                 launchBallIfNeeded();
-                field.setAllFlippersEngaged(true);
+                synchronized (field) {
+                    field.setAllFlippersEngaged(true);
+                }
                 break;
             case EDITING:
                 renderer.handleEditorMouseDown(event);
@@ -557,7 +567,9 @@ public class EditorWindow {
     void handleCanvasMouseReleased(MouseEvent event) {
         switch (editorState) {
             case SAMPLE_GAME:
-                field.setAllFlippersEngaged(false);
+                synchronized (field) {
+                    field.setAllFlippersEngaged(false);
+                }
                 break;
             case EDITING:
                 renderer.handleEditorMouseUp(event);
@@ -626,29 +638,35 @@ public class EditorWindow {
     private static EnumSet<KeyCode> ALL_FLIPPER_KEYS = EnumSet.of(KeyCode.SPACE, KeyCode.ENTER);
 
     private boolean updateFlippersFromKey(KeyCode code, boolean pressed) {
-        if (LEFT_FLIPPER_KEYS.contains(code)) {
-            field.setLeftFlippersEngaged(pressed);
-            return true;
+        // synchronized so we don't modify the Box2d world while it's updating.
+        synchronized (field) {
+            if (LEFT_FLIPPER_KEYS.contains(code)) {
+                field.setLeftFlippersEngaged(pressed);
+                return true;
+            }
+            else if (RIGHT_FLIPPER_KEYS.contains(code)) {
+                field.setRightFlippersEngaged(pressed);
+                return true;
+            }
+            else if (ALL_FLIPPER_KEYS.contains(code)) {
+                field.setAllFlippersEngaged(pressed);
+                return true;
+            }
+            return false;
         }
-        else if (RIGHT_FLIPPER_KEYS.contains(code)) {
-            field.setRightFlippersEngaged(pressed);
-            return true;
-        }
-        else if (ALL_FLIPPER_KEYS.contains(code)) {
-            field.setAllFlippersEngaged(pressed);
-            return true;
-        }
-        return false;
     }
 
     private void launchBallIfNeeded() {
         // synchronized so we don't modify the Box2d world while it's updating.
         synchronized (field) {
-            if (!field.getGameState().isGameInProgress()) {
-                startGame();
+            if (field.getGameState().isGameInProgress()) {
+                field.launchBallIfNeeded();
+                return;
             }
-            field.launchBallIfNeeded();
         }
+        // The game is over, so start a new one, which launches a ball. This is outside the
+        // synchronized block because it replaces `field`.
+        startGame();
     }
 
     void handleSelectionChange() {
