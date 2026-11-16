@@ -46,6 +46,8 @@ public class WallPathElementInspector extends ElementInspector {
                 localizedString("Inactive layer")));
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallPathElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
+        box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
+                EditableWallPathElement.CLOSED_PROPERTY, localizedString("Closed")));
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableWallPathElement.RESTITUTION_PROPERTY, localizedString("Restitution")));
         box.getChildren().add(createDecimalStringFieldWithLabel(
@@ -139,14 +141,15 @@ public class WallPathElementInspector extends ElementInspector {
                     Arrays.asList(pos.get(0).toString(), pos.get(1).toString()),
                     Arrays.asList(pos.get(0), 1 + String.valueOf(asDouble(pos.get(1)))));
         }
-        else if (index < positions.size() - 1) {
-            // Split at midpoint of row to insert after and the following point.
+        else if (index < positions.size() - 1 || isClosed()) {
+            // Split at midpoint of row to insert after and the following point. For a closed
+            // path, the point after the last one is the first.
             newPositions = new ArrayList<>();
             for (int i=0; i<=index; i++) {
                 newPositions.add(positions.get(i));
             }
             List<Object> start = positions.get(index);
-            List<Object> end = positions.get(index+1);
+            List<Object> end = positions.get((index+1) % positions.size());
             newPositions.add(Arrays.asList(
                     String.valueOf((asDouble(start.get(0)) + asDouble(end.get(0))) / 2),
                     String.valueOf((asDouble(start.get(1)) + asDouble(end.get(1))) / 2)));
@@ -166,6 +169,10 @@ public class WallPathElementInspector extends ElementInspector {
         }
         getPropertyContainer().setProperty(EditableWallPathElement.POSITIONS_PROPERTY, newPositions);
         notifyChanged();
+    }
+
+    boolean isClosed() {
+        return ((EditableWallPathElement) getPropertyContainer()).isClosed();
     }
 
     void updatePointsList() {
