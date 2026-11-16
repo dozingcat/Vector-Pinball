@@ -101,6 +101,66 @@ public class WallPathGeometryTest {
         assertEquals(3, g.numPoints());
     }
 
+    @Test public void testClosedPathWithoutCurves() {
+        WallPathGeometry g = WallPathGeometry.fromPositions(positions(
+                Arrays.asList(0, 0), Arrays.asList(0, 10), Arrays.asList(10, 10)), true);
+        assertFalse(g.hasCurves());
+        assertEquals(4, g.numPoints());
+        assertPoint(g, 2, 10, 10);
+        assertPoint(g, 3, 0, 0);
+    }
+
+    @Test public void testClosedPathCurvesAllCorners() {
+        // Square with rounded corners of radius 1, including the first and last points.
+        WallPathGeometry g = WallPathGeometry.fromPositions(positions(
+                Arrays.asList(0, 0, 1), Arrays.asList(0, 10, 1), Arrays.asList(10, 10, 1),
+                Arrays.asList(10, 0, 1)), true);
+        assertTrue(g.hasCurves());
+        // Each corner is 19 points (see testEqualDistancesMakeCircularArc), plus the closing point.
+        int n = g.numPoints();
+        assertEquals(4 * 19 + 1, n);
+        // The path starts where the first corner's curve starts, on the closing segment from
+        // (10, 0), and returns there.
+        assertPoint(g, 0, 1, 0);
+        assertPoint(g, 18, 0, 1);
+        assertPoint(g, n - 2, 9, 0);
+        assertPoint(g, n - 1, 1, 0);
+        // Points on the first corner's curve are on the circle around (1, 1).
+        for (int i = 0; i < 19; i++) {
+            assertEquals(1.0, Math.hypot(g.getX(i) - 1, g.getY(i) - 1), EPSILON);
+        }
+    }
+
+    @Test public void testClosedPathScalesDistancesOnClosingSegment() {
+        // The closing segment from (10, 0) to (0, 0) is 10 long, and its corners want 8 each.
+        WallPathGeometry g = WallPathGeometry.fromPositions(positions(
+                Arrays.asList(0, 0, 8, 1), Arrays.asList(0, 10), Arrays.asList(10, 10),
+                Arrays.asList(10, 0, 1, 8)), true);
+        int n = g.numPoints();
+        // The curves meet in the middle of the closing segment, which is where the path starts
+        // and ends.
+        assertPoint(g, 0, 5, 0);
+        assertPoint(g, n - 1, 5, 0);
+        for (int i = 1; i < n; i++) {
+            assertTrue(Math.hypot(g.getX(i) - g.getX(i - 1), g.getY(i) - g.getY(i - 1)) > EPSILON);
+        }
+    }
+
+    @Test public void testClosedPathIgnoresRepeatedFirstPoint() {
+        WallPathGeometry g = WallPathGeometry.fromPositions(positions(
+                Arrays.asList(0, 0), Arrays.asList(0, 10), Arrays.asList(10, 10),
+                Arrays.asList(0, 0)), true);
+        assertEquals(4, g.numPoints());
+        assertPoint(g, 3, 0, 0);
+    }
+
+    @Test public void testClosedPathNeedsThreePoints() {
+        WallPathGeometry g = WallPathGeometry.fromPositions(positions(
+                Arrays.asList(0, 0, 1), Arrays.asList(0, 10, 1)), true);
+        assertFalse(g.hasCurves());
+        assertEquals(2, g.numPoints());
+    }
+
     @Test public void testZeroDistanceOnOneSideLeavesSharpCorner() {
         WallPathGeometry g = WallPathGeometry.fromPositions(positions(
                 Arrays.asList(0, 0), Arrays.asList(0, 10, 0, 1), Arrays.asList(10, 10)));

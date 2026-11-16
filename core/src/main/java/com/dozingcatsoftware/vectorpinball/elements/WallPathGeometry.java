@@ -13,7 +13,8 @@ import java.util.List;
  * For an interior point with nonzero distances, the corner is replaced by a curve that starts
  * `distanceBefore` units before the point on the incoming segment and ends `distanceAfter` units
  * after it on the outgoing segment. [x, y, distance] uses the same distance on both sides.
- * Distances on the first and last points are ignored, since they don't have corners.
+ * Distances on the first and last points are ignored, since they don't have corners, unless the
+ * path is closed.
  *
  * The curve is a rational quadratic Bezier curve whose control point is the corner, which is
  * tangent to both segments where it meets them. Its weight is cos(turnAngle / 2), which makes it
@@ -88,6 +89,16 @@ public class WallPathGeometry {
     }
 
     public static WallPathGeometry fromPositions(List<? extends List<?>> positions) {
+        return fromPositions(positions, false);
+    }
+
+    /**
+     * If `closed` is true, the path has an additional segment from the last point back to the
+     * first, and the first and last points are corners that can have curves like any other.
+     * The returned points end with the first point repeated, so that consecutive points still
+     * form the segments.
+     */
+    public static WallPathGeometry fromPositions(List<? extends List<?>> positions, boolean closed) {
         int n = positions.size();
         double[] px = new double[n];
         double[] py = new double[n];
@@ -97,34 +108,54 @@ public class WallPathGeometry {
             List<?> pos = positions.get(i);
             px[i] = asDouble(pos.get(0));
             py[i] = asDouble(pos.get(1));
-            // Endpoints don't have corners.
-            if (i > 0 && i < n - 1) {
+        }
+        // If a closed path explicitly ends at its first point, ignore the duplicate.
+        if (closed && n > 1 &&
+                Math.hypot(px[n - 1] - px[0], py[n - 1] - py[0]) < MIN_POINT_DISTANCE) {
+            n--;
+        }
+        // A closed path needs at least 3 points to have any area.
+        closed = closed && n >= 3;
+        for (int i = 0; i < n; i++) {
+            // Endpoints of open paths don't have corners.
+            if (closed || (i > 0 && i < n - 1)) {
+                List<?> pos = positions.get(i);
                 distBefore[i] = Math.max(0, curveDistanceBefore(pos));
                 distAfter[i] = Math.max(0, curveDistanceAfter(pos));
             }
         }
         // Scale down distances that don't fit within their segment.
-        for (int i = 0; i < n - 1; i++) {
-            double length = Math.hypot(px[i + 1] - px[i], py[i + 1] - py[i]);
-            double total = distAfter[i] + distBefore[i + 1];
+        int numSegments = closed ? n : n - 1;
+        for (int i = 0; i < numSegments; i++) {
+            int next = (i + 1) % n;
+            double length = Math.hypot(px[next] - px[i], py[next] - py[i]);
+            double total = distAfter[i] + distBefore[next];
             if (total > length) {
                 double scale = length / total;
                 distAfter[i] *= scale;
-                distBefore[i + 1] *= scale;
+                distBefore[next] *= scale;
             }
         }
 
         PointList points = new PointList();
         boolean hasCurves = false;
         for (int i = 0; i < n; i++) {
-            if (i == 0 || i == n - 1 || !addCurve(
-                    points, px[i - 1], py[i - 1], px[i], py[i], px[i + 1], py[i + 1],
+            boolean isCorner = closed || (i > 0 && i < n - 1);
+            int prev = (i + n - 1) % n;
+            int next = (i + 1) % n;
+            if (isCorner && addCurve(
+                    points, px[prev], py[prev], px[i], py[i], px[next], py[next],
                     distBefore[i], distAfter[i])) {
-                points.add(px[i], py[i]);
-            }
-            else {
                 hasCurves = true;
             }
+            else {
+                points.add(px[i], py[i]);
+            }
+        }
+        if (closed) {
+            // Close the path by returning to the first point, which is the start of the first
+            // corner's curve if it has one.
+            points.add(points.xs.get(0), points.ys.get(0));
         }
         return new WallPathGeometry(points.xArray(), points.yArray(), hasCurves);
     }

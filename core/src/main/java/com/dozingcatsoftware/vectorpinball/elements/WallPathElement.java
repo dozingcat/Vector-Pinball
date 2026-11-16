@@ -28,11 +28,15 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * 		"class": "WallPathElement",
  * 		"positions": [[5,5], [5,10,1], [8,10]]
  * }
+ *
+ * If "closed" is true, there's an additional segment from the last point to the first, and the
+ * first and last points can have curve distances like the others.
  * See WallPathGeometry for details.
  */
 public class WallPathElement extends FieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
+    public static final String CLOSED_PROPERTY = "closed";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
     public static final String RESTITUTION_PROPERTY = "restitution";
     public static final String FRICTION_PROPERTY = "friction";
@@ -47,8 +51,10 @@ public class WallPathElement extends FieldElement {
             Map<String, ?> params, FieldElementCollection collection) {
         @SuppressWarnings("unchecked")
         List<List<?>> positions = (List<List<?>>) params.get(POSITIONS_PROPERTY);
-        // N points produce N-1 line segments. Curves add points between the given positions.
-        WallPathGeometry geometry = WallPathGeometry.fromPositions(positions);
+        // N points produce N-1 line segments (N if closed). Curves add points between the given
+        // positions.
+        WallPathGeometry geometry = WallPathGeometry.fromPositions(
+                positions, getBooleanParameterValueForKey(CLOSED_PROPERTY));
         this.xEndpoints = geometry.xPointsAsFloats();
         this.yEndpoints = geometry.yPointsAsFloats();
         this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));

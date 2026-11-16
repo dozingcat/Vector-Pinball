@@ -15,6 +15,7 @@ import com.dozingcatsoftware.vectorpinball.editor.Point;
 public class EditableWallPathElement extends EditableFieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
+    public static final String CLOSED_PROPERTY = "closed";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
     public static final String RESTITUTION_PROPERTY = "restitution";
     public static final String FRICTION_PROPERTY = "friction";
@@ -45,9 +46,17 @@ public class EditableWallPathElement extends EditableFieldElement {
         return ((List<?>)getProperty(POSITIONS_PROPERTY)).size();
     }
 
+    /** Same interpretation as FieldElement.getBooleanParameterValueForKey in the game. */
+    public boolean isClosed() {
+        Object value = getProperty(CLOSED_PROPERTY);
+        return Boolean.TRUE.equals(value) ||
+                ((value instanceof Number) && ((Number) value).doubleValue() != 0);
+    }
+
     /** Returns the path as drawn, with curves replacing corners where specified. */
     WallPathGeometry getGeometry() {
-        return WallPathGeometry.fromPositions((List<List<Object>>)getProperty(POSITIONS_PROPERTY));
+        return WallPathGeometry.fromPositions(
+                (List<List<Object>>)getProperty(POSITIONS_PROPERTY), isClosed());
     }
 
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
@@ -68,6 +77,10 @@ public class EditableWallPathElement extends EditableFieldElement {
                 for (int i = 1; i < size; i++) {
                     renderer.drawLine(getSegmentX(i-1), getSegmentY(i-1),
                             getSegmentX(i), getSegmentY(i), lineColor);
+                }
+                if (isClosed()) {
+                    renderer.drawLine(getSegmentX(size-1), getSegmentY(size-1),
+                            getSegmentX(0), getSegmentY(0), lineColor);
                 }
             }
             for (int i = 0; i < size; i++) {
