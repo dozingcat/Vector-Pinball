@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Vector Pinball</string>
+
+    <string name="independent_flippers_pref_title">Alette indipendenti</string>
+    <string name="independent_flippers_pref_summary_on">Un tocco attiva le alette in quel lato</string>
+    <string name="independent_flippers_pref_summary_off">Un qualsiasi tocco attiva tutte le alette</string>
+
+    <string name="line_width_pref_title">Dimensione linea</string>
+    <string name="line_width_pref_dialog_message">Dimensione di una linea in pixel, o 0 per valore di default basato sulla risoluzione dello schermo.</string>
+
+    <string name="sound_pref_title">Suono</string>
+    <string name="music_pref_title">Musica di sottofondo</string>
+    <string name="haptic_feedback_pref_title">Feedback vibrazione</string>
+    <string name="show_fps_pref_title">Mostra FPS</string>
+    <string name="zoom_pref_title">Zoom tabellone</string>
+    <string name="ball_trails_pref_title">Scia della biglia</string>
+    <string name="score_animations_pref_title">Animazione punti</string>
+    <string name="use_opengl_pref_title">Rendering OpenGL</string>
+    <string name="game_speed_pref_title">Velocità del gioco</string>
+
+    <string-array name="game_speed_pref_entries">
+        <item>Lento</item>
+        <item>Normale</item>
+        <item>Veloce</item>
+    </string-array>
+    <string-array name="game_speed_pref_values" translatable="false">
+        <item>slow</item>
+        <item>normal</item>
+        <item>fast</item>
+    </string-array>
+
+
+    <string name="about_text">Vector Pinball 1.16.0\n© 2010–2026 Brian Nenninger\n\nCommenti e bug:\nbnenning@gmail.com\n\nTocca lo schermo per iniziare una nuova partita, lancia una biglia se non è già in gioco e attiva le alette. Tocca l'area punti per mettere in pausa il gioco.\n\n[TABLE_RULES]\n\nIl menu Preferenze permette di cambiare le impostazioni seguenti:\n- Suono: Abilita o disabilita gli effetti sonori.\n- Musica di sottofondo: Abilita o disabilita la musica.\n- Feedback vibrazione: Vibra colpendo i respingenti o per altri eventi del gioco.\n- Alette indipendenti: Se deselezionato, ogni tocco attiva entrambe le alette. Se selezionato, occorre toccare il lato sinistro o destro dello schermo per le alette corrispondenti.\n- Zoom: Se selezionato, la vista evidenzia la posizione della biglia durante il gioco.\n- Rendering OpenGL: Usa OpenGL per la grafica. In genere produce la combinazione migliore di qualità e prestazioni, ma alcuni dispositivi potrebbero funzionare meglio se disattivato.\n- Mostra FPS: Se selezionato, mostra i fotogrammi per secondo in alto a sinistra.\n\nVector Pinball è open source;  il codice si trova presso\nhttps://github.com/dozingcat/Vector-Pinball\n\nSi ringrazia Mario Zechner per le migliorie al codice e per libgdx.\n\nTable 8: design e codice di Jack Morgan (jackmorgan8@gmail.com)\n\nsuono, musica &amp; codice audio di pdx\nTwittering Machine\nhttps://www.twittering.com</string>
+
+    <string name="table1_rules">Regole Tabellone:\n- Attiva tutti i bersagli azzurri nelle corsie in alto o in basso per far avanzare il moltiplicatore punti. Tutti i punti guadagnati saranno moltiplicati per questo fattore. La rampa a sinistra fa ugualmente avanzare il moltiplicatore.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.\n- Colpire un gruppo di bersagli attiva la luce successiva al centro del tabellone. Quando la luce bianca più grande al centro è accesa, usa la rampa a sinistra per iniziare il multiball.</string>
+    <string name="table2_rules">Regole Tabellone:\n- Attiva tutti i bersagli azzurri nelle corsie in basso per far avanzare il moltiplicatore punti. Tutti i punti guadagnati saranno moltiplicati per questo fattore.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.\n- I cerchi al centro del gioco tengono traccia di quante volte si sono colpiti tutti i bersagli a sinistra, in alto e a destra. Quando tutti sono stati colpiti almeno 3 volte, colpisci il respingente rosso per iniziare il multiball.</string>
+    <string name="table3_rules">Regole Tabellone:\n- Attiva tutti i bersagli azzurri nelle corsie in basso per far avanzare il moltiplicatore punti. Tutti i punti guadagnati saranno moltiplicati per questo fattore.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.\n- Ognuna delle rampe fa diventrare rossi i respingenti, che torneranno blu dopo alcuni secondi. Colpiscili in questo intervallo per punti extra.\n- Fa' diventare rossi gli anelli al centro colpendo i respingenti e il gruppo di bersagli centrale. Quando tutti gli anelli sono rossi, usa una delle rampe per iniziare il multiball.</string>
+    <string name="table4_rules">Regole Tabellone:\n- Ogni respingente aumenta il moltiplicatore punti di 0,01x. Colpire i bersagli in alto o accendere tutte le corsie aumenta questo fattore.\n- Colpisci tutti i 6 respingenti to accendere gli indicatori al centro. Quando tutti gli indicatori di una riga sono accesi, centra la buca a destra per bloccare la palla per il multiball.\n- Il multiball inizia quando si bloccano 3 biglie. Durante il multiball gli indicatori al centro lampeggiano su una biglia vi passa sopra. Accendili tutti per avere un jackpot.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.</string>
+    <string name="table5_rules">Regole Tabellone:\n- Il cerchio centrale ha 12 punti intorno, di 4 colori diversi. Ogni rampa in alto cambia il colore della biglia e permette di attivare i punti con lo stesso colore.\n- Quando tutti i 12 punti intorno al cerchio sono attivi, colpendo i bordi del triangolo rotante questi vengono rimossi. Colpisci il bersaglio al centro del triangolo per iniziare il multiball.\n- Durante il multiball, attiva ancora i 12 punti del cerchio per vincere un jackpot, che aumenta ogni volta di valore.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.</string>
+    <string name="table6_rules">Regole Tabellone:\n- Al centro del tabellone, 5 pianeti orbitano intorno a un sole. Quando la biglia passa su un pianeta, cambia il suo colore e il pianeta inizia a lampeggiare.\n- Colpisci il bersaglio corrispondente per &quot;attivare&quot; il pianeta e renderlo pieno. Per il pianeta arancione al centro, colpisci i bersagli in alto a sinistra. Per il secondo pianeta blu, attiva i simboli in alto a destra. Per i pianeti rimanenti, usa la rampa dello stesso colore.\n- Attiva tutti 5 i pianeti per iniziare il multiball. Nel multiball, attiva di nuovo tutti i pianeti per un jackpot.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.\n- Il sole e i pianeti hanno una gravità e attraggono la biglia quando è vicina.</string>
+    <string name="table7_rules">Regole Tabellone:\n- Il centro del tabellone contiene una mappa stellare. Usa una delle rampe con le frecce verdi che lampeggiano per far muovere la mappa in una costellazione.\n- Le stelle di quella costellazione appariranno verdi. Fai passare la biglia sopra di esse per attivarle; diventeranno gialle e delle linee connetteranno le stelle attiva per disegnare la costellazione.\n- Quando la costellazione è completa, usa la rampa a destra con la freccia gialla che lampeggia per bloccare la biglia. Ripeti questa operazione con altre 2 costellazioni. Bloccando la terza biglia inizia il multiball.\n- Nel multiball, completa le costellazioni rimanenti e usa poi la rampa a destra per un jackpot.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.</string>
+    <string name="table8_rules">Regole Tabellone:\n- L'obiettivo principale del gioco è mandare in buca le palle da biliardo colpendo i bersagli giusti, quindi mandare in buca la palla n.8 colpendo il bersaglio in alto a destra.\n- Le palle da 1 a 7 restano in buca tra una biglia e un'altra, a meno che la sequenza giusta di bersagli è completata. Se la sequenza è completata ma la palla n.8 non è colpita, tutti i bersagli si resettano alla biglia successiva.\n- Ogni palla da biliardo aggiunge 7.000 punti al bonus. Ogni volta che le palle da 1 a 8 vanno in buca, un super bonus di 56.000 punti è aggiunto al bonus al termine di ogni biglia successiva.\n- Dopo aver mandato in buca la palla n.8, un bonus una-tantum si accende dietro il bersaglio della palla n.8.\n- I moltiplicatori bonus possono aumentare fino a 5x colpendo i bersagli in fila a sinistra. Dopo aver completato i 4 bersagli, un bersaglio rosso da 50.000 punti appare dietro gli altri bersagli.\n- Completare le 4 corsie fa avanzare il valore del bersaglio rotante (fino a 1.500 per giro) e della palla n.8 (fino a 60.000 per colpo).\n- Attivando l'aletta sinistra mentre si lancia la biglia si ha una possibilità di colpire la palla n.8 e ottenere l'insieme intero.</string>
+    <string name="table9_rules">Regole Tabellone:\n- Raccogli le carte per formare una mano di poker. Usa la rampa a destra o a sinistra per prendere la carta mostrata.\n- Colpisci i bersagli in alto per cambiare la carta della rampa più vicina. Colpendo l'ultimo bersaglio viene offerta una carta "fortunata" sulla rampa che permette di avere una mano ad alto punteggio.\n- Usa la rampa in alto al centro per sostituire entrambe le carte con carte fortunate.\n- Raccogliendo 5 carte si ottiene un punteggio bonus in base alla mano di carte. Un tris o meglio (inclusi scala, colore, full, poker e scala reale) fa iniziare il multiball. Nel multiball, usa ognuna delle rampe per un jackpot.\n- Il gioco inizia con salva-biglie nelle uscite di destra e sinistra, che scompaiono quando usati. Colpisci tutti i bersagli a destra e sinistra per riattivarli.</string>
+    <string name="change_table_button_label">Seleziona Tabellone</string>
+    <string name="help_button_label">Aiuto</string>
+    <string name="preferences_button_label">Preferenze</string>
+    <string name="start_game_button_label">Inizia Gioco</string>
+    <string name="resume_game_button_label">Riprendi Gioco</string>
+    <string name="end_game_button_label">Termina Gioco</string>
+    <string name="quit_button_label">Esci</string>
+    <string name="unlimited_balls_label">Biglie Illimitate</string>
+
+    <string name="ball_number_message">Biglia %1$d</string>
+    <string name="shoot_again_message">Tira Ancora</string>
+    <string name="ball_saved_message">Biglia Salvata</string>
+    <string name="game_over_message">Game Over</string>
+    <string name="bump_message">Bump!</string>
+    <string name="touch_to_start_message">Tocca per iniziare</string>
+    <string name="last_score_message">Ultimo Punteggio: %1$s</string>
+    <string name="top_high_score_message">Punteggio Record: %1$s</string>
+    <string name="other_high_score_message">%1$d^ Punteggio: %2$s</string>
+    <string name="no_high_scores_message">Nessun punteggio per questo tabellone</string>
+
+    <string name="left_save_enabled_message">Salvataggio Sinistro Attivo</string>
+    <string name="right_save_enabled_message">Salvataggio Destro Attivo</string>
+    <string name="shoot_ramp_multiball_message">Usa la Rampa per Multiball</string>
+    <string name="multiball_started_message">Multiball!</string>
+    <string name="multiplier_message">Moltiplicatore %1$dx</string>
+    <string name="shoot_red_bumper_message">Colpisci Respingente Rosso</string>
+    <string name="bumper_multiplier_message">Moltiplicatore Respingente %1$d%%"</string>
+    <string name="jackpot_received_message">Jackpot!</string>
+    <string name="jackpot_received_with_multipler_message">Jackpot %1$dx!</string>
+    <string name="multiball_ready_message">Multiball Pronto</string>
+    <string name="ball_lock_ready_message">Blocco Biglia Pronto</string>
+    <string name="ball_locked_message">Biglia %1$d Bloccata</string>
+    <string name="shoot_pyramid_message">Colpisci la Piramide!</string>
+    <string name="extra_ball_received_message">Biglia Extra!</string>
+    <string name="blue_ramp_bonus_message">Rampa blu +%1$d%%</string>
+    <string name="red_ramp_bonus_message">Rampa rossa +%1$d%%</string>
+    <string name="yellow_ramp_bonus_message">Rampa gialla +%1$d%%</string>
+    <string name="green_ramp_bonus_message">Rampa verde +%1$d%%</string>
+    <string name="color_blue">Blu</string>
+    <string name="color_red">Rosso</string>
+    <string name="color_yellow">Giallo</string>
+    <string name="color_green">Verde</string>
+    <string name="planet_activated_message">Pianeta %1$d Attivo!</string>
+    <string name="ramp_bonus_message">Rampa %1$dx</string>
+    <string name="ramp_bonus_increased_message">Bonus rampa aumentato</string>
+    <string name="shoot_ramp_jackpot_message">Usa la rampa per il jackpot</string>
+    <string name="constellation_complete_message">%1$s completo</string>
+    <string name="poker_hand_scored_message">%1$s! +%2$d</string>
+    <string name="lucky_draw_message">Mano fortunata!</string>
+    <string name="lucky_card_message">Carta fortunata!</string>
+    <string name="hand_bonus_increased_message">Bonus mano aumentato</string>
+    <string name="show_high_score_button_label">Punteggi Record</string>
+    <string name="hide_high_score_button_label">OK</string>
+    <string name="high_score_table_title">Punteggi Record</string>
+    <string name="select_table_title">Seleziona Tabellone</string>
+</resources>
