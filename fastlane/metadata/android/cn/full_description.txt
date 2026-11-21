@@ -1,0 +1,3 @@
+简单矢量画风的弹球游戏，有七种球台，使用物理库实现精确模拟。
+
+查看 https://github.com/dozingcat/Vector-Pinball 如果你想贡献代码或设计球台。
